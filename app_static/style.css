@@ -133,16 +133,6 @@ textarea {
   background: transparent;
 }
 
-.sidebar:hover .sidebar-resize::before,
-.sidebar:focus-within .sidebar-resize::before {
-  background: var(--line);
-}
-
-.sidebar-resize:hover::before,
-.sidebar-resizing .sidebar-resize::before {
-  background: var(--accent);
-}
-
 .sidebar-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 32px;
@@ -356,7 +346,7 @@ textarea {
   gap: 8px;
   margin: 0 0 8px;
   border: 0;
-  padding: 0 2px 0 0;
+  padding: 0 10px;
   background: transparent;
   color: var(--muted);
   font-size: 12px;
@@ -741,11 +731,6 @@ textarea {
   background: transparent;
 }
 
-.ai-panel-resize:hover::before,
-.ai-panel-resizing .ai-panel-resize::before {
-  background: var(--accent);
-}
-
 .ai-panel-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 36px;
@@ -1115,6 +1100,11 @@ textarea {
   gap: 8px;
 }
 
+.reader-actions {
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+
 .card-footer a {
   border-color: var(--line);
   background: var(--panel-soft);
@@ -1163,6 +1153,8 @@ textarea {
   align-items: start;
   padding: 18px;
   border-bottom: 1px solid var(--line);
+  max-height: 188px;
+  overflow: hidden;
 }
 
 .icon-button {
@@ -1194,21 +1186,39 @@ textarea {
 .reader-heading {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 
 .reader-heading h2 {
   font-size: 24px;
+  line-height: 1.25;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .reader-heading p {
   color: var(--muted);
   line-height: 1.5;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.reader-tags {
+  max-height: 30px;
 }
 
 .button-link {
   border-color: var(--line);
   background: var(--panel-soft);
   color: var(--text);
+}
+
+a.icon-action {
+  text-decoration: none;
 }
 
 .reader-ai-button {

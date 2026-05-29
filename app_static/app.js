@@ -137,7 +137,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.17.",
+    aboutVersion: "Current early version: 0.3.18.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -354,7 +354,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.17。",
+    aboutVersion: "当前早期版本：0.3.18。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -571,7 +571,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.17。",
+    aboutVersion: "現在の初期バージョン: 0.3.18。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -703,7 +703,6 @@ const elements = {
   navSections: document.querySelectorAll("[data-nav-section]"),
   importEntries: document.querySelectorAll("[data-import-entry]"),
   siteTitle: document.querySelector("#site-title"),
-  itemCount: document.querySelector("#item-count"),
   languageSelect: document.querySelector("#language-select"),
   themeModeButtons: document.querySelectorAll("[data-theme-mode]"),
   settingsOpen: document.querySelector("#settings-open"),
@@ -812,8 +811,7 @@ function renderApp() {
   applyViewMode();
   applyFavoriteFilter();
   applyTranslations();
-  elements.siteTitle.textContent = state.manifest.site?.title || "HTML Vault";
-  elements.itemCount.textContent = t("items", { count: state.items.length });
+  elements.siteTitle.textContent = "HTMLvault";
   renderFeedback();
   renderLibraryNav();
   renderCollectionNav();
@@ -1237,9 +1235,11 @@ function updateAgentStatus() {
 function copyReaderLink() {
   const url = window.location.href;
   navigator.clipboard?.writeText(url);
-  elements.readerCopy.textContent = t("copied");
+  elements.readerCopy.innerHTML = copiedIcon();
+  setIconButtonLabel(elements.readerCopy, "copied");
   window.setTimeout(() => {
-    elements.readerCopy.textContent = t("copyLink");
+    elements.readerCopy.innerHTML = copyIcon();
+    setIconButtonLabel(elements.readerCopy, "copyLink");
   }, 1400);
 }
 
@@ -1262,6 +1262,10 @@ async function shareReaderLink() {
 }
 
 function openReaderAiPanel() {
+  if (state.aiPanelOpen) {
+    closeAiPanel();
+    return;
+  }
   state.manualAiContextIds.clear();
   renderGrid();
   renderAiContext();
@@ -1295,6 +1299,8 @@ function renderReaderActions(item) {
   elements.readerArchive.innerHTML = archiveIcon();
   elements.readerArchive.setAttribute("aria-label", archiveLabel);
   elements.readerArchive.setAttribute("title", archiveLabel);
+  elements.readerCopy.innerHTML = copyIcon();
+  setIconButtonLabel(elements.readerCopy, "copyLink");
 }
 
 function getItemById(id) {
@@ -1509,6 +1515,7 @@ function applyAiPanelState() {
   elements.body.style.setProperty("--ai-panel-width", `${state.aiPanelWidth}px`);
   elements.body.classList.toggle("ai-panel-open", state.aiPanelOpen);
   elements.aiPanelOpen.classList.toggle("active", state.aiPanelOpen);
+  elements.readerAiPanelOpen.classList.toggle("active", state.aiPanelOpen);
   applySidebarWidth();
 }
 
@@ -2144,6 +2151,29 @@ function contextToggleIcon(active) {
       <path d="M5 12h14"></path>
     </svg>
   `;
+}
+
+function copyIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+      <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+    </svg>
+  `;
+}
+
+function copiedIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 6 9 17l-5-5"></path>
+    </svg>
+  `;
+}
+
+function setIconButtonLabel(button, key) {
+  const label = t(key);
+  button.setAttribute("aria-label", label);
+  button.setAttribute("title", label);
 }
 
 function registerServiceWorker() {

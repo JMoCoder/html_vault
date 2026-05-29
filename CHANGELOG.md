@@ -7,6 +7,19 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.18] - 2026-05-30
+
+### Changed
+
+- Sidebar branding now always shows `HTMLvault` and removes the item-count
+  subtitle.
+- Sidebar and AI-panel resize rails no longer show hover/drag highlight lines.
+- Reader actions now use icon buttons for original/copy, keep the AI button on
+  the far right, and let that button toggle the AI panel open/closed.
+- Reader headers now clamp title, summary, and tags to keep the header height
+  stable as the AI panel width changes.
+- Package, app, and PWA cache version updated to `0.3.18`.
+
 ## [0.3.17] - 2026-05-30
 
 ### Changed
