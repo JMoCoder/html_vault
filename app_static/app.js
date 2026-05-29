@@ -48,7 +48,8 @@ const i18n = {
     settingsSections: "Settings sections",
     basicSettings: "Basic settings",
     basicSettingsIntro: "Configure interface preferences stored in this browser.",
-    interfaceTheme: "Interface theme",
+    interfaceTheme: "Theme settings",
+    themeSettingsComingSoon: "Theme color controls will be added here later.",
     languageSetting: "Language",
     themeSystem: "System",
     themeLight: "Light",
@@ -137,7 +138,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.18.",
+    aboutVersion: "Current early version: 0.3.19.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -161,7 +162,7 @@ const i18n = {
     feelingLucky: "I'm feeling lucky",
     viewStyle: "View style",
     resultFilters: "Result filters",
-    advancedFilters: "Collection and tag filters",
+    advancedFilters: "Tag filters",
     collectionFilters: "Collections",
     tagFilters: "Tags",
     tagMatchMode: "Tag match mode",
@@ -265,7 +266,8 @@ const i18n = {
     settingsSections: "设置分区",
     basicSettings: "基本设置",
     basicSettingsIntro: "配置保存在当前浏览器中的界面偏好。",
-    interfaceTheme: "界面设置",
+    interfaceTheme: "主题设置",
+    themeSettingsComingSoon: "后续会在这里加入主题色切换功能。",
     languageSetting: "语言设置",
     themeSystem: "跟随系统",
     themeLight: "亮色模式",
@@ -354,7 +356,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.18。",
+    aboutVersion: "当前早期版本：0.3.19。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -378,7 +380,7 @@ const i18n = {
     feelingLucky: "手气不错",
     viewStyle: "视图样式",
     resultFilters: "结果筛选",
-    advancedFilters: "集合与标签筛选",
+    advancedFilters: "标签筛选",
     collectionFilters: "集合",
     tagFilters: "标签",
     tagMatchMode: "标签匹配模式",
@@ -482,7 +484,8 @@ const i18n = {
     settingsSections: "設定セクション",
     basicSettings: "基本設定",
     basicSettingsIntro: "このブラウザーに保存するインターフェース設定です。",
-    interfaceTheme: "インターフェーステーマ",
+    interfaceTheme: "テーマ設定",
+    themeSettingsComingSoon: "今後ここにテーマカラー切り替えを追加します。",
     languageSetting: "言語設定",
     themeSystem: "システム",
     themeLight: "ライト",
@@ -571,7 +574,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.18。",
+    aboutVersion: "現在の初期バージョン: 0.3.19。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -595,7 +598,7 @@ const i18n = {
     feelingLucky: "おまかせ表示",
     viewStyle: "表示形式",
     resultFilters: "結果フィルター",
-    advancedFilters: "コレクションとタグフィルター",
+    advancedFilters: "タグフィルター",
     collectionFilters: "コレクション",
     tagFilters: "タグ",
     tagMatchMode: "タグ一致モード",
@@ -687,7 +690,6 @@ const state = {
   sortOpen: false,
   sortMode: getInitialSortMode(),
   tagMatchMode: "any",
-  selectedCollections: new Set(),
   selectedTags: new Set(),
   manualAiContextIds: new Set(),
   onlyFavorites: getInitialFavoriteFilter(),
@@ -705,6 +707,7 @@ const elements = {
   siteTitle: document.querySelector("#site-title"),
   languageSelect: document.querySelector("#language-select"),
   themeModeButtons: document.querySelectorAll("[data-theme-mode]"),
+  themeToggle: document.querySelector("#theme-toggle"),
   settingsOpen: document.querySelector("#settings-open"),
   settingsBack: document.querySelector("#settings-back"),
   settingsPage: document.querySelector("#settings-page"),
@@ -746,7 +749,6 @@ const elements = {
   tagNav: document.querySelector("#tag-nav"),
   multiFilterToggle: document.querySelector("#multi-filter-toggle"),
   multiFilterPopover: document.querySelector("#multi-filter-popover"),
-  multiCollectionOptions: document.querySelector("#multi-collection-options"),
   multiTagOptions: document.querySelector("#multi-tag-options"),
   tagMatchButtons: document.querySelectorAll("[data-tag-match-mode]"),
   sortToggle: document.querySelector("#sort-toggle"),
@@ -843,8 +845,7 @@ function renderCollectionNav() {
     .filter((collection) => isManagedItemVisible("collections", collection.name))
     .map((collection) => {
     const active = state.filter.type === "collection" && state.filter.value === collection.name;
-    const multiActive = state.selectedCollections.has(collection.name);
-    return navButton(collection.name, countCollectionItems(collection.name), active || multiActive, () => {
+    return navButton(collection.name, countCollectionItems(collection.name), active, () => {
       selectCollection(collection.name);
     });
   });
@@ -898,10 +899,6 @@ function filteredItems() {
     items = items.filter((item) => item.collection === state.filter.value);
   } else if (state.filter.type === "tag") {
     items = items.filter((item) => (item.tags || []).includes(state.filter.value));
-  }
-
-  if (state.selectedCollections.size > 0) {
-    items = items.filter((item) => state.selectedCollections.has(item.collection || "Inbox"));
   }
 
   if (state.selectedTags.size > 0) {
@@ -1117,11 +1114,7 @@ function selectTag(name) {
 }
 
 function syncSingleSelectionToMultiFilter(type, value) {
-  if (state.selectedCollections.size === 0 && state.selectedTags.size === 0) return;
-  if (type === "collection") {
-    state.selectedCollections.clear();
-    state.selectedCollections.add(value);
-  }
+  if (state.selectedTags.size === 0) return;
   if (type === "tag") {
     state.selectedTags.clear();
     state.selectedTags.add(value);
@@ -1551,11 +1544,6 @@ function getAiContextLabel() {
     parts.push(t("aiContextGlobal"));
   }
 
-  const extraCollections = [...state.selectedCollections].filter((name) => name !== primaryCollection);
-  if (extraCollections.length > 0) {
-    parts.push(t("aiContextCollections", { names: extraCollections.join(", ") }));
-  }
-
   const extraTags = [...state.selectedTags].filter((name) => name !== primaryTag);
   if (extraTags.length > 0) {
     const mode = t(state.tagMatchMode === "all" ? "tagMatchModeAllLabel" : "tagMatchModeAnyLabel");
@@ -1644,7 +1632,7 @@ function setSortMode(mode) {
 }
 
 function hasMultiFilters() {
-  return state.selectedCollections.size > 0 || state.selectedTags.size > 0;
+  return state.selectedTags.size > 0;
 }
 
 function setTagMatchMode(mode) {
@@ -1656,27 +1644,24 @@ function setTagMatchMode(mode) {
 }
 
 function renderMultiFilterOptions() {
-  elements.multiCollectionOptions.replaceChildren(...(state.manifest.collections || [])
-    .filter((collection) => isManagedItemVisible("collections", collection.name))
-    .map((collection) => multiFilterOption("collection", collection.name, countCollectionItems(collection.name))));
   elements.multiTagOptions.replaceChildren(...(state.manifest.tags || [])
     .filter((tag) => isManagedItemVisible("tags", tag.name))
-    .map((tag) => multiFilterOption("tag", tag.name, countTagItems(tag.name))));
+    .map((tag) => multiFilterOption(tag.name, countTagItems(tag.name))));
   applyMultiFilterState();
 }
 
-function multiFilterOption(type, name, count) {
-  const selected = type === "collection" ? state.selectedCollections.has(name) : state.selectedTags.has(name);
+function multiFilterOption(name, count) {
+  const selected = state.selectedTags.has(name);
   const label = document.createElement("label");
   label.className = "multi-filter-option";
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
   checkbox.checked = selected;
   checkbox.addEventListener("change", () => {
-    toggleMultiFilterValue(type, name);
+    toggleMultiFilterValue(name);
   });
   const text = document.createElement("span");
-  text.textContent = type === "tag" ? `#${name}` : name;
+  text.textContent = `#${name}`;
   const badge = document.createElement("span");
   badge.className = "multi-filter-count";
   badge.textContent = count;
@@ -1684,12 +1669,11 @@ function multiFilterOption(type, name, count) {
   return label;
 }
 
-function toggleMultiFilterValue(type, name) {
-  const target = type === "collection" ? state.selectedCollections : state.selectedTags;
-  if (target.has(name)) {
-    target.delete(name);
+function toggleMultiFilterValue(name) {
+  if (state.selectedTags.has(name)) {
+    state.selectedTags.delete(name);
   } else {
-    target.add(name);
+    state.selectedTags.add(name);
   }
   renderCollectionNav();
   renderTagNav();
@@ -1699,7 +1683,6 @@ function toggleMultiFilterValue(type, name) {
 }
 
 function clearMultiFilters(shouldRender = true) {
-  state.selectedCollections.clear();
   state.selectedTags.clear();
   if (!shouldRender) return;
   renderCollectionNav();
@@ -1756,16 +1739,33 @@ function setThemeMode(mode) {
 }
 
 function applyTheme() {
-  const resolvedTheme = state.themeMode === "system" ? getSystemTheme() : state.themeMode;
+  const resolvedTheme = getResolvedTheme();
   document.documentElement.dataset.theme = resolvedTheme;
   document.documentElement.dataset.themeMode = state.themeMode;
   elements.themeModeButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.themeMode === state.themeMode);
   });
+  updateThemeToggle(resolvedTheme);
+}
+
+function toggleThemeMode() {
+  setThemeMode(getResolvedTheme() === "dark" ? "light" : "dark");
+}
+
+function getResolvedTheme() {
+  return state.themeMode === "system" ? getSystemTheme() : state.themeMode;
 }
 
 function getSystemTheme() {
   return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function updateThemeToggle(resolvedTheme) {
+  const targetMode = resolvedTheme === "dark" ? "light" : "dark";
+  const label = t(targetMode === "dark" ? "themeDark" : "themeLight");
+  elements.themeToggle.innerHTML = targetMode === "dark" ? moonIcon() : sunIcon();
+  elements.themeToggle.setAttribute("aria-label", label);
+  elements.themeToggle.setAttribute("title", label);
 }
 
 function loadAiConfig() {
@@ -2170,6 +2170,30 @@ function copiedIcon() {
   `;
 }
 
+function moonIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20.9 15.1A8 8 0 0 1 8.9 3.1 7 7 0 1 0 20.9 15.1Z"></path>
+    </svg>
+  `;
+}
+
+function sunIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2"></path>
+      <path d="M12 20v2"></path>
+      <path d="m4.93 4.93 1.41 1.41"></path>
+      <path d="m17.66 17.66 1.41 1.41"></path>
+      <path d="M2 12h2"></path>
+      <path d="M20 12h2"></path>
+      <path d="m6.34 17.66-1.41 1.41"></path>
+      <path d="m19.07 4.93-1.41 1.41"></path>
+    </svg>
+  `;
+}
+
 function setIconButtonLabel(button, key) {
   const label = t(key);
   button.setAttribute("aria-label", label);
@@ -2211,6 +2235,7 @@ function applyTranslations() {
   applyFavoriteFilter();
   applyMultiFilterState();
   applySortState();
+  updateThemeToggle(getResolvedTheme());
 }
 
 function setFeedback(key, params = {}) {
@@ -2278,6 +2303,7 @@ elements.languageSelect.addEventListener("change", (event) => setLanguage(event.
 elements.themeModeButtons.forEach((button) => {
   button.addEventListener("click", () => setThemeMode(button.dataset.themeMode));
 });
+elements.themeToggle.addEventListener("click", toggleThemeMode);
 elements.settingsOpen.addEventListener("click", toggleSettings);
 elements.settingsBack.addEventListener("click", closeSettings);
 elements.settingsTabs.forEach((tab) => {

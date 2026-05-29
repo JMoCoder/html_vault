@@ -7,6 +7,19 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.19] - 2026-05-30
+
+### Changed
+
+- Collapsed sidebar is narrower and uses a smaller logo mark.
+- Top filter popover now filters tags only; collection filtering remains a
+  left-navigation action.
+- Light/dark theme toggle moved back beside the sidebar Settings button with
+  icon-only switching.
+- Basic settings now labels the theme area as Theme settings and reserves it
+  for future theme-color controls.
+- Package, app, and PWA cache version updated to `0.3.19`.
+
 ## [0.3.18] - 2026-05-30
 
 ### Changed
