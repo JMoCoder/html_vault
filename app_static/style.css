@@ -350,23 +350,14 @@ textarea {
   font-size: 26px;
 }
 
-.ai-panel-open .topbar {
-  align-items: stretch;
-  flex-direction: column;
-}
-
 .topbar-tools {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
   width: min(650px, 100%);
-}
-
-.ai-panel-open .topbar-tools {
-  width: 100%;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  min-width: 0;
+  flex-wrap: nowrap;
 }
 
 .view-toggle,
@@ -601,7 +592,8 @@ textarea {
 .search {
   display: grid;
   gap: 6px;
-  width: 100%;
+  flex: 1 1 180px;
+  min-width: 120px;
   color: var(--muted);
   font-size: 12px;
 }

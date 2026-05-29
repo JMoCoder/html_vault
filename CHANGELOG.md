@@ -7,6 +7,16 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.11] - 2026-05-29
+
+### Changed
+
+- Opening the AI panel no longer changes the top toolbar into a wrapped
+  multi-row layout.
+- The global AI button remains visible to the right of search while the panel
+  is open, preserving the search/AI button relationship.
+- Package, app, and PWA cache version updated to `0.3.11`.
+
 ## [0.3.10] - 2026-05-29
 
 ### Changed
