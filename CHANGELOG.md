@@ -17,7 +17,7 @@ versioning after the initial public release.
 - New knowledge item entry card with optional Agent API handoff.
 - Example content, tests, Docker static image, README, MIT license.
 
-## [0.1.1] - 2026-05-29
+## [0.2.0] - 2026-05-29
 
 ### Added
 
@@ -35,3 +35,5 @@ versioning after the initial public release.
 - Language selection now lives at the bottom of the sidebar.
 - API keys are explicitly excluded from browser storage; static mode only saves
   non-sensitive AI model preferences.
+- Settings header icon buttons are grid-centered for consistent visual
+  alignment.

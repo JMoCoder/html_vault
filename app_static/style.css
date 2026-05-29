@@ -155,6 +155,8 @@ select {
 .settings-toggle {
   width: 42px;
   height: 36px;
+  display: grid;
+  place-items: center;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
@@ -399,11 +401,16 @@ select {
 .icon-button {
   width: 36px;
   height: 36px;
+  display: grid;
+  place-items: center;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel-soft);
   cursor: pointer;
-  font-size: 24px;
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
 }
 
 .reader-heading {

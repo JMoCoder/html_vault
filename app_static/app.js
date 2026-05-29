@@ -38,7 +38,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.1.1.",
+    aboutVersion: "Current early version: 0.2.0.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -126,7 +126,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.1.1。",
+    aboutVersion: "当前早期版本：0.2.0。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -420,10 +420,13 @@ function closeReader() {
   }
 }
 
-function openSettings(tab = "ai") {
+function openSettings(tab = "ai", updateHash = true) {
   state.activeSettingsTab = tab;
   elements.settingsPage.hidden = false;
   renderSettingsTabs();
+  if (updateHash) {
+    window.location.hash = `/settings/${tab}`;
+  }
 }
 
 function toggleSettings() {
@@ -436,6 +439,9 @@ function toggleSettings() {
 
 function closeSettings() {
   elements.settingsPage.hidden = true;
+  if (window.location.hash.startsWith("#/settings")) {
+    history.pushState("", document.title, window.location.pathname + window.location.search);
+  }
 }
 
 function renderSettingsTabs() {
@@ -452,6 +458,11 @@ function renderSettingsTabs() {
 
 function openFromHash() {
   const id = decodeURIComponent(window.location.hash.replace(/^#\/?/, ""));
+  if (id.startsWith("settings")) {
+    const tab = id.split("/")[1] || "ai";
+    openSettings(tab, false);
+    return;
+  }
   if (!id) return;
   const item = state.items.find((candidate) => candidate.id === id);
   if (item) openReader(item);
@@ -670,6 +681,7 @@ elements.settingsTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     state.activeSettingsTab = tab.dataset.settingsTab;
     renderSettingsTabs();
+    window.location.hash = `/settings/${state.activeSettingsTab}`;
   });
 });
 elements.aiSettingsForm.addEventListener("submit", saveAiConfig);
