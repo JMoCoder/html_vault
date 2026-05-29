@@ -138,7 +138,6 @@ select {
 
 .language-switcher {
   display: grid;
-  gap: 6px;
   color: var(--muted);
   font-size: 12px;
 }
