@@ -8,6 +8,7 @@ const i18n = {
     home: "Home",
     collapseSidebar: "Collapse sidebar",
     expandSidebar: "Expand sidebar",
+    resizeSidebar: "Resize sidebar",
     language: "Language",
     toggleTheme: "Toggle dark and light mode",
     openGlobalAi: "Open AI assistant",
@@ -18,10 +19,16 @@ const i18n = {
     aiConversation: "Knowledge Q&A",
     aiContext: "Context",
     aiContextGlobal: "All notes",
+    aiContextLibrary: "Library: {name}",
     aiContextCollection: "Collection: {name}",
     aiContextTag: "Tag: {name}",
     aiContextReader: "Current topic: {title}",
     aiContextSearch: "Search results: {query}",
+    aiContextCollections: "Collections: {names}",
+    aiContextTags: "Tags: {names}",
+    aiContextFavoritesOnly: "Favorites only",
+    aiContextArchivedHidden: "Archived excluded",
+    aiContextArchivedShown: "Archived included",
     aiWelcome: "This AI panel will answer questions against the current workspace context. Connect Agent Server later to enable real responses.",
     aiUserPlaceholder: "User question",
     aiAssistantPlaceholder: "AI response placeholder. No request was sent.",
@@ -111,7 +118,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.2.",
+    aboutVersion: "Current early version: 0.3.3.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -134,6 +141,10 @@ const i18n = {
     feelingLucky: "I'm feeling lucky",
     viewStyle: "View style",
     resultFilters: "Result filters",
+    advancedFilters: "Collection and tag filters",
+    clearMultiFilters: "Clear",
+    collectionFilters: "Collections",
+    tagFilters: "Tags",
     cardView: "Card view",
     listView: "List view",
     hideArchived: "Hide archived items",
@@ -183,6 +194,7 @@ const i18n = {
     home: "回到主页",
     collapseSidebar: "收起侧栏",
     expandSidebar: "展开侧栏",
+    resizeSidebar: "调整侧栏宽度",
     language: "语言",
     toggleTheme: "切换暗色与亮色模式",
     openGlobalAi: "打开 AI 助理",
@@ -193,10 +205,16 @@ const i18n = {
     aiConversation: "知识库问答",
     aiContext: "上下文",
     aiContextGlobal: "全部笔记",
+    aiContextLibrary: "资料库：{name}",
     aiContextCollection: "集合：{name}",
     aiContextTag: "标签：{name}",
     aiContextReader: "当前话题：{title}",
     aiContextSearch: "搜索结果：{query}",
+    aiContextCollections: "集合：{names}",
+    aiContextTags: "标签：{names}",
+    aiContextFavoritesOnly: "仅收藏",
+    aiContextArchivedHidden: "已排除归档",
+    aiContextArchivedShown: "包含归档",
     aiWelcome: "这里将针对当前工作区上下文进行 AI 问答。连接 Agent Server 后再启用真实回复。",
     aiUserPlaceholder: "用户问题",
     aiAssistantPlaceholder: "AI 回复占位。当前未发送任何请求。",
@@ -286,7 +304,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.2。",
+    aboutVersion: "当前早期版本：0.3.3。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -309,6 +327,10 @@ const i18n = {
     feelingLucky: "手气不错",
     viewStyle: "视图样式",
     resultFilters: "结果筛选",
+    advancedFilters: "集合与标签筛选",
+    clearMultiFilters: "清空",
+    collectionFilters: "集合",
+    tagFilters: "标签",
     cardView: "方块视图",
     listView: "横向条目视图",
     hideArchived: "排除已归档",
@@ -358,6 +380,7 @@ const i18n = {
     home: "ホームへ戻る",
     collapseSidebar: "サイドバーを折りたたむ",
     expandSidebar: "サイドバーを展開",
+    resizeSidebar: "サイドバー幅を調整",
     language: "言語",
     toggleTheme: "ダーク/ライトモードを切り替え",
     openGlobalAi: "AI アシスタントを開く",
@@ -368,10 +391,16 @@ const i18n = {
     aiConversation: "ナレッジ Q&A",
     aiContext: "コンテキスト",
     aiContextGlobal: "すべてのノート",
+    aiContextLibrary: "ライブラリ: {name}",
     aiContextCollection: "コレクション: {name}",
     aiContextTag: "タグ: {name}",
     aiContextReader: "現在のトピック: {title}",
     aiContextSearch: "検索結果: {query}",
+    aiContextCollections: "コレクション: {names}",
+    aiContextTags: "タグ: {names}",
+    aiContextFavoritesOnly: "お気に入りのみ",
+    aiContextArchivedHidden: "アーカイブを除外",
+    aiContextArchivedShown: "アーカイブを含む",
     aiWelcome: "この AI パネルは現在のワークスペース文脈に対して質問応答する予定です。実際の応答は後で Agent Server 接続後に有効化します。",
     aiUserPlaceholder: "ユーザーの質問",
     aiAssistantPlaceholder: "AI 応答のプレースホルダーです。リクエストは送信されていません。",
@@ -461,7 +490,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.2。",
+    aboutVersion: "現在の初期バージョン: 0.3.3。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -484,6 +513,10 @@ const i18n = {
     feelingLucky: "おまかせ表示",
     viewStyle: "表示形式",
     resultFilters: "結果フィルター",
+    advancedFilters: "コレクションとタグフィルター",
+    clearMultiFilters: "クリア",
+    collectionFilters: "コレクション",
+    tagFilters: "タグ",
     cardView: "カード表示",
     listView: "横長リスト表示",
     hideArchived: "アーカイブ済みを非表示",
@@ -553,9 +586,13 @@ const state = {
   itemState: loadItemState(),
   navConfig: loadNavConfig(),
   sidebarCollapsed: getInitialSidebarState(),
+  sidebarWidth: getInitialSidebarWidth(),
   viewMode: getInitialViewMode(),
   aiPanelOpen: false,
   aiPanelWidth: getInitialAiPanelWidth(),
+  multiFilterOpen: false,
+  selectedCollections: new Set(),
+  selectedTags: new Set(),
   hideArchived: getInitialArchiveFilter(),
   onlyFavorites: getInitialFavoriteFilter(),
   currentReaderItemId: "",
@@ -565,6 +602,7 @@ const elements = {
   body: document.body,
   brandHome: document.querySelector("#brand-home"),
   sidebarCollapse: document.querySelector("#sidebar-collapse"),
+  sidebarResize: document.querySelector("#sidebar-resize"),
   siteTitle: document.querySelector("#site-title"),
   itemCount: document.querySelector("#item-count"),
   languageSelect: document.querySelector("#language-select"),
@@ -611,6 +649,11 @@ const elements = {
   collectionNav: document.querySelector("#collection-nav"),
   tagNav: document.querySelector("#tag-nav"),
   workspaceTitle: document.querySelector("#workspace-title"),
+  multiFilterToggle: document.querySelector("#multi-filter-toggle"),
+  multiFilterPopover: document.querySelector("#multi-filter-popover"),
+  clearMultiFilters: document.querySelector("#clear-multi-filters"),
+  multiCollectionOptions: document.querySelector("#multi-collection-options"),
+  multiTagOptions: document.querySelector("#multi-tag-options"),
   favoriteFilter: document.querySelector("#favorite-filter"),
   archiveFilter: document.querySelector("#archive-filter"),
   aiPanelOpen: document.querySelector("#ai-panel-open"),
@@ -662,6 +705,7 @@ async function boot() {
 
 function renderApp() {
   applySidebarState();
+  applySidebarWidth();
   applyAiPanelState();
   applyTheme();
   applyViewMode();
@@ -674,6 +718,7 @@ function renderApp() {
   renderLibraryNav();
   renderCollectionNav();
   renderTagNav();
+  renderMultiFilterOptions();
   renderGrid();
   renderAiContext();
   updateAgentStatus();
@@ -687,7 +732,8 @@ function renderLibraryNav() {
     return isManagedItemVisible("library", filter.value);
   }).map((filter) => {
     const count = countLibraryFilter(filter.value);
-    return navButton(t(filter.labelKey), count, state.filter.type === "library" && state.filter.value === filter.value, () => {
+    const active = state.filter.type === "library" && state.filter.value === filter.value;
+    return navButton(t(filter.labelKey), count, active, () => {
       selectLibraryFilter(filter.value);
     });
   }));
@@ -697,7 +743,9 @@ function renderCollectionNav() {
   const buttons = (state.manifest.collections || [])
     .filter((collection) => isManagedItemVisible("collections", collection.name))
     .map((collection) => {
-    return navButton(collection.name, collection.count, state.filter.type === "collection" && state.filter.value === collection.name, () => {
+    const active = state.filter.type === "collection" && state.filter.value === collection.name;
+    const multiActive = state.selectedCollections.has(collection.name);
+    return navButton(collection.name, collection.count, active || multiActive, () => {
       selectCollection(collection.name);
     });
   });
@@ -708,7 +756,9 @@ function renderTagNav() {
   const tags = (state.manifest.tags || [])
     .filter((tag) => isManagedItemVisible("tags", tag.name))
     .map((tag) => {
-    return navButton(`#${tag.name}`, tag.count, state.filter.type === "tag" && state.filter.value === tag.name, () => {
+    const active = state.filter.type === "tag" && state.filter.value === tag.name;
+    const multiActive = state.selectedTags.has(tag.name);
+    return navButton(`#${tag.name}`, tag.count, active || multiActive, () => {
       selectTag(tag.name);
     }, "tag-filter");
   });
@@ -741,6 +791,17 @@ function filteredItems() {
     items = items.filter((item) => item.collection === state.filter.value);
   } else if (state.filter.type === "tag") {
     items = items.filter((item) => (item.tags || []).includes(state.filter.value));
+  }
+
+  if (state.selectedCollections.size > 0) {
+    items = items.filter((item) => state.selectedCollections.has(item.collection || "Inbox"));
+  }
+
+  if (state.selectedTags.size > 0) {
+    items = items.filter((item) => {
+      const tags = item.tags || [];
+      return tags.some((tag) => state.selectedTags.has(tag));
+    });
   }
 
   const filterValue = state.filter.type === "library" ? state.filter.value : "";
@@ -777,7 +838,7 @@ function searchableText(item) {
 }
 
 function renderGrid() {
-  elements.workspaceTitle.textContent = state.query ? t("searchTitle", { query: state.query }) : t("knowledgeWorkspace");
+  elements.workspaceTitle.textContent = getWorkspaceTitle();
   const items = filteredItems();
   elements.contentGrid.classList.toggle("list-view", state.viewMode === "list");
 
@@ -787,6 +848,17 @@ function renderGrid() {
   }
 
   elements.contentGrid.replaceChildren(...items.map(renderCard));
+}
+
+function getWorkspaceTitle() {
+  if (state.query) return t("searchTitle", { query: state.query });
+  if (state.filter.type === "library") {
+    const filter = libraryFilterDefinitions.find((item) => item.value === state.filter.value);
+    return filter ? t(filter.labelKey) : t("knowledgeWorkspace");
+  }
+  if (state.filter.type === "collection") return state.filter.value;
+  if (state.filter.type === "tag") return `#${state.filter.value}`;
+  return t("knowledgeWorkspace");
 }
 
 function renderCard(item) {
@@ -893,14 +965,28 @@ function selectLibraryFilter(value) {
 
 function selectCollection(name) {
   state.filter = { type: "collection", value: name };
+  syncSingleSelectionToMultiFilter("collection", name);
   returnToWorkspace();
   renderApp();
 }
 
 function selectTag(name) {
   state.filter = { type: "tag", value: name };
+  syncSingleSelectionToMultiFilter("tag", name);
   returnToWorkspace();
   renderApp();
+}
+
+function syncSingleSelectionToMultiFilter(type, value) {
+  if (state.selectedCollections.size === 0 && state.selectedTags.size === 0) return;
+  if (type === "collection") {
+    state.selectedCollections.clear();
+    state.selectedCollections.add(value);
+  }
+  if (type === "tag") {
+    state.selectedTags.clear();
+    state.selectedTags.add(value);
+  }
 }
 
 function openSettings(tab = "library", updateHash = true) {
@@ -1107,9 +1193,20 @@ function getInitialAiPanelWidth() {
   return 420;
 }
 
+function getInitialSidebarWidth() {
+  const saved = Number(localStorage.getItem("html-vault-sidebar-width"));
+  if (Number.isFinite(saved) && saved >= 240 && saved <= 420) return saved;
+  return 280;
+}
+
 function clampAiPanelWidth(width) {
   const viewportLimit = Math.max(320, window.innerWidth - 120);
   return Math.min(720, Math.max(320, Math.min(width, viewportLimit)));
+}
+
+function clampSidebarWidth(width) {
+  const viewportLimit = Math.max(240, window.innerWidth - state.aiPanelWidth - 360);
+  return Math.min(420, Math.max(240, Math.min(width, viewportLimit)));
 }
 
 function getInitialSidebarState() {
@@ -1127,6 +1224,31 @@ function applySidebarState() {
   const label = t(state.sidebarCollapsed ? "expandSidebar" : "collapseSidebar");
   elements.sidebarCollapse.setAttribute("aria-label", label);
   elements.sidebarCollapse.setAttribute("title", label);
+}
+
+function applySidebarWidth() {
+  if (!state.sidebarCollapsed) {
+    state.sidebarWidth = clampSidebarWidth(state.sidebarWidth);
+  }
+  elements.body.style.setProperty("--sidebar-width", `${state.sidebarWidth}px`);
+}
+
+function startSidebarResize(event) {
+  if (state.sidebarCollapsed) return;
+  event.preventDefault();
+  const startX = event.clientX;
+  const startWidth = state.sidebarWidth;
+  const onMove = (moveEvent) => {
+    state.sidebarWidth = clampSidebarWidth(startWidth + moveEvent.clientX - startX);
+    applySidebarWidth();
+  };
+  const onUp = () => {
+    localStorage.setItem("html-vault-sidebar-width", String(state.sidebarWidth));
+    window.removeEventListener("pointermove", onMove);
+    window.removeEventListener("pointerup", onUp);
+  };
+  window.addEventListener("pointermove", onMove);
+  window.addEventListener("pointerup", onUp);
 }
 
 function getInitialArchiveFilter() {
@@ -1173,6 +1295,7 @@ function applyAiPanelState() {
   elements.body.style.setProperty("--ai-panel-width", `${state.aiPanelWidth}px`);
   elements.body.classList.toggle("ai-panel-open", state.aiPanelOpen);
   elements.aiPanelOpen.classList.toggle("active", state.aiPanelOpen);
+  applySidebarWidth();
 }
 
 function renderAiContext() {
@@ -1181,20 +1304,43 @@ function renderAiContext() {
 }
 
 function getAiContextLabel() {
+  const parts = [];
+  let primaryCollection = "";
+  let primaryTag = "";
   if (!elements.reader.hidden && state.currentReaderItemId) {
     const item = getItemById(state.currentReaderItemId);
-    return t("aiContextReader", { title: item?.title || t("item") });
+    parts.push(t("aiContextReader", { title: item?.title || t("item") }));
+  } else if (state.query.trim()) {
+    parts.push(t("aiContextSearch", { query: state.query.trim() }));
+  } else if (state.filter.type === "library") {
+    const filter = libraryFilterDefinitions.find((item) => item.value === state.filter.value);
+    parts.push(state.filter.value === "all" ? t("aiContextGlobal") : t("aiContextLibrary", { name: filter ? t(filter.labelKey) : state.filter.value }));
+  } else if (state.filter.type === "collection") {
+    primaryCollection = state.filter.value;
+    parts.push(t("aiContextCollection", { name: state.filter.value }));
+  } else if (state.filter.type === "tag") {
+    primaryTag = state.filter.value;
+    parts.push(t("aiContextTag", { name: state.filter.value }));
+  } else {
+    parts.push(t("aiContextGlobal"));
   }
-  if (state.query.trim()) {
-    return t("aiContextSearch", { query: state.query.trim() });
+
+  const extraCollections = [...state.selectedCollections].filter((name) => name !== primaryCollection);
+  if (extraCollections.length > 0) {
+    parts.push(t("aiContextCollections", { names: extraCollections.join(", ") }));
   }
-  if (state.filter.type === "collection") {
-    return t("aiContextCollection", { name: state.filter.value });
+
+  const extraTags = [...state.selectedTags].filter((name) => name !== primaryTag);
+  if (extraTags.length > 0) {
+    parts.push(t("aiContextTags", { names: extraTags.map((tag) => `#${tag}`).join(", ") }));
   }
-  if (state.filter.type === "tag") {
-    return t("aiContextTag", { name: state.filter.value });
+
+  if (state.onlyFavorites) {
+    parts.push(t("aiContextFavoritesOnly"));
   }
-  return t("aiContextGlobal");
+
+  parts.push(t(state.hideArchived ? "aiContextArchivedHidden" : "aiContextArchivedShown"));
+  return parts.join(" · ");
 }
 
 function renderInitialAiMessage() {
@@ -1226,6 +1372,79 @@ function markAiGeneratePlaceholder() {
   appendAiMessage("assistant", `${t("generateHtmlNote")}: ${t("aiPanelComingSoon")}`);
 }
 
+function toggleMultiFilterPopover() {
+  state.multiFilterOpen = !state.multiFilterOpen;
+  applyMultiFilterState();
+}
+
+function closeMultiFilterPopover() {
+  state.multiFilterOpen = false;
+  applyMultiFilterState();
+}
+
+function applyMultiFilterState() {
+  elements.multiFilterPopover.hidden = !state.multiFilterOpen;
+  elements.multiFilterToggle.classList.toggle("open", state.multiFilterOpen);
+  elements.multiFilterToggle.classList.toggle("active", hasMultiFilters());
+}
+
+function hasMultiFilters() {
+  return state.selectedCollections.size > 0 || state.selectedTags.size > 0;
+}
+
+function renderMultiFilterOptions() {
+  elements.multiCollectionOptions.replaceChildren(...(state.manifest.collections || [])
+    .filter((collection) => isManagedItemVisible("collections", collection.name))
+    .map((collection) => multiFilterOption("collection", collection.name, collection.count)));
+  elements.multiTagOptions.replaceChildren(...(state.manifest.tags || [])
+    .filter((tag) => isManagedItemVisible("tags", tag.name))
+    .map((tag) => multiFilterOption("tag", tag.name, tag.count)));
+  applyMultiFilterState();
+}
+
+function multiFilterOption(type, name, count) {
+  const selected = type === "collection" ? state.selectedCollections.has(name) : state.selectedTags.has(name);
+  const label = document.createElement("label");
+  label.className = "multi-filter-option";
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = selected;
+  checkbox.addEventListener("change", () => {
+    toggleMultiFilterValue(type, name);
+  });
+  const text = document.createElement("span");
+  text.textContent = type === "tag" ? `#${name}` : name;
+  const badge = document.createElement("span");
+  badge.className = "multi-filter-count";
+  badge.textContent = count;
+  label.append(checkbox, text, badge);
+  return label;
+}
+
+function toggleMultiFilterValue(type, name) {
+  const target = type === "collection" ? state.selectedCollections : state.selectedTags;
+  if (target.has(name)) {
+    target.delete(name);
+  } else {
+    target.add(name);
+  }
+  renderCollectionNav();
+  renderTagNav();
+  renderMultiFilterOptions();
+  renderGrid();
+  renderAiContext();
+}
+
+function clearMultiFilters() {
+  state.selectedCollections.clear();
+  state.selectedTags.clear();
+  renderCollectionNav();
+  renderTagNav();
+  renderMultiFilterOptions();
+  renderGrid();
+  renderAiContext();
+}
+
 function startAiPanelResize(event) {
   event.preventDefault();
   const startX = event.clientX;
@@ -1248,6 +1467,7 @@ function toggleArchiveFilter() {
   localStorage.setItem("html-vault-hide-archived", String(state.hideArchived));
   applyArchiveFilter();
   renderGrid();
+  renderAiContext();
 }
 
 function toggleFavoriteFilter() {
@@ -1255,6 +1475,7 @@ function toggleFavoriteFilter() {
   localStorage.setItem("html-vault-only-favorites", String(state.onlyFavorites));
   applyFavoriteFilter();
   renderGrid();
+  renderAiContext();
 }
 
 function applyArchiveFilter() {
@@ -1700,6 +1921,7 @@ function applyTranslations() {
   renderFeedback();
   applyArchiveFilter();
   applyFavoriteFilter();
+  applyMultiFilterState();
 }
 
 function setFeedback(key, params = {}) {
@@ -1734,14 +1956,22 @@ elements.searchInput.addEventListener("input", (event) => {
 });
 elements.brandHome.addEventListener("click", goHome);
 elements.sidebarCollapse.addEventListener("click", toggleSidebar);
+elements.sidebarResize.addEventListener("pointerdown", startSidebarResize);
 elements.aiPanelOpen.addEventListener("click", toggleAiPanel);
 elements.aiPanelClose.addEventListener("click", closeAiPanel);
 elements.aiPanelResize.addEventListener("pointerdown", startAiPanelResize);
 elements.aiChatForm.addEventListener("submit", submitAiMessage);
 elements.aiGenerateNote.addEventListener("click", markAiGeneratePlaceholder);
 elements.luckyButton.addEventListener("click", openLuckyItem);
+elements.multiFilterToggle.addEventListener("click", toggleMultiFilterPopover);
+elements.clearMultiFilters.addEventListener("click", clearMultiFilters);
 elements.favoriteFilter.addEventListener("click", toggleFavoriteFilter);
 elements.archiveFilter.addEventListener("click", toggleArchiveFilter);
+document.addEventListener("click", (event) => {
+  if (!state.multiFilterOpen) return;
+  if (elements.multiFilterPopover.contains(event.target) || elements.multiFilterToggle.contains(event.target)) return;
+  closeMultiFilterPopover();
+});
 elements.viewButtons.forEach((button) => {
   button.addEventListener("click", () => setViewMode(button.dataset.viewMode));
 });

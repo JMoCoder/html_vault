@@ -7,6 +7,22 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.3] - 2026-05-29
+
+### Added
+
+- Resizable left sidebar width with local persistence.
+- Multi-select collection and tag filter popover in the top toolbar, including
+  a clear-all action.
+- AI context labels now include library views, favorite-only state, archive
+  visibility state, and active multi-select filters.
+
+### Changed
+
+- Clicking a collection or tag while multi-select filters are active now syncs
+  the matching multi-select group.
+- Package, app, and PWA cache version updated to `0.3.3`.
+
 ## [0.3.2] - 2026-05-29
 
 ### Added

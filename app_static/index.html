@@ -13,6 +13,7 @@
 <body>
   <div class="shell">
     <aside class="sidebar" aria-label="Vault navigation" data-i18n-attr="aria-label:sidebarAria">
+      <div class="sidebar-resize" id="sidebar-resize" role="separator" aria-orientation="vertical" aria-label="Resize sidebar" data-i18n-attr="aria-label:resizeSidebar"></div>
       <div class="sidebar-header">
         <button class="brand" type="button" id="brand-home" aria-label="Home" title="Home" data-i18n-attr="aria-label:home,title:home">
           <img class="brand-mark" src="assets/html-vault-logo.svg" alt="" aria-hidden="true">
@@ -70,20 +71,43 @@
           <h2 id="workspace-title"></h2>
         </div>
         <div class="topbar-tools">
-          <div class="filter-toggle-group" role="group" aria-label="Result filters" data-i18n-attr="aria-label:resultFilters">
-            <button class="filter-toggle" type="button" id="favorite-filter" aria-label="Only favorites" title="Only favorites" data-i18n-attr="aria-label:onlyFavorites,title:onlyFavorites">
-              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m12 3 2.82 5.72 6.31.92-4.57 4.45 1.08 6.28L12 17.4l-5.64 2.97 1.08-6.28-4.57-4.45 6.31-.92L12 3Z"></path>
-              </svg>
-            </button>
-            <button class="filter-toggle active" type="button" id="archive-filter" aria-label="Show archived items" title="Show archived items" data-i18n-attr="aria-label:showArchived,title:showArchived">
-              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 7h18"></path>
-                <path d="M5 7v12h14V7"></path>
-                <path d="M8 7V4h8v3"></path>
-                <path d="M9 12h6"></path>
-              </svg>
-            </button>
+          <div class="filter-shell">
+            <div class="filter-toggle-group" role="group" aria-label="Result filters" data-i18n-attr="aria-label:resultFilters">
+              <button class="filter-toggle" type="button" id="multi-filter-toggle" aria-label="Collection and tag filters" title="Collection and tag filters" data-i18n-attr="aria-label:advancedFilters,title:advancedFilters">
+                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 6h16"></path>
+                  <path d="M7 12h10"></path>
+                  <path d="M10 18h4"></path>
+                </svg>
+              </button>
+              <button class="filter-toggle" type="button" id="favorite-filter" aria-label="Only favorites" title="Only favorites" data-i18n-attr="aria-label:onlyFavorites,title:onlyFavorites">
+                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m12 3 2.82 5.72 6.31.92-4.57 4.45 1.08 6.28L12 17.4l-5.64 2.97 1.08-6.28-4.57-4.45 6.31-.92L12 3Z"></path>
+                </svg>
+              </button>
+              <button class="filter-toggle active" type="button" id="archive-filter" aria-label="Show archived items" title="Show archived items" data-i18n-attr="aria-label:showArchived,title:showArchived">
+                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 7h18"></path>
+                  <path d="M5 7v12h14V7"></path>
+                  <path d="M8 7V4h8v3"></path>
+                  <path d="M9 12h6"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="multi-filter-popover" id="multi-filter-popover" hidden>
+              <div class="multi-filter-header">
+                <h3 data-i18n="advancedFilters"></h3>
+                <button type="button" id="clear-multi-filters" data-i18n="clearMultiFilters"></button>
+              </div>
+              <div class="multi-filter-section">
+                <h4 data-i18n="collectionFilters"></h4>
+                <div class="multi-filter-options" id="multi-collection-options"></div>
+              </div>
+              <div class="multi-filter-section">
+                <h4 data-i18n="tagFilters"></h4>
+                <div class="multi-filter-options" id="multi-tag-options"></div>
+              </div>
+            </div>
           </div>
           <div class="view-toggle" role="group" aria-label="View style" data-i18n-attr="aria-label:viewStyle">
             <button type="button" id="card-view" class="view-button active" data-view-mode="cards" aria-label="Card view" title="Card view" data-i18n-attr="aria-label:cardView,title:cardView">

@@ -1,5 +1,7 @@
 :root {
   color-scheme: light;
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 80px;
   --bg: #f5f5f2;
   --panel: #ffffff;
   --panel-soft: #f8f8f6;
@@ -55,21 +57,21 @@ textarea {
 .shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   transition: grid-template-columns 160ms ease;
 }
 
 .sidebar-collapsed .shell {
-  grid-template-columns: 80px minmax(0, 1fr);
+  grid-template-columns: var(--sidebar-collapsed-width) minmax(0, 1fr);
 }
 
 .ai-panel-open .shell {
   width: calc(100% - var(--ai-panel-width, 420px));
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
 }
 
 .sidebar-collapsed.ai-panel-open .shell {
-  grid-template-columns: 80px minmax(0, 1fr);
+  grid-template-columns: var(--sidebar-collapsed-width) minmax(0, 1fr);
 }
 
 .sidebar {
@@ -82,6 +84,30 @@ textarea {
   flex-direction: column;
   background: var(--panel-soft);
   border-right: 1px solid var(--line);
+}
+
+.sidebar-resize {
+  position: absolute;
+  top: 0;
+  right: -5px;
+  bottom: 0;
+  z-index: 3;
+  width: 10px;
+  cursor: col-resize;
+}
+
+.sidebar-resize::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 4px;
+  width: 1px;
+  background: transparent;
+}
+
+.sidebar-resize:hover::before {
+  background: var(--accent);
 }
 
 .sidebar-header {
@@ -229,6 +255,10 @@ textarea {
   overflow: hidden;
 }
 
+.sidebar-collapsed .sidebar-resize {
+  display: none;
+}
+
 .sidebar-collapsed .sidebar-header {
   grid-template-columns: 1fr;
   justify-items: center;
@@ -345,6 +375,10 @@ textarea {
   background: var(--panel);
 }
 
+.filter-shell {
+  position: relative;
+}
+
 .view-button,
 .filter-toggle,
 .magic-button,
@@ -408,6 +442,109 @@ textarea {
 
 #favorite-filter.active {
   color: var(--warm);
+}
+
+#multi-filter-toggle.active {
+  color: var(--accent-dark);
+}
+
+.multi-filter-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 25;
+  width: min(340px, calc(100vw - 48px));
+  max-height: min(560px, calc(100vh - 150px));
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.multi-filter-popover[hidden] {
+  display: none;
+}
+
+.multi-filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.multi-filter-header h3,
+.multi-filter-section h4 {
+  margin: 0;
+}
+
+.multi-filter-header h3 {
+  font-size: 15px;
+}
+
+.multi-filter-header button {
+  min-height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-soft);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.multi-filter-section {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.multi-filter-section h4 {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.multi-filter-options {
+  display: grid;
+  gap: 6px;
+}
+
+.multi-filter-option {
+  min-height: 34px;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0 8px;
+  cursor: pointer;
+}
+
+.multi-filter-option:hover {
+  border-color: var(--line);
+  background: var(--panel-soft);
+}
+
+.multi-filter-option input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.multi-filter-option span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.multi-filter-count {
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .search {
@@ -828,7 +965,7 @@ textarea {
 
 .reader {
   position: fixed;
-  inset: 0 0 0 280px;
+  inset: 0 0 0 var(--sidebar-width);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   background: var(--panel);
@@ -836,7 +973,7 @@ textarea {
 }
 
 .sidebar-collapsed .reader {
-  left: 80px;
+  left: var(--sidebar-collapsed-width);
 }
 
 .reader[hidden] {
@@ -906,7 +1043,7 @@ textarea {
 
 .settings-page {
   position: fixed;
-  inset: 0 0 0 280px;
+  inset: 0 0 0 var(--sidebar-width);
   z-index: 20;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
@@ -914,7 +1051,7 @@ textarea {
 }
 
 .sidebar-collapsed .settings-page {
-  left: 80px;
+  left: var(--sidebar-collapsed-width);
 }
 
 .settings-page[hidden] {
@@ -1245,6 +1382,10 @@ textarea {
     height: auto;
     border-right: 0;
     border-bottom: 1px solid var(--line);
+  }
+
+  .sidebar-resize {
+    display: none;
   }
 
   .sidebar-tools {
