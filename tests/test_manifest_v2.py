@@ -37,3 +37,15 @@ def test_manifest_v2_infers_missing_metadata() -> None:
     assert item["collection"] == "Reading"
     assert item["source_type"] == "html"
     assert item["review_status"] == "reviewed"
+
+
+def test_manifest_v2_defaults_generated_items_to_reviewed() -> None:
+    root = Path(__file__).resolve().parents[1]
+    manifest = build_manifest(
+        content_dir=root / "examples" / "content",
+        meta_dir=None,
+    )
+
+    item = next(item for item in manifest["items"] if item["id"] == "generated/2026/05/mcp-security.html")
+    assert item["source_type"] == "topic"
+    assert item["review_status"] == "reviewed"

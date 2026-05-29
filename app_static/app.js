@@ -39,7 +39,7 @@ const i18n = {
     generateHtmlNote: "Generate HTML note",
     send: "Send",
     settings: "Settings",
-    settingsTitle: "Project settings",
+    settingsTitle: "Settings",
     closeSettings: "Close settings",
     settingsSections: "Settings sections",
     libraryManagement: "Library",
@@ -94,6 +94,12 @@ const i18n = {
     exportPreferences: "Export preferences",
     dataExportNote: "Exports are downloaded as JSON files. They do not include API keys.",
     exportCreated: "Export file created.",
+    userProfile: "User profile",
+    userProfileIntro: "Profile details for future sync and cloud account features.",
+    userProfilePlaceholder: "This area will manage display name, avatar, workspace identity, and plan information after account support is added.",
+    accountSecurity: "Account & security",
+    accountSecurityIntro: "Security controls for future login, devices, and credential workflows.",
+    accountSecurityPlaceholder: "This area will manage password, passkeys, sessions, connected devices, and security events after account support is added.",
     userAgreement: "User agreement",
     aboutProject: "About project",
     updateDocs: "Update docs",
@@ -120,7 +126,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.5.",
+    aboutVersion: "Current early version: 0.3.6.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -137,7 +143,8 @@ const i18n = {
     favorites: "Favorites",
     generated: "Generated",
     imported: "Imported",
-    needsReview: "Needs Review",
+    generatedSource: "Generated",
+    importedSource: "Imported",
     archived: "Archived",
     knowledgeWorkspace: "Knowledge Workspace",
     feelingLucky: "I'm feeling lucky",
@@ -236,7 +243,7 @@ const i18n = {
     generateHtmlNote: "生成 HTML 笔记",
     send: "发送",
     settings: "设置",
-    settingsTitle: "项目设置",
+    settingsTitle: "设置",
     closeSettings: "关闭设置",
     settingsSections: "设置分区",
     libraryManagement: "资料库管理",
@@ -291,6 +298,12 @@ const i18n = {
     exportPreferences: "导出偏好",
     dataExportNote: "导出文件为 JSON，不包含 API Key。",
     exportCreated: "导出文件已创建。",
+    userProfile: "用户资料",
+    userProfileIntro: "预留未来同步与云账号能力所需的个人资料设置。",
+    userProfilePlaceholder: "账号能力完成后，这里将管理显示名称、头像、工作区身份与套餐信息。",
+    accountSecurity: "账户与安全",
+    accountSecurityIntro: "预留未来登录、设备与凭据相关的安全控制。",
+    accountSecurityPlaceholder: "账号能力完成后，这里将管理密码、通行密钥、会话、已登录设备与安全事件。",
     userAgreement: "用户协议",
     aboutProject: "关于项目",
     updateDocs: "更新文档",
@@ -317,7 +330,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.5。",
+    aboutVersion: "当前早期版本：0.3.6。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -334,7 +347,8 @@ const i18n = {
     favorites: "收藏",
     generated: "生成内容",
     imported: "导入内容",
-    needsReview: "待审核",
+    generatedSource: "生成",
+    importedSource: "导入",
     archived: "已归档",
     knowledgeWorkspace: "知识工作台",
     feelingLucky: "手气不错",
@@ -433,7 +447,7 @@ const i18n = {
     generateHtmlNote: "HTML ノートを生成",
     send: "送信",
     settings: "設定",
-    settingsTitle: "プロジェクト設定",
+    settingsTitle: "設定",
     closeSettings: "設定を閉じる",
     settingsSections: "設定セクション",
     libraryManagement: "ライブラリ",
@@ -488,6 +502,12 @@ const i18n = {
     exportPreferences: "設定をエクスポート",
     dataExportNote: "エクスポートは JSON ファイルとしてダウンロードされます。API Key は含みません。",
     exportCreated: "エクスポートファイルを作成しました。",
+    userProfile: "ユーザープロフィール",
+    userProfileIntro: "将来の同期とクラウドアカウント向けのプロフィール設定です。",
+    userProfilePlaceholder: "アカウント対応後、表示名、アバター、ワークスペース ID、プラン情報をここで管理します。",
+    accountSecurity: "アカウントとセキュリティ",
+    accountSecurityIntro: "将来のログイン、デバイス、認証情報向けのセキュリティ設定です。",
+    accountSecurityPlaceholder: "アカウント対応後、パスワード、パスキー、セッション、ログイン済みデバイス、セキュリティイベントをここで管理します。",
     userAgreement: "利用規約",
     aboutProject: "プロジェクトについて",
     updateDocs: "更新ドキュメント",
@@ -514,7 +534,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.5。",
+    aboutVersion: "現在の初期バージョン: 0.3.6。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -531,7 +551,8 @@ const i18n = {
     favorites: "お気に入り",
     generated: "生成済み",
     imported: "インポート済み",
-    needsReview: "要確認",
+    generatedSource: "生成",
+    importedSource: "インポート",
     archived: "アーカイブ済み",
     knowledgeWorkspace: "ナレッジワークスペース",
     feelingLucky: "おまかせ表示",
@@ -599,7 +620,6 @@ const libraryFilterDefinitions = [
   { value: "favorites", labelKey: "favorites", test: (item) => isFavorite(item) },
   { value: "generated", labelKey: "generated", test: (item) => item.agent?.generated || item.source_type === "topic" },
   { value: "imported", labelKey: "imported", test: (item) => item.source_type === "imported" || item.source_type === "html" },
-  { value: "needs-review", labelKey: "needsReview", test: (item) => item.review_status === "unreviewed" },
   { value: "archived", labelKey: "archived", test: (item) => isArchived(item) },
 ];
 
@@ -923,21 +943,21 @@ function getWorkspaceTitle() {
 function renderCard(item) {
   const card = document.createElement("article");
   card.className = "item-card";
-  const sourceType = item.source_type || "html";
+  const sourceLabel = getSourceLabel(item);
+  const collectionLabel = item.collection || "Inbox";
   card.innerHTML = `
     <div class="card-topline">
-      <span>${escapeHtml(item.collection || "Inbox")}</span>
       <div class="item-actions">
         ${itemActionButton("favorite", item)}
         ${itemActionButton("archive", item)}
-        <span>${formatDate(item.updated)}</span>
       </div>
     </div>
     <h3>${escapeHtml(item.title)}</h3>
     <p>${escapeHtml(item.summary || t("noSummary"))}</p>
     <div class="card-tags">${(item.tags || []).slice(0, 4).map((tag) => `<span>#${escapeHtml(tag)}</span>`).join("")}</div>
     <div class="card-footer">
-      <span class="source-type">${escapeHtml(sourceType)}</span>
+      <span class="source-type">${escapeHtml(collectionLabel)} / ${escapeHtml(sourceLabel)}</span>
+      <span class="card-date">${escapeHtml(formatDate(item.updated))}</span>
       <div>
         <button type="button" data-read>${escapeHtml(t("read"))}</button>
         <a href="${encodeURI(item.path)}" target="_blank" rel="noreferrer">${escapeHtml(t("original"))}</a>
@@ -957,6 +977,11 @@ function renderCard(item) {
   return card;
 }
 
+function getSourceLabel(item) {
+  if (item.agent?.generated || item.source_type === "topic") return t("generatedSource");
+  return t("importedSource");
+}
+
 function itemActionButton(action, item) {
   const active = action === "favorite" ? isFavorite(item) : isArchived(item);
   const label = action === "favorite"
@@ -974,7 +999,7 @@ function openReader(item) {
   elements.reader.hidden = false;
   elements.readerTitle.textContent = item.title;
   elements.readerSummary.textContent = item.summary || "";
-  elements.readerSource.textContent = `${item.source_type || "html"} · ${item.collection || "Inbox"}`;
+  elements.readerSource.textContent = `${item.collection || "Inbox"} / ${getSourceLabel(item)}`;
   elements.readerOriginal.href = item.path;
   elements.readerFrame.src = item.path;
   elements.readerTags.replaceChildren(...(item.tags || []).map((tag) => {

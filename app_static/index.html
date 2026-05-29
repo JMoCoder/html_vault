@@ -80,15 +80,6 @@
                   <path d="M10 18h4"></path>
                 </svg>
               </button>
-              <button class="filter-toggle" type="button" id="sort-toggle" aria-label="Sort" title="Sort" data-i18n-attr="aria-label:sort,title:sort">
-                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M11 5h10"></path>
-                  <path d="M11 12h7"></path>
-                  <path d="M11 19h4"></path>
-                  <path d="M4 5v14"></path>
-                  <path d="m7 16-3 3-3-3"></path>
-                </svg>
-              </button>
               <button class="filter-toggle" type="button" id="favorite-filter" aria-label="Only favorites" title="Only favorites" data-i18n-attr="aria-label:onlyFavorites,title:onlyFavorites">
                 <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="m12 3 2.82 5.72 6.31.92-4.57 4.45 1.08 6.28L12 17.4l-5.64 2.97 1.08-6.28-4.57-4.45 6.31-.92L12 3Z"></path>
@@ -123,6 +114,19 @@
                 </div>
                 <div class="multi-filter-options" id="multi-tag-options"></div>
               </div>
+            </div>
+          </div>
+          <div class="sort-shell">
+            <div class="sort-toggle-group" role="group" aria-label="Sort" data-i18n-attr="aria-label:sort">
+              <button class="filter-toggle" type="button" id="sort-toggle" aria-label="Sort" title="Sort" data-i18n-attr="aria-label:sort,title:sort">
+                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M11 5h10"></path>
+                  <path d="M11 12h7"></path>
+                  <path d="M11 19h4"></path>
+                  <path d="M4 5v14"></path>
+                  <path d="m7 16-3 3-3-3"></path>
+                </svg>
+              </button>
             </div>
             <div class="sort-popover" id="sort-popover" hidden>
               <button type="button" data-sort-mode="newest" data-i18n="sortNewest"></button>
@@ -233,12 +237,15 @@
           <button type="button" class="settings-tab" data-settings-tab="collections" data-i18n="collectionManagement"></button>
           <button type="button" class="settings-tab" data-settings-tab="tags" data-i18n="tagManagement"></button>
           <div class="settings-divider" aria-hidden="true"></div>
-          <button type="button" class="settings-tab" data-settings-tab="ai" data-i18n="aiProviders"></button>
-          <button type="button" class="settings-tab" data-settings-tab="ai-assistant" data-i18n="aiKnowledgeAssistant"></button>
-          <div class="settings-divider" aria-hidden="true"></div>
           <button type="button" class="settings-tab" data-settings-tab="backup" data-i18n="localBackupRestore"></button>
           <button type="button" class="settings-tab" data-settings-tab="webdav" data-i18n="webdavSettings"></button>
           <button type="button" class="settings-tab" data-settings-tab="export" data-i18n="dataExport"></button>
+          <div class="settings-divider" aria-hidden="true"></div>
+          <button type="button" class="settings-tab" data-settings-tab="ai" data-i18n="aiProviders"></button>
+          <button type="button" class="settings-tab" data-settings-tab="ai-assistant" data-i18n="aiKnowledgeAssistant"></button>
+          <div class="settings-divider" aria-hidden="true"></div>
+          <button type="button" class="settings-tab" data-settings-tab="profile" data-i18n="userProfile"></button>
+          <button type="button" class="settings-tab" data-settings-tab="security" data-i18n="accountSecurity"></button>
           <div class="settings-divider" aria-hidden="true"></div>
           <button type="button" class="settings-tab" data-settings-tab="terms" data-i18n="userAgreement"></button>
           <button type="button" class="settings-tab" data-settings-tab="about" data-i18n="aboutProject"></button>
@@ -419,6 +426,28 @@
               </div>
               <p class="security-note" data-i18n="dataExportNote"></p>
               <p class="settings-feedback" id="export-feedback"></p>
+            </div>
+          </section>
+
+          <section class="settings-section" data-settings-section="profile">
+            <div class="section-heading">
+              <h3 data-i18n="userProfile"></h3>
+              <p data-i18n="userProfileIntro"></p>
+            </div>
+            <div class="placeholder-panel">
+              <strong data-i18n="developmentInProgress"></strong>
+              <p data-i18n="userProfilePlaceholder"></p>
+            </div>
+          </section>
+
+          <section class="settings-section" data-settings-section="security">
+            <div class="section-heading">
+              <h3 data-i18n="accountSecurity"></h3>
+              <p data-i18n="accountSecurityIntro"></p>
+            </div>
+            <div class="placeholder-panel">
+              <strong data-i18n="developmentInProgress"></strong>
+              <p data-i18n="accountSecurityPlaceholder"></p>
             </div>
           </section>
 

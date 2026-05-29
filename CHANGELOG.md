@@ -7,6 +7,24 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.6] - 2026-05-29
+
+### Added
+
+- User profile and account/security placeholder sections in settings.
+
+### Changed
+
+- Filter and sort toolbar controls are now visually separated.
+- Card metadata now shows collection/source and date in the lower-left area,
+  while favorite/archive actions stay in the upper-right.
+- Source labels are normalized to generated/imported system labels.
+- Removed the Needs Review library view; notes are categorized by source
+  instead of a review queue.
+- Settings title now reads simply as Settings, and data settings appear before
+  AI settings.
+- Package, app, and PWA cache version updated to `0.3.6`.
+
 ## [0.3.5] - 2026-05-29
 
 ### Added

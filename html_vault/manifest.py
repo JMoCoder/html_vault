@@ -60,7 +60,7 @@ def build_item(path: Path, content_dir: Path, metadata: MetadataStore) -> dict[s
         "collection": collection,
         "tags": sidecar.get("tags") or [],
         "status": sidecar.get("status") or "ready",
-        "review_status": sidecar.get("review_status") or default_review_status(source_type),
+        "review_status": sidecar.get("review_status") or "reviewed",
         "favorite": bool(sidecar.get("favorite", False)),
         "archived": bool(sidecar.get("archived", False)),
         "pinned": bool(sidecar.get("pinned", False)),
@@ -142,10 +142,6 @@ def infer_source_type(item_id: str) -> str:
     if item_id.startswith("imported/"):
         return "imported"
     return "html"
-
-
-def default_review_status(source_type: str) -> str:
-    return "unreviewed" if source_type in {"topic", "link", "book"} else "reviewed"
 
 
 def filename_to_title(value: str) -> str:

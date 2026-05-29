@@ -18,6 +18,8 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Toolbar multi-select filters for combining collections and tags, with a
   reset-all action and Any/All tag matching.
 - Toolbar sort menu for newest, oldest, title A-Z, and title Z-A ordering.
+- Card metadata uses generated/imported source labels and collection/source
+  grouping.
 - Optional card or horizontal list workspace layout.
 - Reader pane with iframe mode, original-open action, and hash links.
 - Favorite and archive actions on item cards and in the reader.
@@ -33,8 +35,8 @@ the source of truth, while metadata lives in optional YAML sidecar files.
   context labels for all notes, collections, tags, search results, or the
   current reader topic, including active favorite/archive and multi-select
   filters.
-- Settings page for AI provider configuration, user agreement, project info,
-  and update notes.
+- Settings page for data, AI provider configuration, user profile,
+  account/security, user agreement, project info, and update notes.
 - Library, collection, and tag sidebar visibility management.
 - Local backup/restore, WebDAV settings, and data export sections are
   scaffolded under a separate data settings group.
