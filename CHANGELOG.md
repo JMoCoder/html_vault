@@ -7,6 +7,16 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.7] - 2026-05-29
+
+### Changed
+
+- Sidebar resize handle no longer creates a horizontal scrollbar.
+- Multi-filter popover now uses the header area for Any/All tag match controls.
+- Card action buttons no longer reserve a top layout row, keeping collection,
+  source, and date visually anchored in the lower-left area.
+- Package, app, and PWA cache version updated to `0.3.7`.
+
 ## [0.3.6] - 2026-05-29
 
 ### Added
