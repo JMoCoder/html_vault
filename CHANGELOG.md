@@ -7,6 +7,13 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.1] - 2026-05-29
+
+### Changed
+
+- Compact list-view rows by moving the read/original actions up to align with the tag row.
+- Package, app, and PWA cache version updated to `0.3.1`.
+
 ## [0.3.0] - 2026-05-29
 
 ### Added
