@@ -18,7 +18,7 @@
         <button class="brand" type="button" id="brand-home" aria-label="Home" title="Home" data-i18n-attr="aria-label:home,title:home">
           <img class="brand-mark" src="assets/html-vault-logo.svg" alt="" aria-hidden="true">
           <div class="brand-copy">
-            <h1 id="site-title">HTML Vault</h1>
+            <h1 id="site-title">HTMLvault</h1>
             <p id="item-count"></p>
           </div>
         </button>
@@ -30,20 +30,33 @@
       </div>
 
       <div class="sidebar-main">
-        <button class="new-button" type="button" data-import-entry data-i18n="newButton"></button>
-
-        <section class="nav-section">
-          <h2 data-i18n="library"></h2>
+        <section class="nav-section" data-nav-section="library">
+          <button class="nav-section-header" type="button" data-nav-section-toggle="library">
+            <span data-i18n="library"></span>
+            <svg class="nav-section-arrow" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="m5 3 5 5-5 5"></path>
+            </svg>
+          </button>
           <div class="nav-list" id="library-nav"></div>
         </section>
 
-        <section class="nav-section">
-          <h2 data-i18n="collections"></h2>
+        <section class="nav-section" data-nav-section="collections">
+          <button class="nav-section-header" type="button" data-nav-section-toggle="collections">
+            <span data-i18n="collections"></span>
+            <svg class="nav-section-arrow" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="m5 3 5 5-5 5"></path>
+            </svg>
+          </button>
           <div class="nav-list" id="collection-nav"></div>
         </section>
 
-        <section class="nav-section">
-          <h2 data-i18n="tags"></h2>
+        <section class="nav-section" data-nav-section="tags">
+          <button class="nav-section-header" type="button" data-nav-section-toggle="tags">
+            <span data-i18n="tags"></span>
+            <svg class="nav-section-arrow" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="m5 3 5 5-5 5"></path>
+            </svg>
+          </button>
           <div class="tag-list" id="tag-nav"></div>
         </section>
       </div>
@@ -65,6 +78,12 @@
       <header class="topbar">
         <div class="topbar-tools">
           <div class="topbar-control-group">
+            <button class="import-topbar-button" type="button" data-import-entry aria-label="Import HTML file" title="Import HTML file" data-i18n-attr="aria-label:importHtmlFile,title:importHtmlFile">
+              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5v14"></path>
+                <path d="M5 12h14"></path>
+              </svg>
+            </button>
             <div class="filter-shell">
               <div class="filter-toggle-group" role="group" aria-label="Result filters" data-i18n-attr="aria-label:resultFilters">
                 <button class="filter-toggle" type="button" id="multi-filter-toggle" aria-label="Collection and tag filters" title="Collection and tag filters" data-i18n-attr="aria-label:advancedFilters,title:advancedFilters">
@@ -185,8 +204,16 @@
         <div class="reader-actions">
           <button type="button" class="icon-action" id="reader-favorite" aria-label="Favorite" title="Favorite" data-i18n-attr="aria-label:favoriteAction,title:favoriteAction"></button>
           <button type="button" class="icon-action" id="reader-archive" aria-label="Archive" title="Archive" data-i18n-attr="aria-label:archiveAction,title:archiveAction"></button>
+          <button type="button" class="icon-action" id="reader-ai-context" aria-label="Add to AI context" title="Add to AI context" data-i18n-attr="aria-label:addToAiContext,title:addToAiContext"></button>
           <a class="button-link" id="reader-original" target="_blank" rel="noreferrer" data-i18n="original"></a>
           <button type="button" class="button-link" id="reader-copy" data-i18n="copyLink"></button>
+          <button type="button" class="reader-share-button" id="reader-share" aria-label="Share" title="Share" data-i18n-attr="aria-label:shareAction,title:shareAction">
+            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"></path>
+              <path d="m16 6-4-4-4 4"></path>
+              <path d="M12 2v14"></path>
+            </svg>
+          </button>
         </div>
       </div>
       <iframe id="reader-frame" title="HTML knowledge item" data-i18n-attr="title:readerFrameTitle"></iframe>

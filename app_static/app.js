@@ -9,6 +9,9 @@ const i18n = {
     collapseSidebar: "Collapse sidebar",
     expandSidebar: "Expand sidebar",
     resizeSidebar: "Resize sidebar",
+    importHtmlFile: "Import HTML file",
+    collapseNavSection: "Collapse {name}",
+    expandNavSection: "Expand {name}",
     language: "Language",
     toggleTheme: "Toggle dark and light mode",
     openGlobalAi: "Open AI assistant",
@@ -134,7 +137,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.15.",
+    aboutVersion: "Current early version: 0.3.16.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -203,6 +206,7 @@ const i18n = {
     original: "Original",
     copyLink: "Copy Link",
     copied: "Copied",
+    shareAction: "Share",
     favoriteAction: "Favorite",
     unfavoriteAction: "Remove favorite",
     archiveAction: "Archive",
@@ -221,6 +225,9 @@ const i18n = {
     collapseSidebar: "收起侧栏",
     expandSidebar: "展开侧栏",
     resizeSidebar: "调整侧栏宽度",
+    importHtmlFile: "导入HTML文件",
+    collapseNavSection: "折叠{name}",
+    expandNavSection: "展开{name}",
     language: "语言",
     toggleTheme: "切换暗色与亮色模式",
     openGlobalAi: "打开 AI 助理",
@@ -346,7 +353,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.15。",
+    aboutVersion: "当前早期版本：0.3.16。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -415,6 +422,7 @@ const i18n = {
     original: "原文",
     copyLink: "复制链接",
     copied: "已复制",
+    shareAction: "分享",
     favoriteAction: "收藏",
     unfavoriteAction: "取消收藏",
     archiveAction: "归档",
@@ -433,6 +441,9 @@ const i18n = {
     collapseSidebar: "サイドバーを折りたたむ",
     expandSidebar: "サイドバーを展開",
     resizeSidebar: "サイドバー幅を調整",
+    importHtmlFile: "HTML ファイルをインポート",
+    collapseNavSection: "{name}を折りたたむ",
+    expandNavSection: "{name}を展開",
     language: "言語",
     toggleTheme: "ダーク/ライトモードを切り替え",
     openGlobalAi: "AI アシスタントを開く",
@@ -558,7 +569,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.15。",
+    aboutVersion: "現在の初期バージョン: 0.3.16。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -627,6 +638,7 @@ const i18n = {
     original: "原文",
     copyLink: "リンクをコピー",
     copied: "コピー済み",
+    shareAction: "共有",
     favoriteAction: "お気に入り",
     unfavoriteAction: "お気に入り解除",
     archiveAction: "アーカイブ",
@@ -662,6 +674,7 @@ const state = {
   dataConfig: loadDataConfig(),
   itemState: loadItemState(),
   navConfig: loadNavConfig(),
+  navSectionCollapsed: getInitialNavSectionState(),
   sidebarCollapsed: getInitialSidebarState(),
   sidebarWidth: getInitialSidebarWidth(),
   viewMode: getInitialViewMode(),
@@ -684,6 +697,9 @@ const elements = {
   brandHome: document.querySelector("#brand-home"),
   sidebarCollapse: document.querySelector("#sidebar-collapse"),
   sidebarResize: document.querySelector("#sidebar-resize"),
+  navSectionToggles: document.querySelectorAll("[data-nav-section-toggle]"),
+  navSections: document.querySelectorAll("[data-nav-section]"),
+  importEntries: document.querySelectorAll("[data-import-entry]"),
   siteTitle: document.querySelector("#site-title"),
   itemCount: document.querySelector("#item-count"),
   languageSelect: document.querySelector("#language-select"),
@@ -763,8 +779,10 @@ const elements = {
   readerTags: document.querySelector("#reader-tags"),
   readerFavorite: document.querySelector("#reader-favorite"),
   readerArchive: document.querySelector("#reader-archive"),
+  readerAiContext: document.querySelector("#reader-ai-context"),
   readerOriginal: document.querySelector("#reader-original"),
   readerCopy: document.querySelector("#reader-copy"),
+  readerShare: document.querySelector("#reader-share"),
   readerFrame: document.querySelector("#reader-frame"),
 };
 
@@ -787,6 +805,7 @@ async function boot() {
 function renderApp() {
   applySidebarState();
   applySidebarWidth();
+  applyNavSectionState();
   applyAiPanelState();
   applyTheme();
   applyViewMode();
@@ -1216,11 +1235,31 @@ function copyReaderLink() {
   }, 1400);
 }
 
+async function shareReaderLink() {
+  const item = getItemById(state.currentReaderItemId);
+  const shareData = {
+    title: item?.title || document.title,
+    text: item?.summary || "",
+    url: window.location.href,
+  };
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      return;
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+    }
+  }
+  copyReaderLink();
+}
+
 function renderReaderActions(item) {
   const favorite = isFavorite(item);
   const archived = isArchived(item);
+  const inAiContext = state.manualAiContextIds.has(item.id);
   const favoriteLabel = t(favorite ? "unfavoriteAction" : "favoriteAction");
   const archiveLabel = t(archived ? "unarchiveAction" : "archiveAction");
+  const aiContextLabel = t(inAiContext ? "removeFromAiContext" : "addToAiContext");
   elements.readerFavorite.classList.toggle("active", favorite);
   elements.readerFavorite.innerHTML = starIcon(favorite);
   elements.readerFavorite.setAttribute("aria-label", favoriteLabel);
@@ -1229,6 +1268,10 @@ function renderReaderActions(item) {
   elements.readerArchive.innerHTML = archiveIcon();
   elements.readerArchive.setAttribute("aria-label", archiveLabel);
   elements.readerArchive.setAttribute("title", archiveLabel);
+  elements.readerAiContext.classList.toggle("active", inAiContext);
+  elements.readerAiContext.innerHTML = contextToggleIcon(inAiContext);
+  elements.readerAiContext.setAttribute("aria-label", aiContextLabel);
+  elements.readerAiContext.setAttribute("title", aiContextLabel);
 }
 
 function getItemById(id) {
@@ -1328,6 +1371,34 @@ function clampSidebarWidth(width) {
 
 function getInitialSidebarState() {
   return localStorage.getItem("html-vault-sidebar-collapsed") === "true";
+}
+
+function getInitialNavSectionState() {
+  try {
+    return JSON.parse(localStorage.getItem("html-vault-nav-section-collapsed") || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function toggleNavSection(section) {
+  state.navSectionCollapsed[section] = !state.navSectionCollapsed[section];
+  localStorage.setItem("html-vault-nav-section-collapsed", JSON.stringify(state.navSectionCollapsed));
+  applyNavSectionState();
+}
+
+function applyNavSectionState() {
+  elements.navSections.forEach((section) => {
+    const key = section.dataset.navSection;
+    section.classList.toggle("collapsed", Boolean(state.navSectionCollapsed[key]));
+  });
+  elements.navSectionToggles.forEach((button) => {
+    const key = button.dataset.navSectionToggle;
+    const sectionName = t(key);
+    const label = t(state.navSectionCollapsed[key] ? "expandNavSection" : "collapseNavSection", { name: sectionName });
+    button.setAttribute("aria-label", label);
+    button.setAttribute("title", label);
+  });
 }
 
 function toggleSidebar() {
@@ -1505,6 +1576,10 @@ function toggleManualAiContext(id) {
     state.manualAiContextIds.add(id);
   }
   renderGrid();
+  const item = getItemById(id);
+  if (item && state.currentReaderItemId === id && !elements.reader.hidden) {
+    renderReaderActions(item);
+  }
   renderAiContext();
 }
 
@@ -2110,6 +2185,7 @@ function applyTranslations() {
     });
   });
   renderFeedback();
+  applyNavSectionState();
   applyArchiveFilter();
   applyFavoriteFilter();
   applyMultiFilterState();
@@ -2149,6 +2225,9 @@ elements.searchInput.addEventListener("input", (event) => {
 elements.brandHome.addEventListener("click", goHome);
 elements.sidebarCollapse.addEventListener("click", toggleSidebar);
 elements.sidebarResize.addEventListener("pointerdown", startSidebarResize);
+elements.navSectionToggles.forEach((button) => {
+  button.addEventListener("click", () => toggleNavSection(button.dataset.navSectionToggle));
+});
 elements.aiPanelOpen.addEventListener("click", toggleAiPanel);
 elements.aiPanelClose.addEventListener("click", closeAiPanel);
 elements.aiPanelResize.addEventListener("pointerdown", startAiPanelResize);
@@ -2205,8 +2284,14 @@ elements.readerFavorite.addEventListener("click", () => {
 elements.readerArchive.addEventListener("click", () => {
   if (state.currentReaderItemId) toggleArchive(state.currentReaderItemId);
 });
+elements.readerAiContext.addEventListener("click", () => {
+  if (state.currentReaderItemId) toggleManualAiContext(state.currentReaderItemId);
+});
 elements.readerCopy.addEventListener("click", copyReaderLink);
-document.querySelector("[data-import-entry]").addEventListener("click", focusImportEntry);
+elements.readerShare.addEventListener("click", shareReaderLink);
+elements.importEntries.forEach((button) => {
+  button.addEventListener("click", focusImportEntry);
+});
 window.addEventListener("hashchange", openFromHash);
 window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener("change", () => {
   if (state.themeMode === "system") applyTheme();

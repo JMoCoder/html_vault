@@ -7,6 +7,24 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.16] - 2026-05-29
+
+### Added
+
+- Top toolbar now has a dedicated colored `+` import button with an HTML import
+  tooltip, and the old sidebar import button was removed.
+- Library, Collections, and Tags sidebar sections can be collapsed and expanded.
+- Reader actions now include add/remove from AI Q&A context and a share button.
+
+### Changed
+
+- Updated the sidebar brand mark to the redesigned HTMLvault icon and refined
+  brand/collapse-button alignment for light and dark themes.
+- Sidebar and page scrollbars now stay hidden until hover or keyboard focus.
+- AI-create source selector now uses an inset custom chevron so the arrow no
+  longer touches the right border.
+- Package, app, and PWA cache version updated to `0.3.16`.
+
 ## [0.3.15] - 2026-05-29
 
 ### Changed
