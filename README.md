@@ -16,7 +16,8 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Sidecar metadata from `meta/items/**/*.yml`.
 - Card grid with filters for library status, collections, and tags.
 - Reader pane with iframe mode, original-open action, and hash links.
-- Pinned new knowledge item entry with optional Agent Server API handoff.
+- Sidebar import entry for existing HTML files, plus a separate AI creation
+  entry for generated HTML notes.
 - Chinese, English, and Japanese UI language switching for system labels.
 - Dark and light mode switching with a compact sidebar icon.
 - Settings page for AI provider configuration, user agreement, project info,

@@ -60,7 +60,7 @@ const i18n = {
     library: "Library",
     collections: "Collections",
     tags: "Tags",
-    newButton: "+ New",
+    newButton: "+ Import",
     allItems: "All Items",
     inbox: "Inbox",
     recent: "Recent",
@@ -75,7 +75,7 @@ const i18n = {
     manifestMissing: "Manifest not found. Run <code>html-vault build</code> first.",
     noMatches: "No matching HTML knowledge items.",
     newKnowledgeItem: "New Knowledge Item",
-    createHtmlNote: "Create an HTML note",
+    createHtmlNote: "Create with AI",
     staticMode: "Static mode",
     agentConnected: "Agent connected",
     connectAgent: "Connect an Agent Server to create notes from this entry.",
@@ -85,7 +85,7 @@ const i18n = {
     inputFile: "File",
     inputBook: "Book",
     inputTopic: "Topic",
-    newItemPlaceholder: "Paste a link, enter a book, or describe a topic",
+    newItemPlaceholder: "Paste a link, choose file mode, enter a book, or describe a topic",
     create: "Create",
     emptyInput: "Enter a link, book, file path, or topic first.",
     agentNotConfigured: "Agent Server not configured. Set window.HTML_VAULT_AGENT_URL before loading the app.",
@@ -160,7 +160,7 @@ const i18n = {
     library: "资料库",
     collections: "集合",
     tags: "标签",
-    newButton: "+ 新建",
+    newButton: "+ 导入",
     allItems: "全部条目",
     inbox: "收件箱",
     recent: "最近更新",
@@ -175,7 +175,7 @@ const i18n = {
     manifestMissing: "未找到 Manifest。请先运行 <code>html-vault build</code>。",
     noMatches: "没有匹配的 HTML 知识条目。",
     newKnowledgeItem: "新知识条目",
-    createHtmlNote: "创建 HTML 笔记",
+    createHtmlNote: "用 AI 创建",
     staticMode: "静态模式",
     agentConnected: "Agent 已连接",
     connectAgent: "连接 Agent Server 后，可从这里创建笔记。",
@@ -185,7 +185,7 @@ const i18n = {
     inputFile: "文件",
     inputBook: "书籍",
     inputTopic: "主题",
-    newItemPlaceholder: "粘贴链接、输入书名，或描述一个主题",
+    newItemPlaceholder: "粘贴链接、切换文件模式、输入书名，或描述一个主题",
     create: "创建",
     emptyInput: "请先输入链接、书籍、文件路径或主题。",
     agentNotConfigured: "尚未配置 Agent Server。请在加载应用前设置 window.HTML_VAULT_AGENT_URL。",
@@ -260,7 +260,7 @@ const i18n = {
     library: "ライブラリ",
     collections: "コレクション",
     tags: "タグ",
-    newButton: "+ 新規",
+    newButton: "+ インポート",
     allItems: "すべて",
     inbox: "受信箱",
     recent: "最近更新",
@@ -275,7 +275,7 @@ const i18n = {
     manifestMissing: "Manifest が見つかりません。先に <code>html-vault build</code> を実行してください。",
     noMatches: "一致する HTML ナレッジ項目がありません。",
     newKnowledgeItem: "新規ナレッジ項目",
-    createHtmlNote: "HTML ノートを作成",
+    createHtmlNote: "AI で作成",
     staticMode: "静的モード",
     agentConnected: "Agent 接続済み",
     connectAgent: "Agent Server を接続すると、ここからノートを作成できます。",
@@ -285,7 +285,7 @@ const i18n = {
     inputFile: "ファイル",
     inputBook: "書籍",
     inputTopic: "トピック",
-    newItemPlaceholder: "リンク、書名、またはトピックを入力",
+    newItemPlaceholder: "リンク、ファイルモード、書名、またはトピックを入力",
     create: "作成",
     emptyInput: "リンク、書籍、ファイルパス、またはトピックを入力してください。",
     agentNotConfigured: "Agent Server が設定されていません。アプリ読み込み前に window.HTML_VAULT_AGENT_URL を設定してください。",
@@ -863,6 +863,12 @@ function testProviderConfig() {
   elements.settingsFeedback.textContent = t("settingsAgentFailed");
 }
 
+function focusImportEntry() {
+  returnToWorkspace();
+  elements.inputType.value = "file";
+  elements.newItemInput.focus();
+}
+
 function t(key, params = {}) {
   const dictionary = i18n[state.language] || i18n.en;
   const fallback = i18n.en[key] || key;
@@ -930,7 +936,7 @@ elements.testProvider.addEventListener("click", testProviderConfig);
 elements.newItemForm.addEventListener("submit", submitNewItem);
 elements.readerClose.addEventListener("click", closeReader);
 elements.readerCopy.addEventListener("click", copyReaderLink);
-document.querySelector("[data-focus-new]").addEventListener("click", () => elements.newItemInput.focus());
+document.querySelector("[data-import-entry]").addEventListener("click", focusImportEntry);
 window.addEventListener("hashchange", openFromHash);
 
 boot();

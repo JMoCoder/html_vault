@@ -43,3 +43,4 @@ versioning after the initial public release.
   alignment.
 - AI provider settings are visually separated from sidebar management and
   project information sections.
+- Sidebar import entry is separated from the AI creation entry.
