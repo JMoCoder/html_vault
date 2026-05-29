@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HTML Vault</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Vault navigation">
+      <div class="brand">
+        <div class="brand-mark">HV</div>
+        <div>
+          <h1 id="site-title">HTML Vault</h1>
+          <p id="item-count">Loading</p>
+        </div>
+      </div>
+
+      <button class="new-button" type="button" data-focus-new>+ New</button>
+
+      <section class="nav-section">
+        <h2>Library</h2>
+        <div class="nav-list" id="library-nav"></div>
+      </section>
+
+      <section class="nav-section">
+        <h2>Collections</h2>
+        <div class="nav-list" id="collection-nav"></div>
+      </section>
+
+      <section class="nav-section">
+        <h2>Tags</h2>
+        <div class="tag-list" id="tag-nav"></div>
+      </section>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="active-filter-label">All Items</p>
+          <h2 id="workspace-title">Knowledge Workspace</h2>
+        </div>
+        <label class="search">
+          <span>Search</span>
+          <input id="search-input" type="search" autocomplete="off" placeholder="Title, summary, tag, path">
+        </label>
+      </header>
+
+      <section class="new-card" id="new-card">
+        <div class="new-card-header">
+          <div>
+            <p class="eyebrow">New Knowledge Item</p>
+            <h3>Create an HTML note</h3>
+          </div>
+          <span class="status-pill" id="agent-status">Static mode</span>
+        </div>
+        <form id="new-item-form" class="new-form">
+          <select id="input-type" aria-label="Input type">
+            <option value="auto">Auto</option>
+            <option value="link">Link</option>
+            <option value="file">File</option>
+            <option value="book">Book</option>
+            <option value="topic">Topic</option>
+          </select>
+          <input id="new-item-input" type="text" placeholder="Paste a link, enter a book, or describe a topic">
+          <button type="submit">Create</button>
+        </form>
+        <p class="new-feedback" id="new-feedback">Connect an Agent Server to create notes from this entry.</p>
+      </section>
+
+      <section class="content-grid" id="content-grid" aria-live="polite"></section>
+    </main>
+
+    <section class="reader" id="reader" aria-label="Reader" hidden>
+      <div class="reader-header">
+        <button class="icon-button" type="button" id="reader-close" aria-label="Close reader">×</button>
+        <div class="reader-heading">
+          <p class="eyebrow" id="reader-source">Item</p>
+          <h2 id="reader-title"></h2>
+          <p id="reader-summary"></p>
+          <div class="reader-tags" id="reader-tags"></div>
+        </div>
+        <div class="reader-actions">
+          <a class="button-link" id="reader-original" target="_blank" rel="noreferrer">Original</a>
+          <button type="button" class="button-link" id="reader-copy">Copy Link</button>
+        </div>
+      </div>
+      <iframe id="reader-frame" title="HTML knowledge item"></iframe>
+    </section>
+  </div>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>

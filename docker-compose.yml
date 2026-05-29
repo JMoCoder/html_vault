@@ -1,0 +1,5 @@
+services:
+  html-vault:
+    build: .
+    ports:
+      - "8080:80"
