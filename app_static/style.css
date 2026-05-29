@@ -521,6 +521,12 @@ select {
   background: var(--panel);
 }
 
+.settings-divider {
+  height: 1px;
+  margin: 10px 0;
+  background: var(--line);
+}
+
 .settings-content {
   min-width: 0;
   overflow: auto;
@@ -621,6 +627,56 @@ select {
   min-height: 20px;
 }
 
+.management-list {
+  display: grid;
+  gap: 10px;
+}
+
+.management-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(220px, 1.2fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--panel);
+}
+
+.management-row > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+}
+
+.management-row strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.management-row label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.management-row input[type="text"] {
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: var(--panel-soft);
+  color: var(--text);
+}
+
+.management-row .switch-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .empty-state {
   border: 1px dashed var(--line);
   border-radius: 8px;
@@ -680,7 +736,18 @@ select {
     white-space: nowrap;
   }
 
+  .settings-divider {
+    width: 1px;
+    height: auto;
+    margin: 0;
+    flex: 0 0 1px;
+  }
+
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .management-row {
     grid-template-columns: 1fr;
   }
 

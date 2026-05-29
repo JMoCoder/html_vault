@@ -27,6 +27,8 @@ versioning after the initial public release.
 - Dark and light theme toggle with a compact icon control.
 - Settings page with AI provider configuration, user agreement, about, and
   update documentation sections.
+- Collection and tag management sections that link directly to the left
+  sidebar navigation.
 
 ### Changed
 
@@ -37,3 +39,5 @@ versioning after the initial public release.
   non-sensitive AI model preferences.
 - Settings header icon buttons are grid-centered for consistent visual
   alignment.
+- AI provider settings are visually separated from sidebar management and
+  project information sections.

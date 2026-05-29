@@ -11,6 +11,12 @@ const i18n = {
     settingsTitle: "Project settings",
     closeSettings: "Close settings",
     settingsSections: "Settings sections",
+    collectionManagement: "Collection management",
+    tagManagement: "Tag management",
+    collectionManagementIntro: "Rename or hide collections in the left sidebar. This changes navigation labels only, not item metadata.",
+    tagManagementIntro: "Rename or hide tags in the left sidebar. Original tag values on cards remain unchanged.",
+    displayName: "Display name",
+    visible: "Visible",
     aiProviders: "AI providers",
     userAgreement: "User agreement",
     aboutProject: "About project",
@@ -99,6 +105,12 @@ const i18n = {
     settingsTitle: "项目设置",
     closeSettings: "关闭设置",
     settingsSections: "设置分区",
+    collectionManagement: "集合管理",
+    tagManagement: "标签管理",
+    collectionManagementIntro: "重命名或隐藏左侧导航栏中的集合。这里只改变导航显示，不修改条目元数据。",
+    tagManagementIntro: "重命名或隐藏左侧导航栏中的标签。卡片上的原始标签值保持不变。",
+    displayName: "显示名称",
+    visible: "显示",
     aiProviders: "AI 服务商配置",
     userAgreement: "用户协议",
     aboutProject: "关于项目",
@@ -197,8 +209,9 @@ const state = {
   theme: getInitialTheme(),
   feedbackKey: "connectAgent",
   feedbackParams: {},
-  activeSettingsTab: "ai",
+  activeSettingsTab: "collections",
   aiConfig: loadAiConfig(),
+  navConfig: loadNavConfig(),
 };
 
 const elements = {
@@ -214,6 +227,8 @@ const elements = {
   settingsContent: document.querySelector(".settings-content"),
   settingsTabs: document.querySelectorAll("[data-settings-tab]"),
   settingsSections: document.querySelectorAll("[data-settings-section]"),
+  collectionManagement: document.querySelector("#collection-management"),
+  tagManagement: document.querySelector("#tag-management"),
   aiSettingsForm: document.querySelector("#ai-settings-form"),
   aiProvider: document.querySelector("#ai-provider"),
   currentModel: document.querySelector("#current-model"),
@@ -275,6 +290,7 @@ function renderApp() {
   renderGrid();
   updateAgentStatus();
   renderAiConfig();
+  renderManagementLists();
 }
 
 function renderLibraryNav() {
@@ -288,8 +304,10 @@ function renderLibraryNav() {
 }
 
 function renderCollectionNav() {
-  const buttons = (state.manifest.collections || []).map((collection) => {
-    return navButton(collection.name, collection.count, state.filter.type === "collection" && state.filter.value === collection.name, () => {
+  const buttons = (state.manifest.collections || [])
+    .filter((collection) => isManagedItemVisible("collections", collection.name))
+    .map((collection) => {
+    return navButton(getManagedItemLabel("collections", collection.name), collection.count, state.filter.type === "collection" && state.filter.value === collection.name, () => {
       state.filter = { type: "collection", value: collection.name, label: collection.name };
       renderApp();
     });
@@ -298,11 +316,13 @@ function renderCollectionNav() {
 }
 
 function renderTagNav() {
-  const tags = (state.manifest.tags || []).map((tag) => {
+  const tags = (state.manifest.tags || [])
+    .filter((tag) => isManagedItemVisible("tags", tag.name))
+    .map((tag) => {
     const button = document.createElement("button");
     button.className = `tag-filter${state.filter.type === "tag" && state.filter.value === tag.name ? " active" : ""}`;
     button.type = "button";
-    button.textContent = `#${tag.name} ${tag.count}`;
+    button.textContent = `#${getManagedItemLabel("tags", tag.name)} ${tag.count}`;
     button.addEventListener("click", () => {
       state.filter = { type: "tag", value: tag.name, label: `#${tag.name}` };
       renderApp();
@@ -420,7 +440,7 @@ function closeReader() {
   }
 }
 
-function openSettings(tab = "ai", updateHash = true) {
+function openSettings(tab = "collections", updateHash = true) {
   state.activeSettingsTab = tab;
   elements.settingsPage.hidden = false;
   renderSettingsTabs();
@@ -459,7 +479,7 @@ function renderSettingsTabs() {
 function openFromHash() {
   const id = decodeURIComponent(window.location.hash.replace(/^#\/?/, ""));
   if (id.startsWith("settings")) {
-    const tab = id.split("/")[1] || "ai";
+    const tab = id.split("/")[1] || "collections";
     openSettings(tab, false);
     return;
   }
@@ -556,6 +576,77 @@ function loadAiConfig() {
   } catch {
     return {};
   }
+}
+
+function loadNavConfig() {
+  try {
+    return JSON.parse(localStorage.getItem("html-vault-nav-config") || '{"collections":{},"tags":{}}');
+  } catch {
+    return { collections: {}, tags: {} };
+  }
+}
+
+function saveNavConfig() {
+  localStorage.setItem("html-vault-nav-config", JSON.stringify(state.navConfig));
+}
+
+function getManagedItemConfig(type, name) {
+  state.navConfig[type] ||= {};
+  state.navConfig[type][name] ||= { label: name, visible: true };
+  return state.navConfig[type][name];
+}
+
+function getManagedItemLabel(type, name) {
+  const config = getManagedItemConfig(type, name);
+  return config.label?.trim() || name;
+}
+
+function isManagedItemVisible(type, name) {
+  const config = getManagedItemConfig(type, name);
+  return config.visible !== false;
+}
+
+function renderManagementLists() {
+  renderManagementList("collections", state.manifest.collections || [], elements.collectionManagement);
+  renderManagementList("tags", state.manifest.tags || [], elements.tagManagement);
+}
+
+function renderManagementList(type, items, container) {
+  const rows = items.map((item) => renderManagementRow(type, item.name, item.count));
+  container.replaceChildren(...rows);
+}
+
+function renderManagementRow(type, name, count) {
+  const config = getManagedItemConfig(type, name);
+  const row = document.createElement("div");
+  row.className = "management-row";
+  row.innerHTML = `
+    <div>
+      <strong>${escapeHtml(name)}</strong>
+      <span>${count}</span>
+    </div>
+    <label>
+      <span>${escapeHtml(t("displayName"))}</span>
+      <input type="text" value="${escapeHtml(config.label || name)}" data-management-label>
+    </label>
+    <label class="switch-row">
+      <input type="checkbox" ${config.visible === false ? "" : "checked"} data-management-visible>
+      <span>${escapeHtml(t("visible"))}</span>
+    </label>
+  `;
+  row.querySelector("[data-management-label]").addEventListener("input", (event) => {
+    getManagedItemConfig(type, name).label = event.target.value;
+    saveNavConfig();
+    renderCollectionNav();
+    renderTagNav();
+  });
+  row.querySelector("[data-management-visible]").addEventListener("change", (event) => {
+    getManagedItemConfig(type, name).visible = event.target.checked;
+    saveNavConfig();
+    renderCollectionNav();
+    renderTagNav();
+  });
+  return row;
 }
 
 function renderAiConfig() {

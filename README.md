@@ -19,6 +19,7 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Dark and light mode switching with a compact sidebar icon.
 - Settings page for AI provider configuration, user agreement, project info,
   and update notes.
+- Collection and tag management for sidebar labels and visibility.
 - Static build output that works on GitHub Pages, Cloudflare Pages, Caddy,
   Nginx, NAS, or any static file server.
 - Docker image for quick static hosting.
@@ -127,6 +128,12 @@ In full mode, the API key should be sent only to a protected Agent Server
 endpoint over HTTPS or a private network. The server should store it as an
 environment secret or encrypted server-side credential and never return it to
 the browser.
+
+## Sidebar Management
+
+Collection and tag management live in the settings page. They can rename or
+hide sidebar navigation entries without modifying the original item metadata,
+HTML files, or tag values displayed on cards.
 
 ## Docker
 

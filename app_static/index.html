@@ -119,14 +119,34 @@
 
       <div class="settings-body">
         <nav class="settings-nav" aria-label="Settings sections" data-i18n-attr="aria-label:settingsSections">
-          <button type="button" class="settings-tab active" data-settings-tab="ai" data-i18n="aiProviders"></button>
+          <button type="button" class="settings-tab active" data-settings-tab="collections" data-i18n="collectionManagement"></button>
+          <button type="button" class="settings-tab" data-settings-tab="tags" data-i18n="tagManagement"></button>
+          <div class="settings-divider" aria-hidden="true"></div>
+          <button type="button" class="settings-tab" data-settings-tab="ai" data-i18n="aiProviders"></button>
+          <div class="settings-divider" aria-hidden="true"></div>
           <button type="button" class="settings-tab" data-settings-tab="terms" data-i18n="userAgreement"></button>
           <button type="button" class="settings-tab" data-settings-tab="about" data-i18n="aboutProject"></button>
           <button type="button" class="settings-tab" data-settings-tab="updates" data-i18n="updateDocs"></button>
         </nav>
 
         <div class="settings-content">
-          <section class="settings-section active" data-settings-section="ai">
+          <section class="settings-section active" data-settings-section="collections">
+            <div class="section-heading">
+              <h3 data-i18n="collectionManagement"></h3>
+              <p data-i18n="collectionManagementIntro"></p>
+            </div>
+            <div class="management-list" id="collection-management"></div>
+          </section>
+
+          <section class="settings-section" data-settings-section="tags">
+            <div class="section-heading">
+              <h3 data-i18n="tagManagement"></h3>
+              <p data-i18n="tagManagementIntro"></p>
+            </div>
+            <div class="management-list" id="tag-management"></div>
+          </section>
+
+          <section class="settings-section" data-settings-section="ai">
             <div class="section-heading">
               <h3 data-i18n="aiProviders"></h3>
               <p data-i18n="aiProviderIntro"></p>
