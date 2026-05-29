@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">HTML Vault logo</title>
+  <desc id="desc">A rounded vault-shaped mark combining an HTML document, card grid, and AI sparkle.</desc>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="80" x2="900" y2="940" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#111827"/>
+      <stop offset="0.55" stop-color="#182033"/>
+      <stop offset="1" stop-color="#0B1020"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="242" y1="190" x2="782" y2="838" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7DD3FC"/>
+      <stop offset="0.45" stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="344" y1="232" x2="682" y2="770" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DCE7F7"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="28" stdDeviation="34" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.49  0 0 0 0 0.36  0 0 0 0 0.96  0 0 0 0.55 0"/>
+      <feBlend in="SourceGraphic" mode="screen"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" rx="232" fill="url(#bg)"/>
+  <path d="M232 314C232 231 299 164 382 164H642C725 164 792 231 792 314V360H710V314C710 276 680 246 642 246H382C344 246 314 276 314 314V360H232V314Z" fill="none" stroke="url(#accent)" stroke-width="46" stroke-linecap="round"/>
+  <rect x="214" y="330" width="596" height="510" rx="104" fill="url(#accent)" filter="url(#shadow)"/>
+  <rect x="268" y="390" width="488" height="390" rx="68" fill="#111827" opacity="0.92"/>
+
+  <g filter="url(#shadow)">
+    <path d="M390 252H596L698 354V704C698 744 666 776 626 776H390C350 776 318 744 318 704V324C318 284 350 252 390 252Z" fill="url(#paper)"/>
+    <path d="M596 252V326C596 342 608 354 624 354H698L596 252Z" fill="#BFD2EF"/>
+  </g>
+
+  <g fill="none" stroke="#182033" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M454 458L402 512L454 566"/>
+    <path d="M570 458L622 512L570 566"/>
+    <path d="M532 440L492 586"/>
+  </g>
+
+  <g opacity="0.95">
+    <rect x="392" y="626" width="86" height="62" rx="18" fill="#7DD3FC"/>
+    <rect x="502" y="626" width="86" height="62" rx="18" fill="#8B5CF6"/>
+    <rect x="612" y="626" width="50" height="62" rx="18" fill="#F97316"/>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <path d="M744 206L763 256L813 276L763 296L744 346L724 296L674 276L724 256L744 206Z" fill="#F8FAFC"/>
+    <circle cx="810" cy="420" r="18" fill="#7DD3FC"/>
+    <circle cx="222" cy="548" r="14" fill="#F97316" opacity="0.9"/>
+  </g>
+</svg>

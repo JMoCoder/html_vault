@@ -79,12 +79,9 @@ select {
 .brand-mark {
   width: 44px;
   height: 44px;
-  display: grid;
-  place-items: center;
   border-radius: 8px;
-  background: var(--text);
-  color: #fff;
-  font-weight: 800;
+  display: block;
+  object-fit: cover;
 }
 
 .brand h1,
