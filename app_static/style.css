@@ -463,7 +463,40 @@ textarea {
   box-shadow: var(--shadow);
 }
 
-.multi-filter-popover[hidden] {
+.sort-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 26;
+  width: 220px;
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.sort-popover button {
+  min-height: 34px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 0 10px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sort-popover button:hover,
+.sort-popover button.active {
+  border-color: var(--line);
+  background: var(--panel-soft);
+}
+
+.multi-filter-popover[hidden],
+.sort-popover[hidden] {
   display: none;
 }
 

@@ -7,6 +7,17 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.4] - 2026-05-29
+
+### Added
+
+- Sort menu in the result filter group for newest, oldest, title A-Z, and
+  title Z-A ordering of the current view.
+
+### Changed
+
+- Package, app, and PWA cache version updated to `0.3.4`.
+
 ## [0.3.3] - 2026-05-29
 
 ### Added

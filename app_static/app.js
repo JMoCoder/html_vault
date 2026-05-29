@@ -118,7 +118,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.3.",
+    aboutVersion: "Current early version: 0.3.4.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -145,6 +145,11 @@ const i18n = {
     clearMultiFilters: "Clear",
     collectionFilters: "Collections",
     tagFilters: "Tags",
+    sort: "Sort",
+    sortNewest: "Time: new to old",
+    sortOldest: "Time: old to new",
+    sortTitleAz: "Title: A-Z",
+    sortTitleZa: "Title: Z-A",
     cardView: "Card view",
     listView: "List view",
     hideArchived: "Hide archived items",
@@ -304,7 +309,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.3。",
+    aboutVersion: "当前早期版本：0.3.4。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -331,6 +336,11 @@ const i18n = {
     clearMultiFilters: "清空",
     collectionFilters: "集合",
     tagFilters: "标签",
+    sort: "排序",
+    sortNewest: "时间：新到旧",
+    sortOldest: "时间：旧到新",
+    sortTitleAz: "标题：A-Z",
+    sortTitleZa: "标题：Z-A",
     cardView: "方块视图",
     listView: "横向条目视图",
     hideArchived: "排除已归档",
@@ -490,7 +500,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.3。",
+    aboutVersion: "現在の初期バージョン: 0.3.4。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -517,6 +527,11 @@ const i18n = {
     clearMultiFilters: "クリア",
     collectionFilters: "コレクション",
     tagFilters: "タグ",
+    sort: "並び替え",
+    sortNewest: "時間: 新しい順",
+    sortOldest: "時間: 古い順",
+    sortTitleAz: "タイトル: A-Z",
+    sortTitleZa: "タイトル: Z-A",
     cardView: "カード表示",
     listView: "横長リスト表示",
     hideArchived: "アーカイブ済みを非表示",
@@ -591,6 +606,8 @@ const state = {
   aiPanelOpen: false,
   aiPanelWidth: getInitialAiPanelWidth(),
   multiFilterOpen: false,
+  sortOpen: false,
+  sortMode: getInitialSortMode(),
   selectedCollections: new Set(),
   selectedTags: new Set(),
   hideArchived: getInitialArchiveFilter(),
@@ -654,6 +671,9 @@ const elements = {
   clearMultiFilters: document.querySelector("#clear-multi-filters"),
   multiCollectionOptions: document.querySelector("#multi-collection-options"),
   multiTagOptions: document.querySelector("#multi-tag-options"),
+  sortToggle: document.querySelector("#sort-toggle"),
+  sortPopover: document.querySelector("#sort-popover"),
+  sortButtons: document.querySelectorAll("[data-sort-mode]"),
   favoriteFilter: document.querySelector("#favorite-filter"),
   archiveFilter: document.querySelector("#archive-filter"),
   aiPanelOpen: document.querySelector("#ai-panel-open"),
@@ -719,6 +739,7 @@ function renderApp() {
   renderCollectionNav();
   renderTagNav();
   renderMultiFilterOptions();
+  applySortState();
   renderGrid();
   renderAiContext();
   updateAgentStatus();
@@ -815,10 +836,7 @@ function filteredItems() {
     items = items.filter((item) => searchableText(item).includes(query));
   }
 
-  if (state.filter.value === "recent") {
-    return items.sort((a, b) => String(b.updated).localeCompare(String(a.updated)));
-  }
-  return items.sort((a, b) => Number(b.pinned) - Number(a.pinned) || String(b.updated).localeCompare(String(a.updated)));
+  return sortItems(items);
 }
 
 function isVisibleInLibraryFilter(item, value, hideArchived) {
@@ -835,6 +853,23 @@ function searchableText(item) {
     item.source_type,
     ...(item.tags || []),
   ].filter(Boolean).join(" ").toLowerCase();
+}
+
+function sortItems(items) {
+  const sorted = [...items];
+  const byNewest = (a, b) => String(b.updated).localeCompare(String(a.updated));
+  const byOldest = (a, b) => String(a.updated).localeCompare(String(b.updated));
+  const byTitleAz = (a, b) => String(a.title || "").localeCompare(String(b.title || ""), undefined, { sensitivity: "base" });
+  const byTitleZa = (a, b) => byTitleAz(b, a);
+
+  const comparator = {
+    newest: (a, b) => byNewest(a, b) || byTitleAz(a, b),
+    oldest: (a, b) => byOldest(a, b) || byTitleAz(a, b),
+    "title-az": (a, b) => byTitleAz(a, b) || byNewest(a, b),
+    "title-za": (a, b) => byTitleZa(a, b) || byNewest(a, b),
+  }[state.sortMode] || ((a, b) => byNewest(a, b) || byTitleAz(a, b));
+
+  return sorted.sort(comparator);
 }
 
 function renderGrid() {
@@ -1187,6 +1222,11 @@ function getInitialViewMode() {
   return saved === "list" ? "list" : "cards";
 }
 
+function getInitialSortMode() {
+  const saved = localStorage.getItem("html-vault-sort-mode");
+  return ["newest", "oldest", "title-az", "title-za"].includes(saved) ? saved : "newest";
+}
+
 function getInitialAiPanelWidth() {
   const saved = Number(localStorage.getItem("html-vault-ai-panel-width"));
   if (Number.isFinite(saved) && saved >= 320 && saved <= 720) return saved;
@@ -1382,10 +1422,37 @@ function closeMultiFilterPopover() {
   applyMultiFilterState();
 }
 
+function toggleSortPopover() {
+  state.sortOpen = !state.sortOpen;
+  applySortState();
+}
+
+function closeSortPopover() {
+  state.sortOpen = false;
+  applySortState();
+}
+
 function applyMultiFilterState() {
   elements.multiFilterPopover.hidden = !state.multiFilterOpen;
   elements.multiFilterToggle.classList.toggle("open", state.multiFilterOpen);
   elements.multiFilterToggle.classList.toggle("active", hasMultiFilters());
+}
+
+function applySortState() {
+  elements.sortPopover.hidden = !state.sortOpen;
+  elements.sortToggle.classList.toggle("active", state.sortOpen || state.sortMode !== "newest");
+  elements.sortButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.sortMode === state.sortMode);
+  });
+}
+
+function setSortMode(mode) {
+  if (!["newest", "oldest", "title-az", "title-za"].includes(mode)) return;
+  state.sortMode = mode;
+  state.sortOpen = false;
+  localStorage.setItem("html-vault-sort-mode", mode);
+  applySortState();
+  renderGrid();
 }
 
 function hasMultiFilters() {
@@ -1922,6 +1989,7 @@ function applyTranslations() {
   applyArchiveFilter();
   applyFavoriteFilter();
   applyMultiFilterState();
+  applySortState();
 }
 
 function setFeedback(key, params = {}) {
@@ -1965,12 +2033,21 @@ elements.aiGenerateNote.addEventListener("click", markAiGeneratePlaceholder);
 elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.multiFilterToggle.addEventListener("click", toggleMultiFilterPopover);
 elements.clearMultiFilters.addEventListener("click", clearMultiFilters);
+elements.sortToggle.addEventListener("click", toggleSortPopover);
+elements.sortButtons.forEach((button) => {
+  button.addEventListener("click", () => setSortMode(button.dataset.sortMode));
+});
 elements.favoriteFilter.addEventListener("click", toggleFavoriteFilter);
 elements.archiveFilter.addEventListener("click", toggleArchiveFilter);
 document.addEventListener("click", (event) => {
   if (!state.multiFilterOpen) return;
   if (elements.multiFilterPopover.contains(event.target) || elements.multiFilterToggle.contains(event.target)) return;
   closeMultiFilterPopover();
+});
+document.addEventListener("click", (event) => {
+  if (!state.sortOpen) return;
+  if (elements.sortPopover.contains(event.target) || elements.sortToggle.contains(event.target)) return;
+  closeSortPopover();
 });
 elements.viewButtons.forEach((button) => {
   button.addEventListener("click", () => setViewMode(button.dataset.viewMode));

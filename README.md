@@ -17,6 +17,7 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Card grid with filters for library status, collections, and tags.
 - Toolbar multi-select filters for combining collections and tags, with a
   clear-all action.
+- Toolbar sort menu for newest, oldest, title A-Z, and title Z-A ordering.
 - Optional card or horizontal list workspace layout.
 - Reader pane with iframe mode, original-open action, and hash links.
 - Favorite and archive actions on item cards and in the reader.

@@ -80,6 +80,15 @@
                   <path d="M10 18h4"></path>
                 </svg>
               </button>
+              <button class="filter-toggle" type="button" id="sort-toggle" aria-label="Sort" title="Sort" data-i18n-attr="aria-label:sort,title:sort">
+                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M11 5h10"></path>
+                  <path d="M11 12h7"></path>
+                  <path d="M11 19h4"></path>
+                  <path d="M4 5v14"></path>
+                  <path d="m7 16-3 3-3-3"></path>
+                </svg>
+              </button>
               <button class="filter-toggle" type="button" id="favorite-filter" aria-label="Only favorites" title="Only favorites" data-i18n-attr="aria-label:onlyFavorites,title:onlyFavorites">
                 <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="m12 3 2.82 5.72 6.31.92-4.57 4.45 1.08 6.28L12 17.4l-5.64 2.97 1.08-6.28-4.57-4.45 6.31-.92L12 3Z"></path>
@@ -107,6 +116,12 @@
                 <h4 data-i18n="tagFilters"></h4>
                 <div class="multi-filter-options" id="multi-tag-options"></div>
               </div>
+            </div>
+            <div class="sort-popover" id="sort-popover" hidden>
+              <button type="button" data-sort-mode="newest" data-i18n="sortNewest"></button>
+              <button type="button" data-sort-mode="oldest" data-i18n="sortOldest"></button>
+              <button type="button" data-sort-mode="title-az" data-i18n="sortTitleAz"></button>
+              <button type="button" data-sort-mode="title-za" data-i18n="sortTitleZa"></button>
             </div>
           </div>
           <div class="view-toggle" role="group" aria-label="View style" data-i18n-attr="aria-label:viewStyle">
