@@ -27,8 +27,8 @@ const i18n = {
     aiContextCollections: "Collections: {names}",
     aiContextTags: "Tags ({mode}): {names}",
     aiContextManualItems: "Selected files: {titles}",
-    tagMatchModeAnyLabel: "any",
-    tagMatchModeAllLabel: "all",
+    tagMatchModeAnyLabel: "OR",
+    tagMatchModeAllLabel: "AND",
     aiContextFavoritesOnly: "Favorites only",
     aiContextArchivedHidden: "Archived excluded",
     aiContextArchivedShown: "Archived included",
@@ -127,7 +127,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.9.",
+    aboutVersion: "Current early version: 0.3.10.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -155,8 +155,8 @@ const i18n = {
     collectionFilters: "Collections",
     tagFilters: "Tags",
     tagMatchMode: "Tag match mode",
-    tagMatchAny: "Any",
-    tagMatchAll: "All",
+    tagMatchAny: "OR",
+    tagMatchAll: "AND",
     sort: "Sort",
     sortNewest: "Time: new to old",
     sortOldest: "Time: old to new",
@@ -232,8 +232,8 @@ const i18n = {
     aiContextCollections: "集合：{names}",
     aiContextTags: "标签（{mode}）：{names}",
     aiContextManualItems: "指定文件：{titles}",
-    tagMatchModeAnyLabel: "任一",
-    tagMatchModeAllLabel: "全部",
+    tagMatchModeAnyLabel: "或",
+    tagMatchModeAllLabel: "且",
     aiContextFavoritesOnly: "仅收藏",
     aiContextArchivedHidden: "已排除归档",
     aiContextArchivedShown: "包含归档",
@@ -332,7 +332,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.9。",
+    aboutVersion: "当前早期版本：0.3.10。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -360,8 +360,8 @@ const i18n = {
     collectionFilters: "集合",
     tagFilters: "标签",
     tagMatchMode: "标签匹配模式",
-    tagMatchAny: "任一",
-    tagMatchAll: "全部",
+    tagMatchAny: "或",
+    tagMatchAll: "且",
     sort: "排序",
     sortNewest: "时间：新到旧",
     sortOldest: "时间：旧到新",
@@ -437,8 +437,8 @@ const i18n = {
     aiContextCollections: "コレクション: {names}",
     aiContextTags: "タグ（{mode}）: {names}",
     aiContextManualItems: "選択ファイル: {titles}",
-    tagMatchModeAnyLabel: "いずれか",
-    tagMatchModeAllLabel: "すべて",
+    tagMatchModeAnyLabel: "OR",
+    tagMatchModeAllLabel: "AND",
     aiContextFavoritesOnly: "お気に入りのみ",
     aiContextArchivedHidden: "アーカイブを除外",
     aiContextArchivedShown: "アーカイブを含む",
@@ -537,7 +537,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.9。",
+    aboutVersion: "現在の初期バージョン: 0.3.10。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -565,8 +565,8 @@ const i18n = {
     collectionFilters: "コレクション",
     tagFilters: "タグ",
     tagMatchMode: "タグ一致モード",
-    tagMatchAny: "いずれか",
-    tagMatchAll: "すべて",
+    tagMatchAny: "OR",
+    tagMatchAll: "AND",
     sort: "並び替え",
     sortNewest: "時間: 新しい順",
     sortOldest: "時間: 古い順",
@@ -1000,7 +1000,7 @@ function itemActionButton(action, item) {
   }[action];
   return `
     <button class="item-icon-button${active ? " active" : ""}" type="button" data-item-action="${action}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}">
-      ${action === "favorite" ? starIcon(active) : action === "archive" ? archiveIcon() : plusIcon()}
+      ${action === "favorite" ? starIcon(active) : action === "archive" ? archiveIcon() : contextToggleIcon(active)}
     </button>
   `;
 }
@@ -2051,10 +2051,10 @@ function archiveIcon() {
   `;
 }
 
-function plusIcon() {
+function contextToggleIcon(active) {
   return `
     <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 5v14"></path>
+      ${active ? "" : '<path d="M12 5v14"></path>'}
       <path d="M5 12h14"></path>
     </svg>
   `;

@@ -370,7 +370,8 @@ textarea {
 }
 
 .view-toggle,
-.filter-toggle-group {
+.filter-toggle-group,
+.sort-toggle-group {
   height: 42px;
   display: flex;
   padding: 3px;
@@ -379,7 +380,8 @@ textarea {
   background: var(--panel);
 }
 
-.filter-shell {
+.filter-shell,
+.sort-shell {
   position: relative;
 }
 
@@ -470,7 +472,7 @@ textarea {
 .sort-popover {
   position: absolute;
   top: calc(100% + 8px);
-  right: 4px;
+  left: 0;
   z-index: 26;
   width: 220px;
   display: grid;

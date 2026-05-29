@@ -7,6 +7,17 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.10] - 2026-05-29
+
+### Changed
+
+- Manual AI context card action now changes from plus to minus when selected
+  while keeping the active icon color.
+- Filter and sort toolbar controls are separated into independent groups again.
+- Tag match controls now use OR/AND wording, matching the underlying any/all
+  tag filter logic.
+- Package, app, and PWA cache version updated to `0.3.10`.
+
 ## [0.3.9] - 2026-05-29
 
 ### Changed
