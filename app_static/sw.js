@@ -1,4 +1,4 @@
-const CACHE_NAME = "html-vault-v0.3.11";
+const CACHE_NAME = "html-vault-v0.3.12";
 const APP_SHELL = [
   "./",
   "index.html",

@@ -7,6 +7,15 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.12] - 2026-05-29
+
+### Changed
+
+- Top toolbar grouping now pairs filter with sort, and favorite with archive.
+- Verified OR/AND tag filtering against MCP and Docker sample notes: OR returns
+  any matching tag, while AND requires all selected tags.
+- Package, app, and PWA cache version updated to `0.3.12`.
+
 ## [0.3.11] - 2026-05-29
 
 ### Changed

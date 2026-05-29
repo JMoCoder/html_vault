@@ -362,7 +362,7 @@ textarea {
 
 .view-toggle,
 .filter-toggle-group,
-.sort-toggle-group {
+.quick-filter-toggle-group {
   height: 42px;
   display: flex;
   padding: 3px;
@@ -371,8 +371,7 @@ textarea {
   background: var(--panel);
 }
 
-.filter-shell,
-.sort-shell {
+.filter-shell {
   position: relative;
 }
 
