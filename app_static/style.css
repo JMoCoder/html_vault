@@ -225,7 +225,6 @@ textarea {
   align-items: center;
 }
 
-.theme-toggle,
 .settings-toggle,
 .github-link {
   min-width: 42px;
@@ -241,25 +240,23 @@ textarea {
 }
 
 .github-link {
+  grid-auto-flow: column;
+  gap: 7px;
   padding: 0 10px;
   color: var(--muted);
   font-size: 12px;
   font-weight: 700;
 }
 
+.github-mark {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
 .github-link:hover {
   border-color: var(--accent);
   color: var(--accent-dark);
-}
-
-.theme-toggle {
-  width: fit-content;
-  min-width: 150px;
-  grid-auto-flow: column;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 12px;
-  font-size: 18px;
 }
 
 .settings-toggle {
@@ -1267,11 +1264,32 @@ textarea {
   color: var(--text);
 }
 
-.settings-form .theme-toggle {
+.theme-mode-group {
   height: 40px;
-  justify-self: start;
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
   background: var(--panel-soft);
-  font-size: 14px;
+}
+
+.theme-mode-group button {
+  height: 32px;
+  min-width: 88px;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 12px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.theme-mode-group button:hover,
+.theme-mode-group button.active {
+  background: var(--panel);
+  color: var(--accent-dark);
 }
 
 .settings-form textarea {

@@ -47,6 +47,9 @@ const i18n = {
     basicSettingsIntro: "Configure interface preferences stored in this browser.",
     interfaceTheme: "Interface theme",
     languageSetting: "Language",
+    themeSystem: "System",
+    themeLight: "Light",
+    themeDark: "Dark",
     libraryManagement: "Library",
     collectionManagement: "Collections",
     tagManagement: "Tags",
@@ -131,7 +134,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.13.",
+    aboutVersion: "Current early version: 0.3.14.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -256,6 +259,9 @@ const i18n = {
     basicSettingsIntro: "配置保存在当前浏览器中的界面偏好。",
     interfaceTheme: "界面设置",
     languageSetting: "语言设置",
+    themeSystem: "跟随系统",
+    themeLight: "亮色模式",
+    themeDark: "暗色模式",
     libraryManagement: "资料库管理",
     collectionManagement: "集合管理",
     tagManagement: "标签管理",
@@ -340,7 +346,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.13。",
+    aboutVersion: "当前早期版本：0.3.14。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -465,6 +471,9 @@ const i18n = {
     basicSettingsIntro: "このブラウザーに保存するインターフェース設定です。",
     interfaceTheme: "インターフェーステーマ",
     languageSetting: "言語設定",
+    themeSystem: "システム",
+    themeLight: "ライト",
+    themeDark: "ダーク",
     libraryManagement: "ライブラリ",
     collectionManagement: "コレクション",
     tagManagement: "タグ",
@@ -549,7 +558,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.13。",
+    aboutVersion: "現在の初期バージョン: 0.3.14。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -645,7 +654,7 @@ const state = {
   query: "",
   agentUrl: window.HTML_VAULT_AGENT_URL || "",
   language: getInitialLanguage(),
-  theme: getInitialTheme(),
+  themeMode: getInitialThemeMode(),
   feedbackKey: "connectAgent",
   feedbackParams: {},
   activeSettingsTab: "basic",
@@ -678,8 +687,7 @@ const elements = {
   siteTitle: document.querySelector("#site-title"),
   itemCount: document.querySelector("#item-count"),
   languageSelect: document.querySelector("#language-select"),
-  themeToggle: document.querySelector("#theme-toggle"),
-  themeIcon: document.querySelector("#theme-icon"),
+  themeModeButtons: document.querySelectorAll("[data-theme-mode]"),
   settingsOpen: document.querySelector("#settings-open"),
   settingsBack: document.querySelector("#settings-back"),
   settingsPage: document.querySelector("#settings-page"),
@@ -1284,11 +1292,10 @@ function setLanguage(language) {
   renderApp();
 }
 
-function getInitialTheme() {
+function getInitialThemeMode() {
   const saved = localStorage.getItem("html-vault-theme");
-  if (saved === "dark" || saved === "light") return saved;
-  if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) return "dark";
-  return "light";
+  if (saved === "system" || saved === "dark" || saved === "light") return saved;
+  return "system";
 }
 
 function getInitialViewMode() {
@@ -1673,15 +1680,24 @@ function applyViewMode() {
   });
 }
 
-function toggleTheme() {
-  state.theme = state.theme === "dark" ? "light" : "dark";
-  localStorage.setItem("html-vault-theme", state.theme);
+function setThemeMode(mode) {
+  if (!["system", "light", "dark"].includes(mode)) return;
+  state.themeMode = mode;
+  localStorage.setItem("html-vault-theme", mode);
   applyTheme();
 }
 
 function applyTheme() {
-  document.documentElement.dataset.theme = state.theme;
-  elements.themeIcon.textContent = state.theme === "dark" ? "☀" : "☾";
+  const resolvedTheme = state.themeMode === "system" ? getSystemTheme() : state.themeMode;
+  document.documentElement.dataset.theme = resolvedTheme;
+  document.documentElement.dataset.themeMode = state.themeMode;
+  elements.themeModeButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.themeMode === state.themeMode);
+  });
+}
+
+function getSystemTheme() {
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 function loadAiConfig() {
@@ -1914,7 +1930,7 @@ function buildBackupPayload() {
 function getPreferencePayload() {
   return {
     language: state.language,
-    theme: state.theme,
+    theme: state.themeMode,
     viewMode: state.viewMode,
     hideArchived: state.hideArchived,
     onlyFavorites: state.onlyFavorites,
@@ -1957,9 +1973,9 @@ function restorePreferences(preferences) {
     state.language = preferences.language;
     localStorage.setItem("html-vault-language", state.language);
   }
-  if (preferences.theme === "dark" || preferences.theme === "light") {
-    state.theme = preferences.theme;
-    localStorage.setItem("html-vault-theme", state.theme);
+  if (preferences.theme === "system" || preferences.theme === "dark" || preferences.theme === "light") {
+    state.themeMode = preferences.theme;
+    localStorage.setItem("html-vault-theme", state.themeMode);
   }
   if (preferences.viewMode === "cards" || preferences.viewMode === "list") {
     state.viewMode = preferences.viewMode;
@@ -2171,7 +2187,9 @@ elements.viewButtons.forEach((button) => {
   button.addEventListener("click", () => setViewMode(button.dataset.viewMode));
 });
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
-elements.themeToggle.addEventListener("click", toggleTheme);
+elements.themeModeButtons.forEach((button) => {
+  button.addEventListener("click", () => setThemeMode(button.dataset.themeMode));
+});
 elements.settingsOpen.addEventListener("click", toggleSettings);
 elements.settingsBack.addEventListener("click", closeSettings);
 elements.settingsTabs.forEach((tab) => {
@@ -2201,6 +2219,9 @@ elements.readerArchive.addEventListener("click", () => {
 elements.readerCopy.addEventListener("click", copyReaderLink);
 document.querySelector("[data-import-entry]").addEventListener("click", focusImportEntry);
 window.addEventListener("hashchange", openFromHash);
+window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if (state.themeMode === "system") applyTheme();
+});
 
 boot();
 registerServiceWorker();

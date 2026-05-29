@@ -2,6 +2,18 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.3.14] - 2026-05-29
+
+### Added
+
+- サイドバーの GitHub リポジトリリンクに GitHub mark を追加しました。
+- 基本設定のテーマ操作を System、Light、Dark の 3 ボタンにしました。
+
+### Changed
+
+- テーマ設定は選択モードを保存し、System の場合はブラウザーの配色設定から実際のテーマを解決します。
+- パッケージ、アプリ、PWA キャッシュのバージョンを `0.3.14` に更新。
+
 ## [0.3.13] - 2026-05-29
 
 ### Added

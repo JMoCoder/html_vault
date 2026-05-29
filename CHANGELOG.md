@@ -7,6 +7,19 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.14] - 2026-05-29
+
+### Added
+
+- GitHub sidebar link now includes the GitHub mark.
+- Basic settings theme control now offers System, Light, and Dark modes.
+
+### Changed
+
+- Theme preference now stores the selected mode and resolves System from the
+  browser color-scheme preference.
+- Package, app, and PWA cache version updated to `0.3.14`.
+
 ## [0.3.13] - 2026-05-29
 
 ### Added
