@@ -208,8 +208,10 @@ const elements = {
   themeToggle: document.querySelector("#theme-toggle"),
   themeIcon: document.querySelector("#theme-icon"),
   settingsOpen: document.querySelector("#settings-open"),
+  settingsBack: document.querySelector("#settings-back"),
   settingsClose: document.querySelector("#settings-close"),
   settingsPage: document.querySelector("#settings-page"),
+  settingsContent: document.querySelector(".settings-content"),
   settingsTabs: document.querySelectorAll("[data-settings-tab]"),
   settingsSections: document.querySelectorAll("[data-settings-section]"),
   aiSettingsForm: document.querySelector("#ai-settings-form"),
@@ -424,6 +426,14 @@ function openSettings(tab = "ai") {
   renderSettingsTabs();
 }
 
+function toggleSettings() {
+  if (elements.settingsPage.hidden) {
+    openSettings();
+  } else {
+    closeSettings();
+  }
+}
+
 function closeSettings() {
   elements.settingsPage.hidden = true;
 }
@@ -437,6 +447,7 @@ function renderSettingsTabs() {
     const active = section.dataset.settingsSection === state.activeSettingsTab;
     section.classList.toggle("active", active);
   });
+  elements.settingsContent.scrollTop = 0;
 }
 
 function openFromHash() {
@@ -652,7 +663,8 @@ elements.searchInput.addEventListener("input", (event) => {
 });
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
 elements.themeToggle.addEventListener("click", toggleTheme);
-elements.settingsOpen.addEventListener("click", () => openSettings());
+elements.settingsOpen.addEventListener("click", toggleSettings);
+elements.settingsBack.addEventListener("click", closeSettings);
 elements.settingsClose.addEventListener("click", closeSettings);
 elements.settingsTabs.forEach((tab) => {
   tab.addEventListener("click", () => {

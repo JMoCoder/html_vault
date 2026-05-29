@@ -455,6 +455,12 @@ select {
   background: var(--panel);
 }
 
+.settings-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .settings-header h2,
 .section-heading h3,
 .section-heading p,
