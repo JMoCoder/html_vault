@@ -1,5 +1,7 @@
 # Changelog
 
+Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
+
 All notable changes to HTML Vault will be documented in this file.
 
 The format is based on Keep a Changelog, and this project uses semantic
@@ -22,7 +24,7 @@ versioning after the initial public release.
 ### Added
 
 - Extensible frontend i18n dictionary.
-- Language selector for English and Chinese system UI labels.
+- Language selector for Chinese, English, and Japanese system UI labels.
 - Persistent language preference via `localStorage`.
 - Dark and light theme toggle with a compact icon control.
 - Settings page with AI provider configuration, user agreement, about, and

@@ -1,5 +1,7 @@
 # HTML Vault
 
+Languages: [English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
+
 HTML Vault is a static-first workspace for HTML knowledge assets. Put HTML files
 in a content directory, build a manifest, and publish a card-based knowledge
 library that can be hosted by any static web server.
@@ -15,11 +17,11 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Card grid with filters for library status, collections, and tags.
 - Reader pane with iframe mode, original-open action, and hash links.
 - Pinned new knowledge item entry with optional Agent Server API handoff.
-- English and Chinese UI language switching for system labels.
+- Chinese, English, and Japanese UI language switching for system labels.
 - Dark and light mode switching with a compact sidebar icon.
 - Settings page for AI provider configuration, user agreement, project info,
   and update notes.
-- Collection and tag management for sidebar labels and visibility.
+- Collection and tag sidebar visibility management.
 - Static build output that works on GitHub Pages, Cloudflare Pages, Caddy,
   Nginx, NAS, or any static file server.
 - Docker image for quick static hosting.
