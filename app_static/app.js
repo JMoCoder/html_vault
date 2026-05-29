@@ -138,7 +138,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.19.",
+    aboutVersion: "Current early version: 0.3.20.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -356,7 +356,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.19。",
+    aboutVersion: "当前早期版本：0.3.20。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -574,7 +574,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.19。",
+    aboutVersion: "現在の初期バージョン: 0.3.20。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -1695,10 +1695,11 @@ function clearMultiFilters(shouldRender = true) {
 function startAiPanelResize(event) {
   event.preventDefault();
   elements.body.classList.add("ai-panel-resizing");
-  const startX = event.clientX;
-  const startWidth = state.aiPanelWidth;
+  const panelBox = elements.aiPanel.getBoundingClientRect();
+  const pointerOffset = event.clientX - panelBox.left;
+  const startWidth = panelBox.width;
   const onMove = (moveEvent) => {
-    state.aiPanelWidth = clampAiPanelWidth(startWidth + startX - moveEvent.clientX);
+    state.aiPanelWidth = clampAiPanelWidth(startWidth + panelBox.left - moveEvent.clientX + pointerOffset);
     applyAiPanelState();
   };
   const onUp = () => {

@@ -7,6 +7,15 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.20] - 2026-05-30
+
+### Fixed
+
+- AI panel resizing on the reader page now follows the pointer consistently by
+  ignoring the reader iframe during drag and calculating width from the actual
+  panel boundary.
+- Package, app, and PWA cache version updated to `0.3.20`.
+
 ## [0.3.19] - 2026-05-30
 
 ### Changed

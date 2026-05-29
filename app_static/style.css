@@ -761,6 +761,17 @@ textarea {
   background: transparent;
 }
 
+.ai-panel-resizing,
+.sidebar-resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.ai-panel-resizing .reader iframe,
+.sidebar-resizing .reader iframe {
+  pointer-events: none;
+}
+
 .ai-panel-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 36px;
