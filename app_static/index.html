@@ -63,108 +63,89 @@
 
     <main class="workspace">
       <header class="topbar">
-        <div>
-          <h2 id="workspace-title"></h2>
-        </div>
         <div class="topbar-tools">
-          <div class="filter-shell">
-            <div class="filter-toggle-group" role="group" aria-label="Result filters" data-i18n-attr="aria-label:resultFilters">
-              <button class="filter-toggle" type="button" id="multi-filter-toggle" aria-label="Collection and tag filters" title="Collection and tag filters" data-i18n-attr="aria-label:advancedFilters,title:advancedFilters">
-                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M4 6h16"></path>
-                  <path d="M7 12h10"></path>
-                  <path d="M10 18h4"></path>
-                </svg>
-              </button>
-              <button class="filter-toggle" type="button" id="sort-toggle" aria-label="Sort" title="Sort" data-i18n-attr="aria-label:sort,title:sort">
-                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M11 5h10"></path>
-                  <path d="M11 12h7"></path>
-                  <path d="M11 19h4"></path>
-                  <path d="M4 5v14"></path>
-                  <path d="m7 16-3 3-3-3"></path>
-                </svg>
-              </button>
-            </div>
-            <div class="multi-filter-popover" id="multi-filter-popover" hidden>
-              <div class="multi-filter-header">
-                <h3 data-i18n="advancedFilters"></h3>
-                <div class="multi-filter-header-actions">
-                  <button type="button" data-tag-match-mode="any" data-i18n="tagMatchAny"></button>
-                  <button type="button" data-tag-match-mode="all" data-i18n="tagMatchAll"></button>
+          <div class="topbar-control-group">
+            <div class="filter-shell">
+              <div class="filter-toggle-group" role="group" aria-label="Result filters" data-i18n-attr="aria-label:resultFilters">
+                <button class="filter-toggle" type="button" id="multi-filter-toggle" aria-label="Collection and tag filters" title="Collection and tag filters" data-i18n-attr="aria-label:advancedFilters,title:advancedFilters">
+                  <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h16"></path>
+                    <path d="M7 12h10"></path>
+                    <path d="M10 18h4"></path>
+                  </svg>
+                </button>
+                <button class="filter-toggle" type="button" id="sort-toggle" aria-label="Sort" title="Sort" data-i18n-attr="aria-label:sort,title:sort">
+                  <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M11 5h10"></path>
+                    <path d="M11 12h7"></path>
+                    <path d="M11 19h4"></path>
+                    <path d="M4 5v14"></path>
+                    <path d="m7 16-3 3-3-3"></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="multi-filter-popover" id="multi-filter-popover" hidden>
+                <div class="multi-filter-header">
+                  <h3 data-i18n="advancedFilters"></h3>
+                  <div class="multi-filter-header-actions">
+                    <button type="button" data-tag-match-mode="any" data-i18n="tagMatchAny"></button>
+                    <button type="button" data-tag-match-mode="all" data-i18n="tagMatchAll"></button>
+                  </div>
+                </div>
+                <div class="multi-filter-section">
+                  <h4 data-i18n="collectionFilters"></h4>
+                  <div class="multi-filter-options" id="multi-collection-options"></div>
+                </div>
+                <div class="multi-filter-section">
+                  <h4 data-i18n="tagFilters"></h4>
+                  <div class="multi-filter-options" id="multi-tag-options"></div>
                 </div>
               </div>
-              <div class="multi-filter-section">
-                <h4 data-i18n="collectionFilters"></h4>
-                <div class="multi-filter-options" id="multi-collection-options"></div>
-              </div>
-              <div class="multi-filter-section">
-                <h4 data-i18n="tagFilters"></h4>
-                <div class="multi-filter-options" id="multi-tag-options"></div>
+              <div class="sort-popover" id="sort-popover" hidden>
+                <button type="button" data-sort-mode="newest" data-i18n="sortNewest"></button>
+                <button type="button" data-sort-mode="oldest" data-i18n="sortOldest"></button>
+                <button type="button" data-sort-mode="title-az" data-i18n="sortTitleAz"></button>
+                <button type="button" data-sort-mode="title-za" data-i18n="sortTitleZa"></button>
               </div>
             </div>
-            <div class="sort-popover" id="sort-popover" hidden>
-              <button type="button" data-sort-mode="newest" data-i18n="sortNewest"></button>
-              <button type="button" data-sort-mode="oldest" data-i18n="sortOldest"></button>
-              <button type="button" data-sort-mode="title-az" data-i18n="sortTitleAz"></button>
-              <button type="button" data-sort-mode="title-za" data-i18n="sortTitleZa"></button>
+            <div class="quick-filter-toggle-group" role="group" aria-label="Result filters" data-i18n-attr="aria-label:resultFilters">
+              <button class="filter-toggle" type="button" id="favorite-filter" aria-label="Only favorites" title="Only favorites" data-i18n-attr="aria-label:onlyFavorites,title:onlyFavorites">
+                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m12 3 2.82 5.72 6.31.92-4.57 4.45 1.08 6.28L12 17.4l-5.64 2.97 1.08-6.28-4.57-4.45 6.31-.92L12 3Z"></path>
+                </svg>
+              </button>
+              <button class="filter-toggle active" type="button" id="archive-filter" aria-label="Show archived items" title="Show archived items" data-i18n-attr="aria-label:showArchived,title:showArchived">
+                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 7h18"></path>
+                  <path d="M5 7v12h14V7"></path>
+                  <path d="M8 7V4h8v3"></path>
+                  <path d="M9 12h6"></path>
+                </svg>
+              </button>
             </div>
-          </div>
-          <div class="quick-filter-toggle-group" role="group" aria-label="Result filters" data-i18n-attr="aria-label:resultFilters">
-            <button class="filter-toggle" type="button" id="favorite-filter" aria-label="Only favorites" title="Only favorites" data-i18n-attr="aria-label:onlyFavorites,title:onlyFavorites">
+            <button class="magic-button" type="button" id="lucky-button" aria-label="I'm feeling lucky" title="I'm feeling lucky" data-i18n-attr="aria-label:feelingLucky,title:feelingLucky">
               <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m12 3 2.82 5.72 6.31.92-4.57 4.45 1.08 6.28L12 17.4l-5.64 2.97 1.08-6.28-4.57-4.45 6.31-.92L12 3Z"></path>
-              </svg>
-            </button>
-            <button class="filter-toggle active" type="button" id="archive-filter" aria-label="Show archived items" title="Show archived items" data-i18n-attr="aria-label:showArchived,title:showArchived">
-              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 7h18"></path>
-                <path d="M5 7v12h14V7"></path>
-                <path d="M8 7V4h8v3"></path>
-                <path d="M9 12h6"></path>
+                <path d="m15 4 5 5"></path>
+                <path d="m14 5 5 5-9 9H5v-5l9-9Z"></path>
+                <path d="M6 3v4"></path>
+                <path d="M4 5h4"></path>
+                <path d="M19 14v4"></path>
+                <path d="M17 16h4"></path>
               </svg>
             </button>
           </div>
-          <div class="view-toggle" role="group" aria-label="View style" data-i18n-attr="aria-label:viewStyle">
-            <button type="button" id="card-view" class="view-button active" data-view-mode="cards" aria-label="Card view" title="Card view" data-i18n-attr="aria-label:cardView,title:cardView">
+          <div class="topbar-search-group">
+            <label class="search">
+              <input id="search-input" type="search" autocomplete="off" data-i18n-attr="aria-label:search,placeholder:searchPlaceholder">
+            </label>
+            <button class="ai-panel-toggle" type="button" id="ai-panel-open" aria-label="Open AI assistant" title="Open AI assistant" data-i18n-attr="aria-label:openGlobalAi,title:openGlobalAi">
               <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
-                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
-                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
-                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
-              </svg>
-            </button>
-            <button type="button" id="list-view" class="view-button" data-view-mode="list" aria-label="List view" title="List view" data-i18n-attr="aria-label:listView,title:listView">
-              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M8 6h13"></path>
-                <path d="M8 12h13"></path>
-                <path d="M8 18h13"></path>
-                <path d="M3 6h.01"></path>
-                <path d="M3 12h.01"></path>
-                <path d="M3 18h.01"></path>
+                <path d="M12 3l1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7L12 3Z"></path>
+                <path d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14Z"></path>
+                <path d="M5 13l.8 1.8L8 16l-2.2.8L5 19l-.8-2.2L2 16l2.2-1.2L5 13Z"></path>
               </svg>
             </button>
           </div>
-          <button class="magic-button" type="button" id="lucky-button" aria-label="I'm feeling lucky" title="I'm feeling lucky" data-i18n-attr="aria-label:feelingLucky,title:feelingLucky">
-            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m15 4 5 5"></path>
-              <path d="m14 5 5 5-9 9H5v-5l9-9Z"></path>
-              <path d="M6 3v4"></path>
-              <path d="M4 5h4"></path>
-              <path d="M19 14v4"></path>
-              <path d="M17 16h4"></path>
-            </svg>
-          </button>
-          <label class="search">
-            <input id="search-input" type="search" autocomplete="off" data-i18n-attr="aria-label:search,placeholder:searchPlaceholder">
-          </label>
-          <button class="ai-panel-toggle" type="button" id="ai-panel-open" aria-label="Open AI assistant" title="Open AI assistant" data-i18n-attr="aria-label:openGlobalAi,title:openGlobalAi">
-            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 3l1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7L12 3Z"></path>
-              <path d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14Z"></path>
-              <path d="M5 13l.8 1.8L8 16l-2.2.8L5 19l-.8-2.2L2 16l2.2-1.2L5 13Z"></path>
-            </svg>
-          </button>
         </div>
       </header>
 

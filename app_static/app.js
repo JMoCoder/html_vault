@@ -37,7 +37,7 @@ const i18n = {
     aiAssistantPlaceholder: "AI response placeholder. No request was sent.",
     aiPanelComingSoon: "Conversation and note generation are in development.",
     aiChatPlaceholder: "Ask about the current notes or request a new HTML note...",
-    generateHtmlNote: "Generate HTML note",
+    generateHtmlNote: "Generate note",
     send: "Send",
     settings: "Settings",
     settingsTitle: "Settings",
@@ -134,7 +134,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.14.",
+    aboutVersion: "Current early version: 0.3.15.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -249,7 +249,7 @@ const i18n = {
     aiAssistantPlaceholder: "AI 回复占位。当前未发送任何请求。",
     aiPanelComingSoon: "对话与生成 HTML 笔记功能开发中。",
     aiChatPlaceholder: "围绕当前笔记提问，或要求生成新的 HTML 笔记...",
-    generateHtmlNote: "生成 HTML 笔记",
+    generateHtmlNote: "生成笔记",
     send: "发送",
     settings: "设置",
     settingsTitle: "设置",
@@ -346,7 +346,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.14。",
+    aboutVersion: "当前早期版本：0.3.15。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -461,7 +461,7 @@ const i18n = {
     aiAssistantPlaceholder: "AI 応答のプレースホルダーです。リクエストは送信されていません。",
     aiPanelComingSoon: "会話と HTML ノート生成は開発中です。",
     aiChatPlaceholder: "現在のノートについて質問、または新しい HTML ノート生成を依頼...",
-    generateHtmlNote: "HTML ノートを生成",
+    generateHtmlNote: "ノートを生成",
     send: "送信",
     settings: "設定",
     settingsTitle: "設定",
@@ -558,7 +558,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.14。",
+    aboutVersion: "現在の初期バージョン: 0.3.15。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -694,7 +694,6 @@ const elements = {
   settingsContent: document.querySelector(".settings-content"),
   settingsTabs: document.querySelectorAll("[data-settings-tab]"),
   settingsSections: document.querySelectorAll("[data-settings-section]"),
-  viewButtons: document.querySelectorAll("[data-view-mode]"),
   collectionManagement: document.querySelector("#collection-management"),
   libraryManagement: document.querySelector("#library-management"),
   tagManagement: document.querySelector("#tag-management"),
@@ -728,7 +727,6 @@ const elements = {
   libraryNav: document.querySelector("#library-nav"),
   collectionNav: document.querySelector("#collection-nav"),
   tagNav: document.querySelector("#tag-nav"),
-  workspaceTitle: document.querySelector("#workspace-title"),
   multiFilterToggle: document.querySelector("#multi-filter-toggle"),
   multiFilterPopover: document.querySelector("#multi-filter-popover"),
   multiCollectionOptions: document.querySelector("#multi-collection-options"),
@@ -939,9 +937,8 @@ function sortItems(items) {
 }
 
 function renderGrid() {
-  elements.workspaceTitle.textContent = getWorkspaceTitle();
   const items = filteredItems();
-  elements.contentGrid.classList.toggle("list-view", state.viewMode === "list");
+  elements.contentGrid.classList.remove("list-view");
 
   if (items.length === 0) {
     elements.contentGrid.innerHTML = `<div class="empty-state">${t("noMatches")}</div>`;
@@ -1299,8 +1296,7 @@ function getInitialThemeMode() {
 }
 
 function getInitialViewMode() {
-  const saved = localStorage.getItem("html-vault-view-mode");
-  return saved === "list" ? "list" : "cards";
+  return "cards";
 }
 
 function getInitialSortMode() {
@@ -1674,10 +1670,8 @@ function applyFavoriteFilter() {
 }
 
 function applyViewMode() {
-  elements.contentGrid.classList.toggle("list-view", state.viewMode === "list");
-  elements.viewButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.viewMode === state.viewMode);
-  });
+  state.viewMode = "cards";
+  elements.contentGrid.classList.remove("list-view");
 }
 
 function setThemeMode(mode) {
@@ -1977,10 +1971,8 @@ function restorePreferences(preferences) {
     state.themeMode = preferences.theme;
     localStorage.setItem("html-vault-theme", state.themeMode);
   }
-  if (preferences.viewMode === "cards" || preferences.viewMode === "list") {
-    state.viewMode = preferences.viewMode;
-    localStorage.setItem("html-vault-view-mode", state.viewMode);
-  }
+  state.viewMode = "cards";
+  localStorage.setItem("html-vault-view-mode", state.viewMode);
   state.hideArchived = Boolean(preferences.hideArchived);
   localStorage.setItem("html-vault-hide-archived", String(state.hideArchived));
   state.onlyFavorites = Boolean(preferences.onlyFavorites);
@@ -2182,9 +2174,6 @@ document.addEventListener("click", (event) => {
   if (!state.sortOpen) return;
   if (elements.sortPopover.contains(event.target) || elements.sortToggle.contains(event.target)) return;
   closeSortPopover();
-});
-elements.viewButtons.forEach((button) => {
-  button.addEventListener("click", () => setViewMode(button.dataset.viewMode));
 });
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
 elements.themeModeButtons.forEach((button) => {

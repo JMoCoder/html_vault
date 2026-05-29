@@ -7,6 +7,18 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.15] - 2026-05-29
+
+### Changed
+
+- Removed the workspace title from the top toolbar to avoid wrapping on
+  smaller screens with side panels open.
+- Removed the view-mode toggle and forced the workspace to stay in card view.
+- Top toolbar now groups the five control buttons separately from the
+  search/AI group, allowing the search/AI group to wrap together when narrow.
+- AI panel generation action now reads "Generate note".
+- Package, app, and PWA cache version updated to `0.3.15`.
+
 ## [0.3.14] - 2026-05-29
 
 ### Added
