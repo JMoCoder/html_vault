@@ -133,6 +133,11 @@ textarea {
   background: transparent;
 }
 
+.sidebar:hover .sidebar-resize::before,
+.sidebar:focus-within .sidebar-resize::before {
+  background: var(--line);
+}
+
 .sidebar-resize:hover::before,
 .sidebar-resizing .sidebar-resize::before {
   background: var(--accent);
@@ -255,25 +260,12 @@ textarea {
 
 .sidebar-main:hover,
 .sidebar-main:focus-within {
-  scrollbar-width: thin;
-  scrollbar-color: var(--line) transparent;
+  scrollbar-width: none;
 }
 
 .sidebar-main::-webkit-scrollbar {
   width: 0;
   height: 0;
-}
-
-.sidebar-main:hover::-webkit-scrollbar,
-.sidebar-main:focus-within::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.sidebar-main:hover::-webkit-scrollbar-thumb,
-.sidebar-main:focus-within::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: var(--line);
 }
 
 .sidebar-tools {
@@ -1219,7 +1211,7 @@ textarea {
   color: var(--text);
 }
 
-.reader-share-button {
+.reader-ai-button {
   width: 36px;
   height: 36px;
   flex: 0 0 36px;
@@ -1233,7 +1225,8 @@ textarea {
   cursor: pointer;
 }
 
-.reader-share-button:hover {
+.reader-ai-button:hover,
+.reader-ai-button.active {
   background: var(--accent-dark);
 }
 

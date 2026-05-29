@@ -137,7 +137,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.16.",
+    aboutVersion: "Current early version: 0.3.17.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -211,6 +211,7 @@ const i18n = {
     unfavoriteAction: "Remove favorite",
     archiveAction: "Archive",
     unarchiveAction: "Unarchive",
+    confirmArchive: "Archive this note? Archived notes only appear in the Archived library view until restored.",
     addToAiContext: "Add to Q&A context",
     removeFromAiContext: "Remove from Q&A context",
     item: "Item",
@@ -353,7 +354,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.16。",
+    aboutVersion: "当前早期版本：0.3.17。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -427,6 +428,7 @@ const i18n = {
     unfavoriteAction: "取消收藏",
     archiveAction: "归档",
     unarchiveAction: "取消归档",
+    confirmArchive: "确认归档这篇笔记？归档后只会出现在资料库的“已归档”栏目，取消归档后会回到原集合与标签统计。",
     addToAiContext: "加入知识库问答上下文",
     removeFromAiContext: "从知识库问答上下文移除",
     item: "条目",
@@ -569,7 +571,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.16。",
+    aboutVersion: "現在の初期バージョン: 0.3.17。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -643,6 +645,7 @@ const i18n = {
     unfavoriteAction: "お気に入り解除",
     archiveAction: "アーカイブ",
     unarchiveAction: "アーカイブ解除",
+    confirmArchive: "このノートをアーカイブしますか？復元するまで、アーカイブ済みライブラリ表示にのみ表示されます。",
     addToAiContext: "Q&A コンテキストに追加",
     removeFromAiContext: "Q&A コンテキストから削除",
     item: "項目",
@@ -687,7 +690,6 @@ const state = {
   selectedCollections: new Set(),
   selectedTags: new Set(),
   manualAiContextIds: new Set(),
-  hideArchived: getInitialArchiveFilter(),
   onlyFavorites: getInitialFavoriteFilter(),
   currentReaderItemId: "",
 };
@@ -752,7 +754,6 @@ const elements = {
   sortPopover: document.querySelector("#sort-popover"),
   sortButtons: document.querySelectorAll("[data-sort-mode]"),
   favoriteFilter: document.querySelector("#favorite-filter"),
-  archiveFilter: document.querySelector("#archive-filter"),
   aiPanelOpen: document.querySelector("#ai-panel-open"),
   aiPanel: document.querySelector("#ai-panel"),
   aiPanelClose: document.querySelector("#ai-panel-close"),
@@ -779,7 +780,7 @@ const elements = {
   readerTags: document.querySelector("#reader-tags"),
   readerFavorite: document.querySelector("#reader-favorite"),
   readerArchive: document.querySelector("#reader-archive"),
-  readerAiContext: document.querySelector("#reader-ai-context"),
+  readerAiPanelOpen: document.querySelector("#reader-ai-panel-open"),
   readerOriginal: document.querySelector("#reader-original"),
   readerCopy: document.querySelector("#reader-copy"),
   readerShare: document.querySelector("#reader-share"),
@@ -809,7 +810,6 @@ function renderApp() {
   applyAiPanelState();
   applyTheme();
   applyViewMode();
-  applyArchiveFilter();
   applyFavoriteFilter();
   applyTranslations();
   elements.siteTitle.textContent = state.manifest.site?.title || "HTML Vault";
@@ -846,7 +846,7 @@ function renderCollectionNav() {
     .map((collection) => {
     const active = state.filter.type === "collection" && state.filter.value === collection.name;
     const multiActive = state.selectedCollections.has(collection.name);
-    return navButton(collection.name, collection.count, active || multiActive, () => {
+    return navButton(collection.name, countCollectionItems(collection.name), active || multiActive, () => {
       selectCollection(collection.name);
     });
   });
@@ -859,7 +859,7 @@ function renderTagNav() {
     .map((tag) => {
     const active = state.filter.type === "tag" && state.filter.value === tag.name;
     const multiActive = state.selectedTags.has(tag.name);
-    return navButton(`#${tag.name}`, tag.count, active || multiActive, () => {
+    return navButton(`#${tag.name}`, countTagItems(tag.name), active || multiActive, () => {
       selectTag(tag.name);
     }, "tag-filter");
   });
@@ -878,7 +878,15 @@ function navButton(label, count, active, onClick, extraClass = "") {
 function countLibraryFilter(value) {
   const filter = libraryFilterDefinitions.find((item) => item.value === value);
   if (!filter) return 0;
-  return state.items.filter((item) => filter.test(item) && isVisibleInLibraryFilter(item, value, false)).length;
+  return state.items.filter((item) => filter.test(item) && isVisibleInArchiveScope(item, value)).length;
+}
+
+function countCollectionItems(name) {
+  return state.items.filter((item) => !isArchived(item) && (item.collection || "Inbox") === name).length;
+}
+
+function countTagItems(name) {
+  return state.items.filter((item) => !isArchived(item) && (item.tags || []).includes(name)).length;
 }
 
 function filteredItems() {
@@ -909,7 +917,7 @@ function filteredItems() {
   }
 
   const filterValue = state.filter.type === "library" ? state.filter.value : "";
-  items = items.filter((item) => isVisibleInLibraryFilter(item, filterValue, state.hideArchived));
+  items = items.filter((item) => isVisibleInArchiveScope(item, filterValue));
 
   if (state.onlyFavorites) {
     items = items.filter((item) => isFavorite(item));
@@ -922,9 +930,9 @@ function filteredItems() {
   return sortItems(items);
 }
 
-function isVisibleInLibraryFilter(item, value, hideArchived) {
+function isVisibleInArchiveScope(item, value) {
   if (value === "archived") return isArchived(item);
-  return hideArchived ? !isArchived(item) : true;
+  return !isArchived(item);
 }
 
 function searchableText(item) {
@@ -1253,13 +1261,32 @@ async function shareReaderLink() {
   copyReaderLink();
 }
 
+function openReaderAiPanel() {
+  state.manualAiContextIds.clear();
+  renderGrid();
+  renderAiContext();
+  openAiPanel();
+}
+
+function toggleManualAiContext(id) {
+  if (state.manualAiContextIds.has(id)) {
+    state.manualAiContextIds.delete(id);
+  } else {
+    state.manualAiContextIds.add(id);
+  }
+  renderGrid();
+  const item = getItemById(id);
+  if (item && state.currentReaderItemId === id && !elements.reader.hidden) {
+    renderReaderActions(item);
+  }
+  renderAiContext();
+}
+
 function renderReaderActions(item) {
   const favorite = isFavorite(item);
   const archived = isArchived(item);
-  const inAiContext = state.manualAiContextIds.has(item.id);
   const favoriteLabel = t(favorite ? "unfavoriteAction" : "favoriteAction");
   const archiveLabel = t(archived ? "unarchiveAction" : "archiveAction");
-  const aiContextLabel = t(inAiContext ? "removeFromAiContext" : "addToAiContext");
   elements.readerFavorite.classList.toggle("active", favorite);
   elements.readerFavorite.innerHTML = starIcon(favorite);
   elements.readerFavorite.setAttribute("aria-label", favoriteLabel);
@@ -1268,10 +1295,6 @@ function renderReaderActions(item) {
   elements.readerArchive.innerHTML = archiveIcon();
   elements.readerArchive.setAttribute("aria-label", archiveLabel);
   elements.readerArchive.setAttribute("title", archiveLabel);
-  elements.readerAiContext.classList.toggle("active", inAiContext);
-  elements.readerAiContext.innerHTML = contextToggleIcon(inAiContext);
-  elements.readerAiContext.setAttribute("aria-label", aiContextLabel);
-  elements.readerAiContext.setAttribute("title", aiContextLabel);
 }
 
 function getItemById(id) {
@@ -1304,6 +1327,7 @@ function toggleFavorite(id) {
 function toggleArchive(id) {
   const item = getItemById(id);
   if (!item) return;
+  if (!isArchived(item) && !window.confirm(t("confirmArchive"))) return;
   itemOverride(id).archived = !isArchived(item);
   saveItemState();
   renderAfterItemStateChange(item);
@@ -1311,6 +1335,9 @@ function toggleArchive(id) {
 
 function renderAfterItemStateChange(item) {
   renderLibraryNav();
+  renderCollectionNav();
+  renderTagNav();
+  renderMultiFilterOptions();
   renderManagementLists();
   renderGrid();
   if (!elements.reader.hidden && state.currentReaderItemId === item.id) {
@@ -1441,10 +1468,6 @@ function startSidebarResize(event) {
   window.addEventListener("pointerup", onUp);
 }
 
-function getInitialArchiveFilter() {
-  return localStorage.getItem("html-vault-hide-archived") !== "false";
-}
-
 function getInitialFavoriteFilter() {
   return localStorage.getItem("html-vault-only-favorites") === "true";
 }
@@ -1535,8 +1558,6 @@ function getAiContextLabel() {
   if (state.onlyFavorites) {
     parts.push(t("aiContextFavoritesOnly"));
   }
-
-  parts.push(t(state.hideArchived ? "aiContextArchivedHidden" : "aiContextArchivedShown"));
   return parts.join(" · ");
 }
 
@@ -1567,20 +1588,6 @@ function submitAiMessage(event) {
 
 function markAiGeneratePlaceholder() {
   appendAiMessage("assistant", `${t("generateHtmlNote")}: ${t("aiPanelComingSoon")}`);
-}
-
-function toggleManualAiContext(id) {
-  if (state.manualAiContextIds.has(id)) {
-    state.manualAiContextIds.delete(id);
-  } else {
-    state.manualAiContextIds.add(id);
-  }
-  renderGrid();
-  const item = getItemById(id);
-  if (item && state.currentReaderItemId === id && !elements.reader.hidden) {
-    renderReaderActions(item);
-  }
-  renderAiContext();
 }
 
 function toggleMultiFilterPopover() {
@@ -1644,10 +1651,10 @@ function setTagMatchMode(mode) {
 function renderMultiFilterOptions() {
   elements.multiCollectionOptions.replaceChildren(...(state.manifest.collections || [])
     .filter((collection) => isManagedItemVisible("collections", collection.name))
-    .map((collection) => multiFilterOption("collection", collection.name, collection.count)));
+    .map((collection) => multiFilterOption("collection", collection.name, countCollectionItems(collection.name))));
   elements.multiTagOptions.replaceChildren(...(state.manifest.tags || [])
     .filter((tag) => isManagedItemVisible("tags", tag.name))
-    .map((tag) => multiFilterOption("tag", tag.name, tag.count)));
+    .map((tag) => multiFilterOption("tag", tag.name, countTagItems(tag.name))));
   applyMultiFilterState();
 }
 
@@ -1714,27 +1721,12 @@ function startAiPanelResize(event) {
   window.addEventListener("pointerup", onUp);
 }
 
-function toggleArchiveFilter() {
-  state.hideArchived = !state.hideArchived;
-  localStorage.setItem("html-vault-hide-archived", String(state.hideArchived));
-  applyArchiveFilter();
-  renderGrid();
-  renderAiContext();
-}
-
 function toggleFavoriteFilter() {
   state.onlyFavorites = !state.onlyFavorites;
   localStorage.setItem("html-vault-only-favorites", String(state.onlyFavorites));
   applyFavoriteFilter();
   renderGrid();
   renderAiContext();
-}
-
-function applyArchiveFilter() {
-  elements.archiveFilter.classList.toggle("active", state.hideArchived);
-  const label = t(state.hideArchived ? "showArchived" : "hideArchived");
-  elements.archiveFilter.setAttribute("aria-label", label);
-  elements.archiveFilter.setAttribute("title", label);
 }
 
 function applyFavoriteFilter() {
@@ -1839,7 +1831,10 @@ function renderLibraryManagement() {
 
 function renderManagementList(type, items, container) {
   const actions = renderManagementActions(type);
-  const rows = items.map((item) => renderManagementRow(type, item.name, item.count));
+  const rows = items.map((item) => {
+    const count = type === "collections" ? countCollectionItems(item.name) : type === "tags" ? countTagItems(item.name) : item.count;
+    return renderManagementRow(type, item.name, count);
+  });
   container.replaceChildren(actions, ...rows);
 }
 
@@ -2001,7 +1996,6 @@ function getPreferencePayload() {
     language: state.language,
     theme: state.themeMode,
     viewMode: state.viewMode,
-    hideArchived: state.hideArchived,
     onlyFavorites: state.onlyFavorites,
     aiConfig: state.aiConfig,
     dataConfig: getExportableDataConfig(),
@@ -2048,8 +2042,6 @@ function restorePreferences(preferences) {
   }
   state.viewMode = "cards";
   localStorage.setItem("html-vault-view-mode", state.viewMode);
-  state.hideArchived = Boolean(preferences.hideArchived);
-  localStorage.setItem("html-vault-hide-archived", String(state.hideArchived));
   state.onlyFavorites = Boolean(preferences.onlyFavorites);
   localStorage.setItem("html-vault-only-favorites", String(state.onlyFavorites));
   state.aiConfig = preferences.aiConfig || {};
@@ -2186,7 +2178,6 @@ function applyTranslations() {
   });
   renderFeedback();
   applyNavSectionState();
-  applyArchiveFilter();
   applyFavoriteFilter();
   applyMultiFilterState();
   applySortState();
@@ -2243,7 +2234,6 @@ elements.sortButtons.forEach((button) => {
   button.addEventListener("click", () => setSortMode(button.dataset.sortMode));
 });
 elements.favoriteFilter.addEventListener("click", toggleFavoriteFilter);
-elements.archiveFilter.addEventListener("click", toggleArchiveFilter);
 document.addEventListener("click", (event) => {
   if (!state.multiFilterOpen) return;
   if (elements.multiFilterPopover.contains(event.target) || elements.multiFilterToggle.contains(event.target)) return;
@@ -2284,11 +2274,12 @@ elements.readerFavorite.addEventListener("click", () => {
 elements.readerArchive.addEventListener("click", () => {
   if (state.currentReaderItemId) toggleArchive(state.currentReaderItemId);
 });
-elements.readerAiContext.addEventListener("click", () => {
-  if (state.currentReaderItemId) toggleManualAiContext(state.currentReaderItemId);
+elements.readerShare.addEventListener("click", shareReaderLink);
+elements.readerAiPanelOpen.addEventListener("click", () => {
+  if (state.currentReaderItemId) openReaderAiPanel();
+  else openAiPanel();
 });
 elements.readerCopy.addEventListener("click", copyReaderLink);
-elements.readerShare.addEventListener("click", shareReaderLink);
 elements.importEntries.forEach((button) => {
   button.addEventListener("click", focusImportEntry);
 });

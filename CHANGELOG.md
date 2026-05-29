@@ -7,6 +7,18 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.17] - 2026-05-30
+
+### Changed
+
+- Sidebar scroll indicator now shares the resize rail so the nav labels no
+  longer shift when the sidebar is focused.
+- Archive is now confirm-first, hidden from collections/tags by default, and
+  counted only inside the archived library view while preserving metadata.
+- The top toolbar keeps only favorites in the filter/sort group, and the reader
+  action row now uses a share button plus a direct AI-panel entry.
+- Package, app, and PWA cache version updated to `0.3.17`.
+
 ## [0.3.16] - 2026-05-29
 
 ### Added
