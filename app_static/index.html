@@ -3,7 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f766e">
   <title>HTML Vault</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/html-vault-logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/html-vault-logo.svg">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -79,6 +83,14 @@
               </svg>
             </button>
           </div>
+          <button class="filter-toggle" type="button" id="archive-filter" aria-label="Hide archived items" title="Hide archived items" data-i18n-attr="aria-label:hideArchived,title:hideArchived">
+            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 7h18"></path>
+              <path d="M5 7v12h14V7"></path>
+              <path d="M8 7V4h8v3"></path>
+              <path d="M9 12h6"></path>
+            </svg>
+          </button>
           <button class="magic-button" type="button" id="lucky-button" aria-label="I'm feeling lucky" title="I'm feeling lucky" data-i18n-attr="aria-label:feelingLucky,title:feelingLucky">
             <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="m15 4 5 5"></path>

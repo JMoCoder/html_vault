@@ -18,6 +18,8 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Optional card or horizontal list workspace layout.
 - Reader pane with iframe mode, original-open action, and hash links.
 - Favorite and archive actions on item cards and in the reader.
+- PWA install support through a web app manifest and service worker; the web
+  app is the primary cross-device client instead of a separate desktop app.
 - Sidebar import entry for existing HTML files, plus a separate AI creation
   entry for generated HTML notes.
 - Chinese, English, and Japanese UI language switching for system labels.
@@ -158,6 +160,12 @@ manifest. It does not back up source HTML/YAML files from disk.
 
 WebDAV settings currently save only non-sensitive connection fields. Passwords
 or app tokens should be handled by a future protected Agent Server.
+
+## PWA Support
+
+Build output includes `manifest.webmanifest` and `sw.js`, so supported browsers
+can install HTML Vault as a PWA. The service worker caches the app shell and
+visited content for faster reloads and basic offline access.
 
 ## Planned AI Modules
 

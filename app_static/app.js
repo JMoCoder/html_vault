@@ -117,6 +117,8 @@ const i18n = {
     viewStyle: "View style",
     cardView: "Card view",
     listView: "List view",
+    hideArchived: "Hide archived items",
+    showArchived: "Show archived items",
     search: "Search",
     searchTitle: "Search: {query}",
     searchPlaceholder: "Title, summary, tag, path",
@@ -269,6 +271,8 @@ const i18n = {
     viewStyle: "视图样式",
     cardView: "方块视图",
     listView: "横向条目视图",
+    hideArchived: "排除已归档",
+    showArchived: "显示已归档",
     search: "搜索",
     searchTitle: "搜索：{query}",
     searchPlaceholder: "标题、摘要、标签、路径",
@@ -421,6 +425,8 @@ const i18n = {
     viewStyle: "表示形式",
     cardView: "カード表示",
     listView: "横長リスト表示",
+    hideArchived: "アーカイブ済みを非表示",
+    showArchived: "アーカイブ済みを表示",
     search: "検索",
     searchTitle: "検索: {query}",
     searchPlaceholder: "タイトル、概要、タグ、パス",
@@ -484,6 +490,7 @@ const state = {
   itemState: loadItemState(),
   navConfig: loadNavConfig(),
   viewMode: getInitialViewMode(),
+  hideArchived: getInitialArchiveFilter(),
   currentReaderItemId: "",
 };
 
@@ -535,6 +542,7 @@ const elements = {
   collectionNav: document.querySelector("#collection-nav"),
   tagNav: document.querySelector("#tag-nav"),
   workspaceTitle: document.querySelector("#workspace-title"),
+  archiveFilter: document.querySelector("#archive-filter"),
   luckyButton: document.querySelector("#lucky-button"),
   searchInput: document.querySelector("#search-input"),
   contentGrid: document.querySelector("#content-grid"),
@@ -576,6 +584,7 @@ async function boot() {
 function renderApp() {
   applyTheme();
   applyViewMode();
+  applyArchiveFilter();
   applyTranslations();
   elements.siteTitle.textContent = state.manifest.site?.title || "HTML Vault";
   elements.itemCount.textContent = t("items", { count: state.items.length });
@@ -640,7 +649,7 @@ function navButton(label, count, active, onClick) {
 function countLibraryFilter(value) {
   const filter = libraryFilterDefinitions.find((item) => item.value === value);
   if (!filter) return 0;
-  return state.items.filter((item) => filter.test(item) && isVisibleInLibraryFilter(item, value)).length;
+  return state.items.filter((item) => filter.test(item) && isVisibleInLibraryFilter(item, value, false)).length;
 }
 
 function filteredItems() {
@@ -656,7 +665,8 @@ function filteredItems() {
     items = items.filter((item) => (item.tags || []).includes(state.filter.value));
   }
 
-  items = items.filter((item) => isVisibleInLibraryFilter(item, state.filter.type === "library" ? state.filter.value : ""));
+  const filterValue = state.filter.type === "library" ? state.filter.value : "";
+  items = items.filter((item) => isVisibleInLibraryFilter(item, filterValue, state.hideArchived));
 
   if (query) {
     items = items.filter((item) => searchableText(item).includes(query));
@@ -668,8 +678,9 @@ function filteredItems() {
   return items.sort((a, b) => Number(b.pinned) - Number(a.pinned) || String(b.updated).localeCompare(String(a.updated)));
 }
 
-function isVisibleInLibraryFilter(item, value) {
-  return value === "archived" ? isArchived(item) : !isArchived(item);
+function isVisibleInLibraryFilter(item, value, hideArchived) {
+  if (value === "archived") return isArchived(item);
+  return hideArchived ? !isArchived(item) : true;
 }
 
 function searchableText(item) {
@@ -699,6 +710,7 @@ function renderGrid() {
 function renderCard(item) {
   const card = document.createElement("article");
   card.className = "item-card";
+  const sourceType = item.source_type || "html";
   card.innerHTML = `
     <div class="card-topline">
       <span>${escapeHtml(item.collection || "Inbox")}</span>
@@ -712,7 +724,7 @@ function renderCard(item) {
     <p>${escapeHtml(item.summary || t("noSummary"))}</p>
     <div class="card-tags">${(item.tags || []).slice(0, 4).map((tag) => `<span>#${escapeHtml(tag)}</span>`).join("")}</div>
     <div class="card-footer">
-      <span>${escapeHtml(item.source_type || "html")}</span>
+      <span class="source-type">${escapeHtml(sourceType)}</span>
       <div>
         <button type="button" data-read>${escapeHtml(t("read"))}</button>
         <a href="${encodeURI(item.path)}" target="_blank" rel="noreferrer">${escapeHtml(t("original"))}</a>
@@ -1004,12 +1016,30 @@ function getInitialViewMode() {
   return saved === "list" ? "list" : "cards";
 }
 
+function getInitialArchiveFilter() {
+  return localStorage.getItem("html-vault-hide-archived") === "true";
+}
+
 function setViewMode(mode) {
   if (mode !== "cards" && mode !== "list") return;
   state.viewMode = mode;
   localStorage.setItem("html-vault-view-mode", mode);
   applyViewMode();
   renderGrid();
+}
+
+function toggleArchiveFilter() {
+  state.hideArchived = !state.hideArchived;
+  localStorage.setItem("html-vault-hide-archived", String(state.hideArchived));
+  applyArchiveFilter();
+  renderGrid();
+}
+
+function applyArchiveFilter() {
+  elements.archiveFilter.classList.toggle("active", state.hideArchived);
+  const label = t(state.hideArchived ? "showArchived" : "hideArchived");
+  elements.archiveFilter.setAttribute("aria-label", label);
+  elements.archiveFilter.setAttribute("title", label);
 }
 
 function applyViewMode() {
@@ -1262,6 +1292,7 @@ function getPreferencePayload() {
     language: state.language,
     theme: state.theme,
     viewMode: state.viewMode,
+    hideArchived: state.hideArchived,
     aiConfig: state.aiConfig,
     dataConfig: getExportableDataConfig(),
     navConfig: state.navConfig,
@@ -1309,6 +1340,8 @@ function restorePreferences(preferences) {
     state.viewMode = preferences.viewMode;
     localStorage.setItem("html-vault-view-mode", state.viewMode);
   }
+  state.hideArchived = Boolean(preferences.hideArchived);
+  localStorage.setItem("html-vault-hide-archived", String(state.hideArchived));
   state.aiConfig = preferences.aiConfig || {};
   state.dataConfig = preferences.dataConfig || {};
   state.navConfig = preferences.navConfig || { library: {}, collections: {}, tags: {} };
@@ -1402,6 +1435,15 @@ function archiveIcon() {
   `;
 }
 
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch((error) => {
+      console.warn("Service worker registration failed", error);
+    });
+  });
+}
+
 function t(key, params = {}) {
   const dictionary = i18n[state.language] || i18n.en;
   const fallback = i18n.en[key] || key;
@@ -1424,6 +1466,7 @@ function applyTranslations() {
     });
   });
   renderFeedback();
+  applyArchiveFilter();
 }
 
 function setFeedback(key, params = {}) {
@@ -1457,6 +1500,7 @@ elements.searchInput.addEventListener("input", (event) => {
 });
 elements.brandHome.addEventListener("click", goHome);
 elements.luckyButton.addEventListener("click", openLuckyItem);
+elements.archiveFilter.addEventListener("click", toggleArchiveFilter);
 elements.viewButtons.forEach((button) => {
   button.addEventListener("click", () => setViewMode(button.dataset.viewMode));
 });
@@ -1493,3 +1537,4 @@ document.querySelector("[data-import-entry]").addEventListener("click", focusImp
 window.addEventListener("hashchange", openFromHash);
 
 boot();
+registerServiceWorker();

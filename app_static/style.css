@@ -258,6 +258,7 @@ textarea {
 }
 
 .view-button,
+.filter-toggle,
 .magic-button {
   width: 42px;
   height: 42px;
@@ -290,9 +291,23 @@ textarea {
   color: var(--accent-dark);
 }
 
+.filter-toggle {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--muted);
+}
+
 .magic-button:hover {
   border-color: var(--accent);
   background: var(--status-bg);
+}
+
+.filter-toggle:hover,
+.filter-toggle.active {
+  border-color: var(--accent);
+  background: var(--status-bg);
+  color: var(--accent-dark);
 }
 
 .search {
@@ -382,10 +397,10 @@ textarea {
 }
 
 .item-card {
-  min-height: 238px;
+  min-height: 258px;
   display: grid;
-  grid-template-rows: auto auto 1fr auto auto;
-  gap: 12px;
+  grid-template-rows: 30px 48px 68px 30px 36px;
+  gap: 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 16px;
@@ -394,30 +409,50 @@ textarea {
 }
 
 .content-grid.list-view .item-card {
-  min-height: 0;
-  grid-template-columns: 180px minmax(180px, 1fr) minmax(220px, 1.3fr) auto;
-  grid-template-rows: auto;
-  align-items: center;
+  min-height: 116px;
+  grid-template-columns: minmax(140px, 0.75fr) minmax(220px, 1.05fr) minmax(220px, 1.2fr) minmax(180px, auto);
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "top title summary footer"
+    "top tags summary footer";
+  align-items: stretch;
+  column-gap: 16px;
+  row-gap: 10px;
+  padding: 14px 16px;
+}
+
+.content-grid.list-view .card-topline {
+  grid-area: top;
+  align-content: space-between;
+  align-items: start;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .content-grid.list-view .item-card h3 {
+  grid-area: title;
   font-size: 16px;
 }
 
 .content-grid.list-view .item-card p {
+  grid-area: summary;
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
 }
 
 .content-grid.list-view .card-tags {
+  grid-area: tags;
   justify-content: flex-start;
+  max-height: 56px;
 }
 
 .content-grid.list-view .card-footer {
+  grid-area: footer;
   align-items: end;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .item-card:hover {
@@ -432,6 +467,10 @@ textarea {
   gap: 10px;
   color: var(--muted);
   font-size: 12px;
+}
+
+.card-topline {
+  min-width: 0;
 }
 
 .item-actions {
@@ -471,11 +510,20 @@ textarea {
 
 .item-card h3 {
   font-size: 18px;
+  line-height: 1.35;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .item-card p {
   color: var(--muted);
   line-height: 1.55;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 .card-tags,
@@ -483,6 +531,13 @@ textarea {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  align-content: start;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.card-tags {
+  max-height: 30px;
 }
 
 .card-tags span,
@@ -505,6 +560,13 @@ textarea {
   border-color: var(--line);
   background: var(--panel-soft);
   color: var(--text);
+}
+
+.source-type {
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .reader {
@@ -926,6 +988,8 @@ textarea {
 
   .topbar-tools {
     width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 
   .view-toggle {
@@ -986,9 +1050,16 @@ textarea {
 
   .content-grid.list-view .item-card {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "top"
+      "title"
+      "summary"
+      "tags"
+      "footer";
   }
 
   .content-grid.list-view .card-footer {
     align-items: stretch;
+    flex-direction: row;
   }
 }

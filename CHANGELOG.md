@@ -42,6 +42,10 @@ versioning after the initial public release.
 - Card/list workspace view toggle.
 - Separate data settings group for local backup and restore, automatic backup
   snapshots, WebDAV settings, and JSON exports.
+- PWA manifest and service worker for browser installation and app-shell
+  caching.
+- Toolbar archive filter for excluding archived items from the current result
+  view.
 
 ### Changed
 
@@ -58,3 +62,5 @@ versioning after the initial public release.
 - Logo and sidebar navigation now consistently return from settings or reader
   overlays to the main workspace.
 - Manifest items now include an `archived` metadata flag.
+- Card and list layouts now reserve stable areas for title, summary, tags, and
+  actions so long summaries truncate instead of hiding controls.
