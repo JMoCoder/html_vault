@@ -7,6 +7,18 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.9] - 2026-05-29
+
+### Changed
+
+- Card metadata now stays in the upper-left top row beside the card action
+  icons, while titles start on the next row.
+- List view layout separates action icons, read/original buttons, and date to
+  prevent overlap.
+- The AI panel now slides out from the right edge and uses the same resize
+  highlight behavior as the left sidebar.
+- Package, app, and PWA cache version updated to `0.3.9`.
+
 ## [0.3.8] - 2026-05-29
 
 ### Added

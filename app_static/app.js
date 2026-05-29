@@ -127,7 +127,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.8.",
+    aboutVersion: "Current early version: 0.3.9.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -332,7 +332,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.8。",
+    aboutVersion: "当前早期版本：0.3.9。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -537,7 +537,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.8。",
+    aboutVersion: "現在の初期バージョン: 0.3.9。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -949,6 +949,7 @@ function renderCard(item) {
   const collectionLabel = item.collection || "Inbox";
   card.innerHTML = `
     <div class="card-topline">
+      <span class="source-type">${escapeHtml(collectionLabel)} / ${escapeHtml(sourceLabel)}</span>
       <div class="item-actions">
         ${itemActionButton("favorite", item)}
         ${itemActionButton("archive", item)}
@@ -959,9 +960,8 @@ function renderCard(item) {
     <p>${escapeHtml(item.summary || t("noSummary"))}</p>
     <div class="card-tags">${(item.tags || []).slice(0, 4).map((tag) => `<span>#${escapeHtml(tag)}</span>`).join("")}</div>
     <div class="card-footer">
-      <span class="source-type">${escapeHtml(collectionLabel)} / ${escapeHtml(sourceLabel)}</span>
       <span class="card-date">${escapeHtml(formatDate(item.updated))}</span>
-      <div>
+      <div class="card-links">
         <button type="button" data-read>${escapeHtml(t("read"))}</button>
         <a href="${encodeURI(item.path)}" target="_blank" rel="noreferrer">${escapeHtml(t("original"))}</a>
       </div>
@@ -1338,6 +1338,7 @@ function applySidebarWidth() {
 function startSidebarResize(event) {
   if (state.sidebarCollapsed) return;
   event.preventDefault();
+  elements.body.classList.add("sidebar-resizing");
   const startX = event.clientX;
   const startWidth = state.sidebarWidth;
   const onMove = (moveEvent) => {
@@ -1345,6 +1346,7 @@ function startSidebarResize(event) {
     applySidebarWidth();
   };
   const onUp = () => {
+    elements.body.classList.remove("sidebar-resizing");
     localStorage.setItem("html-vault-sidebar-width", String(state.sidebarWidth));
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("pointerup", onUp);
@@ -1392,7 +1394,8 @@ function toggleAiPanel() {
 
 function applyAiPanelState() {
   state.aiPanelWidth = clampAiPanelWidth(state.aiPanelWidth);
-  elements.aiPanel.hidden = !state.aiPanelOpen;
+  elements.aiPanel.hidden = false;
+  elements.aiPanel.setAttribute("aria-hidden", String(!state.aiPanelOpen));
   elements.aiPanel.style.width = `${state.aiPanelWidth}px`;
   elements.body.style.setProperty("--ai-panel-width", `${state.aiPanelWidth}px`);
   elements.body.classList.toggle("ai-panel-open", state.aiPanelOpen);
@@ -1605,6 +1608,7 @@ function clearMultiFilters(shouldRender = true) {
 
 function startAiPanelResize(event) {
   event.preventDefault();
+  elements.body.classList.add("ai-panel-resizing");
   const startX = event.clientX;
   const startWidth = state.aiPanelWidth;
   const onMove = (moveEvent) => {
@@ -1612,6 +1616,7 @@ function startAiPanelResize(event) {
     applyAiPanelState();
   };
   const onUp = () => {
+    elements.body.classList.remove("ai-panel-resizing");
     localStorage.setItem("html-vault-ai-panel-width", String(state.aiPanelWidth));
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("pointerup", onUp);

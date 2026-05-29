@@ -106,7 +106,8 @@ textarea {
   background: transparent;
 }
 
-.sidebar-resize:hover::before {
+.sidebar-resize:hover::before,
+.sidebar-resizing .sidebar-resize::before {
   background: var(--accent);
 }
 
@@ -614,18 +615,23 @@ textarea {
   border-left: 1px solid var(--line);
   background: var(--panel);
   box-shadow: var(--shadow);
+  transform: translateX(100%);
+  transition: transform 180ms ease;
+  will-change: transform;
+  pointer-events: none;
 }
 
-.ai-panel[hidden] {
-  display: none;
+.ai-panel-open .ai-panel {
+  transform: translateX(0);
+  pointer-events: auto;
 }
 
 .ai-panel-resize {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: -5px;
-  width: 10px;
+  left: 0;
+  width: 1px;
   cursor: col-resize;
 }
 
@@ -634,9 +640,14 @@ textarea {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 4px;
-  width: 1px;
-  background: var(--line);
+  left: -7px;
+  width: 8px;
+  background: transparent;
+}
+
+.ai-panel-resize:hover::before,
+.ai-panel-resizing .ai-panel-resize::before {
+  background: var(--accent);
 }
 
 .ai-panel-header {
@@ -830,10 +841,9 @@ textarea {
 }
 
 .item-card {
-  position: relative;
   min-height: 258px;
   display: grid;
-  grid-template-rows: 48px 68px 30px 38px;
+  grid-template-rows: 30px 48px 68px 30px 38px;
   gap: 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -843,11 +853,12 @@ textarea {
 }
 
 .content-grid.list-view .item-card {
-  min-height: 92px;
-  grid-template-columns: minmax(220px, 1.05fr) minmax(220px, 1.2fr) minmax(220px, auto);
-  grid-template-rows: minmax(28px, auto) 36px;
+  min-height: 112px;
+  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1.25fr) minmax(210px, auto);
+  grid-template-rows: 30px minmax(30px, auto) 30px;
   grid-template-areas:
-    "title summary source"
+    "top summary links"
+    "title summary links"
     "tags summary footer";
   align-items: stretch;
   column-gap: 16px;
@@ -856,10 +867,7 @@ textarea {
 }
 
 .content-grid.list-view .card-topline {
-  position: static;
-  grid-area: footer;
-  justify-self: end;
-  align-self: end;
+  grid-area: top;
 }
 
 .content-grid.list-view .item-card h3 {
@@ -882,25 +890,17 @@ textarea {
 }
 
 .content-grid.list-view .card-footer {
-  display: contents;
-}
-
-.content-grid.list-view .source-type {
-  grid-area: source;
-  justify-self: end;
-  align-self: start;
+  grid-area: footer;
 }
 
 .content-grid.list-view .card-date {
-  grid-area: source;
   justify-self: end;
   align-self: end;
 }
 
-.content-grid.list-view .card-footer div {
-  grid-area: footer;
-  justify-self: end;
-  align-self: end;
+.content-grid.list-view .card-links {
+  grid-area: links;
+  align-self: start;
 }
 
 .item-card:hover {
@@ -917,20 +917,15 @@ textarea {
 }
 
 .card-topline {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   min-width: 0;
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 
 .card-footer {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "source actions"
-    "date actions";
-  align-items: end;
+  grid-template-areas: "date links";
+  align-items: center;
 }
 
 .item-actions {
@@ -1009,7 +1004,7 @@ textarea {
   font-size: 12px;
 }
 
-.card-footer div,
+.card-links,
 .reader-actions {
   display: flex;
   align-items: center;
@@ -1035,8 +1030,9 @@ textarea {
   color: var(--muted);
 }
 
-.card-footer div {
-  grid-area: actions;
+.card-links {
+  grid-area: links;
+  justify-content: flex-end;
 }
 
 .reader {
