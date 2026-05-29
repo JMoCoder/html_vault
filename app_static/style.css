@@ -413,6 +413,17 @@ select {
   padding: 0;
 }
 
+.button-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .reader-heading {
   display: grid;
   gap: 8px;
