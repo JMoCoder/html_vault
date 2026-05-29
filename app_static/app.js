@@ -136,7 +136,6 @@ const elements = {
   libraryNav: document.querySelector("#library-nav"),
   collectionNav: document.querySelector("#collection-nav"),
   tagNav: document.querySelector("#tag-nav"),
-  activeFilterLabel: document.querySelector("#active-filter-label"),
   workspaceTitle: document.querySelector("#workspace-title"),
   searchInput: document.querySelector("#search-input"),
   contentGrid: document.querySelector("#content-grid"),
@@ -271,7 +270,6 @@ function searchableText(item) {
 }
 
 function renderGrid() {
-  elements.activeFilterLabel.textContent = getActiveFilterLabel();
   elements.workspaceTitle.textContent = state.query ? t("searchTitle", { query: state.query }) : t("knowledgeWorkspace");
   const items = filteredItems();
 
@@ -451,20 +449,6 @@ function setFeedback(key, params = {}) {
 
 function renderFeedback() {
   elements.newFeedback.textContent = t(state.feedbackKey, state.feedbackParams).trim();
-}
-
-function getActiveFilterLabel() {
-  if (state.filter.type === "library") {
-    const filter = libraryFilterDefinitions.find((item) => item.value === state.filter.value);
-    return filter ? t(filter.labelKey) : t("allItems");
-  }
-  if (state.filter.type === "collection") {
-    return state.filter.value;
-  }
-  if (state.filter.type === "tag") {
-    return `#${state.filter.value}`;
-  }
-  return t("allItems");
 }
 
 function formatDate(value) {
