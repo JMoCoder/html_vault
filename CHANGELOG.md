@@ -7,6 +7,22 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.8] - 2026-05-29
+
+### Added
+
+- Card actions now include an add-to-Q&A-context button for manually selecting
+  multiple files as the AI context.
+
+### Changed
+
+- Manual AI context selections now override the default page, reader, and
+  filter-derived context labels.
+- The top AI button hides while the AI panel is open, leaving the panel close
+  button as the single close control.
+- Filter and sort buttons now share one toolbar group.
+- Package, app, and PWA cache version updated to `0.3.8`.
+
 ## [0.3.7] - 2026-05-29
 
 ### Changed

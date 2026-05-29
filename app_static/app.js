@@ -26,6 +26,7 @@ const i18n = {
     aiContextSearch: "Search results: {query}",
     aiContextCollections: "Collections: {names}",
     aiContextTags: "Tags ({mode}): {names}",
+    aiContextManualItems: "Selected files: {titles}",
     tagMatchModeAnyLabel: "any",
     tagMatchModeAllLabel: "all",
     aiContextFavoritesOnly: "Favorites only",
@@ -126,7 +127,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.7.",
+    aboutVersion: "Current early version: 0.3.8.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -199,6 +200,8 @@ const i18n = {
     unfavoriteAction: "Remove favorite",
     archiveAction: "Archive",
     unarchiveAction: "Unarchive",
+    addToAiContext: "Add to Q&A context",
+    removeFromAiContext: "Remove from Q&A context",
     item: "Item",
   },
   "zh-CN": {
@@ -228,6 +231,7 @@ const i18n = {
     aiContextSearch: "搜索结果：{query}",
     aiContextCollections: "集合：{names}",
     aiContextTags: "标签（{mode}）：{names}",
+    aiContextManualItems: "指定文件：{titles}",
     tagMatchModeAnyLabel: "任一",
     tagMatchModeAllLabel: "全部",
     aiContextFavoritesOnly: "仅收藏",
@@ -328,7 +332,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.7。",
+    aboutVersion: "当前早期版本：0.3.8。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -401,6 +405,8 @@ const i18n = {
     unfavoriteAction: "取消收藏",
     archiveAction: "归档",
     unarchiveAction: "取消归档",
+    addToAiContext: "加入知识库问答上下文",
+    removeFromAiContext: "从知识库问答上下文移除",
     item: "条目",
   },
   ja: {
@@ -430,6 +436,7 @@ const i18n = {
     aiContextSearch: "検索結果: {query}",
     aiContextCollections: "コレクション: {names}",
     aiContextTags: "タグ（{mode}）: {names}",
+    aiContextManualItems: "選択ファイル: {titles}",
     tagMatchModeAnyLabel: "いずれか",
     tagMatchModeAllLabel: "すべて",
     aiContextFavoritesOnly: "お気に入りのみ",
@@ -530,7 +537,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.7。",
+    aboutVersion: "現在の初期バージョン: 0.3.8。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -603,6 +610,8 @@ const i18n = {
     unfavoriteAction: "お気に入り解除",
     archiveAction: "アーカイブ",
     unarchiveAction: "アーカイブ解除",
+    addToAiContext: "Q&A コンテキストに追加",
+    removeFromAiContext: "Q&A コンテキストから削除",
     item: "項目",
   },
 };
@@ -643,6 +652,7 @@ const state = {
   tagMatchMode: "any",
   selectedCollections: new Set(),
   selectedTags: new Set(),
+  manualAiContextIds: new Set(),
   hideArchived: getInitialArchiveFilter(),
   onlyFavorites: getInitialFavoriteFilter(),
   currentReaderItemId: "",
@@ -942,6 +952,7 @@ function renderCard(item) {
       <div class="item-actions">
         ${itemActionButton("favorite", item)}
         ${itemActionButton("archive", item)}
+        ${itemActionButton("ai-context", item)}
       </div>
     </div>
     <h3>${escapeHtml(item.title)}</h3>
@@ -965,6 +976,10 @@ function renderCard(item) {
     event.stopPropagation();
     toggleArchive(item.id);
   });
+  card.querySelector("[data-item-action='ai-context']").addEventListener("click", (event) => {
+    event.stopPropagation();
+    toggleManualAiContext(item.id);
+  });
   card.addEventListener("dblclick", () => openReader(item));
   return card;
 }
@@ -975,13 +990,17 @@ function getSourceLabel(item) {
 }
 
 function itemActionButton(action, item) {
-  const active = action === "favorite" ? isFavorite(item) : isArchived(item);
-  const label = action === "favorite"
-    ? t(active ? "unfavoriteAction" : "favoriteAction")
-    : t(active ? "unarchiveAction" : "archiveAction");
+  const active = action === "favorite" ? isFavorite(item)
+    : action === "archive" ? isArchived(item)
+      : state.manualAiContextIds.has(item.id);
+  const label = {
+    favorite: t(active ? "unfavoriteAction" : "favoriteAction"),
+    archive: t(active ? "unarchiveAction" : "archiveAction"),
+    "ai-context": t(active ? "removeFromAiContext" : "addToAiContext"),
+  }[action];
   return `
     <button class="item-icon-button${active ? " active" : ""}" type="button" data-item-action="${action}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}">
-      ${action === "favorite" ? starIcon(active) : archiveIcon()}
+      ${action === "favorite" ? starIcon(active) : action === "archive" ? archiveIcon() : plusIcon()}
     </button>
   `;
 }
@@ -1378,6 +1397,7 @@ function applyAiPanelState() {
   elements.body.style.setProperty("--ai-panel-width", `${state.aiPanelWidth}px`);
   elements.body.classList.toggle("ai-panel-open", state.aiPanelOpen);
   elements.aiPanelOpen.classList.toggle("active", state.aiPanelOpen);
+  elements.aiPanelOpen.hidden = state.aiPanelOpen;
   applySidebarWidth();
 }
 
@@ -1387,6 +1407,11 @@ function renderAiContext() {
 }
 
 function getAiContextLabel() {
+  const manualItems = [...state.manualAiContextIds].map(getItemById).filter(Boolean);
+  if (manualItems.length > 0) {
+    return t("aiContextManualItems", { titles: manualItems.map((item) => item.title).join(", ") });
+  }
+
   const parts = [];
   let primaryCollection = "";
   let primaryTag = "";
@@ -1454,6 +1479,16 @@ function submitAiMessage(event) {
 
 function markAiGeneratePlaceholder() {
   appendAiMessage("assistant", `${t("generateHtmlNote")}: ${t("aiPanelComingSoon")}`);
+}
+
+function toggleManualAiContext(id) {
+  if (state.manualAiContextIds.has(id)) {
+    state.manualAiContextIds.delete(id);
+  } else {
+    state.manualAiContextIds.add(id);
+  }
+  renderGrid();
+  renderAiContext();
 }
 
 function toggleMultiFilterPopover() {
@@ -2007,6 +2042,15 @@ function archiveIcon() {
       <path d="M5 7v12h14V7"></path>
       <path d="M8 7V4h8v3"></path>
       <path d="M9 12h6"></path>
+    </svg>
+  `;
+}
+
+function plusIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 5v14"></path>
+      <path d="M5 12h14"></path>
     </svg>
   `;
 }
