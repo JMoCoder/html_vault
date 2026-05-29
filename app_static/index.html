@@ -8,29 +8,37 @@
 </head>
 <body>
   <div class="shell">
-    <aside class="sidebar" aria-label="Vault navigation">
+    <aside class="sidebar" aria-label="Vault navigation" data-i18n-attr="aria-label:sidebarAria">
       <div class="brand">
         <div class="brand-mark">HV</div>
         <div>
           <h1 id="site-title">HTML Vault</h1>
-          <p id="item-count">Loading</p>
+          <p id="item-count"></p>
         </div>
       </div>
 
-      <button class="new-button" type="button" data-focus-new>+ New</button>
+      <div class="language-switcher">
+        <label for="language-select" data-i18n="language"></label>
+        <select id="language-select" aria-label="Language">
+          <option value="en">English</option>
+          <option value="zh-CN">中文</option>
+        </select>
+      </div>
+
+      <button class="new-button" type="button" data-focus-new data-i18n="newButton"></button>
 
       <section class="nav-section">
-        <h2>Library</h2>
+        <h2 data-i18n="library"></h2>
         <div class="nav-list" id="library-nav"></div>
       </section>
 
       <section class="nav-section">
-        <h2>Collections</h2>
+        <h2 data-i18n="collections"></h2>
         <div class="nav-list" id="collection-nav"></div>
       </section>
 
       <section class="nav-section">
-        <h2>Tags</h2>
+        <h2 data-i18n="tags"></h2>
         <div class="tag-list" id="tag-nav"></div>
       </section>
     </aside>
@@ -38,43 +46,43 @@
     <main class="workspace">
       <header class="topbar">
         <div>
-          <p class="eyebrow" id="active-filter-label">All Items</p>
-          <h2 id="workspace-title">Knowledge Workspace</h2>
+          <p class="eyebrow" id="active-filter-label"></p>
+          <h2 id="workspace-title"></h2>
         </div>
         <label class="search">
-          <span>Search</span>
-          <input id="search-input" type="search" autocomplete="off" placeholder="Title, summary, tag, path">
+          <span data-i18n="search"></span>
+          <input id="search-input" type="search" autocomplete="off" data-i18n-attr="placeholder:searchPlaceholder">
         </label>
       </header>
 
       <section class="new-card" id="new-card">
         <div class="new-card-header">
           <div>
-            <p class="eyebrow">New Knowledge Item</p>
-            <h3>Create an HTML note</h3>
+            <p class="eyebrow" data-i18n="newKnowledgeItem"></p>
+            <h3 data-i18n="createHtmlNote"></h3>
           </div>
-          <span class="status-pill" id="agent-status">Static mode</span>
+          <span class="status-pill" id="agent-status"></span>
         </div>
         <form id="new-item-form" class="new-form">
-          <select id="input-type" aria-label="Input type">
-            <option value="auto">Auto</option>
-            <option value="link">Link</option>
-            <option value="file">File</option>
-            <option value="book">Book</option>
-            <option value="topic">Topic</option>
+          <select id="input-type" data-i18n-attr="aria-label:inputType">
+            <option value="auto" data-i18n="inputAuto"></option>
+            <option value="link" data-i18n="inputLink"></option>
+            <option value="file" data-i18n="inputFile"></option>
+            <option value="book" data-i18n="inputBook"></option>
+            <option value="topic" data-i18n="inputTopic"></option>
           </select>
-          <input id="new-item-input" type="text" placeholder="Paste a link, enter a book, or describe a topic">
-          <button type="submit">Create</button>
+          <input id="new-item-input" type="text" data-i18n-attr="placeholder:newItemPlaceholder">
+          <button type="submit" data-i18n="create"></button>
         </form>
-        <p class="new-feedback" id="new-feedback">Connect an Agent Server to create notes from this entry.</p>
+        <p class="new-feedback" id="new-feedback"></p>
       </section>
 
       <section class="content-grid" id="content-grid" aria-live="polite"></section>
     </main>
 
-    <section class="reader" id="reader" aria-label="Reader" hidden>
+    <section class="reader" id="reader" aria-label="Reader" data-i18n-attr="aria-label:readerAria" hidden>
       <div class="reader-header">
-        <button class="icon-button" type="button" id="reader-close" aria-label="Close reader">×</button>
+        <button class="icon-button" type="button" id="reader-close" aria-label="Close reader" data-i18n-attr="aria-label:closeReader">×</button>
         <div class="reader-heading">
           <p class="eyebrow" id="reader-source">Item</p>
           <h2 id="reader-title"></h2>
@@ -82,11 +90,11 @@
           <div class="reader-tags" id="reader-tags"></div>
         </div>
         <div class="reader-actions">
-          <a class="button-link" id="reader-original" target="_blank" rel="noreferrer">Original</a>
-          <button type="button" class="button-link" id="reader-copy">Copy Link</button>
+          <a class="button-link" id="reader-original" target="_blank" rel="noreferrer" data-i18n="original"></a>
+          <button type="button" class="button-link" id="reader-copy" data-i18n="copyLink"></button>
         </div>
       </div>
-      <iframe id="reader-frame" title="HTML knowledge item"></iframe>
+      <iframe id="reader-frame" title="HTML knowledge item" data-i18n-attr="title:readerFrameTitle"></iframe>
     </section>
   </div>
 

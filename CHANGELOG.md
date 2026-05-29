@@ -16,3 +16,16 @@ versioning after the initial public release.
 - Static reader pane with iframe and original-open actions.
 - New knowledge item entry card with optional Agent API handoff.
 - Example content, tests, Docker static image, README, MIT license.
+
+## [0.2.0] - 2026-05-29
+
+### Added
+
+- Extensible frontend i18n dictionary.
+- Language selector for English and Chinese system UI labels.
+- Persistent language preference via `localStorage`.
+
+### Changed
+
+- System UI copy is now rendered from translation keys while user-created
+  content such as item titles, collections, and tags remains unchanged.

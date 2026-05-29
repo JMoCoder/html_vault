@@ -15,6 +15,7 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Card grid with filters for library status, collections, and tags.
 - Reader pane with iframe mode, original-open action, and hash links.
 - Pinned new knowledge item entry with optional Agent Server API handoff.
+- English and Chinese UI language switching for system labels.
 - Static build output that works on GitHub Pages, Cloudflare Pages, Caddy,
   Nginx, NAS, or any static file server.
 - Docker image for quick static hosting.
