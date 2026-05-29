@@ -25,7 +25,9 @@ const i18n = {
     aiContextReader: "Current topic: {title}",
     aiContextSearch: "Search results: {query}",
     aiContextCollections: "Collections: {names}",
-    aiContextTags: "Tags: {names}",
+    aiContextTags: "Tags ({mode}): {names}",
+    tagMatchModeAnyLabel: "any",
+    tagMatchModeAllLabel: "all",
     aiContextFavoritesOnly: "Favorites only",
     aiContextArchivedHidden: "Archived excluded",
     aiContextArchivedShown: "Archived included",
@@ -118,7 +120,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.4.",
+    aboutVersion: "Current early version: 0.3.5.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -143,8 +145,12 @@ const i18n = {
     resultFilters: "Result filters",
     advancedFilters: "Collection and tag filters",
     clearMultiFilters: "Clear",
+    selectAllMultiFilters: "All",
     collectionFilters: "Collections",
     tagFilters: "Tags",
+    tagMatchMode: "Tag match mode",
+    tagMatchAny: "Any",
+    tagMatchAll: "All",
     sort: "Sort",
     sortNewest: "Time: new to old",
     sortOldest: "Time: old to new",
@@ -216,7 +222,9 @@ const i18n = {
     aiContextReader: "当前话题：{title}",
     aiContextSearch: "搜索结果：{query}",
     aiContextCollections: "集合：{names}",
-    aiContextTags: "标签：{names}",
+    aiContextTags: "标签（{mode}）：{names}",
+    tagMatchModeAnyLabel: "任一",
+    tagMatchModeAllLabel: "全部",
     aiContextFavoritesOnly: "仅收藏",
     aiContextArchivedHidden: "已排除归档",
     aiContextArchivedShown: "包含归档",
@@ -309,7 +317,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.4。",
+    aboutVersion: "当前早期版本：0.3.5。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -334,8 +342,12 @@ const i18n = {
     resultFilters: "结果筛选",
     advancedFilters: "集合与标签筛选",
     clearMultiFilters: "清空",
+    selectAllMultiFilters: "全选",
     collectionFilters: "集合",
     tagFilters: "标签",
+    tagMatchMode: "标签匹配模式",
+    tagMatchAny: "任一",
+    tagMatchAll: "全部",
     sort: "排序",
     sortNewest: "时间：新到旧",
     sortOldest: "时间：旧到新",
@@ -407,7 +419,9 @@ const i18n = {
     aiContextReader: "現在のトピック: {title}",
     aiContextSearch: "検索結果: {query}",
     aiContextCollections: "コレクション: {names}",
-    aiContextTags: "タグ: {names}",
+    aiContextTags: "タグ（{mode}）: {names}",
+    tagMatchModeAnyLabel: "いずれか",
+    tagMatchModeAllLabel: "すべて",
     aiContextFavoritesOnly: "お気に入りのみ",
     aiContextArchivedHidden: "アーカイブを除外",
     aiContextArchivedShown: "アーカイブを含む",
@@ -500,7 +514,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.4。",
+    aboutVersion: "現在の初期バージョン: 0.3.5。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -525,8 +539,12 @@ const i18n = {
     resultFilters: "結果フィルター",
     advancedFilters: "コレクションとタグフィルター",
     clearMultiFilters: "クリア",
+    selectAllMultiFilters: "全選択",
     collectionFilters: "コレクション",
     tagFilters: "タグ",
+    tagMatchMode: "タグ一致モード",
+    tagMatchAny: "いずれか",
+    tagMatchAll: "すべて",
     sort: "並び替え",
     sortNewest: "時間: 新しい順",
     sortOldest: "時間: 古い順",
@@ -608,6 +626,7 @@ const state = {
   multiFilterOpen: false,
   sortOpen: false,
   sortMode: getInitialSortMode(),
+  tagMatchMode: "any",
   selectedCollections: new Set(),
   selectedTags: new Set(),
   hideArchived: getInitialArchiveFilter(),
@@ -669,8 +688,10 @@ const elements = {
   multiFilterToggle: document.querySelector("#multi-filter-toggle"),
   multiFilterPopover: document.querySelector("#multi-filter-popover"),
   clearMultiFilters: document.querySelector("#clear-multi-filters"),
+  selectAllMultiFilters: document.querySelector("#select-all-multi-filters"),
   multiCollectionOptions: document.querySelector("#multi-collection-options"),
   multiTagOptions: document.querySelector("#multi-tag-options"),
+  tagMatchButtons: document.querySelectorAll("[data-tag-match-mode]"),
   sortToggle: document.querySelector("#sort-toggle"),
   sortPopover: document.querySelector("#sort-popover"),
   sortButtons: document.querySelectorAll("[data-sort-mode]"),
@@ -821,6 +842,9 @@ function filteredItems() {
   if (state.selectedTags.size > 0) {
     items = items.filter((item) => {
       const tags = item.tags || [];
+      if (state.tagMatchMode === "all") {
+        return [...state.selectedTags].every((tag) => tags.includes(tag));
+      }
       return tags.some((tag) => state.selectedTags.has(tag));
     });
   }
@@ -988,12 +1012,14 @@ function goHome() {
   state.filter = { type: "library", value: "all" };
   state.query = "";
   elements.searchInput.value = "";
+  clearMultiFilters(false);
   returnToWorkspace();
   renderApp();
 }
 
 function selectLibraryFilter(value) {
   state.filter = { type: "library", value };
+  clearMultiFilters(false);
   returnToWorkspace();
   renderApp();
 }
@@ -1372,7 +1398,8 @@ function getAiContextLabel() {
 
   const extraTags = [...state.selectedTags].filter((name) => name !== primaryTag);
   if (extraTags.length > 0) {
-    parts.push(t("aiContextTags", { names: extraTags.map((tag) => `#${tag}`).join(", ") }));
+    const mode = t(state.tagMatchMode === "all" ? "tagMatchModeAllLabel" : "tagMatchModeAnyLabel");
+    parts.push(t("aiContextTags", { mode, names: extraTags.map((tag) => `#${tag}`).join(", ") }));
   }
 
   if (state.onlyFavorites) {
@@ -1436,6 +1463,9 @@ function applyMultiFilterState() {
   elements.multiFilterPopover.hidden = !state.multiFilterOpen;
   elements.multiFilterToggle.classList.toggle("open", state.multiFilterOpen);
   elements.multiFilterToggle.classList.toggle("active", hasMultiFilters());
+  elements.tagMatchButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.tagMatchMode === state.tagMatchMode);
+  });
 }
 
 function applySortState() {
@@ -1457,6 +1487,14 @@ function setSortMode(mode) {
 
 function hasMultiFilters() {
   return state.selectedCollections.size > 0 || state.selectedTags.size > 0;
+}
+
+function setTagMatchMode(mode) {
+  if (mode !== "any" && mode !== "all") return;
+  state.tagMatchMode = mode;
+  applyMultiFilterState();
+  renderGrid();
+  renderAiContext();
 }
 
 function renderMultiFilterOptions() {
@@ -1502,14 +1540,19 @@ function toggleMultiFilterValue(type, name) {
   renderAiContext();
 }
 
-function clearMultiFilters() {
+function clearMultiFilters(shouldRender = true) {
   state.selectedCollections.clear();
   state.selectedTags.clear();
+  if (!shouldRender) return;
   renderCollectionNav();
   renderTagNav();
   renderMultiFilterOptions();
   renderGrid();
   renderAiContext();
+}
+
+function selectAllMultiFilters() {
+  clearMultiFilters();
 }
 
 function startAiPanelResize(event) {
@@ -2033,6 +2076,10 @@ elements.aiGenerateNote.addEventListener("click", markAiGeneratePlaceholder);
 elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.multiFilterToggle.addEventListener("click", toggleMultiFilterPopover);
 elements.clearMultiFilters.addEventListener("click", clearMultiFilters);
+elements.selectAllMultiFilters.addEventListener("click", selectAllMultiFilters);
+elements.tagMatchButtons.forEach((button) => {
+  button.addEventListener("click", () => setTagMatchMode(button.dataset.tagMatchMode));
+});
 elements.sortToggle.addEventListener("click", toggleSortPopover);
 elements.sortButtons.forEach((button) => {
   button.addEventListener("click", () => setSortMode(button.dataset.sortMode));

@@ -13,7 +13,7 @@ def main() -> None:
     manifest = build_manifest(root / "examples" / "content", root / "examples" / "meta", "Test Vault")
     assert manifest["version"] == 2
     assert manifest["site"]["title"] == "Test Vault"
-    assert len(manifest["items"]) == 3
+    assert len(manifest["items"]) == 4
 
     first = manifest["items"][0]
     assert first["id"] == "generated/2026/05/mcp-security.html"

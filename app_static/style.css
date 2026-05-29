@@ -517,13 +517,34 @@ textarea {
   font-size: 15px;
 }
 
-.multi-filter-header button {
+.multi-filter-header-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.multi-filter-header button,
+.tag-match-mode button {
   min-height: 30px;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--panel-soft);
   color: var(--text);
   cursor: pointer;
+}
+
+.tag-match-mode {
+  display: flex;
+  gap: 6px;
+}
+
+.tag-match-mode button {
+  flex: 1 1 0;
+}
+
+.tag-match-mode button.active {
+  border-color: var(--accent);
+  background: var(--status-bg);
+  color: var(--accent-dark);
 }
 
 .multi-filter-section {

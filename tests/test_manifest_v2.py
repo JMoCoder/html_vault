@@ -13,7 +13,7 @@ def test_manifest_v2_merges_sidecar_metadata() -> None:
 
     assert manifest["version"] == 2
     assert manifest["site"]["title"] == "Test Vault"
-    assert len(manifest["items"]) == 3
+    assert len(manifest["items"]) == 4
 
     item = next(item for item in manifest["items"] if item["id"] == "generated/2026/05/mcp-security.html")
     assert item["title"] == "MCP Server 安全模型"

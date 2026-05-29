@@ -16,7 +16,7 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Sidecar metadata from `meta/items/**/*.yml`.
 - Card grid with filters for library status, collections, and tags.
 - Toolbar multi-select filters for combining collections and tags, with a
-  clear-all action.
+  reset-all action and Any/All tag matching.
 - Toolbar sort menu for newest, oldest, title A-Z, and title Z-A ordering.
 - Optional card or horizontal list workspace layout.
 - Reader pane with iframe mode, original-open action, and hash links.

@@ -7,6 +7,21 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.5] - 2026-05-29
+
+### Added
+
+- Tag multi-select filters now support Any and All match modes.
+- Added an example note with both MCP and Docker tags for combined-tag
+  filtering coverage.
+
+### Changed
+
+- Library navigation clears collection/tag multi-select limits, treating
+  library views as all collections and all tags within that library.
+- The multi-filter "All" action now resets collection/tag limits.
+- Package, app, and PWA cache version updated to `0.3.5`.
+
 ## [0.3.4] - 2026-05-29
 
 ### Added
