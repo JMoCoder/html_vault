@@ -7,6 +7,18 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.21] - 2026-05-30
+
+### Added
+
+- Item cards and the reader now include an edit metadata button before the
+  favorite action.
+- A local metadata editor can update note title, summary, collection, and tags
+  with Save and Cancel controls. The overrides are stored in browser state and
+  are reflected in cards, reader headers, search, filters, counts, sorting, and
+  AI context labels.
+- Package, app, and PWA cache version updated to `0.3.21`.
+
 ## [0.3.20] - 2026-05-30
 
 ### Fixed

@@ -1287,6 +1287,94 @@ a.icon-action {
   border: 0;
 }
 
+.metadata-editor {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.38);
+}
+
+.metadata-editor[hidden] {
+  display: none;
+}
+
+.metadata-dialog {
+  width: min(620px, 100%);
+  max-height: min(720px, calc(100vh - 48px));
+  overflow: auto;
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.metadata-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.metadata-dialog-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.metadata-dialog label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.metadata-dialog input,
+.metadata-dialog textarea {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 11px;
+  background: var(--panel-soft);
+  color: var(--text);
+}
+
+.metadata-dialog input {
+  height: 40px;
+}
+
+.metadata-dialog textarea {
+  min-height: 112px;
+  resize: vertical;
+  padding: 10px 11px;
+  line-height: 1.5;
+}
+
+.metadata-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.metadata-actions button {
+  min-height: 38px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 0 14px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  cursor: pointer;
+}
+
+.metadata-actions .secondary-button {
+  border-color: var(--line);
+  background: var(--panel-soft);
+  color: var(--text);
+}
+
 .settings-page {
   position: fixed;
   inset: 0 0 0 var(--sidebar-width);

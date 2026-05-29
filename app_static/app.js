@@ -138,7 +138,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.20.",
+    aboutVersion: "Current early version: 0.3.21.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -208,6 +208,17 @@ const i18n = {
     copyLink: "Copy Link",
     copied: "Copied",
     shareAction: "Share",
+    editMetadata: "Edit metadata",
+    metadataEditor: "Edit note metadata",
+    metadataTitle: "Title",
+    metadataSummary: "Summary",
+    metadataCollection: "Collection",
+    metadataTags: "Tags",
+    metadataTagsPlaceholder: "Comma-separated tags",
+    metadataStorageNote: "Changes are saved as local browser metadata overrides and do not rewrite the source HTML or YAML files.",
+    save: "Save",
+    cancel: "Cancel",
+    metadataSaved: "Metadata saved.",
     favoriteAction: "Favorite",
     unfavoriteAction: "Remove favorite",
     archiveAction: "Archive",
@@ -356,7 +367,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.20。",
+    aboutVersion: "当前早期版本：0.3.21。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -426,6 +437,17 @@ const i18n = {
     copyLink: "复制链接",
     copied: "已复制",
     shareAction: "分享",
+    editMetadata: "编辑元信息",
+    metadataEditor: "编辑笔记元信息",
+    metadataTitle: "标题",
+    metadataSummary: "摘要",
+    metadataCollection: "集合",
+    metadataTags: "标签",
+    metadataTagsPlaceholder: "用英文逗号分隔多个标签",
+    metadataStorageNote: "修改会作为浏览器本地元信息覆盖保存，不会改写源 HTML 或 YAML 文件。",
+    save: "保存",
+    cancel: "取消",
+    metadataSaved: "元信息已保存。",
     favoriteAction: "收藏",
     unfavoriteAction: "取消收藏",
     archiveAction: "归档",
@@ -574,7 +596,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.20。",
+    aboutVersion: "現在の初期バージョン: 0.3.21。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -644,6 +666,17 @@ const i18n = {
     copyLink: "リンクをコピー",
     copied: "コピー済み",
     shareAction: "共有",
+    editMetadata: "メタデータを編集",
+    metadataEditor: "ノートメタデータを編集",
+    metadataTitle: "タイトル",
+    metadataSummary: "概要",
+    metadataCollection: "コレクション",
+    metadataTags: "タグ",
+    metadataTagsPlaceholder: "カンマ区切りのタグ",
+    metadataStorageNote: "変更はブラウザー内のローカルメタデータ上書きとして保存され、元の HTML/YAML ファイルは書き換えません。",
+    save: "保存",
+    cancel: "キャンセル",
+    metadataSaved: "メタデータを保存しました。",
     favoriteAction: "お気に入り",
     unfavoriteAction: "お気に入り解除",
     archiveAction: "アーカイブ",
@@ -657,7 +690,7 @@ const i18n = {
 
 const libraryFilterDefinitions = [
   { value: "all", labelKey: "allItems", test: () => true },
-  { value: "inbox", labelKey: "inbox", test: (item) => item.collection === "Inbox" },
+  { value: "inbox", labelKey: "inbox", test: (item) => getItemCollection(item) === "Inbox" },
   { value: "recent", labelKey: "recent", test: () => true },
   { value: "favorites", labelKey: "favorites", test: (item) => isFavorite(item) },
   { value: "generated", labelKey: "generated", test: (item) => item.agent?.generated || item.source_type === "topic" },
@@ -694,6 +727,7 @@ const state = {
   manualAiContextIds: new Set(),
   onlyFavorites: getInitialFavoriteFilter(),
   currentReaderItemId: "",
+  editingItemId: "",
 };
 
 const elements = {
@@ -779,6 +813,7 @@ const elements = {
   readerSummary: document.querySelector("#reader-summary"),
   readerSource: document.querySelector("#reader-source"),
   readerTags: document.querySelector("#reader-tags"),
+  readerEdit: document.querySelector("#reader-edit"),
   readerFavorite: document.querySelector("#reader-favorite"),
   readerArchive: document.querySelector("#reader-archive"),
   readerAiPanelOpen: document.querySelector("#reader-ai-panel-open"),
@@ -786,6 +821,14 @@ const elements = {
   readerCopy: document.querySelector("#reader-copy"),
   readerShare: document.querySelector("#reader-share"),
   readerFrame: document.querySelector("#reader-frame"),
+  metadataEditor: document.querySelector("#metadata-editor"),
+  metadataForm: document.querySelector("#metadata-form"),
+  metadataTitle: document.querySelector("#metadata-title"),
+  metadataSummary: document.querySelector("#metadata-summary"),
+  metadataCollection: document.querySelector("#metadata-collection"),
+  metadataTags: document.querySelector("#metadata-tags"),
+  metadataCancel: document.querySelector("#metadata-cancel"),
+  metadataCancelIcon: document.querySelector("#metadata-cancel-icon"),
 };
 
 async function boot() {
@@ -841,7 +884,7 @@ function renderLibraryNav() {
 }
 
 function renderCollectionNav() {
-  const buttons = (state.manifest.collections || [])
+  const buttons = getCollectionOptions()
     .filter((collection) => isManagedItemVisible("collections", collection.name))
     .map((collection) => {
     const active = state.filter.type === "collection" && state.filter.value === collection.name;
@@ -853,7 +896,7 @@ function renderCollectionNav() {
 }
 
 function renderTagNav() {
-  const tags = (state.manifest.tags || [])
+  const tags = getTagOptions()
     .filter((tag) => isManagedItemVisible("tags", tag.name))
     .map((tag) => {
     const active = state.filter.type === "tag" && state.filter.value === tag.name;
@@ -881,11 +924,11 @@ function countLibraryFilter(value) {
 }
 
 function countCollectionItems(name) {
-  return state.items.filter((item) => !isArchived(item) && (item.collection || "Inbox") === name).length;
+  return state.items.filter((item) => !isArchived(item) && getItemCollection(item) === name).length;
 }
 
 function countTagItems(name) {
-  return state.items.filter((item) => !isArchived(item) && (item.tags || []).includes(name)).length;
+  return state.items.filter((item) => !isArchived(item) && getItemTags(item).includes(name)).length;
 }
 
 function filteredItems() {
@@ -896,14 +939,14 @@ function filteredItems() {
     const filter = libraryFilterDefinitions.find((item) => item.value === state.filter.value);
     items = filter ? items.filter(filter.test) : items;
   } else if (state.filter.type === "collection") {
-    items = items.filter((item) => item.collection === state.filter.value);
+    items = items.filter((item) => getItemCollection(item) === state.filter.value);
   } else if (state.filter.type === "tag") {
-    items = items.filter((item) => (item.tags || []).includes(state.filter.value));
+    items = items.filter((item) => getItemTags(item).includes(state.filter.value));
   }
 
   if (state.selectedTags.size > 0) {
     items = items.filter((item) => {
-      const tags = item.tags || [];
+      const tags = getItemTags(item);
       if (state.tagMatchMode === "all") {
         return [...state.selectedTags].every((tag) => tags.includes(tag));
       }
@@ -932,12 +975,12 @@ function isVisibleInArchiveScope(item, value) {
 
 function searchableText(item) {
   return [
-    item.title,
-    item.summary,
+    getItemTitle(item),
+    getItemSummary(item),
     item.path,
-    item.collection,
+    getItemCollection(item),
     item.source_type,
-    ...(item.tags || []),
+    ...getItemTags(item),
   ].filter(Boolean).join(" ").toLowerCase();
 }
 
@@ -945,7 +988,7 @@ function sortItems(items) {
   const sorted = [...items];
   const byNewest = (a, b) => String(b.updated).localeCompare(String(a.updated));
   const byOldest = (a, b) => String(a.updated).localeCompare(String(b.updated));
-  const byTitleAz = (a, b) => String(a.title || "").localeCompare(String(b.title || ""), undefined, { sensitivity: "base" });
+  const byTitleAz = (a, b) => String(getItemTitle(a) || "").localeCompare(String(getItemTitle(b) || ""), undefined, { sensitivity: "base" });
   const byTitleZa = (a, b) => byTitleAz(b, a);
 
   const comparator = {
@@ -985,19 +1028,23 @@ function renderCard(item) {
   const card = document.createElement("article");
   card.className = "item-card";
   const sourceLabel = getSourceLabel(item);
-  const collectionLabel = item.collection || "Inbox";
+  const collectionLabel = getItemCollection(item);
+  const title = getItemTitle(item);
+  const summary = getItemSummary(item);
+  const tags = getItemTags(item);
   card.innerHTML = `
     <div class="card-topline">
       <span class="source-type">${escapeHtml(collectionLabel)} / ${escapeHtml(sourceLabel)}</span>
       <div class="item-actions">
+        ${itemActionButton("edit", item)}
         ${itemActionButton("favorite", item)}
         ${itemActionButton("archive", item)}
         ${itemActionButton("ai-context", item)}
       </div>
     </div>
-    <h3>${escapeHtml(item.title)}</h3>
-    <p>${escapeHtml(item.summary || t("noSummary"))}</p>
-    <div class="card-tags">${(item.tags || []).slice(0, 4).map((tag) => `<span>#${escapeHtml(tag)}</span>`).join("")}</div>
+    <h3>${escapeHtml(title)}</h3>
+    <p>${escapeHtml(summary || t("noSummary"))}</p>
+    <div class="card-tags">${tags.slice(0, 4).map((tag) => `<span>#${escapeHtml(tag)}</span>`).join("")}</div>
     <div class="card-footer">
       <span class="card-date">${escapeHtml(formatDate(item.updated))}</span>
       <div class="card-links">
@@ -1007,6 +1054,10 @@ function renderCard(item) {
     </div>
   `;
   card.querySelector("[data-read]").addEventListener("click", () => openReader(item));
+  card.querySelector("[data-item-action='edit']").addEventListener("click", (event) => {
+    event.stopPropagation();
+    openMetadataEditor(item.id);
+  });
   card.querySelector("[data-item-action='favorite']").addEventListener("click", (event) => {
     event.stopPropagation();
     toggleFavorite(item.id);
@@ -1031,15 +1082,17 @@ function getSourceLabel(item) {
 function itemActionButton(action, item) {
   const active = action === "favorite" ? isFavorite(item)
     : action === "archive" ? isArchived(item)
-      : state.manualAiContextIds.has(item.id);
+      : action === "ai-context" ? state.manualAiContextIds.has(item.id)
+        : false;
   const label = {
+    edit: t("editMetadata"),
     favorite: t(active ? "unfavoriteAction" : "favoriteAction"),
     archive: t(active ? "unarchiveAction" : "archiveAction"),
     "ai-context": t(active ? "removeFromAiContext" : "addToAiContext"),
   }[action];
   return `
     <button class="item-icon-button${active ? " active" : ""}" type="button" data-item-action="${action}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}">
-      ${action === "favorite" ? starIcon(active) : action === "archive" ? archiveIcon() : contextToggleIcon(active)}
+      ${action === "edit" ? editIcon() : action === "favorite" ? starIcon(active) : action === "archive" ? archiveIcon() : contextToggleIcon(active)}
     </button>
   `;
 }
@@ -1047,19 +1100,23 @@ function itemActionButton(action, item) {
 function openReader(item) {
   state.currentReaderItemId = item.id;
   elements.reader.hidden = false;
-  elements.readerTitle.textContent = item.title;
-  elements.readerSummary.textContent = item.summary || "";
-  elements.readerSource.textContent = `${item.collection || "Inbox"} / ${getSourceLabel(item)}`;
-  elements.readerOriginal.href = item.path;
+  renderReaderMetadata(item);
   elements.readerFrame.src = item.path;
-  elements.readerTags.replaceChildren(...(item.tags || []).map((tag) => {
+  renderReaderActions(item);
+  renderAiContext();
+  window.location.hash = `/${item.id}`;
+}
+
+function renderReaderMetadata(item) {
+  elements.readerTitle.textContent = getItemTitle(item);
+  elements.readerSummary.textContent = getItemSummary(item) || "";
+  elements.readerSource.textContent = `${getItemCollection(item)} / ${getSourceLabel(item)}`;
+  elements.readerOriginal.href = item.path;
+  elements.readerTags.replaceChildren(...getItemTags(item).map((tag) => {
     const span = document.createElement("span");
     span.textContent = `#${tag}`;
     return span;
   }));
-  renderReaderActions(item);
-  renderAiContext();
-  window.location.hash = `/${item.id}`;
 }
 
 function closeReader() {
@@ -1239,8 +1296,8 @@ function copyReaderLink() {
 async function shareReaderLink() {
   const item = getItemById(state.currentReaderItemId);
   const shareData = {
-    title: item?.title || document.title,
-    text: item?.summary || "",
+    title: item ? getItemTitle(item) : document.title,
+    text: item ? getItemSummary(item) : "",
     url: window.location.href,
   };
   if (navigator.share) {
@@ -1280,6 +1337,8 @@ function toggleManualAiContext(id) {
 }
 
 function renderReaderActions(item) {
+  elements.readerEdit.innerHTML = editIcon();
+  setIconButtonLabel(elements.readerEdit, "editMetadata");
   const favorite = isFavorite(item);
   const archived = isArchived(item);
   const favoriteLabel = t(favorite ? "unfavoriteAction" : "favoriteAction");
@@ -1298,6 +1357,64 @@ function renderReaderActions(item) {
 
 function getItemById(id) {
   return state.items.find((item) => item.id === id);
+}
+
+function getItemMetadata(item) {
+  return state.itemState[item.id]?.metadata || {};
+}
+
+function getItemTitle(item) {
+  const title = getItemMetadata(item).title;
+  return typeof title === "string" && title.trim() ? title.trim() : item.title || t("item");
+}
+
+function getItemSummary(item) {
+  const summary = getItemMetadata(item).summary;
+  return typeof summary === "string" ? summary : item.summary || "";
+}
+
+function getItemCollection(item) {
+  const collection = getItemMetadata(item).collection;
+  return typeof collection === "string" && collection.trim() ? collection.trim() : item.collection || "Inbox";
+}
+
+function getItemTags(item) {
+  const tags = getItemMetadata(item).tags;
+  if (Array.isArray(tags)) return normalizeTags(tags);
+  return normalizeTags(item.tags || []);
+}
+
+function normalizeTags(tags) {
+  return [...new Set(tags.map((tag) => String(tag || "").trim().replace(/^#/, "")).filter(Boolean))];
+}
+
+function parseTagInput(value) {
+  return normalizeTags(String(value || "").split(/[,，]/));
+}
+
+function getCollectionOptions() {
+  return mergeManifestAndItemNames("collections", (item) => getItemCollection(item));
+}
+
+function getTagOptions() {
+  return mergeManifestAndItemNames("tags", (item) => getItemTags(item));
+}
+
+function mergeManifestAndItemNames(type, extractor) {
+  const manifestNames = (state.manifest?.[type] || []).map((item) => item.name).filter(Boolean);
+  const names = new Set(manifestNames);
+  const dynamicNames = [];
+  state.items.forEach((item) => {
+    const value = extractor(item);
+    const values = Array.isArray(value) ? value : [value];
+    values.filter(Boolean).forEach((name) => {
+      if (names.has(name)) return;
+      names.add(name);
+      dynamicNames.push(name);
+    });
+  });
+  dynamicNames.sort((a, b) => String(a).localeCompare(String(b), undefined, { sensitivity: "base" }));
+  return [...manifestNames, ...dynamicNames].map((name) => ({ name }));
 }
 
 function itemOverride(id) {
@@ -1332,6 +1449,42 @@ function toggleArchive(id) {
   renderAfterItemStateChange(item);
 }
 
+function openMetadataEditor(id) {
+  const item = getItemById(id);
+  if (!item) return;
+  state.editingItemId = id;
+  elements.metadataTitle.value = getItemTitle(item);
+  elements.metadataSummary.value = getItemSummary(item);
+  elements.metadataCollection.value = getItemCollection(item);
+  elements.metadataTags.value = getItemTags(item).join(", ");
+  elements.metadataEditor.hidden = false;
+  elements.metadataTitle.focus();
+  elements.metadataTitle.select();
+}
+
+function closeMetadataEditor() {
+  state.editingItemId = "";
+  elements.metadataEditor.hidden = true;
+}
+
+function saveMetadataEditor(event) {
+  event.preventDefault();
+  const item = getItemById(state.editingItemId);
+  if (!item) {
+    closeMetadataEditor();
+    return;
+  }
+  itemOverride(item.id).metadata = {
+    title: elements.metadataTitle.value.trim() || item.title || t("item"),
+    summary: elements.metadataSummary.value.trim(),
+    collection: elements.metadataCollection.value.trim() || "Inbox",
+    tags: parseTagInput(elements.metadataTags.value),
+  };
+  saveItemState();
+  closeMetadataEditor();
+  renderAfterItemStateChange(item);
+}
+
 function renderAfterItemStateChange(item) {
   renderLibraryNav();
   renderCollectionNav();
@@ -1340,8 +1493,10 @@ function renderAfterItemStateChange(item) {
   renderManagementLists();
   renderGrid();
   if (!elements.reader.hidden && state.currentReaderItemId === item.id) {
+    renderReaderMetadata(item);
     renderReaderActions(item);
   }
+  renderAiContext();
   maybeAutoBackup();
 }
 
@@ -1520,7 +1675,7 @@ function renderAiContext() {
 function getAiContextLabel() {
   const manualItems = [...state.manualAiContextIds].map(getItemById).filter(Boolean);
   if (manualItems.length > 0) {
-    return t("aiContextManualItems", { titles: manualItems.map((item) => item.title).join(", ") });
+    return t("aiContextManualItems", { titles: manualItems.map((item) => getItemTitle(item)).join(", ") });
   }
 
   const parts = [];
@@ -1528,7 +1683,7 @@ function getAiContextLabel() {
   let primaryTag = "";
   if (!elements.reader.hidden && state.currentReaderItemId) {
     const item = getItemById(state.currentReaderItemId);
-    parts.push(t("aiContextReader", { title: item?.title || t("item") }));
+    parts.push(t("aiContextReader", { title: item ? getItemTitle(item) : t("item") }));
   } else if (state.query.trim()) {
     parts.push(t("aiContextSearch", { query: state.query.trim() }));
   } else if (state.filter.type === "library") {
@@ -1644,7 +1799,7 @@ function setTagMatchMode(mode) {
 }
 
 function renderMultiFilterOptions() {
-  elements.multiTagOptions.replaceChildren(...(state.manifest.tags || [])
+  elements.multiTagOptions.replaceChildren(...getTagOptions()
     .filter((tag) => isManagedItemVisible("tags", tag.name))
     .map((tag) => multiFilterOption(tag.name, countTagItems(tag.name))));
   applyMultiFilterState();
@@ -1822,8 +1977,8 @@ function isManagedItemVisible(type, name) {
 
 function renderManagementLists() {
   renderLibraryManagement();
-  renderManagementList("collections", state.manifest.collections || [], elements.collectionManagement);
-  renderManagementList("tags", state.manifest.tags || [], elements.tagManagement);
+  renderManagementList("collections", getCollectionOptions(), elements.collectionManagement);
+  renderManagementList("tags", getTagOptions(), elements.tagManagement);
 }
 
 function renderLibraryManagement() {
@@ -2154,6 +2309,15 @@ function contextToggleIcon(active) {
   `;
 }
 
+function editIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 20h9"></path>
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"></path>
+    </svg>
+  `;
+}
+
 function copyIcon() {
   return `
     <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -2300,6 +2464,11 @@ document.addEventListener("click", (event) => {
   if (elements.sortPopover.contains(event.target) || elements.sortToggle.contains(event.target)) return;
   closeSortPopover();
 });
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !elements.metadataEditor.hidden) {
+    closeMetadataEditor();
+  }
+});
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
 elements.themeModeButtons.forEach((button) => {
   button.addEventListener("click", () => setThemeMode(button.dataset.themeMode));
@@ -2325,6 +2494,9 @@ elements.exportPreferences.addEventListener("click", exportPreferencesData);
 elements.testProvider.addEventListener("click", testProviderConfig);
 elements.newItemForm.addEventListener("submit", submitNewItem);
 elements.readerClose.addEventListener("click", closeReader);
+elements.readerEdit.addEventListener("click", () => {
+  if (state.currentReaderItemId) openMetadataEditor(state.currentReaderItemId);
+});
 elements.readerFavorite.addEventListener("click", () => {
   if (state.currentReaderItemId) toggleFavorite(state.currentReaderItemId);
 });
@@ -2337,6 +2509,12 @@ elements.readerAiPanelOpen.addEventListener("click", () => {
   else openAiPanel();
 });
 elements.readerCopy.addEventListener("click", copyReaderLink);
+elements.metadataForm.addEventListener("submit", saveMetadataEditor);
+elements.metadataCancel.addEventListener("click", closeMetadataEditor);
+elements.metadataCancelIcon.addEventListener("click", closeMetadataEditor);
+elements.metadataEditor.addEventListener("click", (event) => {
+  if (event.target === elements.metadataEditor) closeMetadataEditor();
+});
 elements.importEntries.forEach((button) => {
   button.addEventListener("click", focusImportEntry);
 });

@@ -190,6 +190,7 @@
           <div class="reader-tags" id="reader-tags"></div>
         </div>
         <div class="reader-actions">
+          <button type="button" class="icon-action" id="reader-edit" aria-label="Edit metadata" title="Edit metadata" data-i18n-attr="aria-label:editMetadata,title:editMetadata"></button>
           <button type="button" class="icon-action" id="reader-favorite" aria-label="Favorite" title="Favorite" data-i18n-attr="aria-label:favoriteAction,title:favoriteAction"></button>
           <button type="button" class="icon-action" id="reader-archive" aria-label="Archive" title="Archive" data-i18n-attr="aria-label:archiveAction,title:archiveAction"></button>
           <button type="button" class="icon-action" id="reader-share" aria-label="Share" title="Share" data-i18n-attr="aria-label:shareAction,title:shareAction">
@@ -541,6 +542,38 @@
         <button type="submit" data-i18n="send"></button>
       </form>
     </aside>
+
+    <section class="metadata-editor" id="metadata-editor" aria-label="Edit note metadata" data-i18n-attr="aria-label:metadataEditor" hidden>
+      <form class="metadata-dialog" id="metadata-form">
+        <div class="metadata-dialog-header">
+          <h2 data-i18n="metadataEditor"></h2>
+          <button class="icon-button" type="button" id="metadata-cancel-icon" aria-label="Cancel" title="Cancel" data-i18n-attr="aria-label:cancel,title:cancel">×</button>
+        </div>
+        <label>
+          <span data-i18n="metadataTitle"></span>
+          <input id="metadata-title" type="text" autocomplete="off">
+        </label>
+        <label>
+          <span data-i18n="metadataSummary"></span>
+          <textarea id="metadata-summary" rows="4"></textarea>
+        </label>
+        <div class="form-grid">
+          <label>
+            <span data-i18n="metadataCollection"></span>
+            <input id="metadata-collection" type="text" autocomplete="off">
+          </label>
+          <label>
+            <span data-i18n="metadataTags"></span>
+            <input id="metadata-tags" type="text" autocomplete="off" data-i18n-attr="placeholder:metadataTagsPlaceholder">
+          </label>
+        </div>
+        <p class="security-note" data-i18n="metadataStorageNote"></p>
+        <div class="metadata-actions">
+          <button type="submit" data-i18n="save"></button>
+          <button type="button" class="secondary-button" id="metadata-cancel" data-i18n="cancel"></button>
+        </div>
+      </form>
+    </section>
   </div>
 
   <script src="app.js" type="module"></script>

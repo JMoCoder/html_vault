@@ -15,17 +15,18 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Manifest v2 item model for HTML knowledge cards.
 - Sidecar metadata from `meta/items/**/*.yml`.
 - Card grid with filters for library status, collections, and tags.
-- Toolbar multi-select filters for combining collections and tags, with a
-  reset-all action and Any/All tag matching.
+- Toolbar tag filters with OR/AND matching.
 - Toolbar sort menu for newest, oldest, title A-Z, and title Z-A ordering.
 - Card metadata uses generated/imported source labels and collection/source
   grouping.
-- Optional card or horizontal list workspace layout.
+- Card-only workspace layout with compact action controls.
 - Reader pane with iframe mode, original-open action, and hash links.
 - Favorite and archive actions on item cards and in the reader.
+- Per-note metadata editing from cards and the reader, saved as local browser
+  overrides for title, summary, collection, and tags.
 - PWA install support through a web app manifest and service worker; the web
   app is the primary cross-device client instead of a separate desktop app.
-- Sidebar import entry for existing HTML files, plus a separate AI creation
+- Topbar import entry for existing HTML files, plus a separate AI creation
   entry for generated HTML notes.
 - Chinese, English, and Japanese UI language switching for system labels.
 - Dark and light mode switching with a compact sidebar icon.
@@ -160,15 +161,16 @@ Library, collection, and tag management live in the settings page. Static mode
 can hide sidebar navigation entries without modifying original metadata.
 Library views are fixed system filters, so only visibility can be changed. Add,
 rename, merge, and delete for collections or tags are structural metadata
-operations and require the future Agent Server or metadata editor to update
-`meta/items/**/*.yml`.
+operations and require the future Agent Server to update `meta/items/**/*.yml`.
+The current per-note metadata editor stores local browser overrides without
+rewriting source files.
 
 ## Local Data Settings
 
 The data settings group covers browser-side backup and restore, WebDAV
 connection placeholders, and JSON export. Static mode can export local UI
-preferences, favorite/archive overrides, visibility settings, and the current
-manifest. It does not back up source HTML/YAML files from disk.
+preferences, favorite/archive and metadata overrides, visibility settings, and
+the current manifest. It does not back up source HTML/YAML files from disk.
 
 WebDAV settings currently save only non-sensitive connection fields. Passwords
 or app tokens should be handled by a future protected Agent Server.
