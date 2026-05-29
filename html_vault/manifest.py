@@ -62,6 +62,7 @@ def build_item(path: Path, content_dir: Path, metadata: MetadataStore) -> dict[s
         "status": sidecar.get("status") or "ready",
         "review_status": sidecar.get("review_status") or default_review_status(source_type),
         "favorite": bool(sidecar.get("favorite", False)),
+        "archived": bool(sidecar.get("archived", False)),
         "pinned": bool(sidecar.get("pinned", False)),
         "created": sidecar.get("created") or updated,
         "updated": sidecar.get("updated") or updated,

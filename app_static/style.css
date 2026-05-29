@@ -47,7 +47,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -244,20 +245,49 @@ select {
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
-  width: min(480px, 100%);
+  width: min(590px, 100%);
 }
 
+.view-toggle {
+  height: 42px;
+  display: flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.view-button,
 .magic-button {
   width: 42px;
   height: 42px;
   flex: 0 0 42px;
   display: grid;
   place-items: center;
+  cursor: pointer;
+}
+
+.view-button {
+  width: 34px;
+  height: 34px;
+  flex-basis: 34px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.view-button.active,
+.view-button:hover {
+  background: var(--panel-soft);
+  color: var(--accent-dark);
+}
+
+.magic-button {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
   color: var(--accent-dark);
-  cursor: pointer;
 }
 
 .magic-button:hover {
@@ -347,6 +377,10 @@ select {
   gap: 14px;
 }
 
+.content-grid.list-view {
+  grid-template-columns: 1fr;
+}
+
 .item-card {
   min-height: 238px;
   display: grid;
@@ -357,6 +391,33 @@ select {
   padding: 16px;
   background: var(--panel);
   box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.content-grid.list-view .item-card {
+  min-height: 0;
+  grid-template-columns: 180px minmax(180px, 1fr) minmax(220px, 1.3fr) auto;
+  grid-template-rows: auto;
+  align-items: center;
+}
+
+.content-grid.list-view .item-card h3 {
+  font-size: 16px;
+}
+
+.content-grid.list-view .item-card p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.content-grid.list-view .card-tags {
+  justify-content: flex-start;
+}
+
+.content-grid.list-view .card-footer {
+  align-items: end;
+  flex-direction: column;
 }
 
 .item-card:hover {
@@ -371,6 +432,41 @@ select {
   gap: 10px;
   color: var(--muted);
   font-size: 12px;
+}
+
+.item-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.item-icon-button,
+.icon-action {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.item-icon-button:hover,
+.icon-action:hover,
+.item-icon-button.active,
+.icon-action.active {
+  border-color: var(--line);
+  background: var(--panel-soft);
+  color: var(--warm);
+}
+
+.item-icon-button .button-icon,
+.icon-action .button-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .item-card h3 {
@@ -401,6 +497,7 @@ select {
 .card-footer div,
 .reader-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
@@ -606,6 +703,17 @@ select {
   gap: 7px;
   color: var(--muted);
   font-size: 13px;
+}
+
+.settings-form .switch-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-form .switch-row input {
+  width: 16px;
+  height: 16px;
 }
 
 .settings-form input,
@@ -820,6 +928,10 @@ select {
     width: 100%;
   }
 
+  .view-toggle {
+    flex: 0 0 auto;
+  }
+
   .new-form {
     grid-template-columns: 1fr;
   }
@@ -870,5 +982,13 @@ select {
 
   .reader-actions {
     grid-column: 2;
+  }
+
+  .content-grid.list-view .item-card {
+    grid-template-columns: 1fr;
+  }
+
+  .content-grid.list-view .card-footer {
+    align-items: stretch;
   }
 }

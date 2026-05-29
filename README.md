@@ -15,7 +15,9 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Manifest v2 item model for HTML knowledge cards.
 - Sidecar metadata from `meta/items/**/*.yml`.
 - Card grid with filters for library status, collections, and tags.
+- Optional card or horizontal list workspace layout.
 - Reader pane with iframe mode, original-open action, and hash links.
+- Favorite and archive actions on item cards and in the reader.
 - Sidebar import entry for existing HTML files, plus a separate AI creation
   entry for generated HTML notes.
 - Chinese, English, and Japanese UI language switching for system labels.
@@ -23,6 +25,8 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Settings page for AI provider configuration, user agreement, project info,
   and update notes.
 - Library, collection, and tag sidebar visibility management.
+- Local backup/restore, WebDAV settings, and data export sections are
+  scaffolded under a separate data settings group.
 - AI knowledge assistant and AI agent sections are scaffolded for future
   database classification, tagging, and multi-turn knowledge conversations.
 - A magic-wand "I'm feeling lucky" button opens a random matching knowledge
@@ -144,6 +148,16 @@ Library views are fixed system filters, so only visibility can be changed. Add,
 rename, merge, and delete for collections or tags are structural metadata
 operations and require the future Agent Server or metadata editor to update
 `meta/items/**/*.yml`.
+
+## Local Data Settings
+
+The data settings group covers browser-side backup and restore, WebDAV
+connection placeholders, and JSON export. Static mode can export local UI
+preferences, favorite/archive overrides, visibility settings, and the current
+manifest. It does not back up source HTML/YAML files from disk.
+
+WebDAV settings currently save only non-sensitive connection fields. Passwords
+or app tokens should be handled by a future protected Agent Server.
 
 ## Planned AI Modules
 

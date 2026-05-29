@@ -59,6 +59,26 @@
           <h2 id="workspace-title"></h2>
         </div>
         <div class="topbar-tools">
+          <div class="view-toggle" role="group" aria-label="View style" data-i18n-attr="aria-label:viewStyle">
+            <button type="button" id="card-view" class="view-button active" data-view-mode="cards" aria-label="Card view" title="Card view" data-i18n-attr="aria-label:cardView,title:cardView">
+              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+              </svg>
+            </button>
+            <button type="button" id="list-view" class="view-button" data-view-mode="list" aria-label="List view" title="List view" data-i18n-attr="aria-label:listView,title:listView">
+              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 6h13"></path>
+                <path d="M8 12h13"></path>
+                <path d="M8 18h13"></path>
+                <path d="M3 6h.01"></path>
+                <path d="M3 12h.01"></path>
+                <path d="M3 18h.01"></path>
+              </svg>
+            </button>
+          </div>
           <button class="magic-button" type="button" id="lucky-button" aria-label="I'm feeling lucky" title="I'm feeling lucky" data-i18n-attr="aria-label:feelingLucky,title:feelingLucky">
             <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="m15 4 5 5"></path>
@@ -109,6 +129,8 @@
           <div class="reader-tags" id="reader-tags"></div>
         </div>
         <div class="reader-actions">
+          <button type="button" class="icon-action" id="reader-favorite" aria-label="Favorite" title="Favorite" data-i18n-attr="aria-label:favoriteAction,title:favoriteAction"></button>
+          <button type="button" class="icon-action" id="reader-archive" aria-label="Archive" title="Archive" data-i18n-attr="aria-label:archiveAction,title:archiveAction"></button>
           <a class="button-link" id="reader-original" target="_blank" rel="noreferrer" data-i18n="original"></a>
           <button type="button" class="button-link" id="reader-copy" data-i18n="copyLink"></button>
         </div>
@@ -135,6 +157,10 @@
           <button type="button" class="settings-tab" data-settings-tab="ai" data-i18n="aiProviders"></button>
           <button type="button" class="settings-tab" data-settings-tab="ai-assistant" data-i18n="aiKnowledgeAssistant"></button>
           <button type="button" class="settings-tab" data-settings-tab="ai-agents" data-i18n="aiAgents"></button>
+          <div class="settings-divider" aria-hidden="true"></div>
+          <button type="button" class="settings-tab" data-settings-tab="backup" data-i18n="localBackupRestore"></button>
+          <button type="button" class="settings-tab" data-settings-tab="webdav" data-i18n="webdavSettings"></button>
+          <button type="button" class="settings-tab" data-settings-tab="export" data-i18n="dataExport"></button>
           <div class="settings-divider" aria-hidden="true"></div>
           <button type="button" class="settings-tab" data-settings-tab="terms" data-i18n="userAgreement"></button>
           <button type="button" class="settings-tab" data-settings-tab="about" data-i18n="aboutProject"></button>
@@ -264,6 +290,68 @@
             <div class="placeholder-panel">
               <strong data-i18n="developmentInProgress"></strong>
               <p data-i18n="aiAgentsPlaceholder"></p>
+            </div>
+          </section>
+
+          <section class="settings-section" data-settings-section="backup">
+            <div class="section-heading">
+              <h3 data-i18n="localBackupRestore"></h3>
+              <p data-i18n="localBackupIntro"></p>
+            </div>
+            <form class="settings-form" id="backup-settings-form">
+              <label class="switch-row">
+                <input id="auto-backup" type="checkbox">
+                <span data-i18n="autoBackup"></span>
+              </label>
+              <p class="security-note" data-i18n="backupScopeNote"></p>
+              <div class="settings-actions">
+                <button type="button" id="create-backup" data-i18n="createBackup"></button>
+                <button type="button" class="secondary-button" id="restore-backup" data-i18n="restoreBackup"></button>
+              </div>
+              <input id="restore-backup-file" type="file" accept="application/json" hidden>
+              <p class="settings-feedback" id="backup-feedback"></p>
+            </form>
+          </section>
+
+          <section class="settings-section" data-settings-section="webdav">
+            <div class="section-heading">
+              <h3 data-i18n="webdavSettings"></h3>
+              <p data-i18n="webdavIntro"></p>
+            </div>
+            <form class="settings-form" id="webdav-settings-form">
+              <label>
+                <span data-i18n="webdavUrl"></span>
+                <input id="webdav-url" type="url" placeholder="https://dav.example.com/html-vault">
+              </label>
+              <label>
+                <span data-i18n="webdavUsername"></span>
+                <input id="webdav-username" type="text" autocomplete="username">
+              </label>
+              <label>
+                <span data-i18n="webdavRemotePath"></span>
+                <input id="webdav-path" type="text" placeholder="/backups/html-vault">
+              </label>
+              <p class="security-note" data-i18n="webdavPasswordNote"></p>
+              <div class="settings-actions">
+                <button type="submit" data-i18n="saveWebdav"></button>
+                <button type="button" class="secondary-button" id="test-webdav" data-i18n="testConnection"></button>
+              </div>
+              <p class="settings-feedback" id="webdav-feedback"></p>
+            </form>
+          </section>
+
+          <section class="settings-section" data-settings-section="export">
+            <div class="section-heading">
+              <h3 data-i18n="dataExport"></h3>
+              <p data-i18n="dataExportIntro"></p>
+            </div>
+            <div class="settings-form">
+              <div class="settings-actions">
+                <button type="button" id="export-manifest" data-i18n="exportManifest"></button>
+                <button type="button" class="secondary-button" id="export-preferences" data-i18n="exportPreferences"></button>
+              </div>
+              <p class="security-note" data-i18n="dataExportNote"></p>
+              <p class="settings-feedback" id="export-feedback"></p>
             </div>
           </section>
 

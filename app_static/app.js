@@ -44,6 +44,29 @@ const i18n = {
     aiAgentsIntro: "Multi-turn AI agents based on knowledge base files.",
     aiAgentsPlaceholder: "This area will host multi-turn conversations over selected library files after Agent Server support is added.",
     developmentInProgress: "Development in progress",
+    localBackupRestore: "Local backup & restore",
+    localBackupIntro: "Back up local browser preferences, view state, favorites, archives, and non-sensitive settings.",
+    autoBackup: "Enable automatic local backup snapshots",
+    backupScopeNote: "Static mode can export browser-side state and the current manifest. Source HTML/YAML files still need filesystem or server-side backup.",
+    createBackup: "Create backup",
+    restoreBackup: "Restore backup",
+    backupCreated: "Backup file created.",
+    backupRestored: "Backup restored. Reloading workspace state.",
+    backupFailed: "Backup file could not be restored.",
+    webdavSettings: "WebDAV",
+    webdavIntro: "Prepare remote backup settings for future Agent Server sync.",
+    webdavUrl: "WebDAV URL",
+    webdavUsername: "Username",
+    webdavRemotePath: "Remote path",
+    webdavPasswordNote: "Password or app token is not saved in this browser. Future sync should hand credentials to Agent Server over a protected connection.",
+    saveWebdav: "Save WebDAV settings",
+    webdavSaved: "Saved non-sensitive WebDAV settings.",
+    dataExport: "Data export",
+    dataExportIntro: "Export manifest data or browser preferences for inspection and migration.",
+    exportManifest: "Export manifest",
+    exportPreferences: "Export preferences",
+    dataExportNote: "Exports are downloaded as JSON files. They do not include API keys.",
+    exportCreated: "Export file created.",
     userAgreement: "User agreement",
     aboutProject: "About project",
     updateDocs: "Update docs",
@@ -88,8 +111,12 @@ const i18n = {
     generated: "Generated",
     imported: "Imported",
     needsReview: "Needs Review",
+    archived: "Archived",
     knowledgeWorkspace: "Knowledge Workspace",
     feelingLucky: "I'm feeling lucky",
+    viewStyle: "View style",
+    cardView: "Card view",
+    listView: "List view",
     search: "Search",
     searchTitle: "Search: {query}",
     searchPlaceholder: "Title, summary, tag, path",
@@ -118,6 +145,10 @@ const i18n = {
     original: "Original",
     copyLink: "Copy Link",
     copied: "Copied",
+    favoriteAction: "Favorite",
+    unfavoriteAction: "Remove favorite",
+    archiveAction: "Archive",
+    unarchiveAction: "Unarchive",
     item: "Item",
   },
   "zh-CN": {
@@ -165,6 +196,29 @@ const i18n = {
     aiAgentsIntro: "基于知识库文件进行多轮对话的智能体入口。",
     aiAgentsPlaceholder: "Agent Server 支持完成后，这里将承载围绕选定知识库文件的多轮对话。",
     developmentInProgress: "开发中",
+    localBackupRestore: "本地备份与恢复",
+    localBackupIntro: "备份浏览器本地偏好、视图状态、收藏、归档与非敏感设置。",
+    autoBackup: "启用本地自动备份快照",
+    backupScopeNote: "静态模式可导出浏览器侧状态和当前 Manifest。源 HTML/YAML 文件仍需要通过文件系统或服务端备份。",
+    createBackup: "创建备份",
+    restoreBackup: "恢复备份",
+    backupCreated: "备份文件已创建。",
+    backupRestored: "备份已恢复，工作区状态已重新加载。",
+    backupFailed: "无法恢复该备份文件。",
+    webdavSettings: "WebDAV 设置",
+    webdavIntro: "预留远程备份配置，用于未来 Agent Server 同步。",
+    webdavUrl: "WebDAV 地址",
+    webdavUsername: "用户名",
+    webdavRemotePath: "远程路径",
+    webdavPasswordNote: "密码或应用令牌不会保存在浏览器。未来同步应通过受保护连接交给 Agent Server。",
+    saveWebdav: "保存 WebDAV 设置",
+    webdavSaved: "已保存非敏感 WebDAV 设置。",
+    dataExport: "数据导出",
+    dataExportIntro: "导出 Manifest 数据或浏览器偏好，便于检查与迁移。",
+    exportManifest: "导出 Manifest",
+    exportPreferences: "导出偏好",
+    dataExportNote: "导出文件为 JSON，不包含 API Key。",
+    exportCreated: "导出文件已创建。",
     userAgreement: "用户协议",
     aboutProject: "关于项目",
     updateDocs: "更新文档",
@@ -209,8 +263,12 @@ const i18n = {
     generated: "生成内容",
     imported: "导入内容",
     needsReview: "待审核",
+    archived: "已归档",
     knowledgeWorkspace: "知识工作台",
     feelingLucky: "手气不错",
+    viewStyle: "视图样式",
+    cardView: "方块视图",
+    listView: "横向条目视图",
     search: "搜索",
     searchTitle: "搜索：{query}",
     searchPlaceholder: "标题、摘要、标签、路径",
@@ -239,6 +297,10 @@ const i18n = {
     original: "原文",
     copyLink: "复制链接",
     copied: "已复制",
+    favoriteAction: "收藏",
+    unfavoriteAction: "取消收藏",
+    archiveAction: "归档",
+    unarchiveAction: "取消归档",
     item: "条目",
   },
   ja: {
@@ -286,6 +348,29 @@ const i18n = {
     aiAgentsIntro: "ナレッジベースファイルをもとにした複数ターン会話の入口です。",
     aiAgentsPlaceholder: "Agent Server 対応後、選択したライブラリファイルに基づく複数ターン会話をここに追加します。",
     developmentInProgress: "開発中",
+    localBackupRestore: "ローカルバックアップと復元",
+    localBackupIntro: "ブラウザー内の設定、表示状態、お気に入り、アーカイブ、非機密設定をバックアップします。",
+    autoBackup: "ローカル自動バックアップスナップショットを有効化",
+    backupScopeNote: "静的モードではブラウザー側の状態と現在の Manifest をエクスポートできます。元の HTML/YAML ファイルはファイルシステムまたはサーバー側で別途バックアップしてください。",
+    createBackup: "バックアップを作成",
+    restoreBackup: "バックアップを復元",
+    backupCreated: "バックアップファイルを作成しました。",
+    backupRestored: "バックアップを復元しました。ワークスペース状態を再読み込みしました。",
+    backupFailed: "このバックアップファイルは復元できませんでした。",
+    webdavSettings: "WebDAV 設定",
+    webdavIntro: "将来の Agent Server 同期向けにリモートバックアップ設定を準備します。",
+    webdavUrl: "WebDAV URL",
+    webdavUsername: "ユーザー名",
+    webdavRemotePath: "リモートパス",
+    webdavPasswordNote: "パスワードやアプリトークンはブラウザーに保存しません。将来の同期では保護された接続で Agent Server に渡してください。",
+    saveWebdav: "WebDAV 設定を保存",
+    webdavSaved: "非機密の WebDAV 設定を保存しました。",
+    dataExport: "データエクスポート",
+    dataExportIntro: "Manifest データまたはブラウザー設定を検査や移行用にエクスポートします。",
+    exportManifest: "Manifest をエクスポート",
+    exportPreferences: "設定をエクスポート",
+    dataExportNote: "エクスポートは JSON ファイルとしてダウンロードされます。API Key は含みません。",
+    exportCreated: "エクスポートファイルを作成しました。",
     userAgreement: "利用規約",
     aboutProject: "プロジェクトについて",
     updateDocs: "更新ドキュメント",
@@ -330,8 +415,12 @@ const i18n = {
     generated: "生成済み",
     imported: "インポート済み",
     needsReview: "要確認",
+    archived: "アーカイブ済み",
     knowledgeWorkspace: "ナレッジワークスペース",
     feelingLucky: "おまかせ表示",
+    viewStyle: "表示形式",
+    cardView: "カード表示",
+    listView: "横長リスト表示",
     search: "検索",
     searchTitle: "検索: {query}",
     searchPlaceholder: "タイトル、概要、タグ、パス",
@@ -360,6 +449,10 @@ const i18n = {
     original: "原文",
     copyLink: "リンクをコピー",
     copied: "コピー済み",
+    favoriteAction: "お気に入り",
+    unfavoriteAction: "お気に入り解除",
+    archiveAction: "アーカイブ",
+    unarchiveAction: "アーカイブ解除",
     item: "項目",
   },
 };
@@ -368,10 +461,11 @@ const libraryFilterDefinitions = [
   { value: "all", labelKey: "allItems", test: () => true },
   { value: "inbox", labelKey: "inbox", test: (item) => item.collection === "Inbox" },
   { value: "recent", labelKey: "recent", test: () => true },
-  { value: "favorites", labelKey: "favorites", test: (item) => item.favorite },
+  { value: "favorites", labelKey: "favorites", test: (item) => isFavorite(item) },
   { value: "generated", labelKey: "generated", test: (item) => item.agent?.generated || item.source_type === "topic" },
   { value: "imported", labelKey: "imported", test: (item) => item.source_type === "imported" || item.source_type === "html" },
   { value: "needs-review", labelKey: "needsReview", test: (item) => item.review_status === "unreviewed" },
+  { value: "archived", labelKey: "archived", test: (item) => isArchived(item) },
 ];
 
 const state = {
@@ -386,7 +480,11 @@ const state = {
   feedbackParams: {},
   activeSettingsTab: "library",
   aiConfig: loadAiConfig(),
+  dataConfig: loadDataConfig(),
+  itemState: loadItemState(),
   navConfig: loadNavConfig(),
+  viewMode: getInitialViewMode(),
+  currentReaderItemId: "",
 };
 
 const elements = {
@@ -402,12 +500,28 @@ const elements = {
   settingsContent: document.querySelector(".settings-content"),
   settingsTabs: document.querySelectorAll("[data-settings-tab]"),
   settingsSections: document.querySelectorAll("[data-settings-section]"),
+  viewButtons: document.querySelectorAll("[data-view-mode]"),
   collectionManagement: document.querySelector("#collection-management"),
   libraryManagement: document.querySelector("#library-management"),
   tagManagement: document.querySelector("#tag-management"),
   aiSettingsForm: document.querySelector("#ai-settings-form"),
   aiAssistantForm: document.querySelector("#ai-assistant-form"),
   assistantFeedback: document.querySelector("#assistant-feedback"),
+  backupSettingsForm: document.querySelector("#backup-settings-form"),
+  autoBackup: document.querySelector("#auto-backup"),
+  createBackup: document.querySelector("#create-backup"),
+  restoreBackup: document.querySelector("#restore-backup"),
+  restoreBackupFile: document.querySelector("#restore-backup-file"),
+  backupFeedback: document.querySelector("#backup-feedback"),
+  webdavSettingsForm: document.querySelector("#webdav-settings-form"),
+  webdavUrl: document.querySelector("#webdav-url"),
+  webdavUsername: document.querySelector("#webdav-username"),
+  webdavPath: document.querySelector("#webdav-path"),
+  testWebdav: document.querySelector("#test-webdav"),
+  webdavFeedback: document.querySelector("#webdav-feedback"),
+  exportManifest: document.querySelector("#export-manifest"),
+  exportPreferences: document.querySelector("#export-preferences"),
+  exportFeedback: document.querySelector("#export-feedback"),
   aiProvider: document.querySelector("#ai-provider"),
   currentModel: document.querySelector("#current-model"),
   apiBaseUrl: document.querySelector("#api-base-url"),
@@ -436,6 +550,8 @@ const elements = {
   readerSummary: document.querySelector("#reader-summary"),
   readerSource: document.querySelector("#reader-source"),
   readerTags: document.querySelector("#reader-tags"),
+  readerFavorite: document.querySelector("#reader-favorite"),
+  readerArchive: document.querySelector("#reader-archive"),
   readerOriginal: document.querySelector("#reader-original"),
   readerCopy: document.querySelector("#reader-copy"),
   readerFrame: document.querySelector("#reader-frame"),
@@ -459,6 +575,7 @@ async function boot() {
 
 function renderApp() {
   applyTheme();
+  applyViewMode();
   applyTranslations();
   elements.siteTitle.textContent = state.manifest.site?.title || "HTML Vault";
   elements.itemCount.textContent = t("items", { count: state.items.length });
@@ -469,6 +586,7 @@ function renderApp() {
   renderGrid();
   updateAgentStatus();
   renderAiConfig();
+  renderDataConfig();
   renderManagementLists();
 }
 
@@ -522,7 +640,7 @@ function navButton(label, count, active, onClick) {
 function countLibraryFilter(value) {
   const filter = libraryFilterDefinitions.find((item) => item.value === value);
   if (!filter) return 0;
-  return state.items.filter(filter.test).length;
+  return state.items.filter((item) => filter.test(item) && isVisibleInLibraryFilter(item, value)).length;
 }
 
 function filteredItems() {
@@ -538,6 +656,8 @@ function filteredItems() {
     items = items.filter((item) => (item.tags || []).includes(state.filter.value));
   }
 
+  items = items.filter((item) => isVisibleInLibraryFilter(item, state.filter.type === "library" ? state.filter.value : ""));
+
   if (query) {
     items = items.filter((item) => searchableText(item).includes(query));
   }
@@ -546,6 +666,10 @@ function filteredItems() {
     return items.sort((a, b) => String(b.updated).localeCompare(String(a.updated)));
   }
   return items.sort((a, b) => Number(b.pinned) - Number(a.pinned) || String(b.updated).localeCompare(String(a.updated)));
+}
+
+function isVisibleInLibraryFilter(item, value) {
+  return value === "archived" ? isArchived(item) : !isArchived(item);
 }
 
 function searchableText(item) {
@@ -562,6 +686,7 @@ function searchableText(item) {
 function renderGrid() {
   elements.workspaceTitle.textContent = state.query ? t("searchTitle", { query: state.query }) : t("knowledgeWorkspace");
   const items = filteredItems();
+  elements.contentGrid.classList.toggle("list-view", state.viewMode === "list");
 
   if (items.length === 0) {
     elements.contentGrid.innerHTML = `<div class="empty-state">${t("noMatches")}</div>`;
@@ -577,7 +702,11 @@ function renderCard(item) {
   card.innerHTML = `
     <div class="card-topline">
       <span>${escapeHtml(item.collection || "Inbox")}</span>
-      <span>${formatDate(item.updated)}</span>
+      <div class="item-actions">
+        ${itemActionButton("favorite", item)}
+        ${itemActionButton("archive", item)}
+        <span>${formatDate(item.updated)}</span>
+      </div>
     </div>
     <h3>${escapeHtml(item.title)}</h3>
     <p>${escapeHtml(item.summary || t("noSummary"))}</p>
@@ -591,11 +720,32 @@ function renderCard(item) {
     </div>
   `;
   card.querySelector("[data-read]").addEventListener("click", () => openReader(item));
+  card.querySelector("[data-item-action='favorite']").addEventListener("click", (event) => {
+    event.stopPropagation();
+    toggleFavorite(item.id);
+  });
+  card.querySelector("[data-item-action='archive']").addEventListener("click", (event) => {
+    event.stopPropagation();
+    toggleArchive(item.id);
+  });
   card.addEventListener("dblclick", () => openReader(item));
   return card;
 }
 
+function itemActionButton(action, item) {
+  const active = action === "favorite" ? isFavorite(item) : isArchived(item);
+  const label = action === "favorite"
+    ? t(active ? "unfavoriteAction" : "favoriteAction")
+    : t(active ? "unarchiveAction" : "archiveAction");
+  return `
+    <button class="item-icon-button${active ? " active" : ""}" type="button" data-item-action="${action}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}">
+      ${action === "favorite" ? starIcon(active) : archiveIcon()}
+    </button>
+  `;
+}
+
 function openReader(item) {
+  state.currentReaderItemId = item.id;
   elements.reader.hidden = false;
   elements.readerTitle.textContent = item.title;
   elements.readerSummary.textContent = item.summary || "";
@@ -607,10 +757,12 @@ function openReader(item) {
     span.textContent = `#${tag}`;
     return span;
   }));
+  renderReaderActions(item);
   window.location.hash = `/${item.id}`;
 }
 
 function closeReader() {
+  state.currentReaderItemId = "";
   elements.reader.hidden = true;
   elements.readerFrame.removeAttribute("src");
   if (window.location.hash) {
@@ -619,6 +771,7 @@ function closeReader() {
 }
 
 function returnToWorkspace() {
+  state.currentReaderItemId = "";
   elements.reader.hidden = true;
   elements.readerFrame.removeAttribute("src");
   elements.settingsPage.hidden = true;
@@ -766,6 +919,66 @@ function copyReaderLink() {
   }, 1400);
 }
 
+function renderReaderActions(item) {
+  const favorite = isFavorite(item);
+  const archived = isArchived(item);
+  const favoriteLabel = t(favorite ? "unfavoriteAction" : "favoriteAction");
+  const archiveLabel = t(archived ? "unarchiveAction" : "archiveAction");
+  elements.readerFavorite.classList.toggle("active", favorite);
+  elements.readerFavorite.innerHTML = starIcon(favorite);
+  elements.readerFavorite.setAttribute("aria-label", favoriteLabel);
+  elements.readerFavorite.setAttribute("title", favoriteLabel);
+  elements.readerArchive.classList.toggle("active", archived);
+  elements.readerArchive.innerHTML = archiveIcon();
+  elements.readerArchive.setAttribute("aria-label", archiveLabel);
+  elements.readerArchive.setAttribute("title", archiveLabel);
+}
+
+function getItemById(id) {
+  return state.items.find((item) => item.id === id);
+}
+
+function itemOverride(id) {
+  state.itemState[id] ||= {};
+  return state.itemState[id];
+}
+
+function isFavorite(item) {
+  const override = state.itemState[item.id];
+  return typeof override?.favorite === "boolean" ? override.favorite : Boolean(item.favorite);
+}
+
+function isArchived(item) {
+  const override = state.itemState[item.id];
+  return typeof override?.archived === "boolean" ? override.archived : Boolean(item.archived);
+}
+
+function toggleFavorite(id) {
+  const item = getItemById(id);
+  if (!item) return;
+  itemOverride(id).favorite = !isFavorite(item);
+  saveItemState();
+  renderAfterItemStateChange(item);
+}
+
+function toggleArchive(id) {
+  const item = getItemById(id);
+  if (!item) return;
+  itemOverride(id).archived = !isArchived(item);
+  saveItemState();
+  renderAfterItemStateChange(item);
+}
+
+function renderAfterItemStateChange(item) {
+  renderLibraryNav();
+  renderManagementLists();
+  renderGrid();
+  if (!elements.reader.hidden && state.currentReaderItemId === item.id) {
+    renderReaderActions(item);
+  }
+  maybeAutoBackup();
+}
+
 function getInitialLanguage() {
   const saved = localStorage.getItem("html-vault-language");
   if (saved && i18n[saved]) return saved;
@@ -786,6 +999,26 @@ function getInitialTheme() {
   return "light";
 }
 
+function getInitialViewMode() {
+  const saved = localStorage.getItem("html-vault-view-mode");
+  return saved === "list" ? "list" : "cards";
+}
+
+function setViewMode(mode) {
+  if (mode !== "cards" && mode !== "list") return;
+  state.viewMode = mode;
+  localStorage.setItem("html-vault-view-mode", mode);
+  applyViewMode();
+  renderGrid();
+}
+
+function applyViewMode() {
+  elements.contentGrid.classList.toggle("list-view", state.viewMode === "list");
+  elements.viewButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.viewMode === state.viewMode);
+  });
+}
+
 function toggleTheme() {
   state.theme = state.theme === "dark" ? "light" : "dark";
   localStorage.setItem("html-vault-theme", state.theme);
@@ -803,6 +1036,26 @@ function loadAiConfig() {
   } catch {
     return {};
   }
+}
+
+function loadDataConfig() {
+  try {
+    return JSON.parse(localStorage.getItem("html-vault-data-config") || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function loadItemState() {
+  try {
+    return JSON.parse(localStorage.getItem("html-vault-item-state") || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function saveItemState() {
+  localStorage.setItem("html-vault-item-state", JSON.stringify(state.itemState));
 }
 
 function loadNavConfig() {
@@ -950,6 +1203,158 @@ async function saveAiConfig(event) {
   }
 }
 
+function renderDataConfig() {
+  const config = state.dataConfig || {};
+  elements.autoBackup.checked = Boolean(config.autoBackup);
+  elements.webdavUrl.value = config.webdav?.url || "";
+  elements.webdavUsername.value = config.webdav?.username || "";
+  elements.webdavPath.value = config.webdav?.path || "";
+}
+
+function saveDataConfig() {
+  localStorage.setItem("html-vault-data-config", JSON.stringify(state.dataConfig));
+}
+
+function setAutoBackup(enabled) {
+  state.dataConfig.autoBackup = enabled;
+  saveDataConfig();
+  if (enabled) {
+    maybeAutoBackup(true);
+  }
+}
+
+function saveWebdavSettings(event) {
+  event.preventDefault();
+  state.dataConfig.webdav = {
+    url: elements.webdavUrl.value.trim(),
+    username: elements.webdavUsername.value.trim(),
+    path: elements.webdavPath.value.trim(),
+  };
+  saveDataConfig();
+  elements.webdavFeedback.textContent = t("webdavSaved");
+  maybeAutoBackup();
+}
+
+function testWebdavSettings() {
+  elements.webdavFeedback.textContent = state.agentUrl ? t("settingsAgentFailed") : t("settingsNeedsAgent");
+}
+
+function createBackup() {
+  downloadJson(`html-vault-backup-${dateStamp()}.json`, buildBackupPayload());
+  state.dataConfig.lastBackupAt = new Date().toISOString();
+  saveDataConfig();
+  elements.backupFeedback.textContent = t("backupCreated");
+}
+
+function buildBackupPayload() {
+  return {
+    type: "html-vault-backup",
+    version: 1,
+    createdAt: new Date().toISOString(),
+    manifestVersion: state.manifest?.version,
+    preferences: getPreferencePayload(),
+    manifest: state.manifest,
+  };
+}
+
+function getPreferencePayload() {
+  return {
+    language: state.language,
+    theme: state.theme,
+    viewMode: state.viewMode,
+    aiConfig: state.aiConfig,
+    dataConfig: getExportableDataConfig(),
+    navConfig: state.navConfig,
+    itemState: state.itemState,
+  };
+}
+
+function getExportableDataConfig() {
+  const { lastBackupSnapshot, ...config } = state.dataConfig || {};
+  return config;
+}
+
+function restoreBackupFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    try {
+      const backup = JSON.parse(String(reader.result || "{}"));
+      if (backup.type !== "html-vault-backup" || !backup.preferences) {
+        throw new Error("Invalid backup file");
+      }
+      restorePreferences(backup.preferences);
+      elements.backupFeedback.textContent = t("backupRestored");
+      renderApp();
+    } catch (error) {
+      elements.backupFeedback.textContent = t("backupFailed");
+      console.error(error);
+    } finally {
+      elements.restoreBackupFile.value = "";
+    }
+  });
+  reader.readAsText(file);
+}
+
+function restorePreferences(preferences) {
+  if (preferences.language && i18n[preferences.language]) {
+    state.language = preferences.language;
+    localStorage.setItem("html-vault-language", state.language);
+  }
+  if (preferences.theme === "dark" || preferences.theme === "light") {
+    state.theme = preferences.theme;
+    localStorage.setItem("html-vault-theme", state.theme);
+  }
+  if (preferences.viewMode === "cards" || preferences.viewMode === "list") {
+    state.viewMode = preferences.viewMode;
+    localStorage.setItem("html-vault-view-mode", state.viewMode);
+  }
+  state.aiConfig = preferences.aiConfig || {};
+  state.dataConfig = preferences.dataConfig || {};
+  state.navConfig = preferences.navConfig || { library: {}, collections: {}, tags: {} };
+  state.itemState = preferences.itemState || {};
+  localStorage.setItem("html-vault-ai-config", JSON.stringify(state.aiConfig));
+  localStorage.setItem("html-vault-data-config", JSON.stringify(state.dataConfig));
+  localStorage.setItem("html-vault-nav-config", JSON.stringify(state.navConfig));
+  saveItemState();
+}
+
+function maybeAutoBackup(force = false) {
+  if (!state.dataConfig.autoBackup) return;
+  state.dataConfig.lastBackupAt = new Date().toISOString();
+  state.dataConfig.lastBackupSnapshot = buildBackupPayload();
+  saveDataConfig();
+  if (force) {
+    elements.backupFeedback.textContent = t("backupCreated");
+  }
+}
+
+function exportManifestData() {
+  downloadJson(`html-vault-manifest-${dateStamp()}.json`, state.manifest || {});
+  elements.exportFeedback.textContent = t("exportCreated");
+}
+
+function exportPreferencesData() {
+  downloadJson(`html-vault-preferences-${dateStamp()}.json`, getPreferencePayload());
+  elements.exportFeedback.textContent = t("exportCreated");
+}
+
+function downloadJson(filename, payload) {
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+function dateStamp() {
+  return new Date().toISOString().replace(/[:.]/g, "-");
+}
+
 function testProviderConfig() {
   if (!state.agentUrl) {
     elements.settingsFeedback.textContent = t("settingsNeedsAgent");
@@ -976,6 +1381,25 @@ function submitAssistantJob(event) {
   if (window.confirm(t("assistantConfirm"))) {
     elements.assistantFeedback.textContent = t("assistantComingSoon");
   }
+}
+
+function starIcon(filled = false) {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path ${filled ? 'fill="currentColor"' : ""} d="m12 3 2.82 5.72 6.31.92-4.57 4.45 1.08 6.28L12 17.4l-5.64 2.97 1.08-6.28-4.57-4.45 6.31-.92L12 3Z"></path>
+    </svg>
+  `;
+}
+
+function archiveIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 7h18"></path>
+      <path d="M5 7v12h14V7"></path>
+      <path d="M8 7V4h8v3"></path>
+      <path d="M9 12h6"></path>
+    </svg>
+  `;
 }
 
 function t(key, params = {}) {
@@ -1033,6 +1457,9 @@ elements.searchInput.addEventListener("input", (event) => {
 });
 elements.brandHome.addEventListener("click", goHome);
 elements.luckyButton.addEventListener("click", openLuckyItem);
+elements.viewButtons.forEach((button) => {
+  button.addEventListener("click", () => setViewMode(button.dataset.viewMode));
+});
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
 elements.themeToggle.addEventListener("click", toggleTheme);
 elements.settingsOpen.addEventListener("click", toggleSettings);
@@ -1044,9 +1471,23 @@ elements.settingsTabs.forEach((tab) => {
 });
 elements.aiSettingsForm.addEventListener("submit", saveAiConfig);
 elements.aiAssistantForm.addEventListener("submit", submitAssistantJob);
+elements.autoBackup.addEventListener("change", (event) => setAutoBackup(event.target.checked));
+elements.createBackup.addEventListener("click", createBackup);
+elements.restoreBackup.addEventListener("click", () => elements.restoreBackupFile.click());
+elements.restoreBackupFile.addEventListener("change", (event) => restoreBackupFile(event.target.files?.[0]));
+elements.webdavSettingsForm.addEventListener("submit", saveWebdavSettings);
+elements.testWebdav.addEventListener("click", testWebdavSettings);
+elements.exportManifest.addEventListener("click", exportManifestData);
+elements.exportPreferences.addEventListener("click", exportPreferencesData);
 elements.testProvider.addEventListener("click", testProviderConfig);
 elements.newItemForm.addEventListener("submit", submitNewItem);
 elements.readerClose.addEventListener("click", closeReader);
+elements.readerFavorite.addEventListener("click", () => {
+  if (state.currentReaderItemId) toggleFavorite(state.currentReaderItemId);
+});
+elements.readerArchive.addEventListener("click", () => {
+  if (state.currentReaderItemId) toggleArchive(state.currentReaderItemId);
+});
 elements.readerCopy.addEventListener("click", copyReaderLink);
 document.querySelector("[data-import-entry]").addEventListener("click", focusImportEntry);
 window.addEventListener("hashchange", openFromHash);

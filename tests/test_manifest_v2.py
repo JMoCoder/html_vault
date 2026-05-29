@@ -20,6 +20,8 @@ def test_manifest_v2_merges_sidecar_metadata() -> None:
     assert item["collection"] == "AI"
     assert item["source_type"] == "topic"
     assert item["tags"] == ["MCP", "Security", "AI Agent"]
+    assert item["favorite"] is True
+    assert item["archived"] is False
     assert item["pinned"] is True
 
 

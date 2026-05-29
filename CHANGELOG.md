@@ -37,6 +37,11 @@ versioning after the initial public release.
 - AI agents placeholder for future multi-turn conversations over knowledge
   base files.
 - Magic-wand "I'm feeling lucky" action for opening a random matching item.
+- Archived library view for future archive workflows.
+- Favorite and archive icon actions on cards and in the reader.
+- Card/list workspace view toggle.
+- Separate data settings group for local backup and restore, automatic backup
+  snapshots, WebDAV settings, and JSON exports.
 
 ### Changed
 
@@ -52,3 +57,4 @@ versioning after the initial public release.
 - Sidebar import entry is separated from the AI creation entry.
 - Logo and sidebar navigation now consistently return from settings or reader
   overlays to the main workspace.
+- Manifest items now include an `archived` metadata flag.
