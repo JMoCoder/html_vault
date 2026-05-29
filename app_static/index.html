@@ -118,6 +118,13 @@
           <label class="search">
             <input id="search-input" type="search" autocomplete="off" data-i18n-attr="aria-label:search,placeholder:searchPlaceholder">
           </label>
+          <button class="ai-panel-toggle" type="button" id="ai-panel-open" aria-label="Open AI assistant" title="Open AI assistant" data-i18n-attr="aria-label:openGlobalAi,title:openGlobalAi">
+            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3l1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7L12 3Z"></path>
+              <path d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14Z"></path>
+              <path d="M5 13l.8 1.8L8 16l-2.2.8L5 19l-.8-2.2L2 16l2.2-1.2L5 13Z"></path>
+            </svg>
+          </button>
         </div>
       </header>
 
@@ -182,7 +189,6 @@
           <div class="settings-divider" aria-hidden="true"></div>
           <button type="button" class="settings-tab" data-settings-tab="ai" data-i18n="aiProviders"></button>
           <button type="button" class="settings-tab" data-settings-tab="ai-assistant" data-i18n="aiKnowledgeAssistant"></button>
-          <button type="button" class="settings-tab" data-settings-tab="ai-agents" data-i18n="aiAgents"></button>
           <div class="settings-divider" aria-hidden="true"></div>
           <button type="button" class="settings-tab" data-settings-tab="backup" data-i18n="localBackupRestore"></button>
           <button type="button" class="settings-tab" data-settings-tab="webdav" data-i18n="webdavSettings"></button>
@@ -308,17 +314,6 @@
             </form>
           </section>
 
-          <section class="settings-section" data-settings-section="ai-agents">
-            <div class="section-heading">
-              <h3 data-i18n="aiAgents"></h3>
-              <p data-i18n="aiAgentsIntro"></p>
-            </div>
-            <div class="placeholder-panel">
-              <strong data-i18n="developmentInProgress"></strong>
-              <p data-i18n="aiAgentsPlaceholder"></p>
-            </div>
-          </section>
-
           <section class="settings-section" data-settings-section="backup">
             <div class="section-heading">
               <h3 data-i18n="localBackupRestore"></h3>
@@ -418,6 +413,34 @@
         </div>
       </div>
     </section>
+
+    <aside class="ai-panel" id="ai-panel" aria-label="Global AI assistant" data-i18n-attr="aria-label:globalAiPanel" hidden>
+      <div class="ai-panel-resize" id="ai-panel-resize" role="separator" aria-orientation="vertical" aria-label="Resize AI panel" data-i18n-attr="aria-label:resizeAiPanel"></div>
+      <header class="ai-panel-header">
+        <div>
+          <p class="eyebrow" data-i18n="globalAiAssistant"></p>
+          <h2 data-i18n="aiConversation"></h2>
+        </div>
+        <button class="icon-button" type="button" id="ai-panel-close" aria-label="Close AI assistant" data-i18n-attr="aria-label:closeGlobalAi">×</button>
+      </header>
+
+      <div class="ai-context-card">
+        <span data-i18n="aiContext"></span>
+        <strong id="ai-context-label"></strong>
+      </div>
+
+      <div class="ai-chat-log" id="ai-chat-log" aria-live="polite"></div>
+
+      <div class="ai-panel-actions">
+        <button type="button" id="ai-generate-note" data-i18n="generateHtmlNote"></button>
+        <span data-i18n="aiPanelComingSoon"></span>
+      </div>
+
+      <form class="ai-chat-form" id="ai-chat-form">
+        <textarea id="ai-chat-input" rows="4" data-i18n-attr="placeholder:aiChatPlaceholder"></textarea>
+        <button type="submit" data-i18n="send"></button>
+      </form>
+    </aside>
   </div>
 
   <script src="app.js" type="module"></script>

@@ -7,6 +7,22 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.2] - 2026-05-29
+
+### Added
+
+- Global AI assistant button beside search.
+- Resizable right AI sidebar with context labels for all notes, collection,
+  tag, search, and reader states.
+- Placeholder chat and HTML note generation actions for the future Agent
+  Server.
+
+### Changed
+
+- Multi-turn knowledge conversation planning moved out of settings and into
+  the global AI sidebar.
+- Package, app, and PWA cache version updated to `0.3.2`.
+
 ## [0.3.1] - 2026-05-29
 
 ### Changed
@@ -54,8 +70,8 @@ versioning after the initial public release.
 - Library management section for fixed system view visibility.
 - AI knowledge assistant placeholder with operation selection, prompt input,
   and a second confirmation before future database-impacting jobs.
-- AI agents placeholder for future multi-turn conversations over knowledge
-  base files.
+- Global AI sidebar placeholder for future multi-turn conversations over
+  knowledge base files.
 - Magic-wand "I'm feeling lucky" action for opening a random matching item.
 - Archived library view for future archive workflows.
 - Favorite and archive icon actions on cards and in the reader.

@@ -10,6 +10,25 @@ const i18n = {
     expandSidebar: "Expand sidebar",
     language: "Language",
     toggleTheme: "Toggle dark and light mode",
+    openGlobalAi: "Open AI assistant",
+    closeGlobalAi: "Close AI assistant",
+    globalAiPanel: "Global AI assistant",
+    resizeAiPanel: "Resize AI panel",
+    globalAiAssistant: "Global AI",
+    aiConversation: "Knowledge Q&A",
+    aiContext: "Context",
+    aiContextGlobal: "All notes",
+    aiContextCollection: "Collection: {name}",
+    aiContextTag: "Tag: {name}",
+    aiContextReader: "Current topic: {title}",
+    aiContextSearch: "Search results: {query}",
+    aiWelcome: "This AI panel will answer questions against the current workspace context. Connect Agent Server later to enable real responses.",
+    aiUserPlaceholder: "User question",
+    aiAssistantPlaceholder: "AI response placeholder. No request was sent.",
+    aiPanelComingSoon: "Conversation and note generation are in development.",
+    aiChatPlaceholder: "Ask about the current notes or request a new HTML note...",
+    generateHtmlNote: "Generate HTML note",
+    send: "Send",
     settings: "Settings",
     settingsTitle: "Project settings",
     closeSettings: "Close settings",
@@ -42,9 +61,6 @@ const i18n = {
     submitAssistantJob: "Submit AI job",
     assistantConfirm: "This may affect the existing knowledge database. Continue?",
     assistantComingSoon: "Development in progress. No database changes were made.",
-    aiAgents: "AI agents",
-    aiAgentsIntro: "Multi-turn AI agents based on knowledge base files.",
-    aiAgentsPlaceholder: "This area will host multi-turn conversations over selected library files after Agent Server support is added.",
     developmentInProgress: "Development in progress",
     localBackupRestore: "Local backup & restore",
     localBackupIntro: "Back up local browser preferences, view state, favorites, archives, and non-sensitive settings.",
@@ -95,7 +111,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.1.",
+    aboutVersion: "Current early version: 0.3.2.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -169,6 +185,25 @@ const i18n = {
     expandSidebar: "展开侧栏",
     language: "语言",
     toggleTheme: "切换暗色与亮色模式",
+    openGlobalAi: "打开 AI 助理",
+    closeGlobalAi: "关闭 AI 助理",
+    globalAiPanel: "全局 AI 助理",
+    resizeAiPanel: "调整 AI 面板宽度",
+    globalAiAssistant: "全局 AI",
+    aiConversation: "知识库问答",
+    aiContext: "上下文",
+    aiContextGlobal: "全部笔记",
+    aiContextCollection: "集合：{name}",
+    aiContextTag: "标签：{name}",
+    aiContextReader: "当前话题：{title}",
+    aiContextSearch: "搜索结果：{query}",
+    aiWelcome: "这里将针对当前工作区上下文进行 AI 问答。连接 Agent Server 后再启用真实回复。",
+    aiUserPlaceholder: "用户问题",
+    aiAssistantPlaceholder: "AI 回复占位。当前未发送任何请求。",
+    aiPanelComingSoon: "对话与生成 HTML 笔记功能开发中。",
+    aiChatPlaceholder: "围绕当前笔记提问，或要求生成新的 HTML 笔记...",
+    generateHtmlNote: "生成 HTML 笔记",
+    send: "发送",
     settings: "设置",
     settingsTitle: "项目设置",
     closeSettings: "关闭设置",
@@ -201,9 +236,6 @@ const i18n = {
     submitAssistantJob: "提交 AI 任务",
     assistantConfirm: "这可能影响现有知识库数据库。确认继续吗？",
     assistantComingSoon: "开发中，未对数据库做任何修改。",
-    aiAgents: "AI 智能体",
-    aiAgentsIntro: "基于知识库文件进行多轮对话的智能体入口。",
-    aiAgentsPlaceholder: "Agent Server 支持完成后，这里将承载围绕选定知识库文件的多轮对话。",
     developmentInProgress: "开发中",
     localBackupRestore: "本地备份与恢复",
     localBackupIntro: "备份浏览器本地偏好、视图状态、收藏、归档与非敏感设置。",
@@ -254,7 +286,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.1。",
+    aboutVersion: "当前早期版本：0.3.2。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -328,6 +360,25 @@ const i18n = {
     expandSidebar: "サイドバーを展開",
     language: "言語",
     toggleTheme: "ダーク/ライトモードを切り替え",
+    openGlobalAi: "AI アシスタントを開く",
+    closeGlobalAi: "AI アシスタントを閉じる",
+    globalAiPanel: "グローバル AI アシスタント",
+    resizeAiPanel: "AI パネル幅を調整",
+    globalAiAssistant: "グローバル AI",
+    aiConversation: "ナレッジ Q&A",
+    aiContext: "コンテキスト",
+    aiContextGlobal: "すべてのノート",
+    aiContextCollection: "コレクション: {name}",
+    aiContextTag: "タグ: {name}",
+    aiContextReader: "現在のトピック: {title}",
+    aiContextSearch: "検索結果: {query}",
+    aiWelcome: "この AI パネルは現在のワークスペース文脈に対して質問応答する予定です。実際の応答は後で Agent Server 接続後に有効化します。",
+    aiUserPlaceholder: "ユーザーの質問",
+    aiAssistantPlaceholder: "AI 応答のプレースホルダーです。リクエストは送信されていません。",
+    aiPanelComingSoon: "会話と HTML ノート生成は開発中です。",
+    aiChatPlaceholder: "現在のノートについて質問、または新しい HTML ノート生成を依頼...",
+    generateHtmlNote: "HTML ノートを生成",
+    send: "送信",
     settings: "設定",
     settingsTitle: "プロジェクト設定",
     closeSettings: "設定を閉じる",
@@ -360,9 +411,6 @@ const i18n = {
     submitAssistantJob: "AI ジョブを送信",
     assistantConfirm: "既存のナレッジデータベースに影響する可能性があります。続行しますか？",
     assistantComingSoon: "開発中です。データベースは変更していません。",
-    aiAgents: "AI エージェント",
-    aiAgentsIntro: "ナレッジベースファイルをもとにした複数ターン会話の入口です。",
-    aiAgentsPlaceholder: "Agent Server 対応後、選択したライブラリファイルに基づく複数ターン会話をここに追加します。",
     developmentInProgress: "開発中",
     localBackupRestore: "ローカルバックアップと復元",
     localBackupIntro: "ブラウザー内の設定、表示状態、お気に入り、アーカイブ、非機密設定をバックアップします。",
@@ -413,7 +461,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.1。",
+    aboutVersion: "現在の初期バージョン: 0.3.2。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -506,6 +554,8 @@ const state = {
   navConfig: loadNavConfig(),
   sidebarCollapsed: getInitialSidebarState(),
   viewMode: getInitialViewMode(),
+  aiPanelOpen: false,
+  aiPanelWidth: getInitialAiPanelWidth(),
   hideArchived: getInitialArchiveFilter(),
   onlyFavorites: getInitialFavoriteFilter(),
   currentReaderItemId: "",
@@ -563,6 +613,15 @@ const elements = {
   workspaceTitle: document.querySelector("#workspace-title"),
   favoriteFilter: document.querySelector("#favorite-filter"),
   archiveFilter: document.querySelector("#archive-filter"),
+  aiPanelOpen: document.querySelector("#ai-panel-open"),
+  aiPanel: document.querySelector("#ai-panel"),
+  aiPanelClose: document.querySelector("#ai-panel-close"),
+  aiPanelResize: document.querySelector("#ai-panel-resize"),
+  aiContextLabel: document.querySelector("#ai-context-label"),
+  aiChatLog: document.querySelector("#ai-chat-log"),
+  aiChatForm: document.querySelector("#ai-chat-form"),
+  aiChatInput: document.querySelector("#ai-chat-input"),
+  aiGenerateNote: document.querySelector("#ai-generate-note"),
   luckyButton: document.querySelector("#lucky-button"),
   searchInput: document.querySelector("#search-input"),
   contentGrid: document.querySelector("#content-grid"),
@@ -603,6 +662,7 @@ async function boot() {
 
 function renderApp() {
   applySidebarState();
+  applyAiPanelState();
   applyTheme();
   applyViewMode();
   applyArchiveFilter();
@@ -615,6 +675,7 @@ function renderApp() {
   renderCollectionNav();
   renderTagNav();
   renderGrid();
+  renderAiContext();
   updateAgentStatus();
   renderAiConfig();
   renderDataConfig();
@@ -791,6 +852,7 @@ function openReader(item) {
     return span;
   }));
   renderReaderActions(item);
+  renderAiContext();
   window.location.hash = `/${item.id}`;
 }
 
@@ -801,6 +863,7 @@ function closeReader() {
   if (window.location.hash) {
     history.pushState("", document.title, window.location.pathname + window.location.search);
   }
+  renderAiContext();
 }
 
 function returnToWorkspace() {
@@ -811,6 +874,7 @@ function returnToWorkspace() {
   if (window.location.hash) {
     history.pushState("", document.title, window.location.pathname + window.location.search);
   }
+  renderAiContext();
 }
 
 function goHome() {
@@ -1037,6 +1101,17 @@ function getInitialViewMode() {
   return saved === "list" ? "list" : "cards";
 }
 
+function getInitialAiPanelWidth() {
+  const saved = Number(localStorage.getItem("html-vault-ai-panel-width"));
+  if (Number.isFinite(saved) && saved >= 320 && saved <= 720) return saved;
+  return 420;
+}
+
+function clampAiPanelWidth(width) {
+  const viewportLimit = Math.max(320, window.innerWidth - 120);
+  return Math.min(720, Math.max(320, Math.min(width, viewportLimit)));
+}
+
 function getInitialSidebarState() {
   return localStorage.getItem("html-vault-sidebar-collapsed") === "true";
 }
@@ -1068,6 +1143,104 @@ function setViewMode(mode) {
   localStorage.setItem("html-vault-view-mode", mode);
   applyViewMode();
   renderGrid();
+}
+
+function openAiPanel() {
+  state.aiPanelOpen = true;
+  applyAiPanelState();
+  renderAiContext();
+  renderInitialAiMessage();
+  elements.aiChatInput.focus();
+}
+
+function closeAiPanel() {
+  state.aiPanelOpen = false;
+  applyAiPanelState();
+}
+
+function toggleAiPanel() {
+  if (state.aiPanelOpen) {
+    closeAiPanel();
+  } else {
+    openAiPanel();
+  }
+}
+
+function applyAiPanelState() {
+  state.aiPanelWidth = clampAiPanelWidth(state.aiPanelWidth);
+  elements.aiPanel.hidden = !state.aiPanelOpen;
+  elements.aiPanel.style.width = `${state.aiPanelWidth}px`;
+  elements.body.style.setProperty("--ai-panel-width", `${state.aiPanelWidth}px`);
+  elements.body.classList.toggle("ai-panel-open", state.aiPanelOpen);
+  elements.aiPanelOpen.classList.toggle("active", state.aiPanelOpen);
+}
+
+function renderAiContext() {
+  if (!elements.aiContextLabel) return;
+  elements.aiContextLabel.textContent = getAiContextLabel();
+}
+
+function getAiContextLabel() {
+  if (!elements.reader.hidden && state.currentReaderItemId) {
+    const item = getItemById(state.currentReaderItemId);
+    return t("aiContextReader", { title: item?.title || t("item") });
+  }
+  if (state.query.trim()) {
+    return t("aiContextSearch", { query: state.query.trim() });
+  }
+  if (state.filter.type === "collection") {
+    return t("aiContextCollection", { name: state.filter.value });
+  }
+  if (state.filter.type === "tag") {
+    return t("aiContextTag", { name: state.filter.value });
+  }
+  return t("aiContextGlobal");
+}
+
+function renderInitialAiMessage() {
+  if (elements.aiChatLog.children.length > 0) return;
+  appendAiMessage("assistant", t("aiWelcome"));
+}
+
+function appendAiMessage(role, text) {
+  const message = document.createElement("article");
+  message.className = `ai-message ${role}`;
+  message.innerHTML = `
+    <strong>${escapeHtml(role === "user" ? t("aiUserPlaceholder") : t("globalAiAssistant"))}</strong>
+    <p>${escapeHtml(text)}</p>
+  `;
+  elements.aiChatLog.append(message);
+  elements.aiChatLog.scrollTop = elements.aiChatLog.scrollHeight;
+}
+
+function submitAiMessage(event) {
+  event.preventDefault();
+  const text = elements.aiChatInput.value.trim();
+  if (!text) return;
+  appendAiMessage("user", text);
+  elements.aiChatInput.value = "";
+  appendAiMessage("assistant", `${t("aiAssistantPlaceholder")} ${getAiContextLabel()}`);
+}
+
+function markAiGeneratePlaceholder() {
+  appendAiMessage("assistant", `${t("generateHtmlNote")}: ${t("aiPanelComingSoon")}`);
+}
+
+function startAiPanelResize(event) {
+  event.preventDefault();
+  const startX = event.clientX;
+  const startWidth = state.aiPanelWidth;
+  const onMove = (moveEvent) => {
+    state.aiPanelWidth = clampAiPanelWidth(startWidth + startX - moveEvent.clientX);
+    applyAiPanelState();
+  };
+  const onUp = () => {
+    localStorage.setItem("html-vault-ai-panel-width", String(state.aiPanelWidth));
+    window.removeEventListener("pointermove", onMove);
+    window.removeEventListener("pointerup", onUp);
+  };
+  window.addEventListener("pointermove", onMove);
+  window.addEventListener("pointerup", onUp);
 }
 
 function toggleArchiveFilter() {
@@ -1557,9 +1730,15 @@ function escapeHtml(value) {
 elements.searchInput.addEventListener("input", (event) => {
   state.query = event.target.value;
   renderGrid();
+  renderAiContext();
 });
 elements.brandHome.addEventListener("click", goHome);
 elements.sidebarCollapse.addEventListener("click", toggleSidebar);
+elements.aiPanelOpen.addEventListener("click", toggleAiPanel);
+elements.aiPanelClose.addEventListener("click", closeAiPanel);
+elements.aiPanelResize.addEventListener("pointerdown", startAiPanelResize);
+elements.aiChatForm.addEventListener("submit", submitAiMessage);
+elements.aiGenerateNote.addEventListener("click", markAiGeneratePlaceholder);
 elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.favoriteFilter.addEventListener("click", toggleFavoriteFilter);
 elements.archiveFilter.addEventListener("click", toggleArchiveFilter);

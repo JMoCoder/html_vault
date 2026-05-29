@@ -24,13 +24,17 @@ the source of truth, while metadata lives in optional YAML sidecar files.
   entry for generated HTML notes.
 - Chinese, English, and Japanese UI language switching for system labels.
 - Dark and light mode switching with a compact sidebar icon.
+- Global AI sidebar entry beside search, with a resizable right panel and
+  context labels for all notes, collections, tags, search results, or the
+  current reader topic.
 - Settings page for AI provider configuration, user agreement, project info,
   and update notes.
 - Library, collection, and tag sidebar visibility management.
 - Local backup/restore, WebDAV settings, and data export sections are
   scaffolded under a separate data settings group.
-- AI knowledge assistant and AI agent sections are scaffolded for future
-  database classification, tagging, and multi-turn knowledge conversations.
+- AI knowledge assistant is scaffolded for future database classification and
+  tagging jobs; multi-turn knowledge conversations move to the global AI
+  sidebar.
 - A magic-wand "I'm feeling lucky" button opens a random matching knowledge
   item from the current workspace view.
 - Static build output that works on GitHub Pages, Cloudflare Pages, Caddy,
@@ -174,8 +178,9 @@ over the knowledge database, such as reclassification, retagging, and review
 status updates. Submitting it currently shows a second confirmation and then a
 development-in-progress message without changing data.
 
-The AI agents section is reserved for future multi-turn conversations grounded
-in selected knowledge base files.
+The global AI sidebar is the future home for context-aware chat and HTML note
+generation. It is UI-only for now: no model request is sent, and note creation
+still requires a future Agent Server.
 
 ## Docker
 
