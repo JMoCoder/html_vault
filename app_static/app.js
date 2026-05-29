@@ -6,6 +6,7 @@ const i18n = {
     readerFrameTitle: "HTML knowledge item",
     closeReader: "Close reader",
     language: "Language",
+    toggleTheme: "Toggle dark and light mode",
     loading: "Loading",
     items: "{count} items",
     library: "Library",
@@ -57,6 +58,7 @@ const i18n = {
     readerFrameTitle: "HTML 知识条目",
     closeReader: "关闭阅读器",
     language: "语言",
+    toggleTheme: "切换暗色与亮色模式",
     loading: "加载中",
     items: "{count} 个条目",
     library: "资料库",
@@ -120,6 +122,7 @@ const state = {
   query: "",
   agentUrl: window.HTML_VAULT_AGENT_URL || "",
   language: getInitialLanguage(),
+  theme: getInitialTheme(),
   feedbackKey: "connectAgent",
   feedbackParams: {},
 };
@@ -128,6 +131,8 @@ const elements = {
   siteTitle: document.querySelector("#site-title"),
   itemCount: document.querySelector("#item-count"),
   languageSelect: document.querySelector("#language-select"),
+  themeToggle: document.querySelector("#theme-toggle"),
+  themeIcon: document.querySelector("#theme-icon"),
   libraryNav: document.querySelector("#library-nav"),
   collectionNav: document.querySelector("#collection-nav"),
   tagNav: document.querySelector("#tag-nav"),
@@ -153,6 +158,7 @@ const elements = {
 };
 
 async function boot() {
+  applyTheme();
   applyTranslations();
   try {
     const response = await fetch("manifest.json", { cache: "no-store" });
@@ -168,6 +174,7 @@ async function boot() {
 }
 
 function renderApp() {
+  applyTheme();
   applyTranslations();
   elements.siteTitle.textContent = state.manifest.site?.title || "HTML Vault";
   elements.itemCount.textContent = t("items", { count: state.items.length });
@@ -394,6 +401,24 @@ function setLanguage(language) {
   renderApp();
 }
 
+function getInitialTheme() {
+  const saved = localStorage.getItem("html-vault-theme");
+  if (saved === "dark" || saved === "light") return saved;
+  if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) return "dark";
+  return "light";
+}
+
+function toggleTheme() {
+  state.theme = state.theme === "dark" ? "light" : "dark";
+  localStorage.setItem("html-vault-theme", state.theme);
+  applyTheme();
+}
+
+function applyTheme() {
+  document.documentElement.dataset.theme = state.theme;
+  elements.themeIcon.textContent = state.theme === "dark" ? "☀" : "☾";
+}
+
 function t(key, params = {}) {
   const dictionary = i18n[state.language] || i18n.en;
   const fallback = i18n.en[key] || key;
@@ -462,6 +487,7 @@ elements.searchInput.addEventListener("input", (event) => {
   renderGrid();
 });
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
+elements.themeToggle.addEventListener("click", toggleTheme);
 elements.newItemForm.addEventListener("submit", submitNewItem);
 elements.readerClose.addEventListener("click", closeReader);
 elements.readerCopy.addEventListener("click", copyReaderLink);

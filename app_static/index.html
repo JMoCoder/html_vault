@@ -17,30 +17,37 @@
         </div>
       </div>
 
-      <div class="language-switcher">
-        <label for="language-select" data-i18n="language"></label>
-        <select id="language-select" aria-label="Language">
-          <option value="en">English</option>
-          <option value="zh-CN">中文</option>
-        </select>
+      <div class="sidebar-main">
+        <button class="new-button" type="button" data-focus-new data-i18n="newButton"></button>
+
+        <section class="nav-section">
+          <h2 data-i18n="library"></h2>
+          <div class="nav-list" id="library-nav"></div>
+        </section>
+
+        <section class="nav-section">
+          <h2 data-i18n="collections"></h2>
+          <div class="nav-list" id="collection-nav"></div>
+        </section>
+
+        <section class="nav-section">
+          <h2 data-i18n="tags"></h2>
+          <div class="tag-list" id="tag-nav"></div>
+        </section>
       </div>
 
-      <button class="new-button" type="button" data-focus-new data-i18n="newButton"></button>
-
-      <section class="nav-section">
-        <h2 data-i18n="library"></h2>
-        <div class="nav-list" id="library-nav"></div>
-      </section>
-
-      <section class="nav-section">
-        <h2 data-i18n="collections"></h2>
-        <div class="nav-list" id="collection-nav"></div>
-      </section>
-
-      <section class="nav-section">
-        <h2 data-i18n="tags"></h2>
-        <div class="tag-list" id="tag-nav"></div>
-      </section>
+      <div class="sidebar-tools">
+        <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Toggle theme" title="Toggle theme" data-i18n-attr="aria-label:toggleTheme,title:toggleTheme">
+          <span id="theme-icon" aria-hidden="true">☾</span>
+        </button>
+        <div class="language-switcher">
+          <label for="language-select" data-i18n="language"></label>
+          <select id="language-select" aria-label="Language">
+            <option value="en">English</option>
+            <option value="zh-CN">中文</option>
+          </select>
+        </div>
+      </div>
     </aside>
 
     <main class="workspace">
