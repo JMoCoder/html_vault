@@ -22,7 +22,11 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Dark and light mode switching with a compact sidebar icon.
 - Settings page for AI provider configuration, user agreement, project info,
   and update notes.
-- Collection and tag sidebar visibility management.
+- Library, collection, and tag sidebar visibility management.
+- AI knowledge assistant and AI agent sections are scaffolded for future
+  database classification, tagging, and multi-turn knowledge conversations.
+- A magic-wand "I'm feeling lucky" button opens a random matching knowledge
+  item from the current workspace view.
 - Static build output that works on GitHub Pages, Cloudflare Pages, Caddy,
   Nginx, NAS, or any static file server.
 - Docker image for quick static hosting.
@@ -134,10 +138,22 @@ the browser.
 
 ## Sidebar Management
 
-Collection and tag management live in the settings page. Static mode can hide
-sidebar navigation entries without modifying original metadata. Add, rename,
-merge, and delete are structural metadata operations and require the future
-Agent Server or metadata editor to update `meta/items/**/*.yml`.
+Library, collection, and tag management live in the settings page. Static mode
+can hide sidebar navigation entries without modifying original metadata.
+Library views are fixed system filters, so only visibility can be changed. Add,
+rename, merge, and delete for collections or tags are structural metadata
+operations and require the future Agent Server or metadata editor to update
+`meta/items/**/*.yml`.
+
+## Planned AI Modules
+
+The AI knowledge assistant section is a UI scaffold for future bulk operations
+over the knowledge database, such as reclassification, retagging, and review
+status updates. Submitting it currently shows a second confirmation and then a
+development-in-progress message without changing data.
+
+The AI agents section is reserved for future multi-turn conversations grounded
+in selected knowledge base files.
 
 ## Docker
 

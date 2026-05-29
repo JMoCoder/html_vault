@@ -72,8 +72,19 @@ select {
 .brand {
   display: flex;
   align-items: center;
+  width: 100%;
   gap: 12px;
   margin-bottom: 20px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.brand:hover h1 {
+  color: var(--accent-dark);
 }
 
 .brand-mark {
@@ -228,10 +239,36 @@ select {
   font-size: 26px;
 }
 
+.topbar-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  width: min(480px, 100%);
+}
+
+.magic-button {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--accent-dark);
+  cursor: pointer;
+}
+
+.magic-button:hover {
+  border-color: var(--accent);
+  background: var(--status-bg);
+}
+
 .search {
   display: grid;
   gap: 6px;
-  width: min(420px, 100%);
+  width: 100%;
   color: var(--muted);
   font-size: 12px;
 }
@@ -572,13 +609,21 @@ select {
 }
 
 .settings-form input,
-.settings-form select {
+.settings-form select,
+.settings-form textarea {
   height: 40px;
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0 11px;
   background: var(--panel-soft);
   color: var(--text);
+}
+
+.settings-form textarea {
+  min-height: 120px;
+  resize: vertical;
+  padding: 10px 11px;
+  line-height: 1.5;
 }
 
 .form-grid {
@@ -638,6 +683,10 @@ select {
   border-radius: 8px;
   padding: 12px;
   background: var(--panel);
+}
+
+.management-row-compact {
+  grid-template-columns: minmax(150px, 1fr) auto;
 }
 
 .management-name {
@@ -726,6 +775,25 @@ select {
   color: var(--muted);
 }
 
+.placeholder-panel {
+  display: grid;
+  gap: 8px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  background: var(--panel);
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.placeholder-panel strong {
+  color: var(--text);
+}
+
+.placeholder-panel p {
+  margin: 0;
+}
+
 @media (max-width: 900px) {
   .shell {
     grid-template-columns: 1fr;
@@ -746,6 +814,10 @@ select {
   .new-card-header {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .topbar-tools {
+    width: 100%;
   }
 
   .new-form {

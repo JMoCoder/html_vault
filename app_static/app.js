@@ -5,14 +5,17 @@ const i18n = {
     readerAria: "Reader",
     readerFrameTitle: "HTML knowledge item",
     closeReader: "Close reader",
+    home: "Home",
     language: "Language",
     toggleTheme: "Toggle dark and light mode",
     settings: "Settings",
     settingsTitle: "Project settings",
     closeSettings: "Close settings",
     settingsSections: "Settings sections",
+    libraryManagement: "Library",
     collectionManagement: "Collections",
     tagManagement: "Tags",
+    libraryManagementIntro: "Library filters are fixed system views. You can choose whether each view appears in the sidebar.",
     collectionManagementIntro: "Hide collections from the sidebar now. Add, rename, merge, and delete need a metadata writer because collections are stored on items.",
     tagManagementIntro: "Hide tags from the sidebar now. Add, rename, merge, and delete need a metadata writer because tags are stored on items.",
     managementStaticNote: "Static mode can only control sidebar visibility. Structural changes must update item metadata through Agent Server or a metadata editor.",
@@ -24,6 +27,23 @@ const i18n = {
     requiresWriter: "Requires metadata writer",
     visible: "Visible",
     aiProviders: "AI providers",
+    aiKnowledgeAssistant: "AI knowledge assistant",
+    aiKnowledgeAssistantIntro: "Prepare an AI job to reclassify, retag, or review all knowledge items in the library. This module is a placeholder until database write support is implemented.",
+    assistantOperation: "Operation",
+    assistantClassify: "Reclassify collections",
+    assistantTag: "Retag items",
+    assistantReview: "Mark review status",
+    assistantCustom: "Custom prompt",
+    assistantPrompt: "Prompt",
+    assistantPromptPlaceholder: "Describe how AI should reorganize or tag the knowledge base.",
+    assistantImpactNote: "This type of operation may rewrite existing database metadata. The real submit flow must show a second confirmation before it runs.",
+    submitAssistantJob: "Submit AI job",
+    assistantConfirm: "This may affect the existing knowledge database. Continue?",
+    assistantComingSoon: "Development in progress. No database changes were made.",
+    aiAgents: "AI agents",
+    aiAgentsIntro: "Multi-turn AI agents based on knowledge base files.",
+    aiAgentsPlaceholder: "This area will host multi-turn conversations over selected library files after Agent Server support is added.",
+    developmentInProgress: "Development in progress",
     userAgreement: "User agreement",
     aboutProject: "About project",
     updateDocs: "Update docs",
@@ -69,6 +89,7 @@ const i18n = {
     imported: "Imported",
     needsReview: "Needs Review",
     knowledgeWorkspace: "Knowledge Workspace",
+    feelingLucky: "I'm feeling lucky",
     search: "Search",
     searchTitle: "Search: {query}",
     searchPlaceholder: "Title, summary, tag, path",
@@ -105,14 +126,17 @@ const i18n = {
     readerAria: "阅读器",
     readerFrameTitle: "HTML 知识条目",
     closeReader: "关闭阅读器",
+    home: "回到主页",
     language: "语言",
     toggleTheme: "切换暗色与亮色模式",
     settings: "设置",
     settingsTitle: "项目设置",
     closeSettings: "关闭设置",
     settingsSections: "设置分区",
+    libraryManagement: "资料库管理",
     collectionManagement: "集合管理",
     tagManagement: "标签管理",
+    libraryManagementIntro: "资料库是固定系统视图。这里仅控制每个视图是否显示在左侧导航栏。",
     collectionManagementIntro: "当前可隐藏侧栏集合。新增、重命名、合并、删除需要元数据写入能力，因为集合保存在条目上。",
     tagManagementIntro: "当前可隐藏侧栏标签。新增、重命名、合并、删除需要元数据写入能力，因为标签保存在条目上。",
     managementStaticNote: "静态模式只能控制侧栏显隐。结构性变更必须通过 Agent Server 或元数据编辑器批量更新条目元数据。",
@@ -124,6 +148,23 @@ const i18n = {
     requiresWriter: "需要元数据写入服务",
     visible: "显示",
     aiProviders: "AI 服务商配置",
+    aiKnowledgeAssistant: "AI 知识库助理",
+    aiKnowledgeAssistantIntro: "预留 AI 批量任务入口，用于对资料库全部内容重新分类、重新打标签或审核整理。数据库写入能力完成前，这里先作为模块占位。",
+    assistantOperation: "任务类型",
+    assistantClassify: "重新分类集合",
+    assistantTag: "重新打标签",
+    assistantReview: "标记审核状态",
+    assistantCustom: "自定义提示词",
+    assistantPrompt: "提示词",
+    assistantPromptPlaceholder: "描述希望 AI 如何整理、分类或标注当前知识库。",
+    assistantImpactNote: "这类操作未来会改写现有数据库元数据。真实提交前必须弹出二次确认。",
+    submitAssistantJob: "提交 AI 任务",
+    assistantConfirm: "这可能影响现有知识库数据库。确认继续吗？",
+    assistantComingSoon: "开发中，未对数据库做任何修改。",
+    aiAgents: "AI 智能体",
+    aiAgentsIntro: "基于知识库文件进行多轮对话的智能体入口。",
+    aiAgentsPlaceholder: "Agent Server 支持完成后，这里将承载围绕选定知识库文件的多轮对话。",
+    developmentInProgress: "开发中",
     userAgreement: "用户协议",
     aboutProject: "关于项目",
     updateDocs: "更新文档",
@@ -169,6 +210,7 @@ const i18n = {
     imported: "导入内容",
     needsReview: "待审核",
     knowledgeWorkspace: "知识工作台",
+    feelingLucky: "手气不错",
     search: "搜索",
     searchTitle: "搜索：{query}",
     searchPlaceholder: "标题、摘要、标签、路径",
@@ -205,14 +247,17 @@ const i18n = {
     readerAria: "リーダー",
     readerFrameTitle: "HTML ナレッジ項目",
     closeReader: "リーダーを閉じる",
+    home: "ホームへ戻る",
     language: "言語",
     toggleTheme: "ダーク/ライトモードを切り替え",
     settings: "設定",
     settingsTitle: "プロジェクト設定",
     closeSettings: "設定を閉じる",
     settingsSections: "設定セクション",
+    libraryManagement: "ライブラリ",
     collectionManagement: "コレクション",
     tagManagement: "タグ",
+    libraryManagementIntro: "ライブラリは固定のシステムビューです。ここでは各ビューをサイドバーに表示するかだけを設定できます。",
     collectionManagementIntro: "現在はサイドバーのコレクション表示/非表示のみ変更できます。追加、名前変更、統合、削除にはメタデータ書き込み機能が必要です。",
     tagManagementIntro: "現在はサイドバーのタグ表示/非表示のみ変更できます。追加、名前変更、統合、削除にはメタデータ書き込み機能が必要です。",
     managementStaticNote: "静的モードではサイドバー表示のみ制御できます。構造的な変更には Agent Server またはメタデータエディターによる項目メタデータ更新が必要です。",
@@ -224,6 +269,23 @@ const i18n = {
     requiresWriter: "メタデータ書き込みサービスが必要",
     visible: "表示",
     aiProviders: "AI プロバイダー設定",
+    aiKnowledgeAssistant: "AI ナレッジアシスタント",
+    aiKnowledgeAssistantIntro: "ライブラリ全体を再分類、再タグ付け、レビュー整理する AI ジョブの入口です。データベース書き込み対応まではプレースホルダーです。",
+    assistantOperation: "操作",
+    assistantClassify: "コレクションを再分類",
+    assistantTag: "項目を再タグ付け",
+    assistantReview: "レビュー状態を設定",
+    assistantCustom: "カスタムプロンプト",
+    assistantPrompt: "プロンプト",
+    assistantPromptPlaceholder: "AI にナレッジベースをどう整理、分類、タグ付けしてほしいかを書いてください。",
+    assistantImpactNote: "この種の操作は既存データベースのメタデータを書き換える可能性があります。実行前には必ず二重確認を表示します。",
+    submitAssistantJob: "AI ジョブを送信",
+    assistantConfirm: "既存のナレッジデータベースに影響する可能性があります。続行しますか？",
+    assistantComingSoon: "開発中です。データベースは変更していません。",
+    aiAgents: "AI エージェント",
+    aiAgentsIntro: "ナレッジベースファイルをもとにした複数ターン会話の入口です。",
+    aiAgentsPlaceholder: "Agent Server 対応後、選択したライブラリファイルに基づく複数ターン会話をここに追加します。",
+    developmentInProgress: "開発中",
     userAgreement: "利用規約",
     aboutProject: "プロジェクトについて",
     updateDocs: "更新ドキュメント",
@@ -269,6 +331,7 @@ const i18n = {
     imported: "インポート済み",
     needsReview: "要確認",
     knowledgeWorkspace: "ナレッジワークスペース",
+    feelingLucky: "おまかせ表示",
     search: "検索",
     searchTitle: "検索: {query}",
     searchPlaceholder: "タイトル、概要、タグ、パス",
@@ -321,12 +384,13 @@ const state = {
   theme: getInitialTheme(),
   feedbackKey: "connectAgent",
   feedbackParams: {},
-  activeSettingsTab: "collections",
+  activeSettingsTab: "library",
   aiConfig: loadAiConfig(),
   navConfig: loadNavConfig(),
 };
 
 const elements = {
+  brandHome: document.querySelector("#brand-home"),
   siteTitle: document.querySelector("#site-title"),
   itemCount: document.querySelector("#item-count"),
   languageSelect: document.querySelector("#language-select"),
@@ -339,8 +403,11 @@ const elements = {
   settingsTabs: document.querySelectorAll("[data-settings-tab]"),
   settingsSections: document.querySelectorAll("[data-settings-section]"),
   collectionManagement: document.querySelector("#collection-management"),
+  libraryManagement: document.querySelector("#library-management"),
   tagManagement: document.querySelector("#tag-management"),
   aiSettingsForm: document.querySelector("#ai-settings-form"),
+  aiAssistantForm: document.querySelector("#ai-assistant-form"),
+  assistantFeedback: document.querySelector("#assistant-feedback"),
   aiProvider: document.querySelector("#ai-provider"),
   currentModel: document.querySelector("#current-model"),
   apiBaseUrl: document.querySelector("#api-base-url"),
@@ -354,6 +421,7 @@ const elements = {
   collectionNav: document.querySelector("#collection-nav"),
   tagNav: document.querySelector("#tag-nav"),
   workspaceTitle: document.querySelector("#workspace-title"),
+  luckyButton: document.querySelector("#lucky-button"),
   searchInput: document.querySelector("#search-input"),
   contentGrid: document.querySelector("#content-grid"),
   newCard: document.querySelector("#new-card"),
@@ -405,7 +473,9 @@ function renderApp() {
 }
 
 function renderLibraryNav() {
-  elements.libraryNav.replaceChildren(...libraryFilterDefinitions.map((filter) => {
+  elements.libraryNav.replaceChildren(...libraryFilterDefinitions.filter((filter) => {
+    return isManagedItemVisible("library", filter.value);
+  }).map((filter) => {
     const count = countLibraryFilter(filter.value);
     return navButton(t(filter.labelKey), count, state.filter.type === "library" && state.filter.value === filter.value, () => {
       selectLibraryFilter(filter.value);
@@ -557,6 +627,14 @@ function returnToWorkspace() {
   }
 }
 
+function goHome() {
+  state.filter = { type: "library", value: "all" };
+  state.query = "";
+  elements.searchInput.value = "";
+  returnToWorkspace();
+  renderApp();
+}
+
 function selectLibraryFilter(value) {
   state.filter = { type: "library", value };
   returnToWorkspace();
@@ -575,7 +653,7 @@ function selectTag(name) {
   renderApp();
 }
 
-function openSettings(tab = "collections", updateHash = true) {
+function openSettings(tab = "library", updateHash = true) {
   setSettingsTab(tab, false);
   elements.settingsPage.hidden = false;
   if (updateHash) {
@@ -612,7 +690,7 @@ function renderSettingsTabs() {
 
 function setSettingsTab(tab, updateHash = true) {
   const validTabs = new Set([...elements.settingsTabs].map((item) => item.dataset.settingsTab));
-  state.activeSettingsTab = validTabs.has(tab) ? tab : "collections";
+  state.activeSettingsTab = validTabs.has(tab) ? tab : "library";
   renderSettingsTabs();
   if (updateHash) {
     updateSettingsHash(state.activeSettingsTab);
@@ -629,7 +707,7 @@ function updateSettingsHash(tab) {
 function openFromHash() {
   const id = decodeURIComponent(window.location.hash.replace(/^#\/?/, ""));
   if (id.startsWith("settings")) {
-    const tab = id.split("/")[1] || "collections";
+    const tab = id.split("/")[1] || "library";
     openSettings(tab, false);
     return;
   }
@@ -729,9 +807,9 @@ function loadAiConfig() {
 
 function loadNavConfig() {
   try {
-    return JSON.parse(localStorage.getItem("html-vault-nav-config") || '{"collections":{},"tags":{}}');
+    return JSON.parse(localStorage.getItem("html-vault-nav-config") || '{"library":{},"collections":{},"tags":{}}');
   } catch {
-    return { collections: {}, tags: {} };
+    return { library: {}, collections: {}, tags: {} };
   }
 }
 
@@ -751,8 +829,20 @@ function isManagedItemVisible(type, name) {
 }
 
 function renderManagementLists() {
+  renderLibraryManagement();
   renderManagementList("collections", state.manifest.collections || [], elements.collectionManagement);
   renderManagementList("tags", state.manifest.tags || [], elements.tagManagement);
+}
+
+function renderLibraryManagement() {
+  const rows = libraryFilterDefinitions.map((filter) => {
+    return {
+      name: filter.value,
+      label: t(filter.labelKey),
+      count: countLibraryFilter(filter.value),
+    };
+  });
+  elements.libraryManagement.replaceChildren(...rows.map((item) => renderManagementRow("library", item.name, item.count, item.label)));
 }
 
 function renderManagementList(type, items, container) {
@@ -774,28 +864,33 @@ function renderManagementActions(type) {
   return panel;
 }
 
-function renderManagementRow(type, name, count) {
+function renderManagementRow(type, name, count, label = name) {
   const config = getManagedItemConfig(type, name);
   const row = document.createElement("div");
   row.className = "management-row";
-  row.innerHTML = `
-    <div class="management-name">
-      <strong>${escapeHtml(name)}</strong>
-      <span>${count}</span>
-    </div>
-    <label class="switch-row">
-      <input type="checkbox" ${config.visible === false ? "" : "checked"} data-management-visible>
-      <span>${escapeHtml(t("visible"))}</span>
-    </label>
+  const actions = type === "library" ? "" : `
     <div class="management-actions">
       <button type="button" disabled title="${escapeHtml(t("requiresWriter"))}">${escapeHtml(t("rename"))}</button>
       <button type="button" disabled title="${escapeHtml(t("requiresWriter"))}">${escapeHtml(t("merge"))}</button>
       <button type="button" disabled title="${escapeHtml(t("requiresWriter"))}">${escapeHtml(t("delete"))}</button>
     </div>
   `;
+  row.classList.toggle("management-row-compact", type === "library");
+  row.innerHTML = `
+    <div class="management-name">
+      <strong>${escapeHtml(label)}</strong>
+      <span>${count}</span>
+    </div>
+    <label class="switch-row">
+      <input type="checkbox" ${config.visible === false ? "" : "checked"} data-management-visible>
+      <span>${escapeHtml(t("visible"))}</span>
+    </label>
+    ${actions}
+  `;
   row.querySelector("[data-management-visible]").addEventListener("change", (event) => {
     getManagedItemConfig(type, name).visible = event.target.checked;
     saveNavConfig();
+    renderLibraryNav();
     renderCollectionNav();
     renderTagNav();
   });
@@ -869,6 +964,20 @@ function focusImportEntry() {
   elements.newItemInput.focus();
 }
 
+function openLuckyItem() {
+  const items = filteredItems();
+  if (items.length === 0) return;
+  const index = Math.floor(Math.random() * items.length);
+  openReader(items[index]);
+}
+
+function submitAssistantJob(event) {
+  event.preventDefault();
+  if (window.confirm(t("assistantConfirm"))) {
+    elements.assistantFeedback.textContent = t("assistantComingSoon");
+  }
+}
+
 function t(key, params = {}) {
   const dictionary = i18n[state.language] || i18n.en;
   const fallback = i18n.en[key] || key;
@@ -922,6 +1031,8 @@ elements.searchInput.addEventListener("input", (event) => {
   state.query = event.target.value;
   renderGrid();
 });
+elements.brandHome.addEventListener("click", goHome);
+elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
 elements.themeToggle.addEventListener("click", toggleTheme);
 elements.settingsOpen.addEventListener("click", toggleSettings);
@@ -932,6 +1043,7 @@ elements.settingsTabs.forEach((tab) => {
   });
 });
 elements.aiSettingsForm.addEventListener("submit", saveAiConfig);
+elements.aiAssistantForm.addEventListener("submit", submitAssistantJob);
 elements.testProvider.addEventListener("click", testProviderConfig);
 elements.newItemForm.addEventListener("submit", submitNewItem);
 elements.readerClose.addEventListener("click", closeReader);

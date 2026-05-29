@@ -31,6 +31,12 @@ versioning after the initial public release.
   update documentation sections.
 - Collection and tag management sections with sidebar visibility controls and
   disabled structural actions for future metadata writing.
+- Library management section for fixed system view visibility.
+- AI knowledge assistant placeholder with operation selection, prompt input,
+  and a second confirmation before future database-impacting jobs.
+- AI agents placeholder for future multi-turn conversations over knowledge
+  base files.
+- Magic-wand "I'm feeling lucky" action for opening a random matching item.
 
 ### Changed
 
@@ -44,3 +50,5 @@ versioning after the initial public release.
 - AI provider settings are visually separated from sidebar management and
   project information sections.
 - Sidebar import entry is separated from the AI creation entry.
+- Logo and sidebar navigation now consistently return from settings or reader
+  overlays to the main workspace.
