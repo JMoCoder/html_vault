@@ -7,6 +7,19 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.0] - 2026-05-29
+
+### Added
+
+- Favorite-only toolbar filter beside the archive filter.
+- Archive filter now starts enabled so archived items are excluded by default.
+
+### Changed
+
+- Archive filter tooltip now reads as an action to show archived items while the filter is active.
+- Toolbar filters use icon color for state instead of adding a highlighted frame.
+- Package, app, and PWA cache version updated to `0.3.0`.
+
 ## [0.1.0] - 2026-05-29
 
 ### Added

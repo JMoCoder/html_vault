@@ -93,7 +93,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.2.0.",
+    aboutVersion: "Current early version: 0.3.0.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -115,10 +115,13 @@ const i18n = {
     knowledgeWorkspace: "Knowledge Workspace",
     feelingLucky: "I'm feeling lucky",
     viewStyle: "View style",
+    resultFilters: "Result filters",
     cardView: "Card view",
     listView: "List view",
     hideArchived: "Hide archived items",
     showArchived: "Show archived items",
+    onlyFavorites: "Only favorites",
+    showAllFavorites: "Show all items",
     search: "Search",
     searchTitle: "Search: {query}",
     searchPlaceholder: "Title, summary, tag, path",
@@ -247,7 +250,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.2.0。",
+    aboutVersion: "当前早期版本：0.3.0。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -269,10 +272,13 @@ const i18n = {
     knowledgeWorkspace: "知识工作台",
     feelingLucky: "手气不错",
     viewStyle: "视图样式",
+    resultFilters: "结果筛选",
     cardView: "方块视图",
     listView: "横向条目视图",
     hideArchived: "排除已归档",
     showArchived: "显示已归档",
+    onlyFavorites: "仅显示收藏",
+    showAllFavorites: "显示全部",
     search: "搜索",
     searchTitle: "搜索：{query}",
     searchPlaceholder: "标题、摘要、标签、路径",
@@ -401,7 +407,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.2.0。",
+    aboutVersion: "現在の初期バージョン: 0.3.0。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -423,10 +429,13 @@ const i18n = {
     knowledgeWorkspace: "ナレッジワークスペース",
     feelingLucky: "おまかせ表示",
     viewStyle: "表示形式",
+    resultFilters: "結果フィルター",
     cardView: "カード表示",
     listView: "横長リスト表示",
     hideArchived: "アーカイブ済みを非表示",
     showArchived: "アーカイブ済みを表示",
+    onlyFavorites: "お気に入りのみ表示",
+    showAllFavorites: "すべて表示",
     search: "検索",
     searchTitle: "検索: {query}",
     searchPlaceholder: "タイトル、概要、タグ、パス",
@@ -491,6 +500,7 @@ const state = {
   navConfig: loadNavConfig(),
   viewMode: getInitialViewMode(),
   hideArchived: getInitialArchiveFilter(),
+  onlyFavorites: getInitialFavoriteFilter(),
   currentReaderItemId: "",
 };
 
@@ -542,6 +552,7 @@ const elements = {
   collectionNav: document.querySelector("#collection-nav"),
   tagNav: document.querySelector("#tag-nav"),
   workspaceTitle: document.querySelector("#workspace-title"),
+  favoriteFilter: document.querySelector("#favorite-filter"),
   archiveFilter: document.querySelector("#archive-filter"),
   luckyButton: document.querySelector("#lucky-button"),
   searchInput: document.querySelector("#search-input"),
@@ -585,6 +596,7 @@ function renderApp() {
   applyTheme();
   applyViewMode();
   applyArchiveFilter();
+  applyFavoriteFilter();
   applyTranslations();
   elements.siteTitle.textContent = state.manifest.site?.title || "HTML Vault";
   elements.itemCount.textContent = t("items", { count: state.items.length });
@@ -667,6 +679,10 @@ function filteredItems() {
 
   const filterValue = state.filter.type === "library" ? state.filter.value : "";
   items = items.filter((item) => isVisibleInLibraryFilter(item, filterValue, state.hideArchived));
+
+  if (state.onlyFavorites) {
+    items = items.filter((item) => isFavorite(item));
+  }
 
   if (query) {
     items = items.filter((item) => searchableText(item).includes(query));
@@ -1017,7 +1033,11 @@ function getInitialViewMode() {
 }
 
 function getInitialArchiveFilter() {
-  return localStorage.getItem("html-vault-hide-archived") === "true";
+  return localStorage.getItem("html-vault-hide-archived") !== "false";
+}
+
+function getInitialFavoriteFilter() {
+  return localStorage.getItem("html-vault-only-favorites") === "true";
 }
 
 function setViewMode(mode) {
@@ -1035,11 +1055,25 @@ function toggleArchiveFilter() {
   renderGrid();
 }
 
+function toggleFavoriteFilter() {
+  state.onlyFavorites = !state.onlyFavorites;
+  localStorage.setItem("html-vault-only-favorites", String(state.onlyFavorites));
+  applyFavoriteFilter();
+  renderGrid();
+}
+
 function applyArchiveFilter() {
   elements.archiveFilter.classList.toggle("active", state.hideArchived);
   const label = t(state.hideArchived ? "showArchived" : "hideArchived");
   elements.archiveFilter.setAttribute("aria-label", label);
   elements.archiveFilter.setAttribute("title", label);
+}
+
+function applyFavoriteFilter() {
+  elements.favoriteFilter.classList.toggle("active", state.onlyFavorites);
+  const label = t(state.onlyFavorites ? "showAllFavorites" : "onlyFavorites");
+  elements.favoriteFilter.setAttribute("aria-label", label);
+  elements.favoriteFilter.setAttribute("title", label);
 }
 
 function applyViewMode() {
@@ -1293,6 +1327,7 @@ function getPreferencePayload() {
     theme: state.theme,
     viewMode: state.viewMode,
     hideArchived: state.hideArchived,
+    onlyFavorites: state.onlyFavorites,
     aiConfig: state.aiConfig,
     dataConfig: getExportableDataConfig(),
     navConfig: state.navConfig,
@@ -1342,6 +1377,8 @@ function restorePreferences(preferences) {
   }
   state.hideArchived = Boolean(preferences.hideArchived);
   localStorage.setItem("html-vault-hide-archived", String(state.hideArchived));
+  state.onlyFavorites = Boolean(preferences.onlyFavorites);
+  localStorage.setItem("html-vault-only-favorites", String(state.onlyFavorites));
   state.aiConfig = preferences.aiConfig || {};
   state.dataConfig = preferences.dataConfig || {};
   state.navConfig = preferences.navConfig || { library: {}, collections: {}, tags: {} };
@@ -1467,6 +1504,7 @@ function applyTranslations() {
   });
   renderFeedback();
   applyArchiveFilter();
+  applyFavoriteFilter();
 }
 
 function setFeedback(key, params = {}) {
@@ -1500,6 +1538,7 @@ elements.searchInput.addEventListener("input", (event) => {
 });
 elements.brandHome.addEventListener("click", goHome);
 elements.luckyButton.addEventListener("click", openLuckyItem);
+elements.favoriteFilter.addEventListener("click", toggleFavoriteFilter);
 elements.archiveFilter.addEventListener("click", toggleArchiveFilter);
 elements.viewButtons.forEach((button) => {
   button.addEventListener("click", () => setViewMode(button.dataset.viewMode));

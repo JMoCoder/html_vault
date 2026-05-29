@@ -248,7 +248,8 @@ textarea {
   width: min(590px, 100%);
 }
 
-.view-toggle {
+.view-toggle,
+.filter-toggle-group {
   height: 42px;
   display: flex;
   padding: 3px;
@@ -278,6 +279,12 @@ textarea {
   color: var(--muted);
 }
 
+.filter-toggle {
+  width: 34px;
+  height: 34px;
+  flex-basis: 34px;
+}
+
 .view-button.active,
 .view-button:hover {
   background: var(--panel-soft);
@@ -292,9 +299,9 @@ textarea {
 }
 
 .filter-toggle {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--panel);
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
   color: var(--muted);
 }
 
@@ -305,9 +312,11 @@ textarea {
 
 .filter-toggle:hover,
 .filter-toggle.active {
-  border-color: var(--accent);
-  background: var(--status-bg);
   color: var(--accent-dark);
+}
+
+#favorite-filter.active {
+  color: var(--warm);
 }
 
 .search {

@@ -63,6 +63,21 @@
           <h2 id="workspace-title"></h2>
         </div>
         <div class="topbar-tools">
+          <div class="filter-toggle-group" role="group" aria-label="Result filters" data-i18n-attr="aria-label:resultFilters">
+            <button class="filter-toggle" type="button" id="favorite-filter" aria-label="Only favorites" title="Only favorites" data-i18n-attr="aria-label:onlyFavorites,title:onlyFavorites">
+              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m12 3 2.82 5.72 6.31.92-4.57 4.45 1.08 6.28L12 17.4l-5.64 2.97 1.08-6.28-4.57-4.45 6.31-.92L12 3Z"></path>
+              </svg>
+            </button>
+            <button class="filter-toggle active" type="button" id="archive-filter" aria-label="Show archived items" title="Show archived items" data-i18n-attr="aria-label:showArchived,title:showArchived">
+              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 7h18"></path>
+                <path d="M5 7v12h14V7"></path>
+                <path d="M8 7V4h8v3"></path>
+                <path d="M9 12h6"></path>
+              </svg>
+            </button>
+          </div>
           <div class="view-toggle" role="group" aria-label="View style" data-i18n-attr="aria-label:viewStyle">
             <button type="button" id="card-view" class="view-button active" data-view-mode="cards" aria-label="Card view" title="Card view" data-i18n-attr="aria-label:cardView,title:cardView">
               <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -83,14 +98,6 @@
               </svg>
             </button>
           </div>
-          <button class="filter-toggle" type="button" id="archive-filter" aria-label="Hide archived items" title="Hide archived items" data-i18n-attr="aria-label:hideArchived,title:hideArchived">
-            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 7h18"></path>
-              <path d="M5 7v12h14V7"></path>
-              <path d="M8 7V4h8v3"></path>
-              <path d="M9 12h6"></path>
-            </svg>
-          </button>
           <button class="magic-button" type="button" id="lucky-button" aria-label="I'm feeling lucky" title="I'm feeling lucky" data-i18n-attr="aria-label:feelingLucky,title:feelingLucky">
             <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="m15 4 5 5"></path>
