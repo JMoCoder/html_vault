@@ -448,7 +448,7 @@ function setFeedback(key, params = {}) {
 }
 
 function renderFeedback() {
-  elements.newFeedback.textContent = t(state.feedbackKey, state.feedbackParams).trim();
+  elements.newFeedback.textContent = state.feedbackKey === "connectAgent" ? "" : t(state.feedbackKey, state.feedbackParams).trim();
 }
 
 function formatDate(value) {
