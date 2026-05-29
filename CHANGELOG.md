@@ -25,9 +25,13 @@ versioning after the initial public release.
 - Language selector for English and Chinese system UI labels.
 - Persistent language preference via `localStorage`.
 - Dark and light theme toggle with a compact icon control.
+- Settings page with AI provider configuration, user agreement, about, and
+  update documentation sections.
 
 ### Changed
 
 - System UI copy is now rendered from translation keys while user-created
   content such as item titles, collections, and tags remains unchanged.
 - Language selection now lives at the bottom of the sidebar.
+- API keys are explicitly excluded from browser storage; static mode only saves
+  non-sensitive AI model preferences.

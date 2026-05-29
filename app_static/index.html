@@ -46,6 +46,9 @@
             <option value="zh-CN">中文</option>
           </select>
         </div>
+        <button class="settings-toggle" type="button" id="settings-open" aria-label="Settings" title="Settings" data-i18n-attr="aria-label:settings,title:settings">
+          <span aria-hidden="true">⚙</span>
+        </button>
       </div>
     </aside>
 
@@ -98,6 +101,121 @@
         </div>
       </div>
       <iframe id="reader-frame" title="HTML knowledge item" data-i18n-attr="title:readerFrameTitle"></iframe>
+    </section>
+
+    <section class="settings-page" id="settings-page" aria-label="Settings" data-i18n-attr="aria-label:settings" hidden>
+      <header class="settings-header">
+        <div>
+          <p class="eyebrow" data-i18n="settings"></p>
+          <h2 data-i18n="settingsTitle"></h2>
+        </div>
+        <button class="icon-button" type="button" id="settings-close" aria-label="Close settings" data-i18n-attr="aria-label:closeSettings">×</button>
+      </header>
+
+      <div class="settings-body">
+        <nav class="settings-nav" aria-label="Settings sections" data-i18n-attr="aria-label:settingsSections">
+          <button type="button" class="settings-tab active" data-settings-tab="ai" data-i18n="aiProviders"></button>
+          <button type="button" class="settings-tab" data-settings-tab="terms" data-i18n="userAgreement"></button>
+          <button type="button" class="settings-tab" data-settings-tab="about" data-i18n="aboutProject"></button>
+          <button type="button" class="settings-tab" data-settings-tab="updates" data-i18n="updateDocs"></button>
+        </nav>
+
+        <div class="settings-content">
+          <section class="settings-section active" data-settings-section="ai">
+            <div class="section-heading">
+              <h3 data-i18n="aiProviders"></h3>
+              <p data-i18n="aiProviderIntro"></p>
+            </div>
+
+            <form class="settings-form" id="ai-settings-form">
+              <label>
+                <span data-i18n="provider"></span>
+                <select id="ai-provider">
+                  <option value="openai">OpenAI</option>
+                  <option value="anthropic">Anthropic</option>
+                  <option value="gemini">Google Gemini</option>
+                  <option value="openrouter">OpenRouter</option>
+                  <option value="custom" data-i18n="customProvider"></option>
+                </select>
+              </label>
+
+              <label>
+                <span data-i18n="currentModel"></span>
+                <input id="current-model" type="text" placeholder="gpt-4.1-mini">
+              </label>
+
+              <label>
+                <span data-i18n="apiBaseUrl"></span>
+                <input id="api-base-url" type="url" placeholder="https://api.openai.com/v1">
+              </label>
+
+              <label>
+                <span data-i18n="apiKey"></span>
+                <input id="api-key" type="password" autocomplete="off" data-i18n-attr="placeholder:apiKeyPlaceholder">
+              </label>
+
+              <label>
+                <span data-i18n="newModel"></span>
+                <input id="new-model" type="text" placeholder="provider/model-name">
+              </label>
+
+              <div class="form-grid">
+                <label>
+                  <span data-i18n="temperature"></span>
+                  <input id="model-temperature" type="number" min="0" max="2" step="0.1" value="0.7">
+                </label>
+                <label>
+                  <span data-i18n="maxTokens"></span>
+                  <input id="model-max-tokens" type="number" min="256" step="256" value="4096">
+                </label>
+              </div>
+
+              <p class="security-note" data-i18n="keyStorageNote"></p>
+
+              <div class="settings-actions">
+                <button type="submit" data-i18n="saveProviderConfig"></button>
+                <button type="button" class="secondary-button" id="test-provider" data-i18n="testConnection"></button>
+              </div>
+              <p class="settings-feedback" id="settings-feedback"></p>
+            </form>
+          </section>
+
+          <section class="settings-section" data-settings-section="terms">
+            <div class="section-heading">
+              <h3 data-i18n="userAgreement"></h3>
+              <p data-i18n="termsIntro"></p>
+            </div>
+            <div class="text-block">
+              <p data-i18n="termsPrivateUse"></p>
+              <p data-i18n="termsCopyright"></p>
+              <p data-i18n="termsSecurity"></p>
+            </div>
+          </section>
+
+          <section class="settings-section" data-settings-section="about">
+            <div class="section-heading">
+              <h3 data-i18n="aboutProject"></h3>
+              <p data-i18n="aboutIntro"></p>
+            </div>
+            <div class="text-block">
+              <p data-i18n="aboutStaticFirst"></p>
+              <p data-i18n="aboutVersion"></p>
+            </div>
+          </section>
+
+          <section class="settings-section" data-settings-section="updates">
+            <div class="section-heading">
+              <h3 data-i18n="updateDocs"></h3>
+              <p data-i18n="updatesIntro"></p>
+            </div>
+            <div class="text-block">
+              <p data-i18n="updatesChangelog"></p>
+              <p data-i18n="updatesDocsLocal"></p>
+              <p data-i18n="updatesNext"></p>
+            </div>
+          </section>
+        </div>
+      </div>
     </section>
   </div>
 

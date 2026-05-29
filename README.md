@@ -17,6 +17,8 @@ the source of truth, while metadata lives in optional YAML sidecar files.
 - Pinned new knowledge item entry with optional Agent Server API handoff.
 - English and Chinese UI language switching for system labels.
 - Dark and light mode switching with a compact sidebar icon.
+- Settings page for AI provider configuration, user agreement, project info,
+  and update notes.
 - Static build output that works on GitHub Pages, Cloudflare Pages, Caddy,
   Nginx, NAS, or any static file server.
 - Docker image for quick static hosting.
@@ -114,6 +116,17 @@ POST /api/jobs
 ```
 
 with an `input_type`, `input`, and `options` payload.
+
+## AI Provider Settings
+
+The sidebar settings button opens a full settings page. API keys are not stored
+in `localStorage`. In static mode, HTML Vault only saves non-sensitive model
+preferences such as provider, model name, base URL, temperature, and max tokens.
+
+In full mode, the API key should be sent only to a protected Agent Server
+endpoint over HTTPS or a private network. The server should store it as an
+environment secret or encrypted server-side credential and never return it to
+the browser.
 
 ## Docker
 

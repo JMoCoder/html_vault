@@ -7,6 +7,42 @@ const i18n = {
     closeReader: "Close reader",
     language: "Language",
     toggleTheme: "Toggle dark and light mode",
+    settings: "Settings",
+    settingsTitle: "Project settings",
+    closeSettings: "Close settings",
+    settingsSections: "Settings sections",
+    aiProviders: "AI providers",
+    userAgreement: "User agreement",
+    aboutProject: "About project",
+    updateDocs: "Update docs",
+    aiProviderIntro: "Configure the provider and model used by the optional Agent Server.",
+    provider: "Provider",
+    customProvider: "Custom provider",
+    currentModel: "Current model",
+    apiBaseUrl: "API base URL",
+    apiKey: "API key",
+    apiKeyPlaceholder: "Stored only by Agent Server, not in this browser",
+    newModel: "Add model",
+    temperature: "Temperature",
+    maxTokens: "Max tokens",
+    keyStorageNote: "Security: API keys are not saved in localStorage. In static mode this form only saves non-sensitive preferences. In full mode the key is sent to the Agent Server over your protected connection and should be encrypted or stored as a server environment secret.",
+    saveProviderConfig: "Save configuration",
+    testConnection: "Test connection",
+    settingsSavedStatic: "Saved local model preferences. API key was not stored.",
+    settingsNeedsAgent: "Agent Server is not configured. API key was not sent or saved.",
+    settingsSavedAgent: "Configuration sent to Agent Server.",
+    settingsAgentFailed: "Agent Server did not accept the configuration.",
+    termsIntro: "HTML Vault is designed for personal and team knowledge assets.",
+    termsPrivateUse: "Use it with content you own, have permission to process, or can lawfully store for private use.",
+    termsCopyright: "Generated notes should summarize and cite sources instead of copying protected works wholesale.",
+    termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
+    aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
+    aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
+    aboutVersion: "Current early version: 0.1.1.",
+    updatesIntro: "Project updates are tracked in the repository and local planning docs.",
+    updatesChangelog: "Public release notes live in CHANGELOG.md.",
+    updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
+    updatesNext: "Next major work: Agent Server, secure provider storage, Pagefind, and metadata editing.",
     loading: "Loading",
     items: "{count} items",
     library: "Library",
@@ -59,6 +95,42 @@ const i18n = {
     closeReader: "关闭阅读器",
     language: "语言",
     toggleTheme: "切换暗色与亮色模式",
+    settings: "设置",
+    settingsTitle: "项目设置",
+    closeSettings: "关闭设置",
+    settingsSections: "设置分区",
+    aiProviders: "AI 服务商配置",
+    userAgreement: "用户协议",
+    aboutProject: "关于项目",
+    updateDocs: "更新文档",
+    aiProviderIntro: "配置可选 Agent Server 使用的服务商与模型。",
+    provider: "服务商",
+    customProvider: "自定义服务商",
+    currentModel: "当前模型",
+    apiBaseUrl: "API 基础地址",
+    apiKey: "API Key",
+    apiKeyPlaceholder: "只由 Agent Server 保存，不保存在浏览器",
+    newModel: "新增模型",
+    temperature: "Temperature",
+    maxTokens: "最大 Tokens",
+    keyStorageNote: "安全说明：API Key 不会写入 localStorage。静态模式只保存非敏感偏好；Full 模式下 Key 只会通过受保护连接发送给 Agent Server，并应由服务端加密保存或作为环境变量管理。",
+    saveProviderConfig: "保存配置",
+    testConnection: "测试连接",
+    settingsSavedStatic: "已保存本地模型偏好。API Key 未被保存。",
+    settingsNeedsAgent: "尚未配置 Agent Server。API Key 没有发送，也没有保存。",
+    settingsSavedAgent: "配置已发送到 Agent Server。",
+    settingsAgentFailed: "Agent Server 未接受该配置。",
+    termsIntro: "HTML Vault 用于个人与团队知识资产管理。",
+    termsPrivateUse: "请仅处理你拥有、被授权处理，或可合法用于私有保存的内容。",
+    termsCopyright: "生成笔记应以总结和来源引用为主，不应整段复制受版权保护的作品。",
+    termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
+    aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
+    aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
+    aboutVersion: "当前早期版本：0.1.1。",
+    updatesIntro: "项目更新记录在仓库与本地规划文档中。",
+    updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
+    updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
+    updatesNext: "后续重点：Agent Server、安全服务商配置、Pagefind、元数据编辑。",
     loading: "加载中",
     items: "{count} 个条目",
     library: "资料库",
@@ -125,6 +197,8 @@ const state = {
   theme: getInitialTheme(),
   feedbackKey: "connectAgent",
   feedbackParams: {},
+  activeSettingsTab: "ai",
+  aiConfig: loadAiConfig(),
 };
 
 const elements = {
@@ -133,6 +207,21 @@ const elements = {
   languageSelect: document.querySelector("#language-select"),
   themeToggle: document.querySelector("#theme-toggle"),
   themeIcon: document.querySelector("#theme-icon"),
+  settingsOpen: document.querySelector("#settings-open"),
+  settingsClose: document.querySelector("#settings-close"),
+  settingsPage: document.querySelector("#settings-page"),
+  settingsTabs: document.querySelectorAll("[data-settings-tab]"),
+  settingsSections: document.querySelectorAll("[data-settings-section]"),
+  aiSettingsForm: document.querySelector("#ai-settings-form"),
+  aiProvider: document.querySelector("#ai-provider"),
+  currentModel: document.querySelector("#current-model"),
+  apiBaseUrl: document.querySelector("#api-base-url"),
+  apiKey: document.querySelector("#api-key"),
+  newModel: document.querySelector("#new-model"),
+  modelTemperature: document.querySelector("#model-temperature"),
+  modelMaxTokens: document.querySelector("#model-max-tokens"),
+  testProvider: document.querySelector("#test-provider"),
+  settingsFeedback: document.querySelector("#settings-feedback"),
   libraryNav: document.querySelector("#library-nav"),
   collectionNav: document.querySelector("#collection-nav"),
   tagNav: document.querySelector("#tag-nav"),
@@ -183,6 +272,7 @@ function renderApp() {
   renderTagNav();
   renderGrid();
   updateAgentStatus();
+  renderAiConfig();
 }
 
 function renderLibraryNav() {
@@ -328,6 +418,27 @@ function closeReader() {
   }
 }
 
+function openSettings(tab = "ai") {
+  state.activeSettingsTab = tab;
+  elements.settingsPage.hidden = false;
+  renderSettingsTabs();
+}
+
+function closeSettings() {
+  elements.settingsPage.hidden = true;
+}
+
+function renderSettingsTabs() {
+  elements.settingsTabs.forEach((tab) => {
+    const active = tab.dataset.settingsTab === state.activeSettingsTab;
+    tab.classList.toggle("active", active);
+  });
+  elements.settingsSections.forEach((section) => {
+    const active = section.dataset.settingsSection === state.activeSettingsTab;
+    section.classList.toggle("active", active);
+  });
+}
+
 function openFromHash() {
   const id = decodeURIComponent(window.location.hash.replace(/^#\/?/, ""));
   if (!id) return;
@@ -417,6 +528,75 @@ function applyTheme() {
   elements.themeIcon.textContent = state.theme === "dark" ? "☀" : "☾";
 }
 
+function loadAiConfig() {
+  try {
+    return JSON.parse(localStorage.getItem("html-vault-ai-config") || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function renderAiConfig() {
+  const config = state.aiConfig || {};
+  elements.aiProvider.value = config.provider || "openai";
+  elements.currentModel.value = config.currentModel || "";
+  elements.apiBaseUrl.value = config.apiBaseUrl || "";
+  elements.newModel.value = config.newModel || "";
+  elements.modelTemperature.value = config.temperature || "0.7";
+  elements.modelMaxTokens.value = config.maxTokens || "4096";
+  elements.apiKey.value = "";
+}
+
+async function saveAiConfig(event) {
+  event.preventDefault();
+  const apiKey = elements.apiKey.value.trim();
+  const config = {
+    provider: elements.aiProvider.value,
+    currentModel: elements.currentModel.value.trim(),
+    apiBaseUrl: elements.apiBaseUrl.value.trim(),
+    newModel: elements.newModel.value.trim(),
+    temperature: elements.modelTemperature.value,
+    maxTokens: elements.modelMaxTokens.value,
+  };
+
+  state.aiConfig = config;
+  localStorage.setItem("html-vault-ai-config", JSON.stringify(config));
+
+  if (!apiKey) {
+    elements.settingsFeedback.textContent = t("settingsSavedStatic");
+    return;
+  }
+
+  if (!state.agentUrl) {
+    elements.settingsFeedback.textContent = t("settingsNeedsAgent");
+    elements.apiKey.value = "";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/settings/ai-provider`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...config, api_key: apiKey }),
+    });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    elements.settingsFeedback.textContent = t("settingsSavedAgent");
+  } catch (error) {
+    elements.settingsFeedback.textContent = t("settingsAgentFailed");
+    console.error(error);
+  } finally {
+    elements.apiKey.value = "";
+  }
+}
+
+function testProviderConfig() {
+  if (!state.agentUrl) {
+    elements.settingsFeedback.textContent = t("settingsNeedsAgent");
+    return;
+  }
+  elements.settingsFeedback.textContent = t("settingsAgentFailed");
+}
+
 function t(key, params = {}) {
   const dictionary = i18n[state.language] || i18n.en;
   const fallback = i18n.en[key] || key;
@@ -472,6 +652,16 @@ elements.searchInput.addEventListener("input", (event) => {
 });
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
 elements.themeToggle.addEventListener("click", toggleTheme);
+elements.settingsOpen.addEventListener("click", () => openSettings());
+elements.settingsClose.addEventListener("click", closeSettings);
+elements.settingsTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    state.activeSettingsTab = tab.dataset.settingsTab;
+    renderSettingsTabs();
+  });
+});
+elements.aiSettingsForm.addEventListener("submit", saveAiConfig);
+elements.testProvider.addEventListener("click", testProviderConfig);
 elements.newItemForm.addEventListener("submit", submitNewItem);
 elements.readerClose.addEventListener("click", closeReader);
 elements.readerCopy.addEventListener("click", copyReaderLink);

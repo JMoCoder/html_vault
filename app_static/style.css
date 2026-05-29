@@ -131,7 +131,7 @@ select {
   margin-top: auto;
   padding-top: 18px;
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
   gap: 10px;
   align-items: end;
 }
@@ -151,7 +151,8 @@ select {
   color: var(--text);
 }
 
-.theme-toggle {
+.theme-toggle,
+.settings-toggle {
   width: 42px;
   height: 36px;
   border: 1px solid var(--line);
@@ -431,6 +432,171 @@ select {
   border: 0;
 }
 
+.settings-page {
+  position: fixed;
+  inset: 0 0 0 280px;
+  z-index: 20;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: var(--bg);
+}
+
+.settings-page[hidden] {
+  display: none;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.settings-header h2,
+.section-heading h3,
+.section-heading p,
+.text-block p,
+.settings-feedback {
+  margin: 0;
+}
+
+.settings-header h2 {
+  font-size: 26px;
+}
+
+.settings-body {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+.settings-nav {
+  padding: 18px;
+  border-right: 1px solid var(--line);
+  background: var(--panel-soft);
+}
+
+.settings-tab {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0 10px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.settings-tab:hover,
+.settings-tab.active {
+  border-color: var(--line);
+  background: var(--panel);
+}
+
+.settings-content {
+  min-width: 0;
+  overflow: auto;
+  padding: 24px;
+}
+
+.settings-section {
+  display: none;
+  max-width: 920px;
+}
+
+.settings-section.active {
+  display: grid;
+  gap: 18px;
+}
+
+.section-heading {
+  display: grid;
+  gap: 8px;
+}
+
+.section-heading h3 {
+  font-size: 22px;
+}
+
+.section-heading p,
+.text-block {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.settings-form {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  background: var(--panel);
+}
+
+.settings-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.settings-form input,
+.settings-form select {
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 11px;
+  background: var(--panel-soft);
+  color: var(--text);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.security-note {
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--panel-soft);
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: 13px;
+}
+
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.settings-actions button {
+  min-height: 38px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 0 13px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  cursor: pointer;
+}
+
+.settings-actions .secondary-button {
+  border-color: var(--line);
+  background: var(--panel-soft);
+  color: var(--text);
+}
+
+.settings-feedback {
+  color: var(--muted);
+  min-height: 20px;
+}
+
 .empty-state {
   border: 1px dashed var(--line);
   border-radius: 8px;
@@ -467,6 +633,31 @@ select {
 
   .reader {
     inset: 0;
+  }
+
+  .settings-page {
+    inset: 0;
+  }
+
+  .settings-body {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-nav {
+    display: flex;
+    gap: 8px;
+    overflow: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .settings-tab {
+    width: auto;
+    white-space: nowrap;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 
   .reader-header {
