@@ -234,7 +234,6 @@ const elements = {
   themeIcon: document.querySelector("#theme-icon"),
   settingsOpen: document.querySelector("#settings-open"),
   settingsBack: document.querySelector("#settings-back"),
-  settingsClose: document.querySelector("#settings-close"),
   settingsPage: document.querySelector("#settings-page"),
   settingsContent: document.querySelector(".settings-content"),
   settingsTabs: document.querySelectorAll("[data-settings-tab]"),
@@ -309,8 +308,7 @@ function renderLibraryNav() {
   elements.libraryNav.replaceChildren(...libraryFilterDefinitions.map((filter) => {
     const count = countLibraryFilter(filter.value);
     return navButton(t(filter.labelKey), count, state.filter.type === "library" && state.filter.value === filter.value, () => {
-      state.filter = { type: "library", value: filter.value };
-      renderApp();
+      selectLibraryFilter(filter.value);
     });
   }));
 }
@@ -320,8 +318,7 @@ function renderCollectionNav() {
     .filter((collection) => isManagedItemVisible("collections", collection.name))
     .map((collection) => {
     return navButton(collection.name, collection.count, state.filter.type === "collection" && state.filter.value === collection.name, () => {
-      state.filter = { type: "collection", value: collection.name, label: collection.name };
-      renderApp();
+      selectCollection(collection.name);
     });
   });
   elements.collectionNav.replaceChildren(...buttons);
@@ -336,8 +333,7 @@ function renderTagNav() {
     button.type = "button";
     button.textContent = `#${tag.name} ${tag.count}`;
     button.addEventListener("click", () => {
-      state.filter = { type: "tag", value: tag.name, label: `#${tag.name}` };
-      renderApp();
+      selectTag(tag.name);
     });
     return button;
   });
@@ -450,6 +446,33 @@ function closeReader() {
   if (window.location.hash) {
     history.pushState("", document.title, window.location.pathname + window.location.search);
   }
+}
+
+function returnToWorkspace() {
+  elements.reader.hidden = true;
+  elements.readerFrame.removeAttribute("src");
+  elements.settingsPage.hidden = true;
+  if (window.location.hash) {
+    history.pushState("", document.title, window.location.pathname + window.location.search);
+  }
+}
+
+function selectLibraryFilter(value) {
+  state.filter = { type: "library", value };
+  returnToWorkspace();
+  renderApp();
+}
+
+function selectCollection(name) {
+  state.filter = { type: "collection", value: name };
+  returnToWorkspace();
+  renderApp();
+}
+
+function selectTag(name) {
+  state.filter = { type: "tag", value: name };
+  returnToWorkspace();
+  renderApp();
 }
 
 function openSettings(tab = "collections", updateHash = true) {
@@ -798,7 +821,6 @@ elements.languageSelect.addEventListener("change", (event) => setLanguage(event.
 elements.themeToggle.addEventListener("click", toggleTheme);
 elements.settingsOpen.addEventListener("click", toggleSettings);
 elements.settingsBack.addEventListener("click", closeSettings);
-elements.settingsClose.addEventListener("click", closeSettings);
 elements.settingsTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     setSettingsTab(tab.dataset.settingsTab);
