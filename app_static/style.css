@@ -219,30 +219,16 @@ textarea {
 .sidebar-tools {
   margin-top: auto;
   padding-top: 18px;
-  display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) 42px;
+  display: flex;
+  justify-content: space-between;
   gap: 10px;
-  align-items: end;
-}
-
-.language-switcher {
-  display: grid;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.language-switcher select {
-  height: 36px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 0 10px;
-  background: var(--panel);
-  color: var(--text);
+  align-items: center;
 }
 
 .theme-toggle,
-.settings-toggle {
-  width: 42px;
+.settings-toggle,
+.github-link {
+  min-width: 42px;
   height: 36px;
   display: grid;
   place-items: center;
@@ -251,7 +237,33 @@ textarea {
   background: var(--panel);
   color: var(--text);
   cursor: pointer;
+  text-decoration: none;
+}
+
+.github-link {
+  padding: 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.github-link:hover {
+  border-color: var(--accent);
+  color: var(--accent-dark);
+}
+
+.theme-toggle {
+  width: fit-content;
+  min-width: 150px;
+  grid-auto-flow: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 12px;
   font-size: 18px;
+}
+
+.settings-toggle {
+  width: 42px;
 }
 
 .sidebar-collapsed .sidebar {
@@ -274,12 +286,11 @@ textarea {
 
 .sidebar-collapsed .brand-copy,
 .sidebar-collapsed .sidebar-main,
-.sidebar-collapsed .language-switcher {
+.sidebar-collapsed .github-link {
   display: none;
 }
 
 .sidebar-collapsed .sidebar-tools {
-  grid-template-columns: 42px;
   justify-content: center;
 }
 
@@ -1254,6 +1265,13 @@ textarea {
   padding: 0 11px;
   background: var(--panel-soft);
   color: var(--text);
+}
+
+.settings-form .theme-toggle {
+  height: 40px;
+  justify-self: start;
+  background: var(--panel-soft);
+  font-size: 14px;
 }
 
 .settings-form textarea {

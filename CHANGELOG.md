@@ -7,6 +7,21 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.3.13] - 2026-05-29
+
+### Added
+
+- GitHub repository link in the lower-right side of the sidebar footer.
+- Basic settings section for interface theme and language preferences.
+
+### Changed
+
+- Sidebar footer now keeps Settings on the left and removes theme/language
+  controls from the persistent navigation.
+- User-related settings now appear first: Basic settings, User profile, and
+  Account & security.
+- Package, app, and PWA cache version updated to `0.3.13`.
+
 ## [0.3.12] - 2026-05-29
 
 ### Changed

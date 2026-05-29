@@ -43,6 +43,10 @@ const i18n = {
     settingsTitle: "Settings",
     closeSettings: "Close settings",
     settingsSections: "Settings sections",
+    basicSettings: "Basic settings",
+    basicSettingsIntro: "Configure interface preferences stored in this browser.",
+    interfaceTheme: "Interface theme",
+    languageSetting: "Language",
     libraryManagement: "Library",
     collectionManagement: "Collections",
     tagManagement: "Tags",
@@ -127,7 +131,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.12.",
+    aboutVersion: "Current early version: 0.3.13.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -248,6 +252,10 @@ const i18n = {
     settingsTitle: "设置",
     closeSettings: "关闭设置",
     settingsSections: "设置分区",
+    basicSettings: "基本设置",
+    basicSettingsIntro: "配置保存在当前浏览器中的界面偏好。",
+    interfaceTheme: "界面设置",
+    languageSetting: "语言设置",
     libraryManagement: "资料库管理",
     collectionManagement: "集合管理",
     tagManagement: "标签管理",
@@ -332,7 +340,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.12。",
+    aboutVersion: "当前早期版本：0.3.13。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -453,6 +461,10 @@ const i18n = {
     settingsTitle: "設定",
     closeSettings: "設定を閉じる",
     settingsSections: "設定セクション",
+    basicSettings: "基本設定",
+    basicSettingsIntro: "このブラウザーに保存するインターフェース設定です。",
+    interfaceTheme: "インターフェーステーマ",
+    languageSetting: "言語設定",
     libraryManagement: "ライブラリ",
     collectionManagement: "コレクション",
     tagManagement: "タグ",
@@ -537,7 +549,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.12。",
+    aboutVersion: "現在の初期バージョン: 0.3.13。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -636,7 +648,7 @@ const state = {
   theme: getInitialTheme(),
   feedbackKey: "connectAgent",
   feedbackParams: {},
-  activeSettingsTab: "library",
+  activeSettingsTab: "basic",
   aiConfig: loadAiConfig(),
   dataConfig: loadDataConfig(),
   itemState: loadItemState(),
@@ -1086,7 +1098,7 @@ function syncSingleSelectionToMultiFilter(type, value) {
   }
 }
 
-function openSettings(tab = "library", updateHash = true) {
+function openSettings(tab = "basic", updateHash = true) {
   setSettingsTab(tab, false);
   elements.settingsPage.hidden = false;
   if (updateHash) {
@@ -1123,7 +1135,7 @@ function renderSettingsTabs() {
 
 function setSettingsTab(tab, updateHash = true) {
   const validTabs = new Set([...elements.settingsTabs].map((item) => item.dataset.settingsTab));
-  state.activeSettingsTab = validTabs.has(tab) ? tab : "library";
+  state.activeSettingsTab = validTabs.has(tab) ? tab : "basic";
   renderSettingsTabs();
   if (updateHash) {
     updateSettingsHash(state.activeSettingsTab);
