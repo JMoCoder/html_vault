@@ -6,6 +6,8 @@ const i18n = {
     readerFrameTitle: "HTML knowledge item",
     closeReader: "Close reader",
     home: "Home",
+    collapseSidebar: "Collapse sidebar",
+    expandSidebar: "Expand sidebar",
     language: "Language",
     toggleTheme: "Toggle dark and light mode",
     settings: "Settings",
@@ -163,6 +165,8 @@ const i18n = {
     readerFrameTitle: "HTML 知识条目",
     closeReader: "关闭阅读器",
     home: "回到主页",
+    collapseSidebar: "收起侧栏",
+    expandSidebar: "展开侧栏",
     language: "语言",
     toggleTheme: "切换暗色与亮色模式",
     settings: "设置",
@@ -320,6 +324,8 @@ const i18n = {
     readerFrameTitle: "HTML ナレッジ項目",
     closeReader: "リーダーを閉じる",
     home: "ホームへ戻る",
+    collapseSidebar: "サイドバーを折りたたむ",
+    expandSidebar: "サイドバーを展開",
     language: "言語",
     toggleTheme: "ダーク/ライトモードを切り替え",
     settings: "設定",
@@ -498,6 +504,7 @@ const state = {
   dataConfig: loadDataConfig(),
   itemState: loadItemState(),
   navConfig: loadNavConfig(),
+  sidebarCollapsed: getInitialSidebarState(),
   viewMode: getInitialViewMode(),
   hideArchived: getInitialArchiveFilter(),
   onlyFavorites: getInitialFavoriteFilter(),
@@ -505,7 +512,9 @@ const state = {
 };
 
 const elements = {
+  body: document.body,
   brandHome: document.querySelector("#brand-home"),
+  sidebarCollapse: document.querySelector("#sidebar-collapse"),
   siteTitle: document.querySelector("#site-title"),
   itemCount: document.querySelector("#item-count"),
   languageSelect: document.querySelector("#language-select"),
@@ -593,6 +602,7 @@ async function boot() {
 }
 
 function renderApp() {
+  applySidebarState();
   applyTheme();
   applyViewMode();
   applyArchiveFilter();
@@ -637,21 +647,16 @@ function renderTagNav() {
   const tags = (state.manifest.tags || [])
     .filter((tag) => isManagedItemVisible("tags", tag.name))
     .map((tag) => {
-    const button = document.createElement("button");
-    button.className = `tag-filter${state.filter.type === "tag" && state.filter.value === tag.name ? " active" : ""}`;
-    button.type = "button";
-    button.textContent = `#${tag.name} ${tag.count}`;
-    button.addEventListener("click", () => {
+    return navButton(`#${tag.name}`, tag.count, state.filter.type === "tag" && state.filter.value === tag.name, () => {
       selectTag(tag.name);
-    });
-    return button;
+    }, "tag-filter");
   });
   elements.tagNav.replaceChildren(...tags);
 }
 
-function navButton(label, count, active, onClick) {
+function navButton(label, count, active, onClick, extraClass = "") {
   const button = document.createElement("button");
-  button.className = `nav-item${active ? " active" : ""}`;
+  button.className = `nav-item${extraClass ? ` ${extraClass}` : ""}${active ? " active" : ""}`;
   button.type = "button";
   button.innerHTML = `<span>${escapeHtml(label)}</span><span>${count}</span>`;
   button.addEventListener("click", onClick);
@@ -1030,6 +1035,23 @@ function getInitialTheme() {
 function getInitialViewMode() {
   const saved = localStorage.getItem("html-vault-view-mode");
   return saved === "list" ? "list" : "cards";
+}
+
+function getInitialSidebarState() {
+  return localStorage.getItem("html-vault-sidebar-collapsed") === "true";
+}
+
+function toggleSidebar() {
+  state.sidebarCollapsed = !state.sidebarCollapsed;
+  localStorage.setItem("html-vault-sidebar-collapsed", String(state.sidebarCollapsed));
+  applySidebarState();
+}
+
+function applySidebarState() {
+  elements.body.classList.toggle("sidebar-collapsed", state.sidebarCollapsed);
+  const label = t(state.sidebarCollapsed ? "expandSidebar" : "collapseSidebar");
+  elements.sidebarCollapse.setAttribute("aria-label", label);
+  elements.sidebarCollapse.setAttribute("title", label);
 }
 
 function getInitialArchiveFilter() {
@@ -1537,6 +1559,7 @@ elements.searchInput.addEventListener("input", (event) => {
   renderGrid();
 });
 elements.brandHome.addEventListener("click", goHome);
+elements.sidebarCollapse.addEventListener("click", toggleSidebar);
 elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.favoriteFilter.addEventListener("click", toggleFavoriteFilter);
 elements.archiveFilter.addEventListener("click", toggleArchiveFilter);

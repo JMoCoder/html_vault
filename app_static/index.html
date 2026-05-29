@@ -13,13 +13,20 @@
 <body>
   <div class="shell">
     <aside class="sidebar" aria-label="Vault navigation" data-i18n-attr="aria-label:sidebarAria">
-      <button class="brand" type="button" id="brand-home" aria-label="Home" title="Home" data-i18n-attr="aria-label:home,title:home">
-        <img class="brand-mark" src="assets/html-vault-logo.svg" alt="" aria-hidden="true">
-        <div>
-          <h1 id="site-title">HTML Vault</h1>
-          <p id="item-count"></p>
-        </div>
-      </button>
+      <div class="sidebar-header">
+        <button class="brand" type="button" id="brand-home" aria-label="Home" title="Home" data-i18n-attr="aria-label:home,title:home">
+          <img class="brand-mark" src="assets/html-vault-logo.svg" alt="" aria-hidden="true">
+          <div class="brand-copy">
+            <h1 id="site-title">HTML Vault</h1>
+            <p id="item-count"></p>
+          </div>
+        </button>
+        <button class="sidebar-collapse-toggle" type="button" id="sidebar-collapse" aria-label="Collapse sidebar" title="Collapse sidebar" data-i18n-attr="aria-label:collapseSidebar,title:collapseSidebar">
+          <svg class="button-icon collapse-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6"></path>
+          </svg>
+        </button>
+      </div>
 
       <div class="sidebar-main">
         <button class="new-button" type="button" data-import-entry data-i18n="newButton"></button>

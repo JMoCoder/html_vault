@@ -56,6 +56,11 @@ textarea {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
+  transition: grid-template-columns 160ms ease;
+}
+
+.sidebar-collapsed .shell {
+  grid-template-columns: 80px minmax(0, 1fr);
 }
 
 .sidebar {
@@ -70,12 +75,20 @@ textarea {
   border-right: 1px solid var(--line);
 }
 
+.sidebar-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 36px;
+  gap: 8px;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
 .brand {
   display: flex;
   align-items: center;
   width: 100%;
   gap: 12px;
-  margin-bottom: 20px;
+  min-width: 0;
   border: 0;
   padding: 0;
   background: transparent;
@@ -94,6 +107,34 @@ textarea {
   border-radius: 8px;
   display: block;
   object-fit: cover;
+}
+
+.brand-copy {
+  min-width: 0;
+}
+
+.sidebar-collapse-toggle {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.sidebar-collapse-toggle:hover {
+  color: var(--accent-dark);
+}
+
+.collapse-icon {
+  transition: transform 160ms ease;
+}
+
+.sidebar-collapsed .collapse-icon {
+  transform: rotate(180deg);
 }
 
 .brand h1,
@@ -174,6 +215,31 @@ textarea {
   font-size: 18px;
 }
 
+.sidebar-collapsed .sidebar {
+  padding: 22px 14px;
+  overflow: hidden;
+}
+
+.sidebar-collapsed .sidebar-header {
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+
+.sidebar-collapsed .brand {
+  justify-content: center;
+}
+
+.sidebar-collapsed .brand-copy,
+.sidebar-collapsed .sidebar-main,
+.sidebar-collapsed .language-switcher {
+  display: none;
+}
+
+.sidebar-collapsed .sidebar-tools {
+  grid-template-columns: 42px;
+  justify-content: center;
+}
+
 .nav-section {
   margin: 22px 0;
 }
@@ -208,11 +274,6 @@ textarea {
   align-items: center;
   justify-content: space-between;
   padding: 0 10px;
-}
-
-.tag-filter {
-  padding: 0 10px;
-  text-align: left;
 }
 
 .nav-item:hover,
@@ -596,6 +657,10 @@ textarea {
   z-index: 10;
 }
 
+.sidebar-collapsed .reader {
+  left: 80px;
+}
+
 .reader[hidden] {
   display: none;
 }
@@ -668,6 +733,10 @@ textarea {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   background: var(--bg);
+}
+
+.sidebar-collapsed .settings-page {
+  left: 80px;
 }
 
 .settings-page[hidden] {
