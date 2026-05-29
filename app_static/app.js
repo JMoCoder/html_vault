@@ -13,9 +13,15 @@ const i18n = {
     settingsSections: "Settings sections",
     collectionManagement: "Collection management",
     tagManagement: "Tag management",
-    collectionManagementIntro: "Rename or hide collections in the left sidebar. This changes navigation labels only, not item metadata.",
-    tagManagementIntro: "Rename or hide tags in the left sidebar. Original tag values on cards remain unchanged.",
-    displayName: "Display name",
+    collectionManagementIntro: "Hide collections from the sidebar now. Add, rename, merge, and delete need a metadata writer because collections are stored on items.",
+    tagManagementIntro: "Hide tags from the sidebar now. Add, rename, merge, and delete need a metadata writer because tags are stored on items.",
+    managementStaticNote: "Static mode can only control sidebar visibility. Structural changes must update item metadata through Agent Server or a metadata editor.",
+    addCollection: "Add collection",
+    addTag: "Add tag",
+    rename: "Rename",
+    merge: "Merge",
+    delete: "Delete",
+    requiresWriter: "Requires metadata writer",
     visible: "Visible",
     aiProviders: "AI providers",
     userAgreement: "User agreement",
@@ -107,9 +113,15 @@ const i18n = {
     settingsSections: "设置分区",
     collectionManagement: "集合管理",
     tagManagement: "标签管理",
-    collectionManagementIntro: "重命名或隐藏左侧导航栏中的集合。这里只改变导航显示，不修改条目元数据。",
-    tagManagementIntro: "重命名或隐藏左侧导航栏中的标签。卡片上的原始标签值保持不变。",
-    displayName: "显示名称",
+    collectionManagementIntro: "当前可隐藏侧栏集合。新增、重命名、合并、删除需要元数据写入能力，因为集合保存在条目上。",
+    tagManagementIntro: "当前可隐藏侧栏标签。新增、重命名、合并、删除需要元数据写入能力，因为标签保存在条目上。",
+    managementStaticNote: "静态模式只能控制侧栏显隐。结构性变更必须通过 Agent Server 或元数据编辑器批量更新条目元数据。",
+    addCollection: "新增集合",
+    addTag: "新增标签",
+    rename: "重命名",
+    merge: "合并",
+    delete: "删除",
+    requiresWriter: "需要元数据写入服务",
     visible: "显示",
     aiProviders: "AI 服务商配置",
     userAgreement: "用户协议",
@@ -307,7 +319,7 @@ function renderCollectionNav() {
   const buttons = (state.manifest.collections || [])
     .filter((collection) => isManagedItemVisible("collections", collection.name))
     .map((collection) => {
-    return navButton(getManagedItemLabel("collections", collection.name), collection.count, state.filter.type === "collection" && state.filter.value === collection.name, () => {
+    return navButton(collection.name, collection.count, state.filter.type === "collection" && state.filter.value === collection.name, () => {
       state.filter = { type: "collection", value: collection.name, label: collection.name };
       renderApp();
     });
@@ -322,7 +334,7 @@ function renderTagNav() {
     const button = document.createElement("button");
     button.className = `tag-filter${state.filter.type === "tag" && state.filter.value === tag.name ? " active" : ""}`;
     button.type = "button";
-    button.textContent = `#${getManagedItemLabel("tags", tag.name)} ${tag.count}`;
+    button.textContent = `#${tag.name} ${tag.count}`;
     button.addEventListener("click", () => {
       state.filter = { type: "tag", value: tag.name, label: `#${tag.name}` };
       renderApp();
@@ -441,11 +453,10 @@ function closeReader() {
 }
 
 function openSettings(tab = "collections", updateHash = true) {
-  state.activeSettingsTab = tab;
+  setSettingsTab(tab, false);
   elements.settingsPage.hidden = false;
-  renderSettingsTabs();
   if (updateHash) {
-    window.location.hash = `/settings/${tab}`;
+    updateSettingsHash(state.activeSettingsTab);
   }
 }
 
@@ -474,6 +485,22 @@ function renderSettingsTabs() {
     section.classList.toggle("active", active);
   });
   elements.settingsContent.scrollTop = 0;
+}
+
+function setSettingsTab(tab, updateHash = true) {
+  const validTabs = new Set([...elements.settingsTabs].map((item) => item.dataset.settingsTab));
+  state.activeSettingsTab = validTabs.has(tab) ? tab : "collections";
+  renderSettingsTabs();
+  if (updateHash) {
+    updateSettingsHash(state.activeSettingsTab);
+  }
+}
+
+function updateSettingsHash(tab) {
+  const nextHash = `#/settings/${tab}`;
+  if (window.location.hash !== nextHash) {
+    window.location.hash = `/settings/${tab}`;
+  }
 }
 
 function openFromHash() {
@@ -592,13 +619,8 @@ function saveNavConfig() {
 
 function getManagedItemConfig(type, name) {
   state.navConfig[type] ||= {};
-  state.navConfig[type][name] ||= { label: name, visible: true };
+  state.navConfig[type][name] ||= { visible: true };
   return state.navConfig[type][name];
-}
-
-function getManagedItemLabel(type, name) {
-  const config = getManagedItemConfig(type, name);
-  return config.label?.trim() || name;
 }
 
 function isManagedItemVisible(type, name) {
@@ -612,8 +634,22 @@ function renderManagementLists() {
 }
 
 function renderManagementList(type, items, container) {
+  const actions = renderManagementActions(type);
   const rows = items.map((item) => renderManagementRow(type, item.name, item.count));
-  container.replaceChildren(...rows);
+  container.replaceChildren(actions, ...rows);
+}
+
+function renderManagementActions(type) {
+  const panel = document.createElement("div");
+  panel.className = "management-actions-panel";
+  panel.innerHTML = `
+    <p>${escapeHtml(t("managementStaticNote"))}</p>
+    <div>
+      <input type="text" disabled value="" placeholder="${escapeHtml(type === "collections" ? t("addCollection") : t("addTag"))}">
+      <button type="button" disabled>${escapeHtml(type === "collections" ? t("addCollection") : t("addTag"))}</button>
+    </div>
+  `;
+  return panel;
 }
 
 function renderManagementRow(type, name, count) {
@@ -621,25 +657,20 @@ function renderManagementRow(type, name, count) {
   const row = document.createElement("div");
   row.className = "management-row";
   row.innerHTML = `
-    <div>
+    <div class="management-name">
       <strong>${escapeHtml(name)}</strong>
       <span>${count}</span>
     </div>
-    <label>
-      <span>${escapeHtml(t("displayName"))}</span>
-      <input type="text" value="${escapeHtml(config.label || name)}" data-management-label>
-    </label>
     <label class="switch-row">
       <input type="checkbox" ${config.visible === false ? "" : "checked"} data-management-visible>
       <span>${escapeHtml(t("visible"))}</span>
     </label>
+    <div class="management-actions">
+      <button type="button" disabled title="${escapeHtml(t("requiresWriter"))}">${escapeHtml(t("rename"))}</button>
+      <button type="button" disabled title="${escapeHtml(t("requiresWriter"))}">${escapeHtml(t("merge"))}</button>
+      <button type="button" disabled title="${escapeHtml(t("requiresWriter"))}">${escapeHtml(t("delete"))}</button>
+    </div>
   `;
-  row.querySelector("[data-management-label]").addEventListener("input", (event) => {
-    getManagedItemConfig(type, name).label = event.target.value;
-    saveNavConfig();
-    renderCollectionNav();
-    renderTagNav();
-  });
   row.querySelector("[data-management-visible]").addEventListener("change", (event) => {
     getManagedItemConfig(type, name).visible = event.target.checked;
     saveNavConfig();
@@ -770,9 +801,7 @@ elements.settingsBack.addEventListener("click", closeSettings);
 elements.settingsClose.addEventListener("click", closeSettings);
 elements.settingsTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
-    state.activeSettingsTab = tab.dataset.settingsTab;
-    renderSettingsTabs();
-    window.location.hash = `/settings/${state.activeSettingsTab}`;
+    setSettingsTab(tab.dataset.settingsTab);
   });
 });
 elements.aiSettingsForm.addEventListener("submit", saveAiConfig);

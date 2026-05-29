@@ -27,8 +27,8 @@ versioning after the initial public release.
 - Dark and light theme toggle with a compact icon control.
 - Settings page with AI provider configuration, user agreement, about, and
   update documentation sections.
-- Collection and tag management sections that link directly to the left
-  sidebar navigation.
+- Collection and tag management sections with sidebar visibility controls and
+  disabled structural actions for future metadata writing.
 
 ### Changed
 

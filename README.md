@@ -131,9 +131,10 @@ the browser.
 
 ## Sidebar Management
 
-Collection and tag management live in the settings page. They can rename or
-hide sidebar navigation entries without modifying the original item metadata,
-HTML files, or tag values displayed on cards.
+Collection and tag management live in the settings page. Static mode can hide
+sidebar navigation entries without modifying original metadata. Add, rename,
+merge, and delete are structural metadata operations and require the future
+Agent Server or metadata editor to update `meta/items/**/*.yml`.
 
 ## Docker
 

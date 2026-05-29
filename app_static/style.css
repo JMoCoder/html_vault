@@ -634,7 +634,7 @@ select {
 
 .management-row {
   display: grid;
-  grid-template-columns: minmax(150px, 1fr) minmax(220px, 1.2fr) auto;
+  grid-template-columns: minmax(150px, 1fr) auto auto;
   gap: 12px;
   align-items: center;
   border: 1px solid var(--line);
@@ -643,7 +643,7 @@ select {
   background: var(--panel);
 }
 
-.management-row > div {
+.management-name {
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -655,14 +655,16 @@ select {
   font-weight: 600;
 }
 
-.management-row label {
+.management-row label,
+.management-actions-panel p {
   display: grid;
   gap: 6px;
   color: var(--muted);
   font-size: 13px;
 }
 
-.management-row input[type="text"] {
+.management-row input[type="text"],
+.management-actions-panel input {
   height: 36px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -675,6 +677,48 @@ select {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.management-actions-panel {
+  display: grid;
+  gap: 12px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--panel);
+}
+
+.management-actions-panel p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.management-actions-panel div,
+.management-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.management-actions-panel input {
+  flex: 1 1 220px;
+}
+
+.management-actions button,
+.management-actions-panel button {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: var(--panel-soft);
+  color: var(--muted);
+}
+
+.management-actions button:disabled,
+.management-actions-panel button:disabled,
+.management-actions-panel input:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 .empty-state {
