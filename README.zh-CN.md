@@ -62,6 +62,8 @@ html-vault serve-api --port 8787
 
 - `GET /api/health`
 - `GET /api/manifest`
+- `GET /api/navigation`
+- `PUT /api/navigation`
 - `GET /api/items`
 - `GET /api/items/{id}`
 - `GET /api/items/{id}/content`
@@ -72,6 +74,8 @@ html-vault serve-api --port 8787
 - `DELETE /api/items/{id}`
 
 `GET /api/items` 支持当前前端列表逻辑：资料库筛选、集合、逗号分隔标签、`tag_match=any|all`、收藏/归档筛选、搜索、排序和 limit。
+
+`GET /api/navigation` 与 `PUT /api/navigation` 会把资料库视图、集合和标签的侧栏显隐偏好持久化到 `meta/config/navigation.json`。
 
 `POST /api/uploads/html` 接收 multipart HTML 文件，并支持可选 `title`、`summary`、`collection`、逗号分隔 `tags`。成功导入后会写入 `content/imported/YYYY/MM/`，生成 sidecar metadata，重新构建 `public/`，并返回已索引条目。
 
@@ -85,7 +89,7 @@ html-vault serve-api --port 8787
 
 ## 侧栏管理
 
-资料库、集合和标签管理位于设置页。静态模式可以隐藏侧栏导航项，但不会修改原始元数据。资料库是固定系统视图，所以仅支持显隐控制。集合和标签的新增、重命名、合并、删除属于结构性元数据操作，需要未来批量元数据 API 支持。当前单条笔记元信息编辑器在配置 Agent Server 时会通过 `PATCH /api/items/{id}/metadata` 写回，静态模式下继续保存浏览器本地覆盖状态。
+资料库、集合和标签管理位于设置页。静态模式可以隐藏侧栏导航项，但不会修改原始元数据。资料库是固定系统视图，所以仅支持显隐控制。集合和标签的新增、重命名、合并、删除属于结构性元数据操作，需要未来批量元数据 API 支持。当前单条笔记元信息编辑器在配置 Agent Server 时会通过 `PATCH /api/items/{id}/metadata` 写回，静态模式下继续保存浏览器本地覆盖状态。显隐设置在后端可用时会通过 `PUT /api/navigation` 持久化。
 
 ## 本地数据设置
 

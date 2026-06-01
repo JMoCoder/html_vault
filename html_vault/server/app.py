@@ -16,6 +16,7 @@ from html_vault import __version__
 
 from .config import ServerSettings, load_settings
 from .items import ItemContentError, ItemDeleteError, ItemMetadataError, ItemService, ItemStateError, normalize_query
+from .navigation import NavigationConfigError, NavigationConfigService
 from .uploads import UploadError, UploadService
 
 
@@ -30,6 +31,10 @@ def get_item_service(settings: Annotated[ServerSettings, Depends(get_settings)])
 
 def get_upload_service(settings: Annotated[ServerSettings, Depends(get_settings)]) -> UploadService:
     return UploadService(settings)
+
+
+def get_navigation_service(settings: Annotated[ServerSettings, Depends(get_settings)]) -> NavigationConfigService:
+    return NavigationConfigService(settings)
 
 
 def create_app() -> FastAPI:
@@ -90,6 +95,20 @@ def create_app() -> FastAPI:
             return HTMLResponse(service.read_item_content(item_id))
         except ItemContentError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get("/api/navigation")
+    def navigation(service: Annotated[NavigationConfigService, Depends(get_navigation_service)]) -> dict:
+        try:
+            return service.get_config()
+        except NavigationConfigError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.put("/api/navigation")
+    def update_navigation(values: dict, service: Annotated[NavigationConfigService, Depends(get_navigation_service)]) -> dict:
+        try:
+            return service.update_config(values)
+        except NavigationConfigError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.patch("/api/items/{item_id:path}/metadata")
     def update_item_metadata(item_id: str, values: dict, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:

@@ -62,6 +62,8 @@ html-vault serve-api --port 8787
 
 - `GET /api/health`
 - `GET /api/manifest`
+- `GET /api/navigation`
+- `PUT /api/navigation`
 - `GET /api/items`
 - `GET /api/items/{id}`
 - `GET /api/items/{id}/content`
@@ -72,6 +74,8 @@ html-vault serve-api --port 8787
 - `DELETE /api/items/{id}`
 
 `GET /api/items` は現在のフロントエンド一覧ロジックに対応します。ライブラリ、コレクション、カンマ区切りタグ、`tag_match=any|all`、お気に入り/アーカイブ、検索、並び替え、limit を指定できます。
+
+`GET /api/navigation` と `PUT /api/navigation` は、ライブラリ表示、コレクション、タグのサイドバー表示設定を `meta/config/navigation.json` に永続化します。
 
 `POST /api/uploads/html` は multipart HTML ファイルを受け取り、任意で `title`、`summary`、`collection`、カンマ区切り `tags` を指定できます。成功時は `content/imported/YYYY/MM/` に保存し、sidecar metadata を生成し、`public/` を再ビルドして、インデックス済み項目を返します。
 
@@ -85,7 +89,7 @@ html-vault serve-api --port 8787
 
 ## サイドバー管理
 
-ライブラリ、コレクション、タグの管理は設定ページにあります。静的モードではサイドバー項目の表示/非表示のみ変更でき、元のメタデータは変更しません。ライブラリは固定のシステムビューなので、表示/非表示のみ変更できます。コレクションとタグの追加、名前変更、統合、削除は構造的なメタデータ操作であり、将来の一括メタデータ API が必要です。現在の単一ノート用メタデータエディターは、Agent Server 設定時に `PATCH /api/items/{id}/metadata` で書き戻し、静的モードではブラウザー内の上書きとして保存します。
+ライブラリ、コレクション、タグの管理は設定ページにあります。静的モードではサイドバー項目の表示/非表示のみ変更でき、元のメタデータは変更しません。ライブラリは固定のシステムビューなので、表示/非表示のみ変更できます。コレクションとタグの追加、名前変更、統合、削除は構造的なメタデータ操作であり、将来の一括メタデータ API が必要です。現在の単一ノート用メタデータエディターは、Agent Server 設定時に `PATCH /api/items/{id}/metadata` で書き戻し、静的モードではブラウザー内の上書きとして保存します。表示設定は利用可能な場合 `PUT /api/navigation` で永続化します。
 
 ## ローカルデータ設定
 

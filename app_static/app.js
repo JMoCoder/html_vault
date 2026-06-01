@@ -138,7 +138,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current item state persistence release: 0.4.6.",
+    aboutVersion: "Current navigation visibility persistence release: 0.4.7.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -221,6 +221,7 @@ const i18n = {
     metadataSaved: "Metadata saved.",
     metadataSaveFailed: "Metadata save failed.",
     stateSaveFailed: "State save failed.",
+    navigationSaveFailed: "Navigation settings save failed.",
     favoriteAction: "Favorite",
     unfavoriteAction: "Remove favorite",
     archiveAction: "Archive",
@@ -373,7 +374,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前条目状态持久化版本：0.4.6。",
+    aboutVersion: "当前导航显隐持久化版本：0.4.7。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -456,6 +457,7 @@ const i18n = {
     metadataSaved: "元信息已保存。",
     metadataSaveFailed: "元信息保存失败。",
     stateSaveFailed: "状态保存失败。",
+    navigationSaveFailed: "导航设置保存失败。",
     favoriteAction: "收藏",
     unfavoriteAction: "取消收藏",
     archiveAction: "归档",
@@ -608,7 +610,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の項目状態永続化バージョン: 0.4.6。",
+    aboutVersion: "現在のナビゲーション表示設定永続化バージョン: 0.4.7。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -691,6 +693,7 @@ const i18n = {
     metadataSaved: "メタデータを保存しました。",
     metadataSaveFailed: "メタデータの保存に失敗しました。",
     stateSaveFailed: "状態の保存に失敗しました。",
+    navigationSaveFailed: "ナビゲーション設定の保存に失敗しました。",
     favoriteAction: "お気に入り",
     unfavoriteAction: "お気に入り解除",
     archiveAction: "アーカイブ",
@@ -853,6 +856,7 @@ async function boot() {
   applyTheme();
   applyTranslations();
   try {
+    await loadRemoteNavConfig();
     const response = await fetch("manifest.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`Unable to load manifest: ${response.status}`);
     state.manifest = await response.json();
@@ -2094,8 +2098,46 @@ function loadNavConfig() {
   }
 }
 
+async function loadRemoteNavConfig() {
+  if (!state.agentUrl) return;
+  try {
+    const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/navigation`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    state.navConfig = normalizeNavConfig(await response.json());
+    saveNavConfig();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 function saveNavConfig() {
   localStorage.setItem("html-vault-nav-config", JSON.stringify(state.navConfig));
+}
+
+async function persistNavConfig() {
+  saveNavConfig();
+  if (!state.agentUrl) return;
+  try {
+    const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/navigation`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(normalizeNavConfig(state.navConfig)),
+    });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    state.navConfig = normalizeNavConfig(await response.json());
+    saveNavConfig();
+  } catch (error) {
+    setFeedback("navigationSaveFailed");
+    console.error(error);
+  }
+}
+
+function normalizeNavConfig(config) {
+  return {
+    library: config?.library || {},
+    collections: config?.collections || {},
+    tags: config?.tags || {},
+  };
 }
 
 function getManagedItemConfig(type, name) {
@@ -2171,9 +2213,9 @@ function renderManagementRow(type, name, count, label = name) {
     </label>
     ${actions}
   `;
-  row.querySelector("[data-management-visible]").addEventListener("change", (event) => {
+  row.querySelector("[data-management-visible]").addEventListener("change", async (event) => {
     getManagedItemConfig(type, name).visible = event.target.checked;
-    saveNavConfig();
+    await persistNavConfig();
     renderLibraryNav();
     renderCollectionNav();
     renderTagNav();

@@ -2,6 +2,15 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.7] - 2026-06-01
+
+### 新增
+
+- 新增 `GET /api/navigation` 与 `PUT /api/navigation`，用于持久化资料库视图、集合和标签的侧栏显隐偏好。
+- 导航显隐设置保存到 `meta/config/navigation.json`。
+- 前端设置管理页在配置 Agent Server URL 时会通过后端读取和保存导航显隐；静态模式继续使用 localStorage fallback。
+- 新增导航配置的服务层测试和真实 HTTP 集成测试。
+
 ## [0.4.6] - 2026-06-01
 
 ### 新增

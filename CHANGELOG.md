@@ -7,6 +7,18 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.7] - 2026-06-01
+
+### Added
+
+- Added `GET /api/navigation` and `PUT /api/navigation` for persisting sidebar
+  visibility preferences for library views, collections, and tags.
+- Navigation visibility settings are stored in `meta/config/navigation.json`.
+- The frontend settings management page loads and saves navigation visibility
+  through the backend when an Agent Server URL is configured, with local storage
+  fallback in static mode.
+- Added service and real HTTP integration tests for navigation configuration.
+
 ## [0.4.6] - 2026-06-01
 
 ### Added

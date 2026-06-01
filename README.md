@@ -159,6 +159,8 @@ Implemented endpoints:
 
 - `GET /api/health`
 - `GET /api/manifest`
+- `GET /api/navigation`
+- `PUT /api/navigation`
 - `GET /api/items`
 - `GET /api/items/{id}`
 - `GET /api/items/{id}/content`
@@ -171,6 +173,10 @@ Implemented endpoints:
 `GET /api/items` supports the current frontend list logic: library filters,
 collection, comma-separated tags with `tag_match=any|all`, favorite/archive
 filters, search query, sorting, and limit.
+
+`GET /api/navigation` and `PUT /api/navigation` persist sidebar visibility
+preferences for library views, collections, and tags in
+`meta/config/navigation.json`.
 
 `POST /api/uploads/html` accepts a multipart HTML file plus optional `title`,
 `summary`, `collection`, and comma-separated `tags`. Successful imports write
@@ -212,6 +218,7 @@ rename, merge, and delete for collections or tags are structural metadata
 operations and require future batch metadata APIs. The current per-note
 metadata editor writes through `PATCH /api/items/{id}/metadata` when the Agent
 Server is configured, and falls back to local browser overrides in static mode.
+Visibility settings are persisted through `PUT /api/navigation` when available.
 
 ## Local Data Settings
 

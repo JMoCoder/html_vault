@@ -2,6 +2,15 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.7] - 2026-06-01
+
+### Added
+
+- ライブラリ表示、コレクション、タグのサイドバー表示設定を永続化する `GET /api/navigation` と `PUT /api/navigation` を追加しました。
+- ナビゲーション表示設定は `meta/config/navigation.json` に保存します。
+- Agent Server URL が設定されている場合、フロントエンドの設定管理ページはバックエンド経由でナビゲーション表示設定を読み書きします。静的モードでは localStorage fallback を維持します。
+- ナビゲーション設定のサービス層テストと実 HTTP 統合テストを追加しました。
+
 ## [0.4.6] - 2026-06-01
 
 ### Added
