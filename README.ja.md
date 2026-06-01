@@ -65,6 +65,7 @@ html-vault serve-api --port 8787
 - `GET /api/navigation`
 - `PUT /api/navigation`
 - `GET /api/items`
+- `GET /api/search`
 - `GET /api/items/{id}`
 - `GET /api/items/{id}/content`
 - `GET /api/items/{id}/raw`
@@ -74,6 +75,8 @@ html-vault serve-api --port 8787
 - `DELETE /api/items/{id}`
 
 `GET /api/items` は現在のフロントエンド一覧ロジックに対応します。ライブラリ、コレクション、カンマ区切りタグ、`tag_match=any|all`、お気に入り/アーカイブ、検索、並び替え、limit を指定できます。
+
+`GET /api/search` は `GET /api/items` と同じパラメータを受け取り、命中した項目、スコア、命中フィールド、スニペットを含む構造化検索結果を返します。現在の実装は manifest メタデータフィールドを使用し、将来 Pagefind、SQLite FTS、クラウド検索バックエンドへ置き換えられます。
 
 `GET /api/navigation` と `PUT /api/navigation` は、ライブラリ表示、コレクション、タグのサイドバー表示設定を `meta/config/navigation.json` に永続化します。
 

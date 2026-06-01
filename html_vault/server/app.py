@@ -82,6 +82,32 @@ def create_app() -> FastAPI:
         result = service.list_items(query)
         return {"items": result, "count": len(result)}
 
+    @app.get("/api/search")
+    def search(
+        service: Annotated[ItemService, Depends(get_item_service)],
+        q: str = "",
+        library: str = "all",
+        collection: str = "",
+        tags: str = "",
+        tag_match: str = "any",
+        favorite: bool | None = None,
+        archived: bool | None = None,
+        sort: str = "newest",
+        limit: Annotated[int | None, Query(gt=0, le=500)] = None,
+    ) -> dict:
+        query = normalize_query(
+            q=q,
+            library=library,
+            collection=collection,
+            tags=tags,
+            tag_match=tag_match,
+            favorite=favorite,
+            archived=archived,
+            sort=sort,
+            limit=limit,
+        )
+        return service.search_items(query)
+
     @app.get("/api/items/{item_id:path}/content", response_class=HTMLResponse)
     def item_content(item_id: str, service: Annotated[ItemService, Depends(get_item_service)]) -> HTMLResponse:
         try:

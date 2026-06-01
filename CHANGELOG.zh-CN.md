@@ -2,6 +2,14 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.8] - 2026-06-01
+
+### 新增
+
+- 新增 `GET /api/search`，参数与 `GET /api/items` 的筛选、排序参数保持一致。
+- 搜索响应包含命中的条目、分数、命中字段和摘要片段，为后续 Pagefind、SQLite FTS 或云端搜索后端保留稳定接口。
+- 新增搜索 query、标签 OR/AND、收藏筛选、中文搜索和结果元数据的服务层测试与真实 HTTP 集成测试。
+
 ## [0.4.7] - 2026-06-01
 
 ### 新增

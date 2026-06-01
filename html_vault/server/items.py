@@ -55,6 +55,14 @@ class ItemService:
             items = items[: query.limit]
         return items
 
+    def search_items(self, query: ItemQuery) -> dict[str, Any]:
+        items = self.list_items(query)
+        return {
+            "query": query.q,
+            "count": len(items),
+            "items": [build_search_result(item, query.q) for item in items],
+        }
+
     def get_item(self, item_id: str) -> dict[str, Any] | None:
         for item in self.manifest().get("items", []):
             if item.get("id") == item_id:
@@ -298,6 +306,65 @@ def searchable_text(item: dict[str, Any]) -> str:
         ]
         if value
     ).lower()
+
+
+def build_search_result(item: dict[str, Any], query: str) -> dict[str, Any]:
+    return {
+        "item": item,
+        "score": score_search_result(item, query),
+        "matches": search_matches(item, query),
+        "snippet": search_snippet(item, query),
+    }
+
+
+def score_search_result(item: dict[str, Any], query: str) -> int:
+    if not query:
+        return 0
+    needle = query.lower()
+    score = 0
+    if needle in str(item.get("title") or "").lower():
+        score += 30
+    if needle in str(item.get("summary") or "").lower():
+        score += 20
+    if needle in str(item.get("collection") or "").lower():
+        score += 10
+    if needle in " ".join(str(tag) for tag in item.get("tags") or []).lower():
+        score += 10
+    if needle in str(item.get("path") or "").lower():
+        score += 5
+    return score
+
+
+def search_matches(item: dict[str, Any], query: str) -> list[str]:
+    if not query:
+        return []
+    needle = query.lower()
+    matches: list[str] = []
+    fields = {
+        "title": item.get("title"),
+        "summary": item.get("summary"),
+        "collection": item.get("collection"),
+        "tags": " ".join(str(tag) for tag in item.get("tags") or []),
+        "path": item.get("path"),
+    }
+    for field, value in fields.items():
+        if needle in str(value or "").lower():
+            matches.append(field)
+    return matches
+
+
+def search_snippet(item: dict[str, Any], query: str) -> str:
+    source = str(item.get("summary") or item.get("title") or "")
+    if not query:
+        return source[:180]
+    index = source.lower().find(query.lower())
+    if index < 0:
+        return source[:180]
+    start = max(0, index - 60)
+    end = min(len(source), index + len(query) + 120)
+    prefix = "..." if start > 0 else ""
+    suffix = "..." if end < len(source) else ""
+    return f"{prefix}{source[start:end].strip()}{suffix}"
 
 
 def sort_items(items: list[dict[str, Any]], sort: str) -> list[dict[str, Any]]:

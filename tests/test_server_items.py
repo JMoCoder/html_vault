@@ -55,6 +55,34 @@ def test_item_service_searches_metadata() -> None:
     assert [item["id"] for item in items] == ["generated/2026/05/mcp-security.html"]
 
 
+def test_item_service_search_results_include_matches_and_snippets() -> None:
+    service = ItemService(SETTINGS)
+
+    result = service.search_items(normalize_query(q="docker", tags="MCP,Docker", tag_match="all"))
+
+    assert result["query"] == "docker"
+    assert result["count"] == 1
+    assert result["items"][0]["item"]["id"] == "generated/2026/05/mcp-docker-agent.html"
+    assert "title" in result["items"][0]["matches"] or "tags" in result["items"][0]["matches"]
+    assert result["items"][0]["score"] > 0
+
+
+def test_item_service_search_filters_favorites_and_tag_match_modes() -> None:
+    service = ItemService(SETTINGS)
+
+    any_result = service.search_items(normalize_query(tags="Docker,Security", tag_match="any"))
+    all_result = service.search_items(normalize_query(tags="MCP,Docker", tag_match="all"))
+    favorite_result = service.search_items(normalize_query(tags="MCP", favorite=True))
+
+    assert {entry["item"]["id"] for entry in any_result["items"]} == {
+        "generated/2026/05/mcp-docker-agent.html",
+        "imported/docker-network.html",
+        "generated/2026/05/mcp-security.html",
+    }
+    assert [entry["item"]["id"] for entry in all_result["items"]] == ["generated/2026/05/mcp-docker-agent.html"]
+    assert [entry["item"]["id"] for entry in favorite_result["items"]] == ["generated/2026/05/mcp-security.html"]
+
+
 def test_item_service_deletes_archived_item_and_rebuilds(tmp_path: Path) -> None:
     content_dir = tmp_path / "content"
     meta_dir = tmp_path / "meta"
@@ -176,5 +204,10 @@ def test_server_items_api() -> None:
         raw = server.request_text("GET", "/api/items/imported/docker-network.html/raw")
         assert "Docker Network Quick Notes" in content
         assert raw == content
+
+        search = server.request("GET", "/api/search", query={"q": "安全", "tags": "MCP"})
+        assert search["count"] == 1
+        assert search["items"][0]["item"]["id"] == "generated/2026/05/mcp-security.html"
+        assert search["items"][0]["score"] > 0
     finally:
         server.close()

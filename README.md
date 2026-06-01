@@ -162,6 +162,7 @@ Implemented endpoints:
 - `GET /api/navigation`
 - `PUT /api/navigation`
 - `GET /api/items`
+- `GET /api/search`
 - `GET /api/items/{id}`
 - `GET /api/items/{id}/content`
 - `GET /api/items/{id}/raw`
@@ -173,6 +174,11 @@ Implemented endpoints:
 `GET /api/items` supports the current frontend list logic: library filters,
 collection, comma-separated tags with `tag_match=any|all`, favorite/archive
 filters, search query, sorting, and limit.
+
+`GET /api/search` accepts the same parameters as `GET /api/items` and returns
+structured search results with the matched item, score, matched fields, and a
+snippet. The current implementation uses manifest metadata fields and can later
+be replaced by Pagefind, SQLite FTS, or a cloud search backend.
 
 `GET /api/navigation` and `PUT /api/navigation` persist sidebar visibility
 preferences for library views, collections, and tags in

@@ -2,6 +2,14 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.8] - 2026-06-01
+
+### Added
+
+- `GET /api/items` と同じフィルター、並び替えパラメータを持つ `GET /api/search` を追加しました。
+- 検索レスポンスは命中した項目、スコア、命中フィールド、スニペットを含み、将来の Pagefind、SQLite FTS、クラウド検索バックエンド向けの安定したインターフェースを提供します。
+- 検索 query、タグ OR/AND、お気に入りフィルター、中国語検索、結果メタデータをカバーするサービス層テストと実 HTTP 統合テストを追加しました。
+
 ## [0.4.7] - 2026-06-01
 
 ### Added

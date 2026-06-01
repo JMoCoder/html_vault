@@ -7,6 +7,18 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.8] - 2026-06-01
+
+### Added
+
+- Added `GET /api/search` with the same filtering and sorting parameters as
+  `GET /api/items`.
+- Search responses now include the matched item, score, matched fields, and a
+  snippet, creating a stable interface for future Pagefind, SQLite FTS, or cloud
+  search backends.
+- Added service and real HTTP integration tests for search query, tag OR/AND,
+  favorite filtering, Chinese text search, and result metadata.
+
 ## [0.4.7] - 2026-06-01
 
 ### Added
