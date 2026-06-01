@@ -14,7 +14,7 @@ except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static
 from html_vault import __version__
 
 from .config import ServerSettings, load_settings
-from .items import ItemService, normalize_query
+from .items import ItemDeleteError, ItemService, normalize_query
 from .uploads import UploadError, UploadService
 
 
@@ -82,6 +82,15 @@ def create_app() -> FastAPI:
         if not found:
             raise HTTPException(status_code=404, detail="Item not found")
         return found
+
+    @app.delete("/api/items/{item_id:path}")
+    def delete_item(item_id: str, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:
+        try:
+            return service.delete_item(item_id)
+        except ItemDeleteError as exc:
+            message = str(exc)
+            status = 404 if message == "Item not found." else 400
+            raise HTTPException(status_code=status, detail=message) from exc
 
     @app.post("/api/uploads/html")
     async def upload_html(

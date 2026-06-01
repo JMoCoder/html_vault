@@ -7,6 +7,17 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.3] - 2026-06-01
+
+### Added
+
+- Archived item cards now replace the AI context button with a permanent
+  delete action.
+- Archived reader pages now replace the right-side AI button with a permanent
+  delete action.
+- Added `DELETE /api/items/{id}` for permanently deleting archived notes from
+  `content/` and `meta/`, followed by a rebuild.
+
 ## [0.4.2] - 2026-06-01
 
 ### Added

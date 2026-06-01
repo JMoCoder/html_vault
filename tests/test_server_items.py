@@ -1,4 +1,6 @@
 from pathlib import Path
+import json
+import shutil
 
 import pytest
 
@@ -54,6 +56,31 @@ def test_item_service_searches_metadata() -> None:
     items = service.list_items(normalize_query(q="security"))
 
     assert [item["id"] for item in items] == ["generated/2026/05/mcp-security.html"]
+
+
+def test_item_service_deletes_archived_item_and_rebuilds(tmp_path: Path) -> None:
+    content_dir = tmp_path / "content"
+    meta_dir = tmp_path / "meta"
+    public_dir = tmp_path / "public"
+    shutil.copytree(ROOT / "examples" / "content", content_dir)
+    shutil.copytree(ROOT / "examples" / "meta", meta_dir)
+    archived_meta = meta_dir / "items" / "imported" / "docker-network.yml"
+    archived_meta.write_text(archived_meta.read_text(encoding="utf-8") + "archived: true\n", encoding="utf-8")
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Delete Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+
+    result = ItemService(settings).delete_item("imported/docker-network.html")
+
+    assert result == {"id": "imported/docker-network.html", "deleted": True}
+    assert not (content_dir / "imported" / "docker-network.html").exists()
+    assert not archived_meta.exists()
+    manifest = json.loads((public_dir / "manifest.json").read_text(encoding="utf-8"))
+    assert all(item["id"] != "imported/docker-network.html" for item in manifest["items"])
 
 
 @pytest.mark.skipif(TestClient is None, reason="fastapi is not installed")

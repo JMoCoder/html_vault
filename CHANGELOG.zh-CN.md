@@ -2,6 +2,14 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.3] - 2026-06-01
+
+### 新增
+
+- 已归档条目卡片将 AI 上下文按钮替换为永久删除入口。
+- 已归档条目阅读页将右侧 AI 按钮替换为永久删除入口。
+- 新增 `DELETE /api/items/{id}`，用于从 `content/` 和 `meta/` 永久删除已归档笔记，并在删除后 rebuild。
+
 ## [0.4.2] - 2026-06-01
 
 ### 新增

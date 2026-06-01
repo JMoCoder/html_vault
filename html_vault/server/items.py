@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import cmp_to_key
+from pathlib import Path
 from typing import Any, Iterable
 
+from html_vault.builder import build_site
 from html_vault.manifest import build_manifest
 
 from .config import ServerSettings
@@ -56,6 +58,35 @@ class ItemService:
             if item.get("id") == item_id:
                 return item
         return None
+
+    def delete_item(self, item_id: str) -> dict[str, Any]:
+        item = self.get_item(item_id)
+        if not item:
+            raise ItemDeleteError("Item not found.")
+        if not bool(item.get("archived")):
+            raise ItemDeleteError("Only archived items can be permanently deleted.")
+
+        content_path = self.settings.content_dir / item_id
+        ensure_within(content_path, self.settings.content_dir)
+        if content_path.exists():
+            content_path.unlink()
+
+        metadata_path = metadata_path_for_item(self.settings.meta_dir, item_id)
+        if metadata_path and metadata_path.exists():
+            metadata_path.unlink()
+            remove_empty_parents(metadata_path.parent, self.settings.meta_dir / "items")
+
+        build_site(
+            content_dir=self.settings.content_dir,
+            meta_dir=self.settings.meta_dir,
+            output_dir=self.settings.public_dir,
+            site_title=self.settings.site_title,
+        )
+        return {"id": item_id, "deleted": True}
+
+
+class ItemDeleteError(ValueError):
+    pass
 
 
 def normalize_query(
@@ -199,3 +230,24 @@ def compare_text(left: Any, right: Any) -> int:
     if left_value > right_value:
         return 1
     return 0
+
+
+def metadata_path_for_item(meta_dir: Path | None, item_id: str) -> Path | None:
+    if meta_dir is None:
+        return None
+    return meta_dir / "items" / Path(item_id).with_suffix(".yml")
+
+
+def ensure_within(path: Path, root: Path) -> None:
+    path.resolve().relative_to(root.resolve())
+
+
+def remove_empty_parents(path: Path, stop_at: Path) -> None:
+    stop = stop_at.resolve()
+    current = path.resolve()
+    while current != stop and stop in current.parents:
+        try:
+            current.rmdir()
+        except OSError:
+            return
+        current = current.parent

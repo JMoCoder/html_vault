@@ -2,6 +2,14 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.3] - 2026-06-01
+
+### Added
+
+- アーカイブ済み項目カードでは、AI コンテキストボタンを完全削除アクションに置き換えました。
+- アーカイブ済み項目のリーダーページでは、右側の AI ボタンを完全削除アクションに置き換えました。
+- `content/` と `meta/` からアーカイブ済みノートを完全削除し、削除後に rebuild する `DELETE /api/items/{id}` を追加しました。
+
 ## [0.4.2] - 2026-06-01
 
 ### Added

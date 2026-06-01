@@ -1286,6 +1286,16 @@ a.icon-action {
   background: var(--accent-dark);
 }
 
+.reader-ai-button.danger {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: #ffffff;
+}
+
+.reader-ai-button.danger:hover {
+  filter: brightness(0.95);
+}
+
 .reader iframe {
   width: 100%;
   height: 100%;

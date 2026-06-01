@@ -65,10 +65,13 @@ html-vault serve-api --port 8787
 - `GET /api/items`
 - `GET /api/items/{id}`
 - `POST /api/uploads/html`
+- `DELETE /api/items/{id}`
 
 `GET /api/items` 支持当前前端列表逻辑：资料库筛选、集合、逗号分隔标签、`tag_match=any|all`、收藏/归档筛选、搜索、排序和 limit。
 
 `POST /api/uploads/html` 接收 multipart HTML 文件，并支持可选 `title`、`summary`、`collection`、逗号分隔 `tags`。成功导入后会写入 `content/imported/YYYY/MM/`，生成 sidecar metadata，重新构建 `public/`，并返回已索引条目。
+
+`DELETE /api/items/{id}` 只接受已归档条目。它会永久删除 HTML 文件和 sidecar metadata，然后重新构建 `public/`。
 
 ## 侧栏管理
 

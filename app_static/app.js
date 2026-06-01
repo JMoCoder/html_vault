@@ -138,7 +138,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current backend upload release: 0.4.2.",
+    aboutVersion: "Current archive delete release: 0.4.3.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -224,6 +224,10 @@ const i18n = {
     archiveAction: "Archive",
     unarchiveAction: "Unarchive",
     confirmArchive: "Archive this note? Archived notes only appear in the Archived library view until restored.",
+    permanentDeleteAction: "Delete permanently",
+    confirmPermanentDelete: "Permanently delete this archived note? This removes the HTML file and metadata when Agent Server is connected. This cannot be undone.",
+    deleteNeedsAgent: "Agent Server is required to permanently delete archived notes.",
+    deleteFailed: "Permanent delete failed.",
     addToAiContext: "Add to Q&A context",
     removeFromAiContext: "Remove from Q&A context",
     item: "Item",
@@ -367,7 +371,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前后端上传版本：0.4.2。",
+    aboutVersion: "当前归档删除版本：0.4.3。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -453,6 +457,10 @@ const i18n = {
     archiveAction: "归档",
     unarchiveAction: "取消归档",
     confirmArchive: "确认归档这篇笔记？归档后只会出现在资料库的“已归档”栏目，取消归档后会回到原集合与标签统计。",
+    permanentDeleteAction: "永久删除",
+    confirmPermanentDelete: "确认永久删除这篇已归档笔记？连接 Agent Server 时会删除 HTML 文件和元数据，此操作不可撤销。",
+    deleteNeedsAgent: "永久删除已归档笔记需要连接 Agent Server。",
+    deleteFailed: "永久删除失败。",
     addToAiContext: "加入知识库问答上下文",
     removeFromAiContext: "从知识库问答上下文移除",
     item: "条目",
@@ -596,7 +604,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在のバックエンドアップロードバージョン: 0.4.2。",
+    aboutVersion: "現在のアーカイブ削除バージョン: 0.4.3。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -682,6 +690,10 @@ const i18n = {
     archiveAction: "アーカイブ",
     unarchiveAction: "アーカイブ解除",
     confirmArchive: "このノートをアーカイブしますか？復元するまで、アーカイブ済みライブラリ表示にのみ表示されます。",
+    permanentDeleteAction: "完全に削除",
+    confirmPermanentDelete: "このアーカイブ済みノートを完全に削除しますか？Agent Server 接続時は HTML ファイルとメタデータを削除します。この操作は元に戻せません。",
+    deleteNeedsAgent: "アーカイブ済みノートの完全削除には Agent Server 接続が必要です。",
+    deleteFailed: "完全削除に失敗しました。",
     addToAiContext: "Q&A コンテキストに追加",
     removeFromAiContext: "Q&A コンテキストから削除",
     item: "項目",
@@ -1039,7 +1051,7 @@ function renderCard(item) {
         ${itemActionButton("edit", item)}
         ${itemActionButton("favorite", item)}
         ${itemActionButton("archive", item)}
-        ${itemActionButton("ai-context", item)}
+        ${itemActionButton(isArchived(item) ? "delete" : "ai-context", item)}
       </div>
     </div>
     <h3>${escapeHtml(title)}</h3>
@@ -1066,9 +1078,13 @@ function renderCard(item) {
     event.stopPropagation();
     toggleArchive(item.id);
   });
-  card.querySelector("[data-item-action='ai-context']").addEventListener("click", (event) => {
+  card.querySelector("[data-item-action='ai-context']")?.addEventListener("click", (event) => {
     event.stopPropagation();
     toggleManualAiContext(item.id);
+  });
+  card.querySelector("[data-item-action='delete']")?.addEventListener("click", (event) => {
+    event.stopPropagation();
+    permanentlyDeleteItem(item.id);
   });
   card.addEventListener("dblclick", () => openReader(item));
   return card;
@@ -1089,10 +1105,11 @@ function itemActionButton(action, item) {
     favorite: t(active ? "unfavoriteAction" : "favoriteAction"),
     archive: t(active ? "unarchiveAction" : "archiveAction"),
     "ai-context": t(active ? "removeFromAiContext" : "addToAiContext"),
+    delete: t("permanentDeleteAction"),
   }[action];
   return `
     <button class="item-icon-button${active ? " active" : ""}" type="button" data-item-action="${action}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}">
-      ${action === "edit" ? editIcon() : action === "favorite" ? starIcon(active) : action === "archive" ? archiveIcon() : contextToggleIcon(active)}
+      ${action === "edit" ? editIcon() : action === "favorite" ? starIcon(active) : action === "archive" ? archiveIcon() : action === "delete" ? trashIcon() : contextToggleIcon(active)}
     </button>
   `;
 }
@@ -1312,6 +1329,11 @@ async function shareReaderLink() {
 }
 
 function openReaderAiPanel() {
+  const item = getItemById(state.currentReaderItemId);
+  if (item && isArchived(item)) {
+    permanentlyDeleteItem(item.id);
+    return;
+  }
   if (state.aiPanelOpen) {
     closeAiPanel();
     return;
@@ -1351,6 +1373,9 @@ function renderReaderActions(item) {
   elements.readerArchive.innerHTML = archiveIcon();
   elements.readerArchive.setAttribute("aria-label", archiveLabel);
   elements.readerArchive.setAttribute("title", archiveLabel);
+  elements.readerAiPanelOpen.innerHTML = archived ? trashIcon() : aiSparkIcon();
+  setIconButtonLabel(elements.readerAiPanelOpen, archived ? "permanentDeleteAction" : "openGlobalAi");
+  elements.readerAiPanelOpen.classList.toggle("danger", archived);
   elements.readerCopy.innerHTML = copyIcon();
   setIconButtonLabel(elements.readerCopy, "copyLink");
 }
@@ -1447,6 +1472,45 @@ function toggleArchive(id) {
   itemOverride(id).archived = !isArchived(item);
   saveItemState();
   renderAfterItemStateChange(item);
+}
+
+async function permanentlyDeleteItem(id) {
+  const item = getItemById(id);
+  if (!item || !isArchived(item)) return;
+  if (!state.agentUrl) {
+    setFeedback("deleteNeedsAgent");
+    return;
+  }
+  if (!window.confirm(t("confirmPermanentDelete"))) return;
+
+  try {
+    const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/items/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    removeItemLocally(id);
+  } catch (error) {
+    setFeedback("deleteFailed");
+    console.error(error);
+  }
+}
+
+function removeItemLocally(id) {
+  state.items = state.items.filter((item) => item.id !== id);
+  state.manualAiContextIds.delete(id);
+  delete state.itemState[id];
+  saveItemState();
+  if (state.currentReaderItemId === id) {
+    closeReader();
+  }
+  renderLibraryNav();
+  renderCollectionNav();
+  renderTagNav();
+  renderMultiFilterOptions();
+  renderManagementLists();
+  renderGrid();
+  renderAiContext();
+  maybeAutoBackup();
 }
 
 function openMetadataEditor(id) {
@@ -2305,6 +2369,28 @@ function contextToggleIcon(active) {
     <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
       ${active ? "" : '<path d="M12 5v14"></path>'}
       <path d="M5 12h14"></path>
+    </svg>
+  `;
+}
+
+function aiSparkIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3l1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7L12 3Z"></path>
+      <path d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14Z"></path>
+      <path d="M5 13l.8 1.8L8 16l-2.2.8L5 19l-.8-2.2L2 16l2.2-1.2L5 13Z"></path>
+    </svg>
+  `;
+}
+
+function trashIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 6h18"></path>
+      <path d="M8 6V4h8v2"></path>
+      <path d="M6 6l1 15h10l1-15"></path>
+      <path d="M10 11v6"></path>
+      <path d="M14 11v6"></path>
     </svg>
   `;
 }

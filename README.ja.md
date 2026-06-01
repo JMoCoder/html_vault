@@ -65,10 +65,13 @@ html-vault serve-api --port 8787
 - `GET /api/items`
 - `GET /api/items/{id}`
 - `POST /api/uploads/html`
+- `DELETE /api/items/{id}`
 
 `GET /api/items` は現在のフロントエンド一覧ロジックに対応します。ライブラリ、コレクション、カンマ区切りタグ、`tag_match=any|all`、お気に入り/アーカイブ、検索、並び替え、limit を指定できます。
 
 `POST /api/uploads/html` は multipart HTML ファイルを受け取り、任意で `title`、`summary`、`collection`、カンマ区切り `tags` を指定できます。成功時は `content/imported/YYYY/MM/` に保存し、sidecar metadata を生成し、`public/` を再ビルドして、インデックス済み項目を返します。
+
+`DELETE /api/items/{id}` はアーカイブ済み項目のみ受け付けます。HTML ファイルと sidecar metadata を完全に削除し、その後 `public/` を再ビルドします。
 
 ## サイドバー管理
 
