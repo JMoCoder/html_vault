@@ -78,12 +78,42 @@ class ItemService:
         item = self.get_item(item_id)
         if not item:
             raise ItemMetadataError("Item not found.")
+
+        metadata = {
+            "title": normalize_metadata_text(values.get("title")) or item.get("title") or "Untitled",
+            "summary": normalize_metadata_text(values.get("summary")),
+            "collection": normalize_metadata_text(values.get("collection")) or item.get("collection") or "Inbox",
+            "tags": normalize_tags(values.get("tags") or []),
+        }
+        return self.write_item_metadata(item_id, item, metadata, ItemMetadataError)
+
+    def update_item_state(self, item_id: str, values: dict[str, Any]) -> dict[str, Any]:
+        item = self.get_item(item_id)
+        if not item:
+            raise ItemStateError("Item not found.")
+        state: dict[str, bool] = {}
+        for key in ("favorite", "archived"):
+            if key in values:
+                if not isinstance(values[key], bool):
+                    raise ItemStateError(f"{key} must be a boolean.")
+                state[key] = values[key]
+        if not state:
+            raise ItemStateError("No state fields provided.")
+        return self.write_item_metadata(item_id, item, state, ItemStateError)
+
+    def write_item_metadata(
+        self,
+        item_id: str,
+        item: dict[str, Any],
+        values: dict[str, Any],
+        error_type: type[ValueError],
+    ) -> dict[str, Any]:
         if self.settings.meta_dir is None:
-            raise ItemMetadataError("Metadata directory is not configured.")
+            raise error_type("Metadata directory is not configured.")
 
         metadata_path = metadata_path_for_item(self.settings.meta_dir, item_id)
         if metadata_path is None:
-            raise ItemMetadataError("Metadata directory is not configured.")
+            raise error_type("Metadata directory is not configured.")
         ensure_within(metadata_path, self.settings.meta_dir)
         metadata_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -91,17 +121,13 @@ class ItemService:
         metadata = {
             **item,
             **existing,
+            **values,
             "id": item_id,
-            "title": normalize_metadata_text(values.get("title")) or item.get("title") or "Untitled",
-            "summary": normalize_metadata_text(values.get("summary")),
-            "collection": normalize_metadata_text(values.get("collection")) or "Inbox",
-            "tags": normalize_tags(values.get("tags") or []),
             "updated": datetime.now(timezone.utc).isoformat(),
         }
         metadata.pop("path", None)
         metadata.pop("source_url", None) if metadata.get("source_url") is None else None
         metadata_path.write_text(dump_simple_yaml(metadata), encoding="utf-8")
-
         build_site(
             content_dir=self.settings.content_dir,
             meta_dir=self.settings.meta_dir,
@@ -148,6 +174,10 @@ class ItemContentError(ValueError):
 
 
 class ItemMetadataError(ValueError):
+    pass
+
+
+class ItemStateError(ValueError):
     pass
 
 

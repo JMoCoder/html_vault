@@ -67,6 +67,7 @@ html-vault serve-api --port 8787
 - `GET /api/items/{id}/content`
 - `GET /api/items/{id}/raw`
 - `PATCH /api/items/{id}/metadata`
+- `PATCH /api/items/{id}/state`
 - `POST /api/uploads/html`
 - `DELETE /api/items/{id}`
 
@@ -77,6 +78,8 @@ html-vault serve-api --port 8787
 `GET /api/items/{id}/content` は iframe 読み取り用のソース HTML を返します。`GET /api/items/{id}/raw` は原文アクセス用に同じソース HTML を返します。どちらも項目が manifest に存在し、設定された content ディレクトリ外へ出ないことを検証します。
 
 `PATCH /api/items/{id}/metadata` は単一ノートのメタデータ編集を YAML sidecar に永続化し、`public/` を再ビルドして、再インデックス済みの項目を返します。現在の書き込み可能フィールドは `title`、`summary`、`collection`、`tags` です。
+
+`PATCH /api/items/{id}/state` は `favorite` と `archived` の boolean 状態を YAML sidecar に永続化し、`public/` を再ビルドして、再インデックス済みの項目を返します。
 
 `DELETE /api/items/{id}` はアーカイブ済み項目のみ受け付けます。HTML ファイルと sidecar metadata を完全に削除し、その後 `public/` を再ビルドします。
 

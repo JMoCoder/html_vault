@@ -108,3 +108,27 @@ def test_metadata_update_api(tmp_path: Path) -> None:
         assert "title: API Updated Docker Note" in metadata_text
     finally:
         server.close()
+
+
+def test_item_state_update_api(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="State API Test")
+    try:
+        favorited = server.json("PATCH", "/api/items/imported/docker-network.html/state", {"favorite": True})
+        archived = server.json("PATCH", "/api/items/imported/docker-network.html/state", {"archived": True})
+        all_items = server.request("GET", "/api/items")
+        archived_items = server.request("GET", "/api/items", query={"library": "archived"})
+        restored = server.json("PATCH", "/api/items/imported/docker-network.html/state", {"archived": False})
+        metadata_text = (meta_dir / "items" / "imported" / "docker-network.yml").read_text(encoding="utf-8")
+
+        assert favorited["favorite"] is True
+        assert archived["favorite"] is True
+        assert archived["archived"] is True
+        assert "imported/docker-network.html" not in [item["id"] for item in all_items["items"]]
+        assert [item["id"] for item in archived_items["items"]] == ["imported/docker-network.html"]
+        assert restored["favorite"] is True
+        assert restored["archived"] is False
+        assert "favorite: true" in metadata_text
+        assert "archived: false" in metadata_text
+    finally:
+        server.close()

@@ -2,6 +2,14 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.6] - 2026-06-01
+
+### Added
+
+- `favorite` と `archived` の状態を YAML sidecar metadata に永続化する `PATCH /api/items/{id}/state` を追加しました。
+- Agent Server URL が設定されている場合、お気に入りボタンとアーカイブボタンはバックエンドへ書き込みます。静的モードではローカル上書き fallback を維持します。
+- お気に入り/アーカイブ状態の永続化とアーカイブ表示フィルターのサービス層テスト、実 HTTP 統合テストを追加しました。
+
 ## [0.4.5] - 2026-06-01
 
 ### Added

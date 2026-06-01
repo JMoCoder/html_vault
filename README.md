@@ -164,6 +164,7 @@ Implemented endpoints:
 - `GET /api/items/{id}/content`
 - `GET /api/items/{id}/raw`
 - `PATCH /api/items/{id}/metadata`
+- `PATCH /api/items/{id}/state`
 - `POST /api/uploads/html`
 - `DELETE /api/items/{id}`
 
@@ -184,6 +185,9 @@ inside the configured content directory.
 `PATCH /api/items/{id}/metadata` persists per-note edits to the YAML sidecar
 file, rebuilds `public/`, and returns the re-indexed item. The current writable
 fields are `title`, `summary`, `collection`, and `tags`.
+
+`PATCH /api/items/{id}/state` persists `favorite` and `archived` booleans to the
+YAML sidecar file, rebuilds `public/`, and returns the re-indexed item.
 
 `DELETE /api/items/{id}` only accepts archived items. It permanently removes
 the HTML file and sidecar metadata, then rebuilds `public/`.

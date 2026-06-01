@@ -138,7 +138,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current metadata persistence release: 0.4.5.",
+    aboutVersion: "Current item state persistence release: 0.4.6.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -220,6 +220,7 @@ const i18n = {
     cancel: "Cancel",
     metadataSaved: "Metadata saved.",
     metadataSaveFailed: "Metadata save failed.",
+    stateSaveFailed: "State save failed.",
     favoriteAction: "Favorite",
     unfavoriteAction: "Remove favorite",
     archiveAction: "Archive",
@@ -372,7 +373,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前元信息持久化版本：0.4.5。",
+    aboutVersion: "当前条目状态持久化版本：0.4.6。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -454,6 +455,7 @@ const i18n = {
     cancel: "取消",
     metadataSaved: "元信息已保存。",
     metadataSaveFailed: "元信息保存失败。",
+    stateSaveFailed: "状态保存失败。",
     favoriteAction: "收藏",
     unfavoriteAction: "取消收藏",
     archiveAction: "归档",
@@ -606,7 +608,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在のメタデータ永続化バージョン: 0.4.5。",
+    aboutVersion: "現在の項目状態永続化バージョン: 0.4.6。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -688,6 +690,7 @@ const i18n = {
     cancel: "キャンセル",
     metadataSaved: "メタデータを保存しました。",
     metadataSaveFailed: "メタデータの保存に失敗しました。",
+    stateSaveFailed: "状態の保存に失敗しました。",
     favoriteAction: "お気に入り",
     unfavoriteAction: "お気に入り解除",
     archiveAction: "アーカイブ",
@@ -1470,19 +1473,50 @@ function isArchived(item) {
   return typeof override?.archived === "boolean" ? override.archived : Boolean(item.archived);
 }
 
-function toggleFavorite(id) {
+async function toggleFavorite(id) {
   const item = getItemById(id);
   if (!item) return;
-  itemOverride(id).favorite = !isFavorite(item);
-  saveItemState();
-  renderAfterItemStateChange(item);
+  await updateItemState(item, { favorite: !isFavorite(item) });
 }
 
-function toggleArchive(id) {
+async function toggleArchive(id) {
   const item = getItemById(id);
   if (!item) return;
   if (!isArchived(item) && !window.confirm(t("confirmArchive"))) return;
-  itemOverride(id).archived = !isArchived(item);
+  await updateItemState(item, { archived: !isArchived(item) });
+}
+
+async function updateItemState(item, values) {
+  if (state.agentUrl) {
+    try {
+      const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/items/${encodeURIComponent(item.id)}/state`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+      const updated = await response.json();
+      const index = state.items.findIndex((candidate) => candidate.id === item.id);
+      if (index >= 0) state.items[index] = updated;
+      const override = state.itemState[item.id];
+      if (override) {
+        if ("favorite" in values) delete override.favorite;
+        if ("archived" in values) delete override.archived;
+        if (!Object.keys(override).length) delete state.itemState[item.id];
+        saveItemState();
+      }
+      renderAfterItemStateChange(updated);
+      return;
+    } catch (error) {
+      setFeedback("stateSaveFailed");
+      console.error(error);
+      return;
+    }
+  }
+
+  const override = itemOverride(item.id);
+  if ("favorite" in values) override.favorite = values.favorite;
+  if ("archived" in values) override.archived = values.archived;
   saveItemState();
   renderAfterItemStateChange(item);
 }

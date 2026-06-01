@@ -67,6 +67,7 @@ html-vault serve-api --port 8787
 - `GET /api/items/{id}/content`
 - `GET /api/items/{id}/raw`
 - `PATCH /api/items/{id}/metadata`
+- `PATCH /api/items/{id}/state`
 - `POST /api/uploads/html`
 - `DELETE /api/items/{id}`
 
@@ -77,6 +78,8 @@ html-vault serve-api --port 8787
 `GET /api/items/{id}/content` 返回用于 iframe 阅读的源 HTML。`GET /api/items/{id}/raw` 返回用于原文访问的同一份源 HTML。两个接口都会校验条目必须存在于 manifest，且路径不能逃逸配置的内容目录。
 
 `PATCH /api/items/{id}/metadata` 会把单条笔记元信息编辑持久化到 YAML sidecar，重新构建 `public/`，并返回重新索引后的条目。当前可写字段为 `title`、`summary`、`collection`、`tags`。
+
+`PATCH /api/items/{id}/state` 会把 `favorite` 与 `archived` 布尔状态持久化到 YAML sidecar，重新构建 `public/`，并返回重新索引后的条目。
 
 `DELETE /api/items/{id}` 只接受已归档条目。它会永久删除 HTML 文件和 sidecar metadata，然后重新构建 `public/`。
 

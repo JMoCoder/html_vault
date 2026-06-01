@@ -124,6 +124,39 @@ def test_item_service_updates_metadata_and_rebuilds(tmp_path: Path) -> None:
     assert manifest_item["summary"] == "Updated summary."
 
 
+def test_item_service_updates_favorite_and_archive_state(tmp_path: Path) -> None:
+    content_dir = tmp_path / "content"
+    meta_dir = tmp_path / "meta"
+    public_dir = tmp_path / "public"
+    shutil.copytree(ROOT / "examples" / "content", content_dir)
+    shutil.copytree(ROOT / "examples" / "meta", meta_dir)
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="State Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    service = ItemService(settings)
+
+    favorited = service.update_item_state("imported/docker-network.html", {"favorite": True})
+    archived = service.update_item_state("imported/docker-network.html", {"archived": True})
+
+    assert favorited["favorite"] is True
+    assert archived["favorite"] is True
+    assert archived["archived"] is True
+    assert "imported/docker-network.html" not in [item["id"] for item in service.list_items(normalize_query(library="all"))]
+    assert [item["id"] for item in service.list_items(normalize_query(library="archived"))] == ["imported/docker-network.html"]
+
+    restored = service.update_item_state("imported/docker-network.html", {"archived": False})
+    metadata_text = (meta_dir / "items" / "imported" / "docker-network.yml").read_text(encoding="utf-8")
+    assert restored["archived"] is False
+    assert restored["favorite"] is True
+    assert restored["collection"] == "Dev"
+    assert "favorite: true" in metadata_text
+    assert "archived: false" in metadata_text
+
+
 def test_server_items_api() -> None:
     server = run_api_server(
         content_dir=SETTINGS.content_dir,

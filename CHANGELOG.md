@@ -7,6 +7,17 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.6] - 2026-06-01
+
+### Added
+
+- Added `PATCH /api/items/{id}/state` to persist `favorite` and `archived`
+  state to YAML sidecar metadata.
+- Favorite and archive buttons now write through the backend when an Agent
+  Server URL is configured, with static-mode local overrides kept as fallback.
+- Added service and real HTTP integration tests for archive/favorite state
+  persistence and archive-view filtering.
+
 ## [0.4.5] - 2026-06-01
 
 ### Added

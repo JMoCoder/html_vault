@@ -15,7 +15,7 @@ except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static
 from html_vault import __version__
 
 from .config import ServerSettings, load_settings
-from .items import ItemContentError, ItemDeleteError, ItemMetadataError, ItemService, normalize_query
+from .items import ItemContentError, ItemDeleteError, ItemMetadataError, ItemService, ItemStateError, normalize_query
 from .uploads import UploadError, UploadService
 
 
@@ -96,6 +96,15 @@ def create_app() -> FastAPI:
         try:
             return service.update_item_metadata(item_id, values)
         except ItemMetadataError as exc:
+            message = str(exc)
+            status = 404 if message == "Item not found." else 400
+            raise HTTPException(status_code=status, detail=message) from exc
+
+    @app.patch("/api/items/{item_id:path}/state")
+    def update_item_state(item_id: str, values: dict, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:
+        try:
+            return service.update_item_state(item_id, values)
+        except ItemStateError as exc:
             message = str(exc)
             status = 404 if message == "Item not found." else 400
             raise HTTPException(status_code=status, detail=message) from exc

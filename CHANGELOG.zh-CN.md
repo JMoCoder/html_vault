@@ -2,6 +2,14 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.6] - 2026-06-01
+
+### 新增
+
+- 新增 `PATCH /api/items/{id}/state`，用于将 `favorite` 与 `archived` 状态持久化写入 YAML sidecar metadata。
+- 收藏与归档按钮在配置 Agent Server URL 时会写入后端，静态模式继续保留本地覆盖 fallback。
+- 新增收藏/归档状态持久化与归档视图筛选的服务层测试和真实 HTTP 集成测试。
+
 ## [0.4.5] - 2026-06-01
 
 ### 新增
