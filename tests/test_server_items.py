@@ -4,13 +4,9 @@ import shutil
 
 import pytest
 
-try:
-    from fastapi.testclient import TestClient
-except ModuleNotFoundError:  # pragma: no cover - optional agent extra
-    TestClient = None
-
 from html_vault.server.config import ServerSettings
 from html_vault.server.items import ItemService, normalize_query
+from tests.api_server import run_api_server
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,10 +24,11 @@ def test_item_service_lists_manifest_items() -> None:
 
     manifest = service.manifest()
     items = service.list_items(normalize_query())
+    expected_items = [item for item in manifest["items"] if not item["archived"]]
 
     assert manifest["version"] == 2
-    assert len(items) == 3
-    assert {item["id"] for item in items} == {item["id"] for item in manifest["items"] if not item["archived"]}
+    assert len(items) == len(expected_items)
+    assert {item["id"] for item in items} == {item["id"] for item in expected_items}
 
 
 def test_item_service_filters_tags_with_all_match() -> None:
@@ -83,21 +80,19 @@ def test_item_service_deletes_archived_item_and_rebuilds(tmp_path: Path) -> None
     assert all(item["id"] != "imported/docker-network.html" for item in manifest["items"])
 
 
-@pytest.mark.skipif(TestClient is None, reason="fastapi is not installed")
 def test_server_items_api() -> None:
-    from html_vault.server.app import app, get_settings
-
-    app.dependency_overrides[get_settings] = lambda: SETTINGS
-    client = TestClient(app)
+    server = run_api_server(
+        content_dir=SETTINGS.content_dir,
+        meta_dir=SETTINGS.meta_dir or ROOT / "examples" / "meta",
+        public_dir=SETTINGS.public_dir,
+        site_title=SETTINGS.site_title,
+    )
     try:
-        response = client.get("/api/items", params={"tags": "MCP,Docker", "tag_match": "all"})
-        assert response.status_code == 200
-        data = response.json()
+        data = server.request("GET", "/api/items", query={"tags": "MCP,Docker", "tag_match": "all"})
         assert data["count"] == 1
         assert data["items"][0]["id"] == "generated/2026/05/mcp-docker-agent.html"
 
-        detail = client.get("/api/items/generated/2026/05/mcp-docker-agent.html")
-        assert detail.status_code == 200
-        assert detail.json()["collection"] == "AI"
+        detail = server.request("GET", "/api/items/generated/2026/05/mcp-docker-agent.html")
+        assert detail["collection"] == "AI"
     finally:
-        app.dependency_overrides.clear()
+        server.close()
