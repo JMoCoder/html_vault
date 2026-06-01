@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import Annotated
 
 try:
-    from fastapi import Depends, FastAPI, HTTPException, Query
+    from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, UploadFile
     from fastapi.middleware.cors import CORSMiddleware
 except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static-only installs
     raise RuntimeError(
@@ -15,6 +15,7 @@ from html_vault import __version__
 
 from .config import ServerSettings, load_settings
 from .items import ItemService, normalize_query
+from .uploads import UploadError, UploadService
 
 
 @lru_cache
@@ -24,6 +25,10 @@ def get_settings() -> ServerSettings:
 
 def get_item_service(settings: Annotated[ServerSettings, Depends(get_settings)]) -> ItemService:
     return ItemService(settings)
+
+
+def get_upload_service(settings: Annotated[ServerSettings, Depends(get_settings)]) -> UploadService:
+    return UploadService(settings)
 
 
 def create_app() -> FastAPI:
@@ -77,6 +82,34 @@ def create_app() -> FastAPI:
         if not found:
             raise HTTPException(status_code=404, detail="Item not found")
         return found
+
+    @app.post("/api/uploads/html")
+    async def upload_html(
+        service: Annotated[UploadService, Depends(get_upload_service)],
+        file: Annotated[UploadFile, File()],
+        title: Annotated[str, Form()] = "",
+        summary: Annotated[str, Form()] = "",
+        collection: Annotated[str, Form()] = "",
+        tags: Annotated[str, Form()] = "",
+    ) -> dict:
+        content = await file.read()
+        try:
+            result = service.import_html(
+                filename=file.filename or "imported-note.html",
+                content=content,
+                title=title,
+                summary=summary,
+                collection=collection,
+                tags=tags,
+            )
+        except UploadError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return {
+            "upload_id": result.upload_id,
+            "item_id": result.item_id,
+            "status": result.status,
+            "item": result.item,
+        }
 
     return app
 

@@ -2,6 +2,14 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.2] - 2026-06-01
+
+### 新增
+
+- 新增 HTML 导入后端能力：`POST /api/uploads/html`。
+- 导入的 HTML 会保存到 `content/imported/YYYY/MM/`，sidecar metadata 写入 `meta/items/`，成功导入后自动重新构建静态站。
+- 新增上传服务测试，覆盖 HTML 导入、元数据生成、rebuild 与非法文件拒绝。
+
 ## [0.4.1] - 2026-06-01
 
 ### 新增

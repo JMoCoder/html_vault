@@ -17,6 +17,7 @@ SETTINGS = ServerSettings(
     meta_dir=ROOT / "examples" / "meta",
     public_dir=ROOT / "public",
     site_title="Test Vault",
+    max_upload_bytes=10 * 1024 * 1024,
 )
 
 

@@ -161,10 +161,16 @@ Implemented endpoints:
 - `GET /api/manifest`
 - `GET /api/items`
 - `GET /api/items/{id}`
+- `POST /api/uploads/html`
 
 `GET /api/items` supports the current frontend list logic: library filters,
 collection, comma-separated tags with `tag_match=any|all`, favorite/archive
 filters, search query, sorting, and limit.
+
+`POST /api/uploads/html` accepts a multipart HTML file plus optional `title`,
+`summary`, `collection`, and comma-separated `tags`. Successful imports write
+to `content/imported/YYYY/MM/`, create sidecar metadata, rebuild `public/`, and
+return the indexed item.
 
 ## AI Provider Settings
 

@@ -11,6 +11,7 @@ class ServerSettings:
     meta_dir: Path | None
     public_dir: Path
     site_title: str
+    max_upload_bytes: int
 
 
 def load_settings() -> ServerSettings:
@@ -19,10 +20,11 @@ def load_settings() -> ServerSettings:
     meta_dir = Path(meta_value) if meta_value else None
     public_dir = Path(os.getenv("HTML_VAULT_PUBLIC", "public"))
     site_title = os.getenv("HTML_VAULT_TITLE", "HTML Vault")
+    max_upload_bytes = int(os.getenv("HTML_VAULT_MAX_UPLOAD_BYTES", str(10 * 1024 * 1024)))
     return ServerSettings(
         content_dir=content_dir,
         meta_dir=meta_dir,
         public_dir=public_dir,
         site_title=site_title,
+        max_upload_bytes=max_upload_bytes,
     )
-

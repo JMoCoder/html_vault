@@ -7,6 +7,17 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.2] - 2026-06-01
+
+### Added
+
+- Added HTML import backend support with `POST /api/uploads/html`.
+- Imported HTML files are saved under `content/imported/YYYY/MM/`, sidecar
+  metadata is written under `meta/items/`, and the static site is rebuilt after
+  a successful import.
+- Added upload service tests covering HTML import, metadata generation, rebuild,
+  and invalid file rejection.
+
 ## [0.4.1] - 2026-06-01
 
 ### Added

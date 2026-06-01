@@ -2,6 +2,14 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.2] - 2026-06-01
+
+### Added
+
+- HTML インポート用バックエンド機能として `POST /api/uploads/html` を追加しました。
+- インポートされた HTML は `content/imported/YYYY/MM/` に保存され、sidecar metadata は `meta/items/` に書き込まれます。成功後に静的サイトを自動再ビルドします。
+- HTML インポート、メタデータ生成、rebuild、不正ファイル拒否をカバーするアップロードサービステストを追加しました。
+
 ## [0.4.1] - 2026-06-01
 
 ### Added
