@@ -47,6 +47,26 @@ python -m http.server 8080 --directory public
 
 Full モードでは、API Key は HTTPS またはプライベートネットワーク経由で保護された Agent Server にのみ送信し、サーバー側で環境変数または暗号化された認証情報として保存してください。ブラウザーに返してはいけません。
 
+## Backend API
+
+最初のバックエンド機能は任意の `agent` extra で起動できます:
+
+```bash
+pip install -e ".[agent]"
+HTML_VAULT_CONTENT=examples/content \
+HTML_VAULT_META=examples/meta \
+html-vault serve-api --port 8787
+```
+
+実装済みエンドポイント:
+
+- `GET /api/health`
+- `GET /api/manifest`
+- `GET /api/items`
+- `GET /api/items/{id}`
+
+`GET /api/items` は現在のフロントエンド一覧ロジックに対応します。ライブラリ、コレクション、カンマ区切りタグ、`tag_match=any|all`、お気に入り/アーカイブ、検索、並び替え、limit を指定できます。
+
 ## サイドバー管理
 
 ライブラリ、コレクション、タグの管理は設定ページにあります。静的モードではサイドバー項目の表示/非表示のみ変更でき、元のメタデータは変更しません。ライブラリは固定のシステムビューなので、表示/非表示のみ変更できます。コレクションとタグの追加、名前変更、統合、削除は構造的なメタデータ操作であり、将来の Agent Server が `meta/items/**/*.yml` に書き戻す必要があります。現在の単一ノート用メタデータエディターは、元ファイルを書き換えずにブラウザー内の上書きとして保存します。

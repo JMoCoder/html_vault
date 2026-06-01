@@ -21,4 +21,4 @@ def test_build_site_writes_manifest_and_static_files(tmp_path: Path) -> None:
 
     saved = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
     assert saved["version"] == 2
-    assert len(saved["items"]) == 3
+    assert len(saved["items"]) == 4

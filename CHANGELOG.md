@@ -7,6 +7,22 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.1] - 2026-06-01
+
+### Added
+
+- Added the first backend development slice: optional Agent Server API skeleton,
+  `GET /api/health`, `GET /api/manifest`, `GET /api/items`, and
+  `GET /api/items/{id}`.
+- `GET /api/items` supports current frontend list behavior for library,
+  collection, tag OR/AND, favorite/archive, search, sort, and limit filters.
+- Added `html-vault serve-api` and service/API tests for the item query layer.
+
+### Fixed
+
+- Updated the builder test expectation to match the current four-item example
+  fixture.
+
 ## [0.4.0] - 2026-06-01
 
 ### Added

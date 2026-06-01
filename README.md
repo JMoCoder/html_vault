@@ -144,6 +144,28 @@ POST /api/jobs
 
 with an `input_type`, `input`, and `options` payload.
 
+## Backend API
+
+The first backend slice is available through the optional `agent` extra:
+
+```bash
+pip install -e ".[agent]"
+HTML_VAULT_CONTENT=examples/content \
+HTML_VAULT_META=examples/meta \
+html-vault serve-api --port 8787
+```
+
+Implemented endpoints:
+
+- `GET /api/health`
+- `GET /api/manifest`
+- `GET /api/items`
+- `GET /api/items/{id}`
+
+`GET /api/items` supports the current frontend list logic: library filters,
+collection, comma-separated tags with `tag_match=any|all`, favorite/archive
+filters, search query, sorting, and limit.
+
 ## AI Provider Settings
 
 The sidebar settings button opens a full settings page. API keys are not stored

@@ -2,6 +2,18 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.1] - 2026-06-01
+
+### 新增
+
+- 新增第一段后端开发切片：可选 Agent Server API 骨架、`GET /api/health`、`GET /api/manifest`、`GET /api/items`、`GET /api/items/{id}`。
+- `GET /api/items` 支持当前前端列表逻辑：资料库、集合、标签 OR/AND、收藏/归档、搜索、排序和 limit。
+- 新增 `html-vault serve-api`，并补充条目查询服务/API 测试。
+
+### 修复
+
+- 更新 builder 测试断言，使其匹配当前 4 条示例内容。
+
 ## [0.4.0] - 2026-06-01
 
 ### 新增

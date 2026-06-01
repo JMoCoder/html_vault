@@ -47,6 +47,26 @@ python -m http.server 8080 --directory public
 
 Full 模式下，API Key 应只通过 HTTPS 或私有网络发送到受保护的 Agent Server，由服务端作为环境变量或加密凭据保存，并且永远不返回给浏览器。
 
+## 后端 API
+
+第一段后端能力通过可选 `agent` extra 启动：
+
+```bash
+pip install -e ".[agent]"
+HTML_VAULT_CONTENT=examples/content \
+HTML_VAULT_META=examples/meta \
+html-vault serve-api --port 8787
+```
+
+已实现接口：
+
+- `GET /api/health`
+- `GET /api/manifest`
+- `GET /api/items`
+- `GET /api/items/{id}`
+
+`GET /api/items` 支持当前前端列表逻辑：资料库筛选、集合、逗号分隔标签、`tag_match=any|all`、收藏/归档筛选、搜索、排序和 limit。
+
 ## 侧栏管理
 
 资料库、集合和标签管理位于设置页。静态模式可以隐藏侧栏导航项，但不会修改原始元数据。资料库是固定系统视图，所以仅支持显隐控制。集合和标签的新增、重命名、合并、删除属于结构性元数据操作，需要未来 Agent Server 写回 `meta/items/**/*.yml`。当前单条笔记元信息编辑器只保存浏览器本地覆盖状态，不改写源文件。

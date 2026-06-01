@@ -2,6 +2,18 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.1] - 2026-06-01
+
+### Added
+
+- 最初のバックエンド開発スライスとして、任意の Agent Server API スケルトン、`GET /api/health`、`GET /api/manifest`、`GET /api/items`、`GET /api/items/{id}` を追加しました。
+- `GET /api/items` は現在のフロントエンド一覧ロジックに合わせ、ライブラリ、コレクション、タグ OR/AND、お気に入り/アーカイブ、検索、並び替え、limit をサポートします。
+- `html-vault serve-api` と、項目クエリ層のサービス/API テストを追加しました。
+
+### Fixed
+
+- 現在の 4 件のサンプル fixture に合わせて builder テストの期待値を更新しました。
+
 ## [0.4.0] - 2026-06-01
 
 ### Added
