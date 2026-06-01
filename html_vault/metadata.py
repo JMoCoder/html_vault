@@ -122,3 +122,30 @@ def _normalize_tags(value: Any) -> list[str]:
     if isinstance(value, list):
         return [str(tag).strip() for tag in value if str(tag).strip()]
     return []
+
+
+def dump_simple_yaml(data: dict[str, Any]) -> str:
+    lines: list[str] = []
+    for key, value in data.items():
+        if isinstance(value, list):
+            lines.append(f"{key}:")
+            for item in value:
+                lines.append(f"  - {escape_yaml_scalar(item)}")
+        elif isinstance(value, dict):
+            lines.append(f"{key}:")
+            for child_key, child_value in value.items():
+                lines.append(f"  {child_key}: {escape_yaml_scalar(child_value)}")
+        else:
+            lines.append(f"{key}: {escape_yaml_scalar(value)}")
+    return "\n".join(lines) + "\n"
+
+
+def escape_yaml_scalar(value: Any) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if value is None:
+        return "null"
+    text = str(value)
+    if text == "" or text.startswith(("-", "@", "`")) or any(char in text for char in [":", "#", "\n", '"']):
+        return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
+    return text

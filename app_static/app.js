@@ -138,7 +138,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current backend content API release: 0.4.4.",
+    aboutVersion: "Current metadata persistence release: 0.4.5.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -215,10 +215,11 @@ const i18n = {
     metadataCollection: "Collection",
     metadataTags: "Tags",
     metadataTagsPlaceholder: "Comma-separated tags",
-    metadataStorageNote: "Changes are saved as local browser metadata overrides and do not rewrite the source HTML or YAML files.",
+    metadataStorageNote: "With Agent Server connected, changes are written to YAML metadata. Static mode saves local browser overrides only.",
     save: "Save",
     cancel: "Cancel",
     metadataSaved: "Metadata saved.",
+    metadataSaveFailed: "Metadata save failed.",
     favoriteAction: "Favorite",
     unfavoriteAction: "Remove favorite",
     archiveAction: "Archive",
@@ -371,7 +372,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前后端内容访问版本：0.4.4。",
+    aboutVersion: "当前元信息持久化版本：0.4.5。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -448,10 +449,11 @@ const i18n = {
     metadataCollection: "集合",
     metadataTags: "标签",
     metadataTagsPlaceholder: "用英文逗号分隔多个标签",
-    metadataStorageNote: "修改会作为浏览器本地元信息覆盖保存，不会改写源 HTML 或 YAML 文件。",
+    metadataStorageNote: "连接 Agent Server 时会写回 YAML 元数据；静态模式仅保存浏览器本地覆盖。",
     save: "保存",
     cancel: "取消",
     metadataSaved: "元信息已保存。",
+    metadataSaveFailed: "元信息保存失败。",
     favoriteAction: "收藏",
     unfavoriteAction: "取消收藏",
     archiveAction: "归档",
@@ -604,7 +606,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在のバックエンドコンテンツ API バージョン: 0.4.4。",
+    aboutVersion: "現在のメタデータ永続化バージョン: 0.4.5。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -681,10 +683,11 @@ const i18n = {
     metadataCollection: "コレクション",
     metadataTags: "タグ",
     metadataTagsPlaceholder: "カンマ区切りのタグ",
-    metadataStorageNote: "変更はブラウザー内のローカルメタデータ上書きとして保存され、元の HTML/YAML ファイルは書き換えません。",
+    metadataStorageNote: "Agent Server 接続時は YAML メタデータへ書き戻します。静的モードではブラウザー内のローカル上書きのみ保存します。",
     save: "保存",
     cancel: "キャンセル",
     metadataSaved: "メタデータを保存しました。",
+    metadataSaveFailed: "メタデータの保存に失敗しました。",
     favoriteAction: "お気に入り",
     unfavoriteAction: "お気に入り解除",
     archiveAction: "アーカイブ",
@@ -1541,22 +1544,45 @@ function closeMetadataEditor() {
   elements.metadataEditor.hidden = true;
 }
 
-function saveMetadataEditor(event) {
+async function saveMetadataEditor(event) {
   event.preventDefault();
   const item = getItemById(state.editingItemId);
   if (!item) {
     closeMetadataEditor();
     return;
   }
-  itemOverride(item.id).metadata = {
+  const metadata = {
     title: elements.metadataTitle.value.trim() || item.title || t("item"),
     summary: elements.metadataSummary.value.trim(),
     collection: elements.metadataCollection.value.trim() || "Inbox",
     tags: parseTagInput(elements.metadataTags.value),
   };
-  saveItemState();
+
+  if (state.agentUrl) {
+    try {
+      const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/items/${encodeURIComponent(item.id)}/metadata`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(metadata),
+      });
+      if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+      const updated = await response.json();
+      const index = state.items.findIndex((candidate) => candidate.id === item.id);
+      if (index >= 0) state.items[index] = updated;
+      delete state.itemState[item.id]?.metadata;
+      saveItemState();
+    } catch (error) {
+      setFeedback("metadataSaveFailed");
+      console.error(error);
+      return;
+    }
+  } else {
+    itemOverride(item.id).metadata = metadata;
+    saveItemState();
+  }
   closeMetadataEditor();
-  renderAfterItemStateChange(item);
+  renderAfterItemStateChange(getItemById(item.id) || item);
+  setFeedback("metadataSaved");
 }
 
 function renderAfterItemStateChange(item) {

@@ -84,3 +84,27 @@ def test_upload_html_api(tmp_path: Path) -> None:
         assert data["item"]["tags"] == ["API", "Upload"]
     finally:
         server.close()
+
+
+def test_metadata_update_api(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Metadata API Test")
+    try:
+        updated = server.json(
+            "PATCH",
+            "/api/items/imported/docker-network.html/metadata",
+            {
+                "title": "API Updated Docker Note",
+                "summary": "API updated summary.",
+                "collection": "Ops",
+                "tags": ["Docker", "API"],
+            },
+        )
+        detail = server.request("GET", "/api/items/imported/docker-network.html")
+        metadata_text = (meta_dir / "items" / "imported" / "docker-network.yml").read_text(encoding="utf-8")
+        assert updated["title"] == "API Updated Docker Note"
+        assert detail["collection"] == "Ops"
+        assert detail["tags"] == ["Docker", "API"]
+        assert "title: API Updated Docker Note" in metadata_text
+    finally:
+        server.close()

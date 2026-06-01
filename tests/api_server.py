@@ -77,6 +77,18 @@ class ApiServer:
     def request(self, method: str, path: str, *, query: dict[str, str] | None = None, body: bytes | None = None, headers: dict[str, str] | None = None) -> Any:
         return json.loads(self.request_text(method, path, query=query, body=body, headers=headers))
 
+    def json(self, method: str, path: str, data: Any) -> Any:
+        body = json.dumps(data).encode("utf-8")
+        return self.request(
+            method,
+            path,
+            body=body,
+            headers={
+                "Content-Type": "application/json",
+                "Content-Length": str(len(body)),
+            },
+        )
+
     def request_text(self, method: str, path: str, *, query: dict[str, str] | None = None, body: bytes | None = None, headers: dict[str, str] | None = None) -> str:
         url = f"http://127.0.0.1:{self.port}{path}"
         if query:

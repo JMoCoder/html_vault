@@ -66,6 +66,7 @@ html-vault serve-api --port 8787
 - `GET /api/items/{id}`
 - `GET /api/items/{id}/content`
 - `GET /api/items/{id}/raw`
+- `PATCH /api/items/{id}/metadata`
 - `POST /api/uploads/html`
 - `DELETE /api/items/{id}`
 
@@ -75,11 +76,13 @@ html-vault serve-api --port 8787
 
 `GET /api/items/{id}/content` 返回用于 iframe 阅读的源 HTML。`GET /api/items/{id}/raw` 返回用于原文访问的同一份源 HTML。两个接口都会校验条目必须存在于 manifest，且路径不能逃逸配置的内容目录。
 
+`PATCH /api/items/{id}/metadata` 会把单条笔记元信息编辑持久化到 YAML sidecar，重新构建 `public/`，并返回重新索引后的条目。当前可写字段为 `title`、`summary`、`collection`、`tags`。
+
 `DELETE /api/items/{id}` 只接受已归档条目。它会永久删除 HTML 文件和 sidecar metadata，然后重新构建 `public/`。
 
 ## 侧栏管理
 
-资料库、集合和标签管理位于设置页。静态模式可以隐藏侧栏导航项，但不会修改原始元数据。资料库是固定系统视图，所以仅支持显隐控制。集合和标签的新增、重命名、合并、删除属于结构性元数据操作，需要未来 Agent Server 写回 `meta/items/**/*.yml`。当前单条笔记元信息编辑器只保存浏览器本地覆盖状态，不改写源文件。
+资料库、集合和标签管理位于设置页。静态模式可以隐藏侧栏导航项，但不会修改原始元数据。资料库是固定系统视图，所以仅支持显隐控制。集合和标签的新增、重命名、合并、删除属于结构性元数据操作，需要未来批量元数据 API 支持。当前单条笔记元信息编辑器在配置 Agent Server 时会通过 `PATCH /api/items/{id}/metadata` 写回，静态模式下继续保存浏览器本地覆盖状态。
 
 ## 本地数据设置
 

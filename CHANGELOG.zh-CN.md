@@ -2,6 +2,15 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.5] - 2026-06-01
+
+### 新增
+
+- 新增 `PATCH /api/items/{id}/metadata`，用于将笔记标题、摘要、集合和标签持久化写入 YAML sidecar metadata。
+- 元信息编辑保存后会重新构建 `public/`，并返回重新索引后的条目。
+- 前端元信息编辑器在配置 Agent Server URL 时会写入后端，静态模式继续保留本地覆盖 fallback。
+- 新增元信息持久化的服务层测试和真实 HTTP 集成测试。
+
 ## [0.4.4] - 2026-06-01
 
 ### 新增

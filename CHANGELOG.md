@@ -7,6 +7,17 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.5] - 2026-06-01
+
+### Added
+
+- Added `PATCH /api/items/{id}/metadata` to persist note title, summary,
+  collection, and tags to YAML sidecar metadata.
+- Metadata edits now rebuild `public/` and return the re-indexed item.
+- The frontend metadata editor writes through the backend when an Agent Server
+  URL is configured, with static-mode local overrides kept as fallback.
+- Added service and real HTTP integration tests for metadata persistence.
+
 ## [0.4.4] - 2026-06-01
 
 ### Added

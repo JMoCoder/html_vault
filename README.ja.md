@@ -66,6 +66,7 @@ html-vault serve-api --port 8787
 - `GET /api/items/{id}`
 - `GET /api/items/{id}/content`
 - `GET /api/items/{id}/raw`
+- `PATCH /api/items/{id}/metadata`
 - `POST /api/uploads/html`
 - `DELETE /api/items/{id}`
 
@@ -75,11 +76,13 @@ html-vault serve-api --port 8787
 
 `GET /api/items/{id}/content` は iframe 読み取り用のソース HTML を返します。`GET /api/items/{id}/raw` は原文アクセス用に同じソース HTML を返します。どちらも項目が manifest に存在し、設定された content ディレクトリ外へ出ないことを検証します。
 
+`PATCH /api/items/{id}/metadata` は単一ノートのメタデータ編集を YAML sidecar に永続化し、`public/` を再ビルドして、再インデックス済みの項目を返します。現在の書き込み可能フィールドは `title`、`summary`、`collection`、`tags` です。
+
 `DELETE /api/items/{id}` はアーカイブ済み項目のみ受け付けます。HTML ファイルと sidecar metadata を完全に削除し、その後 `public/` を再ビルドします。
 
 ## サイドバー管理
 
-ライブラリ、コレクション、タグの管理は設定ページにあります。静的モードではサイドバー項目の表示/非表示のみ変更でき、元のメタデータは変更しません。ライブラリは固定のシステムビューなので、表示/非表示のみ変更できます。コレクションとタグの追加、名前変更、統合、削除は構造的なメタデータ操作であり、将来の Agent Server が `meta/items/**/*.yml` に書き戻す必要があります。現在の単一ノート用メタデータエディターは、元ファイルを書き換えずにブラウザー内の上書きとして保存します。
+ライブラリ、コレクション、タグの管理は設定ページにあります。静的モードではサイドバー項目の表示/非表示のみ変更でき、元のメタデータは変更しません。ライブラリは固定のシステムビューなので、表示/非表示のみ変更できます。コレクションとタグの追加、名前変更、統合、削除は構造的なメタデータ操作であり、将来の一括メタデータ API が必要です。現在の単一ノート用メタデータエディターは、Agent Server 設定時に `PATCH /api/items/{id}/metadata` で書き戻し、静的モードではブラウザー内の上書きとして保存します。
 
 ## ローカルデータ設定
 

@@ -90,6 +90,40 @@ def test_item_service_reads_item_content_safely() -> None:
         service.read_item_content("../README.md")
 
 
+def test_item_service_updates_metadata_and_rebuilds(tmp_path: Path) -> None:
+    content_dir = tmp_path / "content"
+    meta_dir = tmp_path / "meta"
+    public_dir = tmp_path / "public"
+    shutil.copytree(ROOT / "examples" / "content", content_dir)
+    shutil.copytree(ROOT / "examples" / "meta", meta_dir)
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Metadata Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+
+    updated = ItemService(settings).update_item_metadata(
+        "imported/docker-network.html",
+        {
+            "title": "Updated Docker Note",
+            "summary": "Updated summary.",
+            "collection": "Ops",
+            "tags": ["Docker", "Networking", "MCP"],
+        },
+    )
+
+    metadata_text = (meta_dir / "items" / "imported" / "docker-network.yml").read_text(encoding="utf-8")
+    manifest = json.loads((public_dir / "manifest.json").read_text(encoding="utf-8"))
+    manifest_item = next(item for item in manifest["items"] if item["id"] == "imported/docker-network.html")
+    assert updated["title"] == "Updated Docker Note"
+    assert updated["collection"] == "Ops"
+    assert updated["tags"] == ["Docker", "Networking", "MCP"]
+    assert "title: Updated Docker Note" in metadata_text
+    assert manifest_item["summary"] == "Updated summary."
+
+
 def test_server_items_api() -> None:
     server = run_api_server(
         content_dir=SETTINGS.content_dir,

@@ -163,6 +163,7 @@ Implemented endpoints:
 - `GET /api/items/{id}`
 - `GET /api/items/{id}/content`
 - `GET /api/items/{id}/raw`
+- `PATCH /api/items/{id}/metadata`
 - `POST /api/uploads/html`
 - `DELETE /api/items/{id}`
 
@@ -179,6 +180,10 @@ return the indexed item.
 `GET /api/items/{id}/raw` returns the same source HTML for original-file access.
 Both endpoints validate that the requested item exists in the manifest and stays
 inside the configured content directory.
+
+`PATCH /api/items/{id}/metadata` persists per-note edits to the YAML sidecar
+file, rebuilds `public/`, and returns the re-indexed item. The current writable
+fields are `title`, `summary`, `collection`, and `tags`.
 
 `DELETE /api/items/{id}` only accepts archived items. It permanently removes
 the HTML file and sidecar metadata, then rebuilds `public/`.
@@ -200,9 +205,9 @@ Library, collection, and tag management live in the settings page. Static mode
 can hide sidebar navigation entries without modifying original metadata.
 Library views are fixed system filters, so only visibility can be changed. Add,
 rename, merge, and delete for collections or tags are structural metadata
-operations and require the future Agent Server to update `meta/items/**/*.yml`.
-The current per-note metadata editor stores local browser overrides without
-rewriting source files.
+operations and require future batch metadata APIs. The current per-note
+metadata editor writes through `PATCH /api/items/{id}/metadata` when the Agent
+Server is configured, and falls back to local browser overrides in static mode.
 
 ## Local Data Settings
 

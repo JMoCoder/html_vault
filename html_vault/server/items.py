@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from functools import cmp_to_key
 from pathlib import Path
 from typing import Any, Iterable
 
 from html_vault.builder import build_site
 from html_vault.manifest import build_manifest
+from html_vault.metadata import MetadataStore, dump_simple_yaml
 
 from .config import ServerSettings
 
@@ -72,6 +74,45 @@ class ItemService:
     def read_item_content(self, item_id: str) -> str:
         return self.get_item_content_path(item_id).read_text(encoding="utf-8", errors="replace")
 
+    def update_item_metadata(self, item_id: str, values: dict[str, Any]) -> dict[str, Any]:
+        item = self.get_item(item_id)
+        if not item:
+            raise ItemMetadataError("Item not found.")
+        if self.settings.meta_dir is None:
+            raise ItemMetadataError("Metadata directory is not configured.")
+
+        metadata_path = metadata_path_for_item(self.settings.meta_dir, item_id)
+        if metadata_path is None:
+            raise ItemMetadataError("Metadata directory is not configured.")
+        ensure_within(metadata_path, self.settings.meta_dir)
+        metadata_path.parent.mkdir(parents=True, exist_ok=True)
+
+        existing = MetadataStore.load(self.settings.meta_dir).for_item(item_id)
+        metadata = {
+            **item,
+            **existing,
+            "id": item_id,
+            "title": normalize_metadata_text(values.get("title")) or item.get("title") or "Untitled",
+            "summary": normalize_metadata_text(values.get("summary")),
+            "collection": normalize_metadata_text(values.get("collection")) or "Inbox",
+            "tags": normalize_tags(values.get("tags") or []),
+            "updated": datetime.now(timezone.utc).isoformat(),
+        }
+        metadata.pop("path", None)
+        metadata.pop("source_url", None) if metadata.get("source_url") is None else None
+        metadata_path.write_text(dump_simple_yaml(metadata), encoding="utf-8")
+
+        build_site(
+            content_dir=self.settings.content_dir,
+            meta_dir=self.settings.meta_dir,
+            output_dir=self.settings.public_dir,
+            site_title=self.settings.site_title,
+        )
+        updated = self.get_item(item_id)
+        if not updated:
+            raise ItemMetadataError("Updated item not found.")
+        return updated
+
     def delete_item(self, item_id: str) -> dict[str, Any]:
         item = self.get_item(item_id)
         if not item:
@@ -103,6 +144,10 @@ class ItemDeleteError(ValueError):
 
 
 class ItemContentError(ValueError):
+    pass
+
+
+class ItemMetadataError(ValueError):
     pass
 
 
@@ -141,6 +186,10 @@ def normalize_tags(tags: str | Iterable[str]) -> list[str]:
     else:
         values = tags
     return [value.strip().lstrip("#") for value in values if value and value.strip().lstrip("#")]
+
+
+def normalize_metadata_text(value: Any) -> str:
+    return str(value or "").strip()
 
 
 def apply_library_filter(items: list[dict[str, Any]], library: str) -> list[dict[str, Any]]:

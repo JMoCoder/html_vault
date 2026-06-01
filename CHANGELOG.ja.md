@@ -2,6 +2,15 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.5] - 2026-06-01
+
+### Added
+
+- ノートのタイトル、概要、コレクション、タグを YAML sidecar metadata に永続化する `PATCH /api/items/{id}/metadata` を追加しました。
+- メタデータ編集の保存後に `public/` を再ビルドし、再インデックス済みの項目を返します。
+- Agent Server URL が設定されている場合、フロントエンドのメタデータエディターはバックエンドへ書き込みます。静的モードではローカル上書き fallback を維持します。
+- メタデータ永続化のサービス層テストと実 HTTP 統合テストを追加しました。
+
 ## [0.4.4] - 2026-06-01
 
 ### Added
