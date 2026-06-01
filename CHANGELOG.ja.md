@@ -2,6 +2,14 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.4] - 2026-06-01
+
+### Added
+
+- バックエンドのコンテンツ取得 API として `GET /api/items/{id}/content` と `GET /api/items/{id}/raw` を追加しました。
+- Agent Server URL が設定されている場合、リーダー iframe と原文リンクはバックエンドのコンテンツ API を使用します。静的モードでは従来どおりローカル content パスを使用します。
+- 項目コンテンツと raw HTML アクセスの実 HTTP 統合テストを追加しました。
+
 ## [0.4.3] - 2026-06-01
 
 ### Added

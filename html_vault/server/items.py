@@ -59,6 +59,19 @@ class ItemService:
                 return item
         return None
 
+    def get_item_content_path(self, item_id: str) -> Path:
+        item = self.get_item(item_id)
+        if not item:
+            raise ItemContentError("Item not found.")
+        content_path = self.settings.content_dir / item_id
+        ensure_within(content_path, self.settings.content_dir)
+        if not content_path.is_file():
+            raise ItemContentError("Item content not found.")
+        return content_path
+
+    def read_item_content(self, item_id: str) -> str:
+        return self.get_item_content_path(item_id).read_text(encoding="utf-8", errors="replace")
+
     def delete_item(self, item_id: str) -> dict[str, Any]:
         item = self.get_item(item_id)
         if not item:
@@ -86,6 +99,10 @@ class ItemService:
 
 
 class ItemDeleteError(ValueError):
+    pass
+
+
+class ItemContentError(ValueError):
     pass
 
 

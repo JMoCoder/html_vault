@@ -2,6 +2,14 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.4] - 2026-06-01
+
+### 新增
+
+- 新增后端内容访问接口：`GET /api/items/{id}/content` 和 `GET /api/items/{id}/raw`。
+- 配置 Agent Server URL 时，阅读页 iframe 与原文链接会优先使用后端内容 API；静态模式继续使用本地内容路径。
+- 新增条目内容与原文 HTML 访问的真实 HTTP 集成测试。
+
 ## [0.4.3] - 2026-06-01
 
 ### 新增

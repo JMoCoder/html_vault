@@ -5,7 +5,7 @@ import shutil
 import pytest
 
 from html_vault.server.config import ServerSettings
-from html_vault.server.items import ItemService, normalize_query
+from html_vault.server.items import ItemContentError, ItemService, normalize_query
 from tests.api_server import run_api_server
 
 
@@ -80,6 +80,16 @@ def test_item_service_deletes_archived_item_and_rebuilds(tmp_path: Path) -> None
     assert all(item["id"] != "imported/docker-network.html" for item in manifest["items"])
 
 
+def test_item_service_reads_item_content_safely() -> None:
+    service = ItemService(SETTINGS)
+
+    content = service.read_item_content("imported/docker-network.html")
+
+    assert "Docker Network Quick Notes" in content
+    with pytest.raises(ItemContentError):
+        service.read_item_content("../README.md")
+
+
 def test_server_items_api() -> None:
     server = run_api_server(
         content_dir=SETTINGS.content_dir,
@@ -94,5 +104,10 @@ def test_server_items_api() -> None:
 
         detail = server.request("GET", "/api/items/generated/2026/05/mcp-docker-agent.html")
         assert detail["collection"] == "AI"
+
+        content = server.request_text("GET", "/api/items/imported/docker-network.html/content")
+        raw = server.request_text("GET", "/api/items/imported/docker-network.html/raw")
+        assert "Docker Network Quick Notes" in content
+        assert raw == content
     finally:
         server.close()

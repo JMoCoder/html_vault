@@ -64,12 +64,16 @@ html-vault serve-api --port 8787
 - `GET /api/manifest`
 - `GET /api/items`
 - `GET /api/items/{id}`
+- `GET /api/items/{id}/content`
+- `GET /api/items/{id}/raw`
 - `POST /api/uploads/html`
 - `DELETE /api/items/{id}`
 
 `GET /api/items` は現在のフロントエンド一覧ロジックに対応します。ライブラリ、コレクション、カンマ区切りタグ、`tag_match=any|all`、お気に入り/アーカイブ、検索、並び替え、limit を指定できます。
 
 `POST /api/uploads/html` は multipart HTML ファイルを受け取り、任意で `title`、`summary`、`collection`、カンマ区切り `tags` を指定できます。成功時は `content/imported/YYYY/MM/` に保存し、sidecar metadata を生成し、`public/` を再ビルドして、インデックス済み項目を返します。
+
+`GET /api/items/{id}/content` は iframe 読み取り用のソース HTML を返します。`GET /api/items/{id}/raw` は原文アクセス用に同じソース HTML を返します。どちらも項目が manifest に存在し、設定された content ディレクトリ外へ出ないことを検証します。
 
 `DELETE /api/items/{id}` はアーカイブ済み項目のみ受け付けます。HTML ファイルと sidecar metadata を完全に削除し、その後 `public/` を再ビルドします。
 

@@ -75,12 +75,15 @@ class ApiServer:
         raise RuntimeError("Timed out waiting for API server.")
 
     def request(self, method: str, path: str, *, query: dict[str, str] | None = None, body: bytes | None = None, headers: dict[str, str] | None = None) -> Any:
+        return json.loads(self.request_text(method, path, query=query, body=body, headers=headers))
+
+    def request_text(self, method: str, path: str, *, query: dict[str, str] | None = None, body: bytes | None = None, headers: dict[str, str] | None = None) -> str:
         url = f"http://127.0.0.1:{self.port}{path}"
         if query:
             url = f"{url}?{urllib.parse.urlencode(query)}"
         request = urllib.request.Request(url, data=body, method=method, headers=headers or {})
         with urllib.request.urlopen(request, timeout=5) as response:
-            return json.loads(response.read().decode("utf-8"))
+            return response.read().decode("utf-8")
 
     def multipart(self, path: str, *, fields: dict[str, str], file_field: str, filename: str, content: bytes, content_type: str) -> Any:
         boundary = "----html-vault-test-boundary"

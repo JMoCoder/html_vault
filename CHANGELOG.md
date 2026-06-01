@@ -7,6 +7,17 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.4] - 2026-06-01
+
+### Added
+
+- Added backend content access endpoints: `GET /api/items/{id}/content` and
+  `GET /api/items/{id}/raw`.
+- Reader iframe and original-file links now use the backend content API when an
+  Agent Server URL is configured, while static mode keeps using local content
+  paths.
+- Added real HTTP integration tests for item content and raw HTML access.
+
 ## [0.4.3] - 2026-06-01
 
 ### Added

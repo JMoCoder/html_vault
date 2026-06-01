@@ -138,7 +138,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current archive delete release: 0.4.3.",
+    aboutVersion: "Current backend content API release: 0.4.4.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -371,7 +371,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前归档删除版本：0.4.3。",
+    aboutVersion: "当前后端内容访问版本：0.4.4。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -604,7 +604,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在のアーカイブ削除バージョン: 0.4.3。",
+    aboutVersion: "現在のバックエンドコンテンツ API バージョン: 0.4.4。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -1118,7 +1118,7 @@ function openReader(item) {
   state.currentReaderItemId = item.id;
   elements.reader.hidden = false;
   renderReaderMetadata(item);
-  elements.readerFrame.src = item.path;
+  elements.readerFrame.src = getReaderContentUrl(item);
   renderReaderActions(item);
   renderAiContext();
   window.location.hash = `/${item.id}`;
@@ -1128,12 +1128,22 @@ function renderReaderMetadata(item) {
   elements.readerTitle.textContent = getItemTitle(item);
   elements.readerSummary.textContent = getItemSummary(item) || "";
   elements.readerSource.textContent = `${getItemCollection(item)} / ${getSourceLabel(item)}`;
-  elements.readerOriginal.href = item.path;
+  elements.readerOriginal.href = getReaderRawUrl(item);
   elements.readerTags.replaceChildren(...getItemTags(item).map((tag) => {
     const span = document.createElement("span");
     span.textContent = `#${tag}`;
     return span;
   }));
+}
+
+function getReaderContentUrl(item) {
+  if (!state.agentUrl) return item.path;
+  return `${state.agentUrl.replace(/\/$/, "")}/api/items/${encodeURIComponent(item.id)}/content`;
+}
+
+function getReaderRawUrl(item) {
+  if (!state.agentUrl) return item.path;
+  return `${state.agentUrl.replace(/\/$/, "")}/api/items/${encodeURIComponent(item.id)}/raw`;
 }
 
 function closeReader() {

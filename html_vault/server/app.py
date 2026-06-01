@@ -6,6 +6,7 @@ from typing import Annotated
 try:
     from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, UploadFile
     from fastapi.middleware.cors import CORSMiddleware
+    from fastapi.responses import HTMLResponse
 except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static-only installs
     raise RuntimeError(
         "The backend server requires the agent extra: pip install 'html-vault[agent]'",
@@ -14,7 +15,7 @@ except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static
 from html_vault import __version__
 
 from .config import ServerSettings, load_settings
-from .items import ItemDeleteError, ItemService, normalize_query
+from .items import ItemContentError, ItemDeleteError, ItemService, normalize_query
 from .uploads import UploadError, UploadService
 
 
@@ -75,6 +76,20 @@ def create_app() -> FastAPI:
         )
         result = service.list_items(query)
         return {"items": result, "count": len(result)}
+
+    @app.get("/api/items/{item_id:path}/content", response_class=HTMLResponse)
+    def item_content(item_id: str, service: Annotated[ItemService, Depends(get_item_service)]) -> HTMLResponse:
+        try:
+            return HTMLResponse(service.read_item_content(item_id))
+        except ItemContentError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get("/api/items/{item_id:path}/raw", response_class=HTMLResponse)
+    def item_raw(item_id: str, service: Annotated[ItemService, Depends(get_item_service)]) -> HTMLResponse:
+        try:
+            return HTMLResponse(service.read_item_content(item_id))
+        except ItemContentError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.get("/api/items/{item_id:path}")
     def item(item_id: str, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:

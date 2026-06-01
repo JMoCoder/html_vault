@@ -161,6 +161,8 @@ Implemented endpoints:
 - `GET /api/manifest`
 - `GET /api/items`
 - `GET /api/items/{id}`
+- `GET /api/items/{id}/content`
+- `GET /api/items/{id}/raw`
 - `POST /api/uploads/html`
 - `DELETE /api/items/{id}`
 
@@ -172,6 +174,11 @@ filters, search query, sorting, and limit.
 `summary`, `collection`, and comma-separated `tags`. Successful imports write
 to `content/imported/YYYY/MM/`, create sidecar metadata, rebuild `public/`, and
 return the indexed item.
+
+`GET /api/items/{id}/content` returns the source HTML for iframe reading.
+`GET /api/items/{id}/raw` returns the same source HTML for original-file access.
+Both endpoints validate that the requested item exists in the manifest and stays
+inside the configured content directory.
 
 `DELETE /api/items/{id}` only accepts archived items. It permanently removes
 the HTML file and sidecar metadata, then rebuilds `public/`.
