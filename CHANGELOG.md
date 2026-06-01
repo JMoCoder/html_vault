@@ -7,6 +7,22 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.0] - 2026-06-01
+
+### Added
+
+- Promoted the current UI to the first formal frontend release.
+- Frontend now includes the card workspace, PWA app shell, trilingual UI,
+  light/dark theme switching, resizable sidebars, global AI panel scaffold,
+  settings modules, local backup/export scaffolds, item favorite/archive
+  actions, and local note metadata editing.
+
+### Changed
+
+- Replaced the light-mode theme switch moon with a clearer filled moon-and-star
+  icon and added cache-busting resource URLs for the frontend bundle.
+- Package, app, and PWA cache version updated to `0.4.0`.
+
 ## [0.3.21] - 2026-05-30
 
 ### Added

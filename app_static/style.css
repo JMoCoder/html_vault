@@ -1224,6 +1224,11 @@ textarea {
   stroke-linejoin: round;
 }
 
+.button-icon.moon-icon {
+  fill: currentColor;
+  stroke: none;
+}
+
 .reader-heading {
   display: grid;
   gap: 8px;

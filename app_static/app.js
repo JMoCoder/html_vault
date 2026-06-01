@@ -138,7 +138,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current early version: 0.3.21.",
+    aboutVersion: "Current frontend release: 0.4.0.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -367,7 +367,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前早期版本：0.3.21。",
+    aboutVersion: "当前前端正式版本：0.4.0。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -596,7 +596,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在の初期バージョン: 0.3.21。",
+    aboutVersion: "現在のフロントエンド正式バージョン: 0.4.0。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -2337,8 +2337,10 @@ function copiedIcon() {
 
 function moonIcon() {
   return `
-    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M20.9 15.1A8 8 0 0 1 8.9 3.1 7 7 0 1 0 20.9 15.1Z"></path>
+    <svg class="button-icon moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M14.3 3.1A8.9 8.9 0 1 0 21 14.8a7.4 7.4 0 0 1-4.2 1.3 7.6 7.6 0 0 1-7.6-7.6 7.4 7.4 0 0 1 5.1-5.4Z"></path>
+      <path d="m18.3 3.2.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4-1.4-.5 1.4-.5.5-1.4Z"></path>
+      <circle cx="20" cy="8.5" r="1"></circle>
     </svg>
   `;
 }
