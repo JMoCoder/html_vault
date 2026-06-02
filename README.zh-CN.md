@@ -2,7 +2,7 @@
 
 语言：[English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
 
-部署：[生产 Docker 与安全基线](DEPLOYMENT.zh-CN.md)
+部署：[自托管 Docker 与安全基线](DEPLOYMENT.zh-CN.md)
 
 HTML Vault 是一个静态优先的 HTML 知识工作台。把 HTML 文件放进内容目录，构建 manifest，就可以发布一个卡片式知识库，可托管在任意静态 Web 服务器上。
 
@@ -67,11 +67,11 @@ python -m http.server 8080 --directory public
 
 打开 `http://127.0.0.1:8080`。在 localhost 下，前端会自动连接 `http://127.0.0.1:8787`，从而启用真实 HTML 上传、元信息持久化、筛选、归档状态和重建。
 
-VPS 或公网部署前，请先阅读 [DEPLOYMENT.zh-CN.md](DEPLOYMENT.zh-CN.md)。
+自托管 Docker、局域网、VPS、NAS 或公网部署前，请先阅读 [DEPLOYMENT.zh-CN.md](DEPLOYMENT.zh-CN.md)。
 
-## 生产 Docker
+## 自托管 Docker
 
-可复用生产部署入口是 `compose.prod.yml`。它会启动：
+可复用的长期运行 Docker 部署入口是 `compose.prod.yml`。它可以运行在本地电脑、NAS、局域网服务器或 VPS 上。它会启动：
 
 - `web`：Caddy 托管 `public/`，并把 `/api/*` 反向代理到后端；
 - `api`：HTML Vault 后端，写入挂载的 `data/`，并重新构建 `public/`。
@@ -94,7 +94,7 @@ mkdir -p data/content data/meta public
 docker compose -f compose.prod.yml up -d --build
 ```
 
-打开 `http://你的-vps-ip` 或绑定的域名。上传的 HTML 和元数据保存在 `data/`，不会提交到 GitHub。
+打开 `http://localhost`、`http://你的主机-ip` 或绑定的域名。上传的 HTML 和元数据保存在 `data/`，不会提交到 GitHub。
 
 默认生产 Caddyfile 会先要求 Basic Auth 登录，再在服务端内部注入 API token。因此浏览器登录后可以同源访问 `/api/*`，但不会拿到长期后端 token。
 

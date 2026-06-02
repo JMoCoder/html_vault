@@ -6,9 +6,9 @@
 
 ### 新增
 
-- 新增可复用生产 Docker 部署资产：`Dockerfile.api`、`compose.prod.yml`、`deploy/Caddyfile` 和后端容器入口脚本。
+- 新增可复用自托管 Docker 部署资产：`Dockerfile.api`、`compose.prod.yml`、`deploy/Caddyfile` 和后端容器入口脚本。
 - 新增前端运行时 `config.js` 支持，让部署站点可以同源访问 API，同时不把后端 token 写入浏览器代码。
-- 新增 `.dockerignore`，并扩展 VPS 启动、更新、备份、回滚部署文档。
+- 新增 `.dockerignore`，并扩展自托管 Docker 启动、更新、备份、回滚部署文档。
 
 ### 变更
 
@@ -32,7 +32,7 @@
 - 新增完整核心 API smoke 测试，覆盖上传、列表查询、元信息编辑、搜索、内容读取、收藏、归档、取消归档和永久删除。
 - localhost 前端现在默认使用 `http://127.0.0.1:8787` 作为后端 API，无需内联脚本配置即可进入本地笔记本模式。
 - README 新增真实本地笔记本启动说明，覆盖 `data/content`、`data/meta`、API 服务和静态 Web 服务。
-- 新增可复用部署安全基线文档，并加入后端 API Token 与 CORS 配置，为 VPS 生产环境做准备。
+- 新增可复用部署安全基线文档，并加入后端 API Token 与 CORS 配置，为自托管生产环境做准备。
 
 ## [0.4.10] - 2026-06-02
 

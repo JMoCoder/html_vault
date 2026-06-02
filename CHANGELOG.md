@@ -11,12 +11,12 @@ versioning after the initial public release.
 
 ### Added
 
-- Added reusable production Docker deployment assets: `Dockerfile.api`,
+- Added reusable self-hosted Docker deployment assets: `Dockerfile.api`,
   `compose.prod.yml`, `deploy/Caddyfile`, and a backend container entrypoint.
 - Added runtime frontend `config.js` support so deployed sites can use
   same-origin API access without embedding backend tokens in browser code.
-- Added `.dockerignore` and expanded deployment docs for VPS startup, updates,
-  backups, and rollback.
+- Added `.dockerignore` and expanded deployment docs for self-hosted Docker
+  startup, updates, backups, and rollback.
 
 ### Changed
 
@@ -49,7 +49,7 @@ versioning after the initial public release.
 - README now documents real local notebook startup with `data/content`,
   `data/meta`, the API server, and the static web server.
 - Added reusable deployment security baseline docs and backend API token/CORS
-  configuration for VPS production preparation.
+  configuration for self-hosted production preparation.
 
 ## [0.4.10] - 2026-06-02
 

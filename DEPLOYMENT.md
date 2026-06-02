@@ -3,15 +3,18 @@
 Languages: [English](DEPLOYMENT.md) | [中文](DEPLOYMENT.zh-CN.md)
 
 This document defines reusable project-level deployment and security measures.
-It is not a VPS hardening checklist; each host still needs normal OS, firewall,
-SSH, TLS, and backup hardening.
+It is not a host hardening checklist; each self-hosted machine still needs
+normal OS, firewall, SSH or local access, TLS when public, and backup
+hardening.
 
 ## Environment Roles
 
 - `main`: stable production branch.
 - `develop`: active development and test branch.
 - Local workstation: development and local notebook testing.
-- VPS: production runtime plus real-world validation.
+- Self-hosted Docker host: local computer, NAS, LAN server, or VPS running the
+  long-lived notebook service. A local computer deployment does not need to be
+  online 24/7 unless you want continuous remote access.
 - `data/`: private notebook data, not committed to Git.
 
 ## Minimal Production Security
@@ -104,9 +107,9 @@ Caddy asks users to log in before serving the app, then injects
 internal API service. The browser does not need to store or see the long-lived
 backend token.
 
-## Production Docker Deployment
+## Self-Hosted Docker Deployment
 
-On a fresh VPS:
+On a fresh host:
 
 ```bash
 git clone https://github.com/JMoCoder/html_vault.git /srv/html-vault
@@ -147,14 +150,14 @@ The first start builds `public/` from the mounted content/meta directories.
 Uploaded HTML files are stored under `data/content`, metadata under
 `data/meta`, and rebuilt static assets under `public`.
 
-For a temporary IP-only test, keep `deploy/Caddyfile` on `:80` and open
-`http://your-vps-ip`. For a domain and HTTPS, put this stack behind your
-existing HTTPS reverse proxy, or adapt the Caddyfile to a real site address
-after DNS points to the VPS.
+For a local-only test, open `http://localhost`. For another device on the same
+LAN, open `http://your-host-ip`. For a public domain and HTTPS, put this stack
+behind your existing HTTPS reverse proxy, or adapt the Caddyfile to a real site
+address after DNS points to the host.
 
 ## Production Updates
 
-HTML Vault does not auto-update the VPS. `GET /api/version` and the frontend
+HTML Vault does not auto-update the host. `GET /api/version` and the frontend
 About page only show update hints.
 
 Manual update flow:
@@ -179,7 +182,7 @@ changed data structure.
 1. Develop and test on `develop`.
 2. Run full tests locally.
 3. Merge `develop` into `main` for production release.
-4. Pull `main` on the VPS.
+4. Pull `main` on the self-hosted Docker host.
 5. Back up `/srv/html-vault/data`.
 6. Rebuild/recreate containers with `docker compose -f compose.prod.yml up -d --build`.
 7. Verify login, upload, search, read, archive, version display, and backup.

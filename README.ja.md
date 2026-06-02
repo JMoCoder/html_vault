@@ -2,7 +2,7 @@
 
 Languages: [English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
 
-Deployment: [Production Docker and security baseline](DEPLOYMENT.md)
+Deployment: [Self-hosted Docker and security baseline](DEPLOYMENT.md)
 
 HTML Vault は静的優先の HTML ナレッジワークスペースです。HTML ファイルをコンテンツディレクトリに置き、manifest を生成すると、任意の静的 Web サーバーでホストできるカード型ナレッジベースを公開できます。
 
@@ -67,11 +67,11 @@ python -m http.server 8080 --directory public
 
 `http://127.0.0.1:8080` を開きます。localhost では、フロントエンドが自動的に `http://127.0.0.1:8787` へ接続し、実際の HTML アップロード、メタデータ永続化、フィルター、アーカイブ状態、再ビルドを有効にします。
 
-VPS または公開デプロイの前に [DEPLOYMENT.md](DEPLOYMENT.md) を確認してください。
+セルフホスト Docker、LAN、VPS、NAS、公開デプロイの前に [DEPLOYMENT.md](DEPLOYMENT.md) を確認してください。
 
-## Production Docker
+## Self-Hosted Docker
 
-再利用可能な本番デプロイ入口は `compose.prod.yml` です。これは次のサービスを起動します:
+再利用可能な長期実行 Docker デプロイ入口は `compose.prod.yml` です。ローカル PC、NAS、LAN サーバー、VPS で実行できます。これは次のサービスを起動します:
 
 - `web`: Caddy が `public/` を配信し、`/api/*` をバックエンドへリバースプロキシします。
 - `api`: HTML Vault バックエンドがマウントされた `data/` に書き込み、`public/` を再ビルドします。
@@ -94,7 +94,7 @@ mkdir -p data/content data/meta public
 docker compose -f compose.prod.yml up -d --build
 ```
 
-`http://your-vps-ip` または設定したドメインを開きます。アップロードした HTML とメタデータは `data/` に保存され、GitHub にはコミットされません。
+`http://localhost`、`http://your-host-ip`、または設定したドメインを開きます。アップロードした HTML とメタデータは `data/` に保存され、GitHub にはコミットされません。
 
 既定の本番 Caddyfile はまず Basic Auth ログインを要求し、その後サーバー側で API token を注入します。ブラウザーは長期バックエンド token を受け取らず、ログイン後に同一 origin の `/api/*` を呼び出せます。
 

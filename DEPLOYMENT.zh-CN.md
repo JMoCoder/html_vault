@@ -2,14 +2,14 @@
 
 语言：[English](DEPLOYMENT.md) | [中文](DEPLOYMENT.zh-CN.md)
 
-本文件定义项目层面可复用的部署与安全措施。它不是 VPS 系统加固清单；每台主机仍需要常规 OS、防火墙、SSH、TLS 和备份加固。
+本文件定义项目层面可复用的部署与安全措施。它不是主机系统加固清单；每台自托管机器仍需要常规 OS、防火墙、SSH 或本地访问控制、公网部署时的 TLS，以及备份加固。
 
 ## 环境角色
 
 - `main`：稳定生产分支。
 - `develop`：日常开发与测试分支。
 - 本机：开发环境与本地笔记本测试环境。
-- VPS：生产运行环境，同时承担真实场景验证。
+- 自托管 Docker 主机：可以是本地电脑、NAS、局域网服务器或 VPS，用于运行长期笔记本服务。本地电脑部署不要求 24 小时在线，除非你需要持续远程访问。
 - `data/`：私有笔记本数据，不提交到 Git。
 
 ## 最低生产安全要求
@@ -41,7 +41,7 @@ HTML_VAULT_BASIC_AUTH_USER="admin"
 HTML_VAULT_BASIC_AUTH_HASH="replace-with-caddy-hash"
 ```
 
-生产 Docker compose 会在容器内使用 `/data/content`、`/data/meta` 和 `/public`。如果不修改 compose 文件，宿主机路径就是仓库目录下的 `./data/...` 与 `./public`。
+自托管 Docker compose 会在容器内使用 `/data/content`、`/data/meta` 和 `/public`。如果不修改 compose 文件，宿主机路径就是仓库目录下的 `./data/...` 与 `./public`。
 
 后端只监听 localhost 或私有网络地址：
 
@@ -90,9 +90,9 @@ Browser -> Caddy :80 /api/* -> api:8787
 
 Caddy 会先要求用户登录，再只在反代到内部 API 服务时注入 `Authorization: Bearer {$HTML_VAULT_API_TOKEN}`。浏览器不需要保存，也不会看到长期后端 token。
 
-## 生产 Docker 部署
+## 自托管 Docker 部署
 
-新 VPS 上执行：
+新主机上执行：
 
 ```bash
 git clone https://github.com/JMoCoder/html_vault.git /srv/html-vault
@@ -129,11 +129,11 @@ docker compose -f compose.prod.yml logs -f
 
 首次启动会根据挂载的 content/meta 目录构建 `public/`。上传的 HTML 保存到 `data/content`，元数据保存到 `data/meta`，重建后的静态资产保存到 `public`。
 
-临时 IP 测试可以保持 `deploy/Caddyfile` 的 `:80` 配置，打开 `http://你的-vps-ip`。绑定域名和 HTTPS 时，可以把本项目放到已有 HTTPS 反向代理之后，或在 DNS 指向 VPS 后把 Caddyfile 调整为真实站点地址。
+本机测试可以打开 `http://localhost`。局域网内其他设备访问时，打开 `http://你的主机-ip`。绑定公网域名和 HTTPS 时，可以把本项目放到已有 HTTPS 反向代理之后，或在 DNS 指向主机后把 Caddyfile 调整为真实站点地址。
 
 ## 生产更新
 
-HTML Vault 不会自动更新 VPS。`GET /api/version` 和前端“关于项目”只显示更新提示。
+HTML Vault 不会自动更新宿主机。`GET /api/version` 和前端“关于项目”只显示更新提示。
 
 手动更新流程：
 
@@ -154,7 +154,7 @@ docker compose -f compose.prod.yml logs -f
 1. 在 `develop` 开发和测试。
 2. 本地跑完整测试。
 3. 将 `develop` 合并到 `main` 作为生产发布。
-4. VPS 拉取 `main`。
+4. 自托管 Docker 主机拉取 `main`。
 5. 备份 `/srv/html-vault/data`。
 6. 通过 `docker compose -f compose.prod.yml up -d --build` 重建/重启容器。
 7. 验证登录、上传、搜索、阅读、归档、版本显示和备份。

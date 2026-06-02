@@ -6,9 +6,9 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ### Added
 
-- 再利用可能な本番 Docker デプロイ資産として、`Dockerfile.api`、`compose.prod.yml`、`deploy/Caddyfile`、バックエンドコンテナ entrypoint を追加しました。
+- 再利用可能なセルフホスト Docker デプロイ資産として、`Dockerfile.api`、`compose.prod.yml`、`deploy/Caddyfile`、バックエンドコンテナ entrypoint を追加しました。
 - デプロイ済みサイトがブラウザーコードにバックエンド token を埋め込まず、同一 origin API を使えるようにするランタイム `config.js` サポートを追加しました。
-- `.dockerignore` を追加し、VPS 起動、更新、バックアップ、ロールバックのデプロイドキュメントを拡張しました。
+- `.dockerignore` を追加し、セルフホスト Docker の起動、更新、バックアップ、ロールバックのデプロイドキュメントを拡張しました。
 
 ### Changed
 
@@ -32,7 +32,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 - アップロード、一覧、メタデータ編集、検索、本文取得、お気に入り、アーカイブ、アーカイブ解除、完全削除をカバーするコア API smoke テストを追加しました。
 - localhost のフロントエンドはバックエンド API として `http://127.0.0.1:8787` を既定で使うようになり、インラインスクリプト設定なしでローカルノートブックモードを利用できます。
 - README に `data/content`、`data/meta`、API サーバー、静的 Web サーバーを使った実際のローカルノートブック起動手順を追加しました。
-- VPS 本番準備として、再利用可能なデプロイ安全基線ドキュメントとバックエンド API Token/CORS 設定を追加しました。
+- セルフホスト本番準備として、再利用可能なデプロイ安全基線ドキュメントとバックエンド API Token/CORS 設定を追加しました。
 
 ## [0.4.10] - 2026-06-02
 

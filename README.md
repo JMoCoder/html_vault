@@ -2,7 +2,7 @@
 
 Languages: [English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
 
-Deployment: [Production Docker and security baseline](DEPLOYMENT.md)
+Deployment: [Self-hosted Docker and security baseline](DEPLOYMENT.md)
 
 HTML Vault is a static-first workspace for HTML knowledge assets. Put HTML files
 in a content directory, build a manifest, and publish a card-based knowledge
@@ -50,7 +50,7 @@ the source of truth, while metadata lives in optional YAML sidecar files.
   item from the current workspace view.
 - Static build output that works on GitHub Pages, Cloudflare Pages, Caddy,
   Nginx, NAS, or any static file server.
-- Production Docker Compose deployment with a Caddy reverse proxy, persistent
+- Self-hosted Docker Compose deployment with a Caddy reverse proxy, persistent
   data directories, and an internal API service.
 
 ## Repository Layout
@@ -103,12 +103,13 @@ Open `http://127.0.0.1:8080`. On localhost, the frontend automatically connects
 to `http://127.0.0.1:8787`, enabling real HTML upload, metadata persistence,
 filtering, archive state, and rebuilds.
 
-For VPS or public deployments, read [DEPLOYMENT.md](DEPLOYMENT.md) before
-exposing the API.
+For self-hosted Docker, LAN, VPS, NAS, or public deployments, read
+[DEPLOYMENT.md](DEPLOYMENT.md) before exposing the API.
 
-## Production Docker
+## Self-Hosted Docker
 
-The reusable production path is `compose.prod.yml`. It runs:
+The reusable long-running Docker path is `compose.prod.yml`. It can run on a
+local computer, NAS, LAN server, or VPS. It runs:
 
 - `web`: Caddy serving `public/` and reverse-proxying `/api/*`;
 - `api`: the HTML Vault backend, writing to mounted `data/` and rebuilding
@@ -135,8 +136,9 @@ mkdir -p data/content data/meta public
 docker compose -f compose.prod.yml up -d --build
 ```
 
-Open `http://your-vps-ip` or the domain behind your reverse proxy. Uploaded
-HTML files and metadata stay in `data/`; they are not committed to GitHub.
+Open `http://localhost`, `http://your-host-ip`, or the domain behind your
+reverse proxy. Uploaded HTML files and metadata stay in `data/`; they are not
+committed to GitHub.
 
 The default production Caddyfile requires Basic Auth before serving the app and
 injects the API token only on the server side. The browser can call same-origin
