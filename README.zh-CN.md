@@ -4,34 +4,89 @@
 
 部署：[自托管 Docker 与安全基线](DEPLOYMENT.zh-CN.md)
 
-HTML Vault 是一个静态优先的 HTML 知识工作台。把 HTML 文件放进内容目录，构建 manifest，就可以发布一个卡片式知识库，可托管在任意静态 Web 服务器上。
+HTML Vault 是一个自托管 HTML 知识库工作台，用于保存、浏览、阅读和未来通过 AI 讨论 HTML 形式的知识文件。它面向希望内容仍然保留为可携带文件、而不是被锁进数据库优先笔记软件的用户。
 
-## 功能
+项目长期方向是一个 Web 优先的个人知识库：导入或生成 HTML 笔记，用集合和标签组织，通过精致的卡片工作台阅读，安装为 PWA，并在后续接入 AI 服务，对自己的资料库进行分类、检索、总结和多轮问答。
 
-- Manifest v2 知识条目模型。
-- 支持 `meta/items/**/*.yml` 旁车元数据。
-- 卡片网格，支持按资料库状态、集合、标签筛选。
-- 顶部工具栏支持标签复选筛选，并提供“或/且”匹配。
-- 顶部工具栏支持按时间新旧和标题 A-Z/Z-A 排序当前视图。
-- 卡片元信息使用“生成/导入”来源标签，并显示为“集合/来源”。
-- 固定卡片式索引布局，右上角提供紧凑功能按钮。
-- iframe 阅读页、原文打开、hash 链接。
-- 条目卡片和阅读页支持收藏与归档操作。
-- 条目卡片和阅读页支持编辑笔记元信息，标题、摘要、集合和标签会作为浏览器本地覆盖状态保存。
-- 支持 PWA 安装，Web 端作为跨设备主客户端，不再依赖独立桌面端。
-- 顶部导入入口用于已有 HTML 文件；右侧 AI 创建入口用于生成新的 HTML 笔记。
-- 中文、英文、日语三语界面切换。
-- 暗色/亮色模式。
-- 左侧边栏和全局 AI 右侧栏都支持拖动调宽，并保存到本地。
-- 搜索框右侧新增全局 AI 入口，打开可拖动调宽的右侧栏；上下文会随全部笔记、集合、标签、搜索结果、当前阅读话题以及收藏/归档/复选筛选变化。
-- 设置页：数据、AI 服务商配置、用户资料、账户与安全、用户协议、关于项目、更新文档。
-- 资料库/集合/标签侧栏显示管理；集合和标签的新增、重命名、合并、删除需要未来元数据写入服务。
-- 设置页新增独立数据区，预留本地备份与恢复、WebDAV 设置、数据导出。
-- AI 知识库助理保留为未来批量分类、打标签入口；基于知识库的多轮对话迁移到全局 AI 侧栏。
-- 主页搜索框左侧提供“手气不错”魔法棒按钮，可随机打开当前视图中的知识条目。
-- 可部署到 GitHub Pages、Cloudflare Pages、Caddy、Nginx、NAS 或任意静态服务器。
+## 为什么是 HTML Vault
 
-## 快速开始
+很多知识工具要么把内容存成不透明的数据库记录，要么以 Markdown 写作为核心。HTML Vault 选择另一条路线：
+
+- **HTML 文件是长期内容层。** 笔记可以被检查、复制、归档、备份，也可以由普通 Web 基础设施托管。
+- **YAML 旁车元数据让组织方式清晰可见。** 标题、摘要、集合、标签、收藏、归档和来源信息都与内容分离保存。
+- **Web 应用是主客户端。** 项目目标是浏览器和移动端 PWA，而不是额外开发桌面端。
+- **AI 是可选服务层。** 当前已经具备 AI 工作流的界面和上下文架构，但凭据与模型调用不会写入静态前端。
+
+## 0.5.0 稳定版范围
+
+`0.5.0` 是第一个稳定的自托管笔记本版本，重点是本地或私有网络中的真实使用：Docker 部署、HTML 导入、元数据持久化、筛选、阅读、归档，以及公网部署安全边界文档。
+
+当前已实现：
+
+- 单容器 Docker 部署：`docker compose up -d --build`。
+- 从 `app_static/` 生成的静态优先前端。
+- 用于真实笔记本运行的后端 API。
+- HTML 文件上传并导入到 `data/content`。
+- YAML 元数据持久化到 `data/meta`。
+- 导入、元数据变更和状态变更后自动重建 `public/`。
+- 卡片式工作台，支持资料库、集合、标签、收藏、搜索和排序。
+- 标签复选筛选，支持“或/且”匹配。
+- 阅读页支持 iframe 阅读、原文访问、复制/分享、收藏/归档和元信息编辑。
+- 已归档笔记编辑锁定，并支持永久删除。
+- 资料库、集合、标签的侧栏显隐管理。
+- 全局 AI 侧栏界面骨架和上下文标签。
+- 设置页包含 AI 服务商、数据、用户、账户安全、项目信息和更新相关区域。
+- PWA manifest 与 Service Worker。
+- 中文、英文、日语系统界面。
+- 亮色/暗色主题切换和可调宽侧栏。
+- `GET /api/version` 与 GitHub releases/tags 更新提示。
+- 可选 Caddy Basic Auth 公网部署示例。
+
+尚未实现：
+
+- 真实 AI 模型调用。
+- AI 生成 HTML 笔记。
+- AI 重新分类、打标签等批处理任务。
+- 多用户账户。
+- 云同步或托管订阅服务。
+- 完整备份/恢复和 WebDAV 执行逻辑。
+- 集合/标签批量重命名、合并、删除。
+
+## Docker 快速开始
+
+默认 Docker 路径适合本地电脑、NAS、局域网服务器或私有 VPS。它不需要 token，也不强制使用 Caddy。
+
+```bash
+git clone https://github.com/JMoCoder/html_vault.git
+cd html_vault
+docker compose up -d --build
+```
+
+打开：
+
+```text
+http://localhost:8080
+```
+
+或在同一局域网的其他设备上打开：
+
+```text
+http://你的主机-ip:8080
+```
+
+运行时数据不会提交到 Git：
+
+```text
+data/content   导入的 HTML 文件
+data/meta      YAML 旁车元数据和运行时配置
+public         生成后的 Web 应用输出
+```
+
+不要把默认 compose 栈直接暴露到公网。公网部署时，请用你熟悉的反向代理增加 HTTPS 和登录认证。项目提供 Caddy Basic Auth 示例：`compose.prod.yml`、`.env.secure.example` 和 `deploy/caddy-basic-auth.Caddyfile`。
+
+## 静态构建
+
+HTML Vault 也可以根据已有内容和元数据构建静态站点：
 
 ```bash
 python -m venv .venv
@@ -43,63 +98,50 @@ python -m http.server 8080 --directory public
 
 打开 `http://localhost:8080`。
 
-## 本地笔记本模式
+静态模式适合只读发布、类似 GitHub Pages 的托管，或检查生成后的应用。真实上传和元数据持久化需要后端 API 或默认 Docker 部署。
 
-如果要把项目作为真实本地 HTML 笔记本使用，需要同时运行静态前端和后端 API。后端会把导入的 HTML 写入 `data/content`，把 sidecar metadata 写入 `data/meta`，并重新构建 `public`。
+## 数据模型
 
-```bash
-mkdir -p data
-cp -a examples/content data/content
-cp -a examples/meta data/meta
-html-vault build --content data/content --meta data/meta --out public --title "HTML Vault"
-HTML_VAULT_CONTENT=data/content \
-HTML_VAULT_META=data/meta \
-HTML_VAULT_PUBLIC=public \
-HTML_VAULT_TITLE="HTML Vault" \
-html-vault serve-api --host 127.0.0.1 --port 8787
+HTML 文件保存在内容目录下：
+
+```text
+content/
+  generated/2026/05/mcp-security.html
+  imported/docker-network.html
+  reading/knowledge-workspace.html
 ```
 
-另开一个终端：
+可选元数据按相同路径保存在 `meta/items/` 下：
 
-```bash
-python -m http.server 8080 --directory public
+```yaml
+id: generated/2026/05/mcp-security.html
+title: MCP Server 安全模型
+summary: 信任边界、权限、工具调用风险与部署建议。
+source_type: topic
+collection: AI
+tags:
+  - MCP
+  - Security
+favorite: true
+pinned: true
+open_mode: iframe
+agent:
+  generated: true
+  job_id: job_demo
 ```
 
-打开 `http://127.0.0.1:8080`。在 localhost 下，前端会自动连接 `http://127.0.0.1:8787`，从而启用真实 HTML 上传、元信息持久化、筛选、归档状态和重建。
-
-自托管 Docker、局域网、VPS、NAS 或公网部署前，请先阅读 [DEPLOYMENT.zh-CN.md](DEPLOYMENT.zh-CN.md)。
-
-## 自托管 Docker
-
-默认 Docker 路径可以运行在本地电脑、NAS、局域网服务器或 VPS 上。它启动一个应用容器，同时提供前端和 `/api/*`。
-
-```bash
-git clone https://github.com/JMoCoder/html_vault.git
-cd html_vault
-docker compose up -d --build
-```
-
-打开 `http://localhost:8080` 或 `http://你的主机-ip:8080`。上传的 HTML 和元数据保存在 `data/`，不会提交到 GitHub。
-
-默认路径适合本地、局域网和私有自托管。公网部署时，请用你熟悉的反向代理手动增加 HTTPS 和登录认证边界。项目提供 Caddy Basic Auth 示例：`compose.prod.yml`、`.env.secure.example` 和 `deploy/caddy-basic-auth.Caddyfile`。
-
-## AI 服务商配置
-
-设置页中的 API Key 不会保存到 `localStorage`。静态模式只保存服务商、模型名、Base URL、temperature、max tokens 等非敏感偏好。
-
-Full 模式下，API Key 应只通过 HTTPS 或私有网络发送到受保护的 Agent Server，由服务端作为环境变量或加密凭据保存，并且永远不返回给浏览器。
+元数据会覆盖从 HTML 文档中提取的字段。没有元数据时，HTML Vault 会推断标题、摘要、集合、来源类型、时间戳和审核状态。
 
 ## 后端 API
 
-第一段后端能力通过可选 `agent` extra 启动：
+后端 API 已包含在 Docker 部署中，也可以通过可选 `agent` extra 手动启动：
 
 ```bash
 pip install -e ".[agent]"
-HTML_VAULT_CONTENT=examples/content \
-HTML_VAULT_META=examples/meta \
-HTML_VAULT_API_TOKEN=dev-token \
-HTML_VAULT_CORS_ORIGINS=http://127.0.0.1:8080 \
-html-vault serve-api --port 8787
+HTML_VAULT_CONTENT=data/content \
+HTML_VAULT_META=data/meta \
+HTML_VAULT_PUBLIC=public \
+html-vault serve-api --host 127.0.0.1 --port 8787
 ```
 
 已实现接口：
@@ -122,54 +164,64 @@ html-vault serve-api --port 8787
 - `GET /api/uploads/{upload_id}`
 - `DELETE /api/items/{id}`
 
-`GET /api/items` 支持当前前端列表逻辑：资料库筛选、集合、逗号分隔标签、`tag_match=any|all`、收藏/归档筛选、搜索、排序和 limit。
+API 覆盖当前前端核心流程：上传、列表、搜索、筛选、阅读、元信息编辑、收藏、归档、取消归档、已归档笔记永久删除、侧栏显隐持久化、重建任务和版本检查。
 
-`GET /api/search` 接收与 `GET /api/items` 相同的参数，并返回结构化搜索结果：命中的条目、分数、命中的字段和摘要片段。当前实现基于 manifest 元数据字段，后续可替换为 Pagefind、SQLite FTS 或云端搜索后端。
+## 安全模型
 
-`GET /api/version` 返回当前后端版本和仓库元数据。前端会在“设置 > 关于项目”显示当前版本，并检查 GitHub releases/tags 是否有可更新版本。这里只提示，不会自动更新服务端。
+默认 Docker 模式面向本地、局域网和私有自托管使用。默认不要求 `HTML_VAULT_API_TOKEN`，因此前端可以直接调用同源 API。
 
-`GET /api/navigation` 与 `PUT /api/navigation` 会把资料库视图、集合和标签的侧栏显隐偏好持久化到 `meta/config/navigation.json`。
+当你把 HTML Vault 暴露到公网时：
 
-`POST /api/uploads/html` 接收 multipart HTML 文件，并支持可选 `title`、`summary`、`collection`、逗号分隔 `tags`。成功导入后会写入 `content/imported/YYYY/MM/`，生成 sidecar metadata，重新构建 `public/`，并返回已索引条目。
+- 必须放在 HTTPS 后面。
+- 必须在访问应用前要求登录、session 或其他认证。
+- 为后端 API 设置 `HTML_VAULT_API_TOKEN`。
+- 让反向代理在服务端内部注入后端 token。
+- 不要把长期 API token 写进前端 JavaScript。
+- 升级前和结构性变更前备份 `data/`。
 
-`GET /api/uploads/{upload_id}` 返回已持久化的上传任务状态。任务记录保存在 `meta/config/jobs.json`。
+详见 [DEPLOYMENT.zh-CN.md](DEPLOYMENT.zh-CN.md)，其中包含可复用安全基线和 Caddy Basic Auth 示例。
 
-`POST /api/rebuild` 会重新构建静态输出并记录一个轻量任务。`GET /api/rebuild/{job_id}` 返回该重建任务状态。
+## 路线图
 
-`GET /api/items/{id}/content` 返回用于 iframe 阅读的源 HTML。`GET /api/items/{id}/raw` 返回用于原文访问的同一份源 HTML。两个接口都会校验条目必须存在于 manifest，且路径不能逃逸配置的内容目录。
+近期后端与笔记本能力：
 
-`PATCH /api/items/{id}/metadata` 会把单条笔记元信息编辑持久化到 YAML sidecar，重新构建 `public/`，并返回重新索引后的条目。当前可写字段为 `title`、`summary`、`collection`、`tags`。已归档条目会拒绝元信息编辑，取消归档后恢复可编辑。
+- 集合和标签批量操作。
+- 备份与恢复流程。
+- WebDAV 设置执行。
+- 更完整的导入校验和重复内容处理。
+- 搜索后端升级路径，例如 SQLite FTS 或 Pagefind。
 
-`PATCH /api/items/{id}/state` 会把 `favorite` 与 `archived` 布尔状态持久化到 YAML sidecar，重新构建 `public/`，并返回重新索引后的条目。
+AI 能力：
 
-`DELETE /api/items/{id}` 只接受已归档条目。它会永久删除 HTML 文件和 sidecar metadata，然后重新构建 `public/`。
+- 服务端保存 AI 服务商凭据。
+- AI 生成 HTML 笔记。
+- 通过全局 AI 侧栏进行知识库问答。
+- AI 辅助分类、打标签、总结和清理。
+- 对破坏性 AI 批处理提供用户确认和审计记录。
 
-设置 `HTML_VAULT_API_TOKEN` 后，API 请求必须带 `Authorization: Bearer <token>`。生产环境应将 `HTML_VAULT_CORS_ORIGINS` 设置为准确的前端来源。
+未来产品方向：
 
-## 侧栏管理
+- 托管同步和跨设备使用。
+- 用户账户与账户安全。
+- 商业 AI/云服务集成。
+- 更好的移动端 PWA 流程。
+- 在保持本地优先数据所有权的前提下提供可选协作功能。
 
-资料库、集合和标签管理位于设置页。静态模式可以隐藏侧栏导航项，但不会修改原始元数据。资料库是固定系统视图，所以仅支持显隐控制。集合和标签的新增、重命名、合并、删除属于结构性元数据操作，需要未来批量元数据 API 支持。当前单条笔记元信息编辑器在配置 Agent Server 时会通过 `PATCH /api/items/{id}/metadata` 写回，静态模式下继续保存浏览器本地覆盖状态。显隐设置在后端可用时会通过 `PUT /api/navigation` 持久化。
+## 仓库结构
 
-## 本地数据设置
-
-数据设置区包含浏览器侧备份与恢复、WebDAV 配置占位、JSON 数据导出。静态模式可导出本地 UI 偏好、收藏/归档/元信息覆盖状态、侧栏显隐设置和当前 Manifest，但不会备份磁盘上的源 HTML/YAML 文件。
-
-WebDAV 当前只保存非敏感连接字段。密码或应用令牌应交给未来受保护的 Agent Server 处理。
-
-## PWA 支持
-
-构建产物包含 `manifest.webmanifest` 与 `sw.js`，支持的浏览器可以将 HTML Vault 安装为 PWA。Service Worker 会缓存应用外壳和访问过的内容，用于更快加载和基础离线访问。
-
-## 规划中的 AI 模块
-
-AI 知识库助理是未来批量操作入口，用于对知识库数据库重新分类、重新打标签或更新审核状态。当前提交时会弹出二次确认，然后显示开发中，不会修改数据。
-
-全局 AI 侧栏将承载未来的上下文问答与生成 HTML 笔记能力。当前仅落实界面，不会发送模型请求；真实生成仍需要后续 Agent Server。
+```text
+app_static/        构建时复制到输出目录的静态工作台 UI
+html_vault/        Python 构建器、manifest 逻辑和后端 API
+examples/          示例内容与元数据
+tests/             构建器和后端 API 测试
+deploy/            可选部署示例
+docs/              本地规划文档，Git 忽略
+```
 
 ## 开发
 
 ```bash
-pip install -e ".[dev]"
+pip install -e ".[dev,agent]"
 pytest
 python tests/run_smoke.py
 html-vault build --content examples/content --meta examples/meta --out public

@@ -7,6 +7,16 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.5.0] - 2026-06-02
+
+### Changed
+
+- Promoted the project to the first stable self-hosted notebook release.
+- Rebuilt the English, Chinese, and Japanese README files around the full
+  project vision, implemented 0.5.0 scope, current limits, deployment paths,
+  security model, and roadmap.
+- Updated package, app, and PWA cache versions to `0.5.0`.
+
 ## [0.4.14] - 2026-06-02
 
 ### Changed

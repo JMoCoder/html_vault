@@ -4,66 +4,113 @@ Languages: [English](README.md) | [中文](README.zh-CN.md) | [日本語](README
 
 Deployment: [Self-hosted Docker and security baseline](DEPLOYMENT.md)
 
-HTML Vault is a static-first workspace for HTML knowledge assets. Put HTML files
-in a content directory, build a manifest, and publish a card-based knowledge
-library that can be hosted by any static web server.
+HTML Vault is a self-hosted knowledge workspace for saving, browsing, reading,
+and eventually discussing HTML-based knowledge files with AI. It is designed
+for people who want their notes to remain portable files instead of being
+locked inside a database-first note app.
 
-The 0.1 MVP follows the 2.0 product direction: the main UI is a
-Karakeep-style card workspace, not a folder-tree-first reader. HTML files remain
-the source of truth, while metadata lives in optional YAML sidecar files.
+The long-term direction is a web-first personal knowledge vault: import or
+generate HTML notes, organize them with collections and tags, read them in a
+polished card workspace, install the app as a PWA, and later connect AI services
+for classification, retrieval, summarization, and multi-turn conversations over
+your own library.
 
-## Features
+## Why HTML Vault
 
-- Manifest v2 item model for HTML knowledge cards.
-- Sidecar metadata from `meta/items/**/*.yml`.
-- Card grid with filters for library status, collections, and tags.
-- Toolbar tag filters with OR/AND matching.
-- Toolbar sort menu for newest, oldest, title A-Z, and title Z-A ordering.
-- Card metadata uses generated/imported source labels and collection/source
-  grouping.
-- Card-only workspace layout with compact action controls.
-- Reader pane with iframe mode, original-open action, and hash links.
-- Favorite and archive actions on item cards and in the reader.
-- Per-note metadata editing from cards and the reader, saved as local browser
-  overrides for title, summary, collection, and tags.
-- PWA install support through a web app manifest and service worker; the web
-  app is the primary cross-device client instead of a separate desktop app.
-- Topbar import entry for existing HTML files, plus a separate AI creation
-  entry for generated HTML notes.
-- Chinese, English, and Japanese UI language switching for system labels.
-- Dark and light mode switching with a compact sidebar icon.
-- Resizable left sidebar and resizable global AI sidebar, both persisted
-  locally.
-- Global AI sidebar entry beside search, with a resizable right panel and
-  context labels for all notes, collections, tags, search results, or the
-  current reader topic, including active favorite/archive and multi-select
-  filters.
-- Settings page for data, AI provider configuration, user profile,
-  account/security, user agreement, project info, and update notes.
-- Library, collection, and tag sidebar visibility management.
-- Local backup/restore, WebDAV settings, and data export sections are
-  scaffolded under a separate data settings group.
-- AI knowledge assistant is scaffolded for future database classification and
-  tagging jobs; multi-turn knowledge conversations move to the global AI
-  sidebar.
-- A magic-wand "I'm feeling lucky" button opens a random matching knowledge
-  item from the current workspace view.
-- Static build output that works on GitHub Pages, Cloudflare Pages, Caddy,
-  Nginx, NAS, or any static file server.
-- Self-hosted Docker Compose deployment with persistent data directories and a
-  single app container.
+Most knowledge tools either store content as opaque database rows or focus on
+Markdown-first authoring. HTML Vault takes a different path:
 
-## Repository Layout
+- **HTML files are the durable content layer.** Notes can be inspected, copied,
+  archived, backed up, and served by ordinary web infrastructure.
+- **YAML sidecar metadata keeps organization explicit.** Titles, summaries,
+  collections, tags, favorite state, archive state, and source metadata live
+  beside the content.
+- **The web app is the primary client.** The project targets browser + mobile
+  PWA usage instead of a separate desktop application.
+- **AI is treated as an optional service layer.** The current app already has
+  the UI architecture for AI-assisted workflows, while credentials and model
+  calls are kept out of the static frontend.
 
-```text
-app_static/        Static workspace UI copied into build output
-html_vault/        Python builder and manifest code
-examples/          Example content and metadata
-tests/             Pytest coverage for manifest and build output
-docs/              Local planning documents, ignored by Git
+## 0.5.0 Stable Scope
+
+Version `0.5.0` is the first stable self-hosted notebook release. It focuses on
+real local or private-network use: Docker deployment, HTML import, persistent
+metadata, filtering, reading, archiving, and a documented security boundary for
+public deployment.
+
+Implemented today:
+
+- Single-container Docker deployment with `docker compose up -d --build`.
+- Static-first frontend generated from `app_static/`.
+- Backend API for real notebook operation.
+- HTML upload/import into `data/content`.
+- YAML metadata persistence in `data/meta`.
+- Automatic rebuild of `public/` after imports and metadata/state changes.
+- Card workspace with collection, library, tag, favorite, search, and sort
+  workflows.
+- Tag multi-select filters with OR/AND matching.
+- Reader view with iframe reading, original-file access, copy/share actions,
+  favorite/archive actions, and metadata editing.
+- Archive behavior with edit lock and permanent delete for archived notes.
+- Sidebar visibility management for library views, collections, and tags.
+- Global AI sidebar UI scaffold with context labels.
+- AI provider, data, user, account/security, project info, and update sections
+  in settings.
+- PWA manifest and service worker.
+- Chinese, English, and Japanese system UI labels.
+- Light/dark theme switching and resizable sidebars.
+- `GET /api/version` and update hints from GitHub releases/tags.
+- Optional Caddy Basic Auth example for public deployments.
+
+Not implemented yet:
+
+- Real AI model calls.
+- AI-generated HTML notes.
+- AI-powered reclassification/tagging jobs.
+- Multi-user accounts.
+- Cloud sync or hosted subscription service.
+- Full backup/restore and WebDAV execution.
+- Batch collection/tag rename, merge, or delete operations.
+
+## Quick Docker Start
+
+The default deployment is intended for local machines, NAS, LAN servers, or a
+private VPS. It does not require a token or Caddy.
+
+```bash
+git clone https://github.com/JMoCoder/html_vault.git
+cd html_vault
+docker compose up -d --build
 ```
 
-## Quick Start
+Open:
+
+```text
+http://localhost:8080
+```
+
+or from another device on the same network:
+
+```text
+http://your-host-ip:8080
+```
+
+Runtime data is stored outside Git:
+
+```text
+data/content   Imported HTML files
+data/meta      YAML sidecar metadata and runtime config
+public         Generated web app output
+```
+
+Do not expose the default compose stack directly to the public internet. For
+public deployment, add HTTPS and authentication with your preferred reverse
+proxy. A Caddy Basic Auth example is provided in `compose.prod.yml`,
+`.env.secure.example`, and `deploy/caddy-basic-auth.Caddyfile`.
+
+## Static Build
+
+HTML Vault can also build a static site from existing content and metadata:
 
 ```bash
 python -m venv .venv
@@ -75,61 +122,13 @@ python -m http.server 8080 --directory public
 
 Open `http://localhost:8080`.
 
-## Local Notebook Mode
+Static mode is useful for read-only publishing, GitHub Pages-like hosting, or
+checking the generated app. Real upload and metadata persistence require the
+backend API or the default Docker deployment.
 
-For real local notebook usage, run both the static web app and the backend API.
-The backend writes imported HTML to `data/content`, writes sidecar metadata to
-`data/meta`, and rebuilds `public`.
+## Data Model
 
-```bash
-mkdir -p data
-cp -a examples/content data/content
-cp -a examples/meta data/meta
-html-vault build --content data/content --meta data/meta --out public --title "HTML Vault"
-HTML_VAULT_CONTENT=data/content \
-HTML_VAULT_META=data/meta \
-HTML_VAULT_PUBLIC=public \
-HTML_VAULT_TITLE="HTML Vault" \
-html-vault serve-api --host 127.0.0.1 --port 8787
-```
-
-In another terminal:
-
-```bash
-python -m http.server 8080 --directory public
-```
-
-Open `http://127.0.0.1:8080`. On localhost, the frontend automatically connects
-to `http://127.0.0.1:8787`, enabling real HTML upload, metadata persistence,
-filtering, archive state, and rebuilds.
-
-For self-hosted Docker, LAN, VPS, NAS, or public deployments, read
-[DEPLOYMENT.md](DEPLOYMENT.md) before exposing the API.
-
-## Self-Hosted Docker
-
-The default Docker path can run on a local computer, NAS, LAN server, or VPS.
-It starts one app container that serves both the frontend and `/api/*`.
-
-```bash
-git clone https://github.com/JMoCoder/html_vault.git
-cd html_vault
-docker compose up -d --build
-```
-
-Open `http://localhost:8080` or `http://your-host-ip:8080`. Uploaded HTML files
-and metadata stay in `data/`; they are not committed to GitHub.
-
-This default path is intended for local, LAN, and private self-hosting. For
-public internet deployment, add HTTPS and an authentication boundary with your
-preferred reverse proxy. A Caddy Basic Auth example is provided in
-`compose.prod.yml`, `.env.secure.example`, and
-`deploy/caddy-basic-auth.Caddyfile`.
-
-## Content Model
-
-HTML files are stored under `content/` or any directory passed to
-`html-vault build --content`.
+HTML files are stored under a content directory:
 
 ```text
 content/
@@ -138,12 +137,12 @@ content/
   reading/knowledge-workspace.html
 ```
 
-Optional metadata mirrors the content path under `meta/items/`.
+Optional metadata mirrors the content path under `meta/items/`:
 
 ```yaml
 id: generated/2026/05/mcp-security.html
-title: MCP Server 安全模型
-summary: 介绍 MCP Server 的信任边界、权限、工具调用风险与部署建议。
+title: MCP Server Security Model
+summary: Trust boundaries, permissions, tool-call risks, and deployment notes.
 source_type: topic
 collection: AI
 tags:
@@ -161,54 +160,17 @@ Metadata overrides values extracted from the HTML document. Without metadata,
 HTML Vault infers title, summary, collection, source type, timestamps, and
 review status.
 
-## Build Command
-
-```bash
-html-vault build \
-  --content examples/content \
-  --meta examples/meta \
-  --out public \
-  --title "HTML Vault"
-```
-
-The output directory contains:
-
-- `index.html`, `app.js`, `style.css`
-- `manifest.json`
-- copied `content/` HTML files
-
-## Agent Entry
-
-The new-item card is static-safe by default. If no Agent Server is configured,
-submitting the form shows a setup hint.
-
-To connect a future Agent Server, define this before loading `app.js`:
-
-```html
-<script>
-  window.HTML_VAULT_AGENT_URL = "http://localhost:8787";
-</script>
-```
-
-The UI posts to:
-
-```http
-POST /api/jobs
-```
-
-with an `input_type`, `input`, and `options` payload.
-
 ## Backend API
 
-The first backend slice is available through the optional `agent` extra:
+The backend API is included in the Docker deployment and can also be started
+manually with the optional `agent` extra:
 
 ```bash
 pip install -e ".[agent]"
-HTML_VAULT_CONTENT=examples/content \
-HTML_VAULT_META=examples/meta \
-HTML_VAULT_API_TOKEN=dev-token \
-HTML_VAULT_CORS_ORIGINS=http://127.0.0.1:8080 \
-html-vault serve-api --port 8787
+HTML_VAULT_CONTENT=data/content \
+HTML_VAULT_META=data/meta \
+HTML_VAULT_PUBLIC=public \
+html-vault serve-api --host 127.0.0.1 --port 8787
 ```
 
 Implemented endpoints:
@@ -231,118 +193,74 @@ Implemented endpoints:
 - `GET /api/uploads/{upload_id}`
 - `DELETE /api/items/{id}`
 
-`GET /api/items` supports the current frontend list logic: library filters,
-collection, comma-separated tags with `tag_match=any|all`, favorite/archive
-filters, search query, sorting, and limit.
+The API supports current frontend workflows: upload, list, search, filter,
+read, edit metadata, favorite, archive, unarchive, permanent delete for
+archived notes, navigation visibility persistence, rebuild jobs, and version
+checks.
 
-`GET /api/search` accepts the same parameters as `GET /api/items` and returns
-structured search results with the matched item, score, matched fields, and a
-snippet. The current implementation uses manifest metadata fields and can later
-be replaced by Pagefind, SQLite FTS, or a cloud search backend.
+## Security Model
 
-`GET /api/version` returns the running backend version and repository metadata.
-The frontend displays the current version in Settings > About and checks GitHub
-releases/tags for update availability. It only shows a hint; it does not update
-the server automatically.
+Default Docker mode is optimized for local, LAN, and private self-hosted use.
+It does not require `HTML_VAULT_API_TOKEN`, so the frontend can call the same
+origin API directly.
 
-`GET /api/navigation` and `PUT /api/navigation` persist sidebar visibility
-preferences for library views, collections, and tags in
-`meta/config/navigation.json`.
+When you expose HTML Vault publicly:
 
-`POST /api/uploads/html` accepts a multipart HTML file plus optional `title`,
-`summary`, `collection`, and comma-separated `tags`. Successful imports write
-to `content/imported/YYYY/MM/`, create sidecar metadata, rebuild `public/`, and
-return the indexed item plus an upload job id.
+- Put it behind HTTPS.
+- Require login/session/authentication before serving the app.
+- Set `HTML_VAULT_API_TOKEN` for backend API protection.
+- Let the reverse proxy inject the backend token server-side.
+- Do not embed long-lived API tokens in frontend JavaScript.
+- Back up `data/` before upgrades and before any schema-changing release.
 
-`GET /api/uploads/{upload_id}` returns the persisted upload job status. Job
-records are stored in `meta/config/jobs.json`.
+See [DEPLOYMENT.md](DEPLOYMENT.md) for the reusable security baseline and the
+Caddy Basic Auth example.
 
-`POST /api/rebuild` rebuilds the static output and records a lightweight job.
-`GET /api/rebuild/{job_id}` returns that rebuild job status.
+## Roadmap
 
-`GET /api/items/{id}/content` returns the source HTML for iframe reading.
-`GET /api/items/{id}/raw` returns the same source HTML for original-file access.
-Both endpoints validate that the requested item exists in the manifest and stays
-inside the configured content directory.
+Near-term backend and notebook work:
 
-`PATCH /api/items/{id}/metadata` persists per-note edits to the YAML sidecar
-file, rebuilds `public/`, and returns the re-indexed item. The current writable
-fields are `title`, `summary`, `collection`, and `tags`. Archived items reject
-metadata edits until they are unarchived.
+- Batch collection and tag operations.
+- Backup and restore workflows.
+- WebDAV settings execution.
+- Richer import validation and duplicate handling.
+- Search backend upgrade path, such as SQLite FTS or Pagefind.
 
-`PATCH /api/items/{id}/state` persists `favorite` and `archived` booleans to the
-YAML sidecar file, rebuilds `public/`, and returns the re-indexed item.
+AI work:
 
-`DELETE /api/items/{id}` only accepts archived items. It permanently removes
-the HTML file and sidecar metadata, then rebuilds `public/`.
+- Provider-side credential storage on the server.
+- AI-generated HTML notes.
+- Knowledge-base Q&A through the global AI sidebar.
+- AI-assisted classification, tagging, summarization, and cleanup jobs.
+- User confirmation and audit trails for destructive AI batch operations.
 
-Set `HTML_VAULT_API_TOKEN` to require `Authorization: Bearer <token>` on API
-requests. `HTML_VAULT_CORS_ORIGINS` should be set to exact frontend origins in
-production.
+Future product direction:
 
-## AI Provider Settings
+- Hosted sync and cross-device usage.
+- User accounts and account security.
+- Commercial AI/cloud service integration.
+- Better mobile PWA flows.
+- Optional collaboration features while keeping local-first data ownership.
 
-The sidebar settings button opens a full settings page. API keys are not stored
-in `localStorage`. In static mode, HTML Vault only saves non-sensitive model
-preferences such as provider, model name, base URL, temperature, and max tokens.
+## Repository Layout
 
-In full mode, the API key should be sent only to a protected Agent Server
-endpoint over HTTPS or a private network. The server should store it as an
-environment secret or encrypted server-side credential and never return it to
-the browser.
-
-## Sidebar Management
-
-Library, collection, and tag management live in the settings page. Static mode
-can hide sidebar navigation entries without modifying original metadata.
-Library views are fixed system filters, so only visibility can be changed. Add,
-rename, merge, and delete for collections or tags are structural metadata
-operations and require future batch metadata APIs. The current per-note
-metadata editor writes through `PATCH /api/items/{id}/metadata` when the Agent
-Server is configured, and falls back to local browser overrides in static mode.
-Visibility settings are persisted through `PUT /api/navigation` when available.
-
-## Local Data Settings
-
-The data settings group covers browser-side backup and restore, WebDAV
-connection placeholders, and JSON export. Static mode can export local UI
-preferences, favorite/archive and metadata overrides, visibility settings, and
-the current manifest. It does not back up source HTML/YAML files from disk.
-
-WebDAV settings currently save only non-sensitive connection fields. Passwords
-or app tokens should be handled by a future protected Agent Server.
-
-## PWA Support
-
-Build output includes `manifest.webmanifest` and `sw.js`, so supported browsers
-can install HTML Vault as a PWA. The service worker caches the app shell and
-visited content for faster reloads and basic offline access.
-
-## Planned AI Modules
-
-The AI knowledge assistant section is a UI scaffold for future bulk operations
-over the knowledge database, such as reclassification, retagging, and review
-status updates. Submitting it currently shows a second confirmation and then a
-development-in-progress message without changing data.
-
-The global AI sidebar is the future home for context-aware chat and HTML note
-generation. It is UI-only for now: no model request is sent, and note creation
-still requires a future Agent Server.
+```text
+app_static/        Static workspace UI copied into build output
+html_vault/        Python builder, manifest logic, and backend API
+examples/          Example content and metadata
+tests/             Pytest coverage for builder and backend APIs
+deploy/            Optional deployment examples
+docs/              Local planning documents, ignored by Git
+```
 
 ## Development
 
 ```bash
-pip install -e ".[dev]"
+pip install -e ".[dev,agent]"
 pytest
 python tests/run_smoke.py
 html-vault build --content examples/content --meta examples/meta --out public
 ```
-
-## Security Notes
-
-The current release is a static reader and does not execute uploaded files or
-store API keys. Future Agent Server deployments must protect `/api/*`, block
-SSRF-prone fetches, limit uploads, and keep LLM keys on the server.
 
 ## License
 
