@@ -138,7 +138,10 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current core backend job API release: 0.4.11.",
+    aboutVersion: "Current version: {version}.",
+    updateAvailable: "Update available: {version}.",
+    versionCurrent: "You are on the latest checked version.",
+    versionCheckUnavailable: "Version check unavailable.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -377,7 +380,10 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前核心后端任务 API 版本：0.4.11。",
+    aboutVersion: "当前版本：{version}。",
+    updateAvailable: "发现可更新版本：{version}。",
+    versionCurrent: "当前已是已检查到的最新版本。",
+    versionCheckUnavailable: "版本检查不可用。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -616,7 +622,10 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在のコアバックエンド Job API バージョン: 0.4.11。",
+    aboutVersion: "現在のバージョン: {version}。",
+    updateAvailable: "利用可能な更新: {version}。",
+    versionCurrent: "確認済みの最新バージョンです。",
+    versionCheckUnavailable: "バージョン確認を利用できません。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -746,6 +755,10 @@ const state = {
   query: "",
   agentUrl: getDefaultAgentUrl(),
   agentToken: getDefaultAgentToken(),
+  currentVersion: "0.4.12",
+  latestVersion: "",
+  updateAvailable: false,
+  versionCheckComplete: false,
   language: getInitialLanguage(),
   themeMode: getInitialThemeMode(),
   feedbackKey: "connectAgent",
@@ -821,6 +834,7 @@ const elements = {
   modelMaxTokens: document.querySelector("#model-max-tokens"),
   testProvider: document.querySelector("#test-provider"),
   settingsFeedback: document.querySelector("#settings-feedback"),
+  versionStatus: document.querySelector("#version-status"),
   libraryNav: document.querySelector("#library-nav"),
   collectionNav: document.querySelector("#collection-nav"),
   tagNav: document.querySelector("#tag-nav"),
@@ -894,6 +908,7 @@ async function boot() {
     state.manifest = await loadManifest();
     state.items = Array.isArray(state.manifest.items) ? state.manifest.items : [];
     renderApp();
+    checkVersionStatus();
     openFromHash();
   } catch (error) {
     elements.contentGrid.innerHTML = `<div class="empty-state">${t("manifestMissing")}</div>`;
@@ -961,6 +976,65 @@ function renderApp() {
   renderAiConfig();
   renderDataConfig();
   renderManagementLists();
+  renderVersionStatus();
+}
+
+async function checkVersionStatus() {
+  try {
+    if (state.agentUrl) {
+      const response = await apiFetch("/api/version", { cache: "no-store" });
+      if (response.ok) {
+        const data = await response.json();
+        state.currentVersion = normalizeVersion(data.version) || state.currentVersion;
+      }
+    }
+    const latest = await fetchLatestGithubVersion();
+    state.latestVersion = latest;
+    state.updateAvailable = isVersionNewer(latest, state.currentVersion);
+    state.versionCheckComplete = true;
+  } catch (error) {
+    state.versionCheckComplete = true;
+    console.warn("Version check unavailable.", error);
+  }
+  renderVersionStatus();
+}
+
+async function fetchLatestGithubVersion() {
+  const signal = AbortSignal.timeout ? AbortSignal.timeout(4000) : undefined;
+  const releaseResponse = await fetch("https://api.github.com/repos/JMoCoder/html_vault/releases/latest", {
+    headers: { Accept: "application/vnd.github+json" },
+    signal,
+  });
+  if (releaseResponse.ok) {
+    const release = await releaseResponse.json();
+    const version = normalizeVersion(release.tag_name || release.name || "");
+    if (version) return version;
+  }
+  const tagsResponse = await fetch("https://api.github.com/repos/JMoCoder/html_vault/tags", {
+    headers: { Accept: "application/vnd.github+json" },
+    signal,
+  });
+  if (!tagsResponse.ok) throw new Error(`GitHub tags returned ${tagsResponse.status}`);
+  const tags = await tagsResponse.json();
+  const versions = Array.isArray(tags) ? tags.map((tag) => normalizeVersion(tag.name)).filter(Boolean) : [];
+  versions.sort(compareVersions).reverse();
+  return versions[0] || "";
+}
+
+function renderVersionStatus() {
+  document.querySelectorAll("[data-i18n='aboutVersion']").forEach((node) => {
+    node.textContent = t("aboutVersion", { version: state.currentVersion });
+  });
+  if (!elements.versionStatus) return;
+  if (!state.versionCheckComplete) {
+    elements.versionStatus.textContent = "";
+  } else if (state.updateAvailable) {
+    elements.versionStatus.textContent = t("updateAvailable", { version: state.latestVersion });
+  } else if (state.latestVersion) {
+    elements.versionStatus.textContent = t("versionCurrent");
+  } else {
+    elements.versionStatus.textContent = t("versionCheckUnavailable");
+  }
 }
 
 function renderLibraryNav() {
@@ -2667,6 +2741,27 @@ function sunIcon() {
   `;
 }
 
+function normalizeVersion(value) {
+  const match = String(value || "").trim().match(/^v?(\d+(?:\.\d+){0,2})/i);
+  return match ? match[1] : "";
+}
+
+function compareVersions(left, right) {
+  const a = normalizeVersion(left).split(".").map((part) => Number(part || 0));
+  const b = normalizeVersion(right).split(".").map((part) => Number(part || 0));
+  const length = Math.max(a.length, b.length, 3);
+  for (let index = 0; index < length; index += 1) {
+    const diff = (a[index] || 0) - (b[index] || 0);
+    if (diff !== 0) return diff;
+  }
+  return 0;
+}
+
+function isVersionNewer(candidate, current) {
+  if (!candidate || !current) return false;
+  return compareVersions(candidate, current) > 0;
+}
+
 function setIconButtonLabel(button, key) {
   const label = t(key);
   button.setAttribute("aria-label", label);
@@ -2709,6 +2804,7 @@ function applyTranslations() {
   applyMultiFilterState();
   applySortState();
   updateThemeToggle(getResolvedTheme());
+  renderVersionStatus();
 }
 
 function setFeedback(key, params = {}) {

@@ -91,6 +91,7 @@ html-vault serve-api --port 8787
 已实现接口：
 
 - `GET /api/health`
+- `GET /api/version`
 - `GET /api/manifest`
 - `GET /api/navigation`
 - `PUT /api/navigation`
@@ -110,6 +111,8 @@ html-vault serve-api --port 8787
 `GET /api/items` 支持当前前端列表逻辑：资料库筛选、集合、逗号分隔标签、`tag_match=any|all`、收藏/归档筛选、搜索、排序和 limit。
 
 `GET /api/search` 接收与 `GET /api/items` 相同的参数，并返回结构化搜索结果：命中的条目、分数、命中的字段和摘要片段。当前实现基于 manifest 元数据字段，后续可替换为 Pagefind、SQLite FTS 或云端搜索后端。
+
+`GET /api/version` 返回当前后端版本和仓库元数据。前端会在“设置 > 关于项目”显示当前版本，并检查 GitHub releases/tags 是否有可更新版本。这里只提示，不会自动更新服务端。
 
 `GET /api/navigation` 与 `PUT /api/navigation` 会把资料库视图、集合和标签的侧栏显隐偏好持久化到 `meta/config/navigation.json`。
 

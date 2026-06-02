@@ -193,6 +193,7 @@ html-vault serve-api --port 8787
 Implemented endpoints:
 
 - `GET /api/health`
+- `GET /api/version`
 - `GET /api/manifest`
 - `GET /api/navigation`
 - `PUT /api/navigation`
@@ -217,6 +218,11 @@ filters, search query, sorting, and limit.
 structured search results with the matched item, score, matched fields, and a
 snippet. The current implementation uses manifest metadata fields and can later
 be replaced by Pagefind, SQLite FTS, or a cloud search backend.
+
+`GET /api/version` returns the running backend version and repository metadata.
+The frontend displays the current version in Settings > About and checks GitHub
+releases/tags for update availability. It only shows a hint; it does not update
+the server automatically.
 
 `GET /api/navigation` and `PUT /api/navigation` persist sidebar visibility
 preferences for library views, collections, and tags in

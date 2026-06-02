@@ -4,6 +4,7 @@ import shutil
 
 import pytest
 
+from html_vault import __version__
 from html_vault.server.config import ServerSettings
 from html_vault.server.items import ItemContentError, ItemMetadataError, ItemService, normalize_query
 from tests.api_server import run_api_server
@@ -229,5 +230,21 @@ def test_server_items_api() -> None:
         assert search["count"] == 1
         assert search["items"][0]["item"]["id"] == "generated/2026/05/mcp-security.html"
         assert search["items"][0]["score"] > 0
+    finally:
+        server.close()
+
+
+def test_server_version_api() -> None:
+    server = run_api_server(
+        content_dir=SETTINGS.content_dir,
+        meta_dir=SETTINGS.meta_dir or ROOT / "examples" / "meta",
+        public_dir=SETTINGS.public_dir,
+        site_title=SETTINGS.site_title,
+    )
+    try:
+        data = server.request("GET", "/api/version")
+        assert data["version"] == __version__
+        assert data["repository"] == "JMoCoder/html_vault"
+        assert data["release_url"] == "https://github.com/JMoCoder/html_vault/releases"
     finally:
         server.close()

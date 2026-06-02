@@ -78,6 +78,14 @@ def create_app() -> FastAPI:
     def manifest(_: ApiAuth, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:
         return service.manifest()
 
+    @app.get("/api/version")
+    def version(_: ApiAuth) -> dict[str, str]:
+        return {
+            "version": __version__,
+            "repository": "JMoCoder/html_vault",
+            "release_url": "https://github.com/JMoCoder/html_vault/releases",
+        }
+
     @app.post("/api/rebuild")
     def rebuild(_: ApiAuth, service: Annotated[JobService, Depends(get_job_service)]) -> dict:
         try:

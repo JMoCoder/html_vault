@@ -2,6 +2,14 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.12] - 2026-06-02
+
+### Added
+
+- バックエンドのバージョンとリポジトリ情報を返す `GET /api/version` を追加しました。
+- 設定 > プロジェクト情報 で実行中バージョンを表示し、GitHub releases/tags から更新有無を確認するようにしました。
+- 更新確認はヒント表示のみで、サーバーの自動更新は行いません。
+
 ## [0.4.11] - 2026-06-02
 
 ### Added

@@ -7,6 +7,15 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.12] - 2026-06-02
+
+### Added
+
+- Added `GET /api/version` for backend version and repository metadata.
+- Settings > About now shows the running version and checks GitHub
+  releases/tags for update availability.
+- Update checks only show a hint and never auto-update the server.
+
 ## [0.4.11] - 2026-06-02
 
 ### Added

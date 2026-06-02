@@ -2,6 +2,14 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.12] - 2026-06-02
+
+### 新增
+
+- 新增 `GET /api/version`，返回后端版本和仓库元数据。
+- “设置 > 关于项目”现在会显示运行版本，并检查 GitHub releases/tags 是否有可更新版本。
+- 更新检查只显示提示，不会自动更新服务端。
+
 ## [0.4.11] - 2026-06-02
 
 ### 新增
