@@ -7,6 +7,25 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.5.1] - 2026-06-02
+
+### Added
+
+- Added the untracked GitHub Pages `site/` static homepage and read-only demo.
+- Added direct English, Chinese, and Japanese language switching for the public
+  homepage.
+- Added language handoff from the homepage to the demo with
+  `demo/?lang=zh-CN`, `demo/?lang=en`, and `demo/?lang=ja`.
+- Added language-specific demo manifests and full README/CHANGELOG HTML demo
+  notes for each supported language.
+
+### Changed
+
+- Kept the demo explicitly static with backend auto-detection disabled.
+- Updated demo cache-busting and service worker cache names so stale demo shells
+  do not render outdated controls.
+- Updated package, app, and PWA cache versions to `0.5.1`.
+
 ## [0.5.0] - 2026-06-02
 
 ### Changed

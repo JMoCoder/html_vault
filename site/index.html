@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="HTML Vault is a self-hosted HTML knowledge workspace for importing, reading, filtering, archiving, and preparing AI-assisted notebook workflows.">
+  <title>HTML Vault - Self-hosted HTML knowledge workspace</title>
+  <link rel="icon" href="assets/html-vault-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="top-header">
+      <a class="brand" href="./" aria-label="HTML Vault home">
+        <img src="assets/html-vault-logo.svg" alt="">
+        <span>HTMLvault</span>
+      </a>
+      <nav class="main-nav" aria-label="Site navigation">
+        <a href="#workspace" data-i18n="navWorkspace">Workspace</a>
+        <a href="#features" data-i18n="navFeatures">Features</a>
+        <a href="#deploy" data-i18n="navDeploy">Deploy</a>
+        <a href="#roadmap" data-i18n="navRoadmap">Roadmap</a>
+      </nav>
+      <div class="header-actions">
+        <div class="language-switch" aria-label="Language switch">
+          <button type="button" data-lang="en">EN</button>
+          <button type="button" data-lang="zh">中文</button>
+          <button type="button" data-lang="ja">日本語</button>
+        </div>
+        <a class="ghost-link" href="demo/" data-demo-link data-i18n="liveDemo">Live demo</a>
+        <a class="primary-link" href="https://github.com/JMoCoder/html_vault">GitHub</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="workspace">
+        <div class="hero-copy">
+          <p class="eyebrow" data-i18n="heroEyebrow">Self-hosted HTML notebook</p>
+          <h1 data-i18n="heroTitle">Build a private knowledge vault from real HTML files.</h1>
+          <p data-i18n="heroText">
+            HTML Vault keeps notes portable, searchable, and ready for future AI
+            workflows. Import existing HTML, browse by collection and tag, archive
+            finished material, and deploy the same app locally or on your server.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-link large" href="demo/" data-demo-link data-i18n="openDemo">Open static demo</a>
+            <a class="secondary-link large" href="#deploy" data-i18n="deployDocker">Deploy with Docker</a>
+          </div>
+          <div class="status-row" aria-label="Current project status">
+            <span data-i18n-html="statusVersion"><strong>0.5.1</strong> stable frontend</span>
+            <span data-i18n-html="statusDocker"><strong>Docker</strong> single container</span>
+            <span data-i18n-html="statusPwa"><strong>PWA</strong> browser app</span>
+          </div>
+        </div>
+
+        <div class="product-frame" aria-label="HTML Vault product preview">
+          <div class="app-window">
+            <aside class="preview-sidebar">
+              <div class="preview-logo">
+                <img src="assets/html-vault-logo.svg" alt="">
+                <span>HTMLvault</span>
+              </div>
+              <div class="preview-section">
+                <div class="preview-section-title" data-i18n="previewLibrary">Library</div>
+                <div class="preview-nav active"><span data-i18n="previewAll">All notes</span><b>3</b></div>
+                <div class="preview-nav"><span data-i18n="previewProject">Project</span><b>1</b></div>
+                <div class="preview-nav"><span data-i18n="previewRelease">Release</span><b>1</b></div>
+                <div class="preview-nav"><span data-i18n="previewDeploy">Deploy</span><b>1</b></div>
+              </div>
+              <div class="preview-section">
+                <div class="preview-section-title" data-i18n="previewTags">Tags</div>
+                <div class="preview-chip">README</div>
+                <div class="preview-chip">Docker</div>
+                <div class="preview-chip">CHANGELOG</div>
+              </div>
+            </aside>
+            <section class="preview-main">
+              <div class="preview-toolbar">
+                <div class="toolbar-buttons">
+                  <span class="tool import">+</span>
+                  <span class="tool"></span>
+                  <span class="tool"></span>
+                  <span class="tool favorite"></span>
+                </div>
+                <div class="preview-search"></div>
+                <span class="tool ai"></span>
+              </div>
+              <div class="metric-grid">
+                <article>
+                  <span data-i18n="metricNotes">Total notes</span>
+                  <strong>3</strong>
+                </article>
+                <article>
+                  <span data-i18n="metricCollections">Collections</span>
+                  <strong>3</strong>
+                </article>
+                <article>
+                  <span data-i18n="metricTags">Tags</span>
+                  <strong>9</strong>
+                </article>
+              </div>
+              <div class="card-grid">
+                <article class="note-card">
+                  <div class="card-top">
+                    <span data-i18n="previewCardOneMeta">Project / README</span>
+                    <div class="card-icons"><i></i><i></i><i></i></div>
+                  </div>
+                  <h3 data-i18n="previewCardOneTitle">HTML Vault Project Overview</h3>
+                  <p data-i18n="previewCardOneText">Trilingual overview of portable HTML notes, metadata, Docker, PWA, and AI-ready architecture.</p>
+                  <div class="card-bottom">
+                    <span>2026-06-02</span>
+                    <div><b>README</b><b>Docs</b></div>
+                  </div>
+                </article>
+                <article class="note-card">
+                  <div class="card-top">
+                    <span data-i18n="previewCardTwoMeta">Release / CHANGELOG</span>
+                    <div class="card-icons"><i></i><i></i><i></i></div>
+                  </div>
+                  <h3 data-i18n="previewCardTwoTitle">HTML Vault 0.5.1 Release Board</h3>
+                  <p data-i18n="previewCardTwoText">Release notes covering stable scope, deployment changes, API progress, and roadmap.</p>
+                  <div class="card-bottom">
+                    <span>2026-06-02</span>
+                    <div><b>Release</b><b>Roadmap</b></div>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="section feature-band" id="features">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="featuresEyebrow">Product modules</p>
+          <h2 data-i18n="featuresTitle">A notebook interface designed like an operations workspace.</h2>
+          <p data-i18n="featuresText">
+            The design follows a compact admin-workbench pattern: persistent
+            navigation, dense cards, direct actions, explicit metadata, and
+            status panels that remain useful on a laptop screen.
+          </p>
+        </div>
+        <div class="module-grid">
+          <article>
+            <span class="module-icon">01</span>
+            <h3 data-i18n="moduleImportTitle">Import and storage</h3>
+            <p data-i18n="moduleImportText">Upload HTML into generated or imported libraries while keeping raw content outside Git.</p>
+          </article>
+          <article>
+            <span class="module-icon">02</span>
+            <h3 data-i18n="moduleBrowseTitle">Browse and filter</h3>
+            <p data-i18n="moduleBrowseText">Use collections, tags, favorites, archive state, search, sorting, and tag AND/OR filters.</p>
+          </article>
+          <article>
+            <span class="module-icon">03</span>
+            <h3 data-i18n="moduleReaderTitle">Reader workflow</h3>
+            <p data-i18n="moduleReaderText">Open full HTML notes, copy links, share entries, edit metadata, favorite, archive, or restore.</p>
+          </article>
+          <article>
+            <span class="module-icon">04</span>
+            <h3 data-i18n="moduleAiTitle">AI-ready sidebar</h3>
+            <p data-i18n="moduleAiText">Prepare contextual Q&amp;A and note generation with manually selected context files.</p>
+          </article>
+          <article>
+            <span class="module-icon">05</span>
+            <h3 data-i18n="moduleSettingsTitle">Settings and data</h3>
+            <p data-i18n="moduleSettingsText">Scaffold provider settings, data backup, WebDAV, export, theme, language, and account modules.</p>
+          </article>
+          <article>
+            <span class="module-icon">06</span>
+            <h3 data-i18n="moduleDeployTitle">Deployable app</h3>
+            <p data-i18n="moduleDeployText">Run as a PWA with a static frontend and optional API backend in one Docker service.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section deploy-section" id="deploy">
+        <div class="deploy-copy">
+          <p class="eyebrow" data-i18n="deployEyebrow">Reusable deployment</p>
+          <h2 data-i18n="deployTitle">One project, two modes: static preview and Docker notebook.</h2>
+          <p data-i18n="deployText">
+            GitHub Pages can host the public intro and read-only demo. Docker
+            runs the real notebook with the backend API, upload handling, metadata
+            persistence, archive delete protection, and rebuild flow.
+          </p>
+        </div>
+        <div class="deploy-panel">
+          <div class="panel-tabs">
+            <span class="active">Docker</span>
+            <span>Pages</span>
+            <span>PWA</span>
+          </div>
+          <pre><code>git clone https://github.com/JMoCoder/html_vault.git
+cd html_vault
+docker compose up -d --build
+
+# <span data-i18n="codeOpen">open</span> http://localhost:8080</code></pre>
+        </div>
+      </section>
+
+      <section class="section roadmap-section" id="roadmap">
+        <div class="section-heading compact">
+          <p class="eyebrow" data-i18n="roadmapEyebrow">Delivery plan</p>
+          <h2 data-i18n="roadmapTitle">Current capability and next build targets.</h2>
+        </div>
+        <div class="roadmap-table" role="table" aria-label="HTML Vault roadmap">
+          <div class="roadmap-row header" role="row">
+            <span data-i18n="roadmapStatus">Status</span>
+            <span data-i18n="roadmapArea">Area</span>
+            <span data-i18n="roadmapFocus">Focus</span>
+          </div>
+          <div class="roadmap-row" role="row">
+            <span class="badge done" data-i18n="roadmapBuilt">Built</span>
+            <span data-i18n="roadmapCore">Core notebook</span>
+            <span data-i18n="roadmapCoreText">Import, browse, search, tag filters, favorites, archive, metadata editing.</span>
+          </div>
+          <div class="roadmap-row" role="row">
+            <span class="badge active" data-i18n="roadmapNext">Next</span>
+            <span data-i18n="roadmapBackend">Backend depth</span>
+            <span data-i18n="roadmapBackendText">Backup, restore, WebDAV, validation, richer persistence, production hardening.</span>
+          </div>
+          <div class="roadmap-row" role="row">
+            <span class="badge planned" data-i18n="roadmapPlanned">Planned</span>
+            <span data-i18n="roadmapAi">AI workflows</span>
+            <span data-i18n="roadmapAiText">Provider configuration, contextual Q&amp;A, AI tagging, generated HTML notes.</span>
+          </div>
+          <div class="roadmap-row" role="row">
+            <span class="badge planned" data-i18n="roadmapPlanned">Planned</span>
+            <span data-i18n="roadmapCloud">Cloud services</span>
+            <span data-i18n="roadmapCloudText">User accounts, sync, hosted AI services, commercial deployment options.</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>HTML Vault 0.5.1</span>
+      <span data-i18n="footerText">MIT licensed. Your HTML files remain yours.</span>
+    </footer>
+  </div>
+  <script src="assets/site.js"></script>
+</body>
+</html>

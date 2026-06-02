@@ -1,0 +1,100 @@
+{
+  "version": 2,
+  "generated_at": "2026-06-02T08:00:00.000000+00:00",
+  "site": {
+    "title": "HTML Vault Demo",
+    "layout": "cards"
+  },
+  "items": [
+    {
+      "id": "demo-notes/readme.en.html",
+      "title": "HTML Vault Complete README",
+      "summary": "The complete English README rendered as HTML, covering project vision, implemented scope, Docker deployment, data model, backend API, security model, and roadmap.",
+      "path": "content/demo-notes/readme.en.html",
+      "source_type": "html",
+      "source_url": null,
+      "collection": "Project Docs",
+      "tags": [
+        "README",
+        "Full README",
+        "HTML Vault"
+      ],
+      "status": "ready",
+      "review_status": "reviewed",
+      "favorite": true,
+      "archived": false,
+      "pinned": true,
+      "created": "2026-06-02T08:00:00.000000+00:00",
+      "updated": "2026-06-02T08:00:00.000000+00:00",
+      "cover": null,
+      "open_mode": "iframe",
+      "agent": {
+        "generated": false
+      }
+    },
+    {
+      "id": "demo-notes/changelog.en.html",
+      "title": "HTML Vault Changelog",
+      "summary": "The complete English CHANGELOG rendered as HTML with a release-track layout for 0.5.1 and earlier development milestones.",
+      "path": "content/demo-notes/changelog.en.html",
+      "source_type": "html",
+      "source_url": null,
+      "collection": "Release Notes",
+      "tags": [
+        "CHANGELOG",
+        "Full CHANGELOG",
+        "Release"
+      ],
+      "status": "ready",
+      "review_status": "reviewed",
+      "favorite": false,
+      "archived": false,
+      "pinned": false,
+      "created": "2026-06-02T08:01:00.000000+00:00",
+      "updated": "2026-06-02T08:01:00.000000+00:00",
+      "cover": null,
+      "open_mode": "iframe",
+      "agent": {
+        "generated": false
+      }
+    }
+  ],
+  "collections": [
+    {
+      "id": "project-docs",
+      "name": "Project Docs",
+      "count": 1
+    },
+    {
+      "id": "release-notes",
+      "name": "Release Notes",
+      "count": 1
+    }
+  ],
+  "tags": [
+    {
+      "name": "CHANGELOG",
+      "count": 1
+    },
+    {
+      "name": "HTML Vault",
+      "count": 1
+    },
+    {
+      "name": "README",
+      "count": 1
+    },
+    {
+      "name": "Release",
+      "count": 1
+    },
+    {
+      "name": "Full README",
+      "count": 1
+    },
+    {
+      "name": "Full CHANGELOG",
+      "count": 1
+    }
+  ]
+}

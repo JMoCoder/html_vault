@@ -2,6 +2,21 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.5.1] - 2026-06-02
+
+### 新增
+
+- 新增未跟踪的 GitHub Pages `site/` 静态官网与只读 Demo。
+- 官网新增英文、中文、日语直接切换按钮。
+- 新增从官网语言进入 Demo 的传递逻辑，支持 `demo/?lang=zh-CN`、`demo/?lang=en` 和 `demo/?lang=ja`。
+- 新增按语言区分的 Demo manifest，并为每种语言生成完整 README/CHANGELOG HTML 示例笔记。
+
+### 变更
+
+- Demo 明确保持静态模式，禁用后端自动探测。
+- 更新 Demo 缓存参数和 Service Worker 缓存名，避免旧 Demo 页面壳渲染过期控件。
+- 包版本、应用版本与 PWA 缓存版本更新为 `0.5.1`。
+
 ## [0.5.0] - 2026-06-02
 
 ### 变更

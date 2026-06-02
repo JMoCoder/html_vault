@@ -1,0 +1,100 @@
+{
+  "version": 2,
+  "generated_at": "2026-06-02T08:00:00.000000+00:00",
+  "site": {
+    "title": "HTML Vault Demo",
+    "layout": "cards"
+  },
+  "items": [
+    {
+      "id": "demo-notes/readme.ja.html",
+      "title": "HTML Vault README 完全版",
+      "summary": "日本語 README 全文を HTML 化し、プロジェクトの方向性、実装範囲、Docker デプロイ、データモデル、API、セキュリティ、ロードマップをまとめています。",
+      "path": "content/demo-notes/readme.ja.html",
+      "source_type": "html",
+      "source_url": null,
+      "collection": "プロジェクト文書",
+      "tags": [
+        "README",
+        "README 全文",
+        "HTML Vault"
+      ],
+      "status": "ready",
+      "review_status": "reviewed",
+      "favorite": true,
+      "archived": false,
+      "pinned": true,
+      "created": "2026-06-02T08:00:00.000000+00:00",
+      "updated": "2026-06-02T08:00:00.000000+00:00",
+      "cover": null,
+      "open_mode": "iframe",
+      "agent": {
+        "generated": false
+      }
+    },
+    {
+      "id": "demo-notes/changelog.ja.html",
+      "title": "HTML Vault 変更履歴",
+      "summary": "日本語 CHANGELOG 全文を HTML 化し、0.5.1 安定版と過去の開発マイルストーンをリリーストラック形式で表示します。",
+      "path": "content/demo-notes/changelog.ja.html",
+      "source_type": "html",
+      "source_url": null,
+      "collection": "リリース記録",
+      "tags": [
+        "CHANGELOG",
+        "CHANGELOG 全文",
+        "Release"
+      ],
+      "status": "ready",
+      "review_status": "reviewed",
+      "favorite": false,
+      "archived": false,
+      "pinned": false,
+      "created": "2026-06-02T08:01:00.000000+00:00",
+      "updated": "2026-06-02T08:01:00.000000+00:00",
+      "cover": null,
+      "open_mode": "iframe",
+      "agent": {
+        "generated": false
+      }
+    }
+  ],
+  "collections": [
+    {
+      "id": "project-docs",
+      "name": "プロジェクト文書",
+      "count": 1
+    },
+    {
+      "id": "release-notes",
+      "name": "リリース記録",
+      "count": 1
+    }
+  ],
+  "tags": [
+    {
+      "name": "CHANGELOG",
+      "count": 1
+    },
+    {
+      "name": "HTML Vault",
+      "count": 1
+    },
+    {
+      "name": "README",
+      "count": 1
+    },
+    {
+      "name": "Release",
+      "count": 1
+    },
+    {
+      "name": "README 全文",
+      "count": 1
+    },
+    {
+      "name": "CHANGELOG 全文",
+      "count": 1
+    }
+  ]
+}

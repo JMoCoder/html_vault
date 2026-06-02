@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML Vault Complete README</title>
+<style>
+:root{--ink:#17201c;--muted:#5f716b;--line:#d8e4df;--panel:#fff;--soft:#f3f8f6;--brand:#0f766e;--blue:#2563eb;--amber:#c27803}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:linear-gradient(180deg,#eef5f2,#f8fbfa 420px);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.68}.wrap{max-width:1080px;margin:0 auto;padding:34px 28px 70px}.hero{display:grid;grid-template-columns:minmax(0,1fr)220px;gap:18px;align-items:stretch;margin-bottom:20px}.intro,.stat,.doc{border:1px solid var(--line);border-radius:10px;background:var(--panel);box-shadow:0 18px 50px rgba(28,48,40,.08)}.intro{padding:30px}.eyebrow{margin:0 0 12px;color:var(--brand);font-size:12px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}h1{margin:0;font-size:clamp(36px,5vw,58px);line-height:1.05}h2{margin:34px 0 12px;font-size:28px}h3{margin:28px 0 10px;font-size:21px}h4{margin:22px 0 8px;font-size:17px}p{margin:0 0 14px;color:var(--muted)}a{color:var(--brand);font-weight:760}.stat{display:grid;place-items:center;padding:18px;text-align:center}.stat strong{display:block;font-size:32px}.doc{padding:30px}.doc ul{margin:0 0 18px;padding-left:22px;color:var(--muted)}.doc li{margin:7px 0}.doc code{padding:2px 5px;border-radius:5px;background:#e8f2ef;color:#064e3b}.doc pre{overflow:auto;margin:18px 0;padding:16px;border-radius:8px;background:#13231f;color:#e7f8f4}.doc pre code{padding:0;background:transparent;color:inherit}.badge{display:inline-flex;align-items:center;min-height:32px;margin-bottom:14px;padding:0 10px;border-radius:999px;color:#fff;background:var(--brand);font-weight:850;font-size:13px}@media(max-width:760px){.wrap{padding:22px 18px 54px}.hero{grid-template-columns:1fr}.doc{padding:22px}h1{font-size:36px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<section class="hero">
+<article class="intro">
+<p class="eyebrow">Project manual</p>
+<h1>HTML Vault Complete README</h1>
+</article>
+<aside class="stat"><span class="badge">Full README</span><strong>0.5.1</strong></aside>
+</section>
+<section class="doc">
+<h1>HTML Vault</h1>
+<p>Languages: <a href="README.md">English</a> | <a href="README.zh-CN.md">中文</a> | <a href="README.ja.md">日本語</a></p>
+<p>Deployment: <a href="DEPLOYMENT.md">Self-hosted Docker and security baseline</a></p>
+<p>HTML Vault is a self-hosted knowledge workspace for saving, browsing, reading, and eventually discussing HTML-based knowledge files with AI. It is designed for people who want their notes to remain portable files instead of being locked inside a database-first note app.</p>
+<p>The long-term direction is a web-first personal knowledge vault: import or generate HTML notes, organize them with collections and tags, read them in a polished card workspace, install the app as a PWA, and later connect AI services for classification, retrieval, summarization, and multi-turn conversations over your own library.</p>
+<h2>Why HTML Vault</h2>
+<p>Most knowledge tools either store content as opaque database rows or focus on Markdown-first authoring. HTML Vault takes a different path:</p>
+<ul><li><strong>HTML files are the durable content layer.</strong> Notes can be inspected, copied, archived, backed up, and served by ordinary web infrastructure.</li><li><strong>YAML sidecar metadata keeps organization explicit.</strong> Titles, summaries, collections, tags, favorite state, archive state, and source metadata live beside the content.</li><li><strong>The web app is the primary client.</strong> The project targets browser + mobile PWA usage instead of a separate desktop application.</li><li><strong>AI is treated as an optional service layer.</strong> The current app already has the UI architecture for AI-assisted workflows, while credentials and model calls are kept out of the static frontend.</li></ul>
+<h2>0.5.0 Stable Scope</h2>
+<p>Version <code>0.5.0</code> is the first stable self-hosted notebook release. It focuses on real local or private-network use: Docker deployment, HTML import, persistent metadata, filtering, reading, archiving, and a documented security boundary for public deployment.</p>
+<p>Implemented today:</p>
+<ul><li>Single-container Docker deployment with <code>docker compose up -d --build</code>.</li><li>Static-first frontend generated from <code>app_static/</code>.</li><li>Backend API for real notebook operation.</li><li>HTML upload/import into <code>data/content</code>.</li><li>YAML metadata persistence in <code>data/meta</code>.</li><li>Automatic rebuild of <code>public/</code> after imports and metadata/state changes.</li><li>Card workspace with collection, library, tag, favorite, search, and sort workflows.</li><li>Tag multi-select filters with OR/AND matching.</li><li>Reader view with iframe reading, original-file access, copy/share actions, favorite/archive actions, and metadata editing.</li><li>Archive behavior with edit lock and permanent delete for archived notes.</li><li>Sidebar visibility management for library views, collections, and tags.</li><li>Global AI sidebar UI scaffold with context labels.</li><li>AI provider, data, user, account/security, project info, and update sections in settings.</li><li>PWA manifest and service worker.</li><li>Chinese, English, and Japanese system UI labels.</li><li>Light/dark theme switching and resizable sidebars.</li><li><code>GET /api/version</code> and update hints from GitHub releases/tags.</li><li>Optional Caddy Basic Auth example for public deployments.</li></ul>
+<p>Not implemented yet:</p>
+<ul><li>Real AI model calls.</li><li>AI-generated HTML notes.</li><li>AI-powered reclassification/tagging jobs.</li><li>Multi-user accounts.</li><li>Cloud sync or hosted subscription service.</li><li>Full backup/restore and WebDAV execution.</li><li>Batch collection/tag rename, merge, or delete operations.</li></ul>
+<h2>Quick Docker Start</h2>
+<p>The default deployment is intended for local machines, NAS, LAN servers, or a private VPS. It does not require a token or Caddy.</p>
+<pre><code>git clone https://github.com/JMoCoder/html_vault.git
+cd html_vault
+docker compose up -d --build</code></pre>
+<p>Open:</p>
+<pre><code>http://localhost:8080</code></pre>
+<p>or from another device on the same network:</p>
+<pre><code>http://your-host-ip:8080</code></pre>
+<p>Runtime data is stored outside Git:</p>
+<pre><code>data/content   Imported HTML files
+data/meta      YAML sidecar metadata and runtime config
+public         Generated web app output</code></pre>
+<p>Do not expose the default compose stack directly to the public internet. For public deployment, add HTTPS and authentication with your preferred reverse proxy. A Caddy Basic Auth example is provided in <code>compose.prod.yml</code>, <code>.env.secure.example</code>, and <code>deploy/caddy-basic-auth.Caddyfile</code>.</p>
+<h2>Static Build</h2>
+<p>HTML Vault can also build a static site from existing content and metadata:</p>
+<pre><code>python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+html-vault build --content examples/content --meta examples/meta --out public
+python -m http.server 8080 --directory public</code></pre>
+<p>Open <code>http://localhost:8080</code>.</p>
+<p>Static mode is useful for read-only publishing, GitHub Pages-like hosting, or checking the generated app. Real upload and metadata persistence require the backend API or the default Docker deployment.</p>
+<h2>Data Model</h2>
+<p>HTML files are stored under a content directory:</p>
+<pre><code>content/
+  generated/2026/05/mcp-security.html
+  imported/docker-network.html
+  reading/knowledge-workspace.html</code></pre>
+<p>Optional metadata mirrors the content path under <code>meta/items/</code>:</p>
+<pre><code>id: generated/2026/05/mcp-security.html
+title: MCP Server Security Model
+summary: Trust boundaries, permissions, tool-call risks, and deployment notes.
+source_type: topic
+collection: AI
+tags:
+  - MCP
+  - Security
+favorite: true
+pinned: true
+open_mode: iframe
+agent:
+  generated: true
+  job_id: job_demo</code></pre>
+<p>Metadata overrides values extracted from the HTML document. Without metadata, HTML Vault infers title, summary, collection, source type, timestamps, and review status.</p>
+<h2>Backend API</h2>
+<p>The backend API is included in the Docker deployment and can also be started manually with the optional <code>agent</code> extra:</p>
+<pre><code>pip install -e &quot;.[agent]&quot;
+HTML_VAULT_CONTENT=data/content \
+HTML_VAULT_META=data/meta \
+HTML_VAULT_PUBLIC=public \
+html-vault serve-api --host 127.0.0.1 --port 8787</code></pre>
+<p>Implemented endpoints:</p>
+<ul><li><code>GET /api/health</code></li><li><code>GET /api/version</code></li><li><code>GET /api/manifest</code></li><li><code>GET /api/navigation</code></li><li><code>PUT /api/navigation</code></li><li><code>GET /api/items</code></li><li><code>GET /api/search</code></li><li><code>GET /api/items/{id}</code></li><li><code>GET /api/items/{id}/content</code></li><li><code>GET /api/items/{id}/raw</code></li><li><code>POST /api/rebuild</code></li><li><code>GET /api/rebuild/{job_id}</code></li><li><code>PATCH /api/items/{id}/metadata</code></li><li><code>PATCH /api/items/{id}/state</code></li><li><code>POST /api/uploads/html</code></li><li><code>GET /api/uploads/{upload_id}</code></li><li><code>DELETE /api/items/{id}</code></li></ul>
+<p>The API supports current frontend workflows: upload, list, search, filter, read, edit metadata, favorite, archive, unarchive, permanent delete for archived notes, navigation visibility persistence, rebuild jobs, and version checks.</p>
+<h2>Security Model</h2>
+<p>Default Docker mode is optimized for local, LAN, and private self-hosted use. It does not require <code>HTML_VAULT_API_TOKEN</code>, so the frontend can call the same origin API directly.</p>
+<p>When you expose HTML Vault publicly:</p>
+<ul><li>Put it behind HTTPS.</li><li>Require login/session/authentication before serving the app.</li><li>Set <code>HTML_VAULT_API_TOKEN</code> for backend API protection.</li><li>Let the reverse proxy inject the backend token server-side.</li><li>Do not embed long-lived API tokens in frontend JavaScript.</li><li>Back up <code>data/</code> before upgrades and before any schema-changing release.</li></ul>
+<p>See <a href="DEPLOYMENT.md">DEPLOYMENT.md</a> for the reusable security baseline and the Caddy Basic Auth example.</p>
+<h2>Roadmap</h2>
+<p>Near-term backend and notebook work:</p>
+<ul><li>Batch collection and tag operations.</li><li>Backup and restore workflows.</li><li>WebDAV settings execution.</li><li>Richer import validation and duplicate handling.</li><li>Search backend upgrade path, such as SQLite FTS or Pagefind.</li></ul>
+<p>AI work:</p>
+<ul><li>Provider-side credential storage on the server.</li><li>AI-generated HTML notes.</li><li>Knowledge-base Q&amp;A through the global AI sidebar.</li><li>AI-assisted classification, tagging, summarization, and cleanup jobs.</li><li>User confirmation and audit trails for destructive AI batch operations.</li></ul>
+<p>Future product direction:</p>
+<ul><li>Hosted sync and cross-device usage.</li><li>User accounts and account security.</li><li>Commercial AI/cloud service integration.</li><li>Better mobile PWA flows.</li><li>Optional collaboration features while keeping local-first data ownership.</li></ul>
+<h2>Repository Layout</h2>
+<pre><code>app_static/        Static workspace UI copied into build output
+html_vault/        Python builder, manifest logic, and backend API
+examples/          Example content and metadata
+tests/             Pytest coverage for builder and backend APIs
+deploy/            Optional deployment examples
+docs/              Local planning documents, ignored by Git</code></pre>
+<h2>Development</h2>
+<pre><code>pip install -e &quot;.[dev,agent]&quot;
+pytest
+python tests/run_smoke.py
+html-vault build --content examples/content --meta examples/meta --out public</code></pre>
+<h2>License</h2>
+<p>MIT</p>
+</section>
+</main>
+</body>
+</html>

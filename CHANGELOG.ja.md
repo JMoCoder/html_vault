@@ -2,6 +2,21 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.5.1] - 2026-06-02
+
+### Added
+
+- 未追跡の GitHub Pages 用 `site/` 静的ホームページと読み取り専用 Demo を追加しました。
+- 公開ホームページに英語、中国語、日本語の直接切り替えボタンを追加しました。
+- ホームページから Demo へ言語を引き継ぐため、`demo/?lang=zh-CN`、`demo/?lang=en`、`demo/?lang=ja` をサポートしました。
+- 言語別 Demo manifest と、各言語の完全な README/CHANGELOG HTML デモノートを追加しました。
+
+### Changed
+
+- Demo は明示的に静的モードのままとし、バックエンド自動検出を無効化しました。
+- 古い Demo シェルが期限切れのコントロールを表示しないよう、Demo のキャッシュバスターと Service Worker キャッシュ名を更新しました。
+- パッケージ、アプリ、PWA キャッシュバージョンを `0.5.1` に更新しました。
+
 ## [0.5.0] - 2026-06-02
 
 ### Changed

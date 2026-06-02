@@ -738,6 +738,7 @@ const libraryFilterDefinitions = [
 ];
 
 function getDefaultAgentUrl() {
+  if (window.HTML_VAULT_STATIC_DEMO) return "";
   if (window.HTML_VAULT_AGENT_URL) return window.HTML_VAULT_AGENT_URL;
   if (window.location.protocol === "file:") return "";
   const host = window.location.hostname;
@@ -928,7 +929,8 @@ async function loadManifest() {
       console.warn("Agent manifest unavailable, falling back to static manifest.", error);
     }
   }
-  const response = await fetch("manifest.json", { cache: "no-store" });
+  const manifestPath = state.language === "zh-CN" ? "manifest.json" : `manifest.${state.language}.json`;
+  const response = await fetch(manifestPath, { cache: "no-store" });
   if (!response.ok) throw new Error(`Unable to load manifest: ${response.status}`);
   return response.json();
 }
@@ -1830,9 +1832,25 @@ function renderAfterItemStateChange(item) {
 }
 
 function getInitialLanguage() {
+  const requested = normalizeLanguage(new URLSearchParams(window.location.search).get("lang"));
+  if (requested) {
+    localStorage.setItem("html-vault-language", requested);
+    return requested;
+  }
+  const siteLanguage = normalizeLanguage(localStorage.getItem("html-vault-site-lang"));
+  if (siteLanguage) {
+    localStorage.setItem("html-vault-language", siteLanguage);
+    return siteLanguage;
+  }
   const saved = localStorage.getItem("html-vault-language");
   if (saved && i18n[saved]) return saved;
   return "zh-CN";
+}
+
+function normalizeLanguage(language) {
+  if (language === "zh") return "zh-CN";
+  if (language && i18n[language]) return language;
+  return "";
 }
 
 function setLanguage(language) {
@@ -2774,7 +2792,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch((error) => {
+    navigator.serviceWorker.register("sw.js?v=0.5.1-demo").catch((error) => {
       console.warn("Service worker registration failed", error);
     });
   });

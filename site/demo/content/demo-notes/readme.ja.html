@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML Vault README 完全版</title>
+<style>
+:root{--ink:#17201c;--muted:#5f716b;--line:#d8e4df;--panel:#fff;--soft:#f3f8f6;--brand:#0f766e;--blue:#2563eb;--amber:#c27803}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:linear-gradient(180deg,#eef5f2,#f8fbfa 420px);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.68}.wrap{max-width:1080px;margin:0 auto;padding:34px 28px 70px}.hero{display:grid;grid-template-columns:minmax(0,1fr)220px;gap:18px;align-items:stretch;margin-bottom:20px}.intro,.stat,.doc{border:1px solid var(--line);border-radius:10px;background:var(--panel);box-shadow:0 18px 50px rgba(28,48,40,.08)}.intro{padding:30px}.eyebrow{margin:0 0 12px;color:var(--brand);font-size:12px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}h1{margin:0;font-size:clamp(36px,5vw,58px);line-height:1.05}h2{margin:34px 0 12px;font-size:28px}h3{margin:28px 0 10px;font-size:21px}h4{margin:22px 0 8px;font-size:17px}p{margin:0 0 14px;color:var(--muted)}a{color:var(--brand);font-weight:760}.stat{display:grid;place-items:center;padding:18px;text-align:center}.stat strong{display:block;font-size:32px}.doc{padding:30px}.doc ul{margin:0 0 18px;padding-left:22px;color:var(--muted)}.doc li{margin:7px 0}.doc code{padding:2px 5px;border-radius:5px;background:#e8f2ef;color:#064e3b}.doc pre{overflow:auto;margin:18px 0;padding:16px;border-radius:8px;background:#13231f;color:#e7f8f4}.doc pre code{padding:0;background:transparent;color:inherit}.badge{display:inline-flex;align-items:center;min-height:32px;margin-bottom:14px;padding:0 10px;border-radius:999px;color:#fff;background:var(--brand);font-weight:850;font-size:13px}@media(max-width:760px){.wrap{padding:22px 18px 54px}.hero{grid-template-columns:1fr}.doc{padding:22px}h1{font-size:36px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<section class="hero">
+<article class="intro">
+<p class="eyebrow">プロジェクト説明</p>
+<h1>HTML Vault README 完全版</h1>
+</article>
+<aside class="stat"><span class="badge">README 全文</span><strong>0.5.1</strong></aside>
+</section>
+<section class="doc">
+<h1>HTML Vault</h1>
+<p>Languages: <a href="README.md">English</a> | <a href="README.zh-CN.md">中文</a> | <a href="README.ja.md">日本語</a></p>
+<p>Deployment: <a href="DEPLOYMENT.md">Self-hosted Docker and security baseline</a></p>
+<p>HTML Vault は、HTML 形式のナレッジファイルを保存、閲覧、読書し、将来的には AI と対話するためのセルフホスト型ナレッジワークスペースです。内容をデータベース中心のノートアプリに閉じ込めず、移植可能なファイルとして保持したいユーザー向けに設計されています。</p>
+<p>長期的な方向性は、Web ファーストの個人ナレッジ Vault です。HTML ノートをインポートまたは生成し、コレクションとタグで整理し、洗練されたカードワークスペースで読み、PWA としてインストールし、将来的には AI サービスを接続して、自分のライブラリに対する分類、検索、要約、多ターン会話を行えるようにします。</p>
+<h2>Why HTML Vault</h2>
+<p>多くのナレッジツールは、内容を不透明なデータベース行として保存するか、Markdown 執筆を中心にしています。HTML Vault は別の方針を取ります:</p>
+<ul><li><strong>HTML ファイルを永続的なコンテンツ層にします。</strong> ノートは確認、コピー、アーカイブ、バックアップでき、一般的な Web インフラで配信できます。</li><li><strong>YAML サイドカーメタデータで整理情報を明示します。</strong> タイトル、概要、コレクション、タグ、お気に入り、アーカイブ、ソース情報はコンテンツとは別に保存されます。</li><li><strong>Web アプリを主クライアントにします。</strong> 別のデスクトップアプリではなく、ブラウザーとモバイル PWA を主な利用形態にします。</li><li><strong>AI は任意のサービス層です。</strong> 現在のアプリには AI ワークフロー用 UI とコンテキスト設計がありますが、認証情報とモデル呼び出しは静的フロントエンドには保存しません。</li></ul>
+<h2>0.5.0 Stable Scope</h2>
+<p><code>0.5.0</code> は最初の安定したセルフホストノートブックリリースです。Docker デプロイ、HTML インポート、メタデータ永続化、フィルター、読書、アーカイブ、公開デプロイの安全境界を中心にしています。</p>
+<p>現在実装済み:</p>
+<ul><li><code>docker compose up -d --build</code> による単一コンテナ Docker デプロイ。</li><li><code>app_static/</code> から生成される静的優先フロントエンド。</li><li>実際のノートブック運用向けバックエンド API。</li><li>HTML アップロードと <code>data/content</code> へのインポート。</li><li>YAML メタデータの <code>data/meta</code> への永続化。</li><li>インポート、メタデータ変更、状態変更後の <code>public/</code> 自動再ビルド。</li><li>ライブラリ、コレクション、タグ、お気に入り、検索、並び替えを備えたカードワークスペース。</li><li>OR/AND 一致を選べる複数タグフィルター。</li><li>iframe 読書、原文アクセス、コピー/共有、お気に入り/アーカイブ、メタデータ編集を備えたリーダー。</li><li>アーカイブ済みノートの編集ロックと完全削除。</li><li>ライブラリ、コレクション、タグのサイドバー表示管理。</li><li>グローバル AI サイドバー UI スキャフォールドとコンテキストラベル。</li><li>AI プロバイダー、データ、ユーザー、アカウントセキュリティ、プロジェクト情報、更新情報の設定セクション。</li><li>PWA manifest と Service Worker。</li><li>中国語、英語、日本語のシステム UI。</li><li>ライト/ダークテーマ切り替えとリサイズ可能なサイドバー。</li><li><code>GET /api/version</code> と GitHub releases/tags による更新ヒント。</li><li>任意の Caddy Basic Auth 公開デプロイ例。</li></ul>
+<p>未実装:</p>
+<ul><li>実際の AI モデル呼び出し。</li><li>AI 生成 HTML ノート。</li><li>AI による再分類、再タグ付けなどのバッチ処理。</li><li>マルチユーザーアカウント。</li><li>クラウド同期またはホスト型サブスクリプションサービス。</li><li>完全なバックアップ/復元と WebDAV 実行。</li><li>コレクション/タグの一括リネーム、統合、削除。</li></ul>
+<h2>Quick Docker Start</h2>
+<p>既定の Docker パスはローカル PC、NAS、LAN サーバー、プライベート VPS 向けです。token も Caddy も必須ではありません。</p>
+<pre><code>git clone https://github.com/JMoCoder/html_vault.git
+cd html_vault
+docker compose up -d --build</code></pre>
+<p>開く:</p>
+<pre><code>http://localhost:8080</code></pre>
+<p>同じネットワーク上の別デバイスからは:</p>
+<pre><code>http://your-host-ip:8080</code></pre>
+<p>ランタイムデータは Git には保存されません:</p>
+<pre><code>data/content   インポートされた HTML ファイル
+data/meta      YAML サイドカーメタデータとランタイム設定
+public         生成された Web アプリ出力</code></pre>
+<p>既定の compose スタックをそのまま公開インターネットに出さないでください。公開デプロイでは、好みのリバースプロキシで HTTPS と認証を追加してください。Caddy Basic Auth 例として <code>compose.prod.yml</code>、<code>.env.secure.example</code>、<code>deploy/caddy-basic-auth.Caddyfile</code> を用意しています。</p>
+<h2>Static Build</h2>
+<p>既存のコンテンツとメタデータから静的サイトを生成することもできます:</p>
+<pre><code>python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+html-vault build --content examples/content --meta examples/meta --out public
+python -m http.server 8080 --directory public</code></pre>
+<p><code>http://localhost:8080</code> を開きます。</p>
+<p>静的モードは読み取り専用公開、GitHub Pages のようなホスティング、生成アプリの確認に適しています。実際のアップロードとメタデータ永続化には、バックエンド API または既定の Docker デプロイが必要です。</p>
+<h2>Data Model</h2>
+<p>HTML ファイルはコンテンツディレクトリに保存されます:</p>
+<pre><code>content/
+  generated/2026/05/mcp-security.html
+  imported/docker-network.html
+  reading/knowledge-workspace.html</code></pre>
+<p>任意のメタデータは同じパス構造で <code>meta/items/</code> に保存されます:</p>
+<pre><code>id: generated/2026/05/mcp-security.html
+title: MCP Server Security Model
+summary: Trust boundaries, permissions, tool-call risks, and deployment notes.
+source_type: topic
+collection: AI
+tags:
+  - MCP
+  - Security
+favorite: true
+pinned: true
+open_mode: iframe
+agent:
+  generated: true
+  job_id: job_demo</code></pre>
+<p>メタデータは HTML ドキュメントから抽出した値を上書きします。メタデータがない場合、HTML Vault はタイトル、概要、コレクション、ソース種別、タイムスタンプ、レビュー状態を推測します。</p>
+<h2>Backend API</h2>
+<p>バックエンド API は Docker デプロイに含まれます。任意の <code>agent</code> extra で手動起動することもできます:</p>
+<pre><code>pip install -e &quot;.[agent]&quot;
+HTML_VAULT_CONTENT=data/content \
+HTML_VAULT_META=data/meta \
+HTML_VAULT_PUBLIC=public \
+html-vault serve-api --host 127.0.0.1 --port 8787</code></pre>
+<p>実装済みエンドポイント:</p>
+<ul><li><code>GET /api/health</code></li><li><code>GET /api/version</code></li><li><code>GET /api/manifest</code></li><li><code>GET /api/navigation</code></li><li><code>PUT /api/navigation</code></li><li><code>GET /api/items</code></li><li><code>GET /api/search</code></li><li><code>GET /api/items/{id}</code></li><li><code>GET /api/items/{id}/content</code></li><li><code>GET /api/items/{id}/raw</code></li><li><code>POST /api/rebuild</code></li><li><code>GET /api/rebuild/{job_id}</code></li><li><code>PATCH /api/items/{id}/metadata</code></li><li><code>PATCH /api/items/{id}/state</code></li><li><code>POST /api/uploads/html</code></li><li><code>GET /api/uploads/{upload_id}</code></li><li><code>DELETE /api/items/{id}</code></li></ul>
+<p>API は現在のフロントエンドワークフローをカバーします: アップロード、一覧、検索、フィルター、読書、メタデータ編集、お気に入り、アーカイブ、アーカイブ解除、アーカイブ済みノートの完全削除、サイドバー表示設定の永続化、再ビルド Job、バージョン確認。</p>
+<h2>Security Model</h2>
+<p>既定の Docker モードはローカル、LAN、プライベートセルフホスト向けです。既定では <code>HTML_VAULT_API_TOKEN</code> を要求しないため、フロントエンドは同一 origin API を直接呼び出せます。</p>
+<p>HTML Vault を公開インターネットに出す場合:</p>
+<ul><li>HTTPS の背後に置く。</li><li>アプリを配信する前にログイン、session、その他の認証を要求する。</li><li>バックエンド API 保護用に <code>HTML_VAULT_API_TOKEN</code> を設定する。</li><li>リバースプロキシがサーバー側で backend token を注入する。</li><li>長期 API token をフロントエンド JavaScript に埋め込まない。</li><li>アップグレード前とスキーマ変更リリース前に <code>data/</code> をバックアップする。</li></ul>
+<p>再利用可能な安全基線と Caddy Basic Auth 例は <a href="DEPLOYMENT.md">DEPLOYMENT.md</a> を参照してください。</p>
+<h2>Roadmap</h2>
+<p>近い将来のバックエンド/ノートブック機能:</p>
+<ul><li>コレクションとタグの一括操作。</li><li>バックアップと復元フロー。</li><li>WebDAV 設定の実行。</li><li>より堅牢なインポート検証と重複処理。</li><li>SQLite FTS や Pagefind などの検索バックエンド移行。</li></ul>
+<p>AI 機能:</p>
+<ul><li>サーバー側の AI プロバイダー認証情報保存。</li><li>AI 生成 HTML ノート。</li><li>グローバル AI サイドバーによるナレッジベース Q&amp;A。</li><li>AI による分類、タグ付け、要約、整理 Job。</li><li>破壊的な AI バッチ操作に対するユーザー確認と監査履歴。</li></ul>
+<p>将来のプロダクト方向:</p>
+<ul><li>ホスト型同期とクロスデバイス利用。</li><li>ユーザーアカウントとアカウントセキュリティ。</li><li>商用 AI/クラウドサービス連携。</li><li>より良いモバイル PWA フロー。</li><li>ローカル優先のデータ所有権を保ちながら、任意のコラボレーション機能を提供。</li></ul>
+<h2>Repository Layout</h2>
+<pre><code>app_static/        ビルド出力へコピーされる静的ワークスペース UI
+html_vault/        Python ビルダー、manifest ロジック、バックエンド API
+examples/          サンプルコンテンツとメタデータ
+tests/             ビルダーとバックエンド API のテスト
+deploy/            任意のデプロイ例
+docs/              ローカル計画ドキュメント、Git では無視</code></pre>
+<h2>Development</h2>
+<pre><code>pip install -e &quot;.[dev,agent]&quot;
+pytest
+python tests/run_smoke.py
+html-vault build --content examples/content --meta examples/meta --out public</code></pre>
+<h2>License</h2>
+<p>MIT</p>
+</section>
+</main>
+</body>
+</html>
