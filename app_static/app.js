@@ -735,12 +735,17 @@ function getDefaultAgentUrl() {
   return "";
 }
 
+function getDefaultAgentToken() {
+  return window.HTML_VAULT_AGENT_TOKEN || localStorage.getItem("html-vault-agent-token") || "";
+}
+
 const state = {
   manifest: null,
   items: [],
   filter: { type: "library", value: "all" },
   query: "",
   agentUrl: getDefaultAgentUrl(),
+  agentToken: getDefaultAgentToken(),
   language: getInitialLanguage(),
   themeMode: getInitialThemeMode(),
   feedbackKey: "connectAgent",
@@ -899,7 +904,7 @@ async function boot() {
 async function loadManifest() {
   if (state.agentUrl) {
     try {
-      const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/manifest`, { cache: "no-store" });
+      const response = await apiFetch("/api/manifest", { cache: "no-store" });
       if (response.ok) return response.json();
     } catch (error) {
       console.warn("Agent manifest unavailable, falling back to static manifest.", error);
@@ -908,6 +913,30 @@ async function loadManifest() {
   const response = await fetch("manifest.json", { cache: "no-store" });
   if (!response.ok) throw new Error(`Unable to load manifest: ${response.status}`);
   return response.json();
+}
+
+function buildApiUrl(path) {
+  if (!state.agentUrl) return path;
+  return `${state.agentUrl.replace(/\/$/, "")}${path}`;
+}
+
+function getApiHeaders(headers = {}) {
+  const result = { ...headers };
+  if (state.agentToken) result.Authorization = `Bearer ${state.agentToken}`;
+  return result;
+}
+
+function apiFetch(path, options = {}) {
+  return fetch(buildApiUrl(path), {
+    ...options,
+    headers: getApiHeaders(options.headers || {}),
+  });
+}
+
+function withApiAccessToken(url) {
+  if (!state.agentToken) return url;
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}access_token=${encodeURIComponent(state.agentToken)}`;
 }
 
 function renderApp() {
@@ -1189,12 +1218,12 @@ function renderReaderMetadata(item) {
 
 function getReaderContentUrl(item) {
   if (!state.agentUrl) return item.path;
-  return `${state.agentUrl.replace(/\/$/, "")}/api/items/${encodeURIComponent(item.id)}/content`;
+  return withApiAccessToken(buildApiUrl(`/api/items/${encodeURIComponent(item.id)}/content`));
 }
 
 function getReaderRawUrl(item) {
   if (!state.agentUrl) return item.path;
-  return `${state.agentUrl.replace(/\/$/, "")}/api/items/${encodeURIComponent(item.id)}/raw`;
+  return withApiAccessToken(buildApiUrl(`/api/items/${encodeURIComponent(item.id)}/raw`));
 }
 
 function closeReader() {
@@ -1334,7 +1363,7 @@ async function submitNewItem(event) {
 
   setFeedback("submittingJob");
   try {
-    const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/jobs`, {
+    const response = await apiFetch("/api/jobs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -1367,7 +1396,7 @@ async function importHtmlFile(file) {
   const formData = new FormData();
   formData.append("file", file);
   try {
-    const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/uploads/html`, {
+    const response = await apiFetch("/api/uploads/html", {
       method: "POST",
       body: formData,
     });
@@ -1577,7 +1606,7 @@ async function toggleArchive(id) {
 async function updateItemState(item, values) {
   if (state.agentUrl) {
     try {
-      const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/items/${encodeURIComponent(item.id)}/state`, {
+      const response = await apiFetch(`/api/items/${encodeURIComponent(item.id)}/state`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -1619,7 +1648,7 @@ async function permanentlyDeleteItem(id) {
   if (!window.confirm(t("confirmPermanentDelete"))) return;
 
   try {
-    const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/items/${encodeURIComponent(id)}`, {
+    const response = await apiFetch(`/api/items/${encodeURIComponent(id)}`, {
       method: "DELETE",
     });
     if (!response.ok) throw new Error(`Agent returned ${response.status}`);
@@ -1683,7 +1712,7 @@ async function saveMetadataEditor(event) {
 
   if (state.agentUrl) {
     try {
-      const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/items/${encodeURIComponent(item.id)}/metadata`, {
+      const response = await apiFetch(`/api/items/${encodeURIComponent(item.id)}/metadata`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(metadata),
@@ -2186,7 +2215,7 @@ function loadNavConfig() {
 async function loadRemoteNavConfig() {
   if (!state.agentUrl) return;
   try {
-    const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/navigation`, { cache: "no-store" });
+    const response = await apiFetch("/api/navigation", { cache: "no-store" });
     if (!response.ok) throw new Error(`Agent returned ${response.status}`);
     state.navConfig = normalizeNavConfig(await response.json());
     saveNavConfig();
@@ -2203,7 +2232,7 @@ async function persistNavConfig() {
   saveNavConfig();
   if (!state.agentUrl) return;
   try {
-    const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/navigation`, {
+    const response = await apiFetch("/api/navigation", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(normalizeNavConfig(state.navConfig)),
@@ -2346,7 +2375,7 @@ async function saveAiConfig(event) {
   }
 
   try {
-    const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/settings/ai-provider`, {
+    const response = await apiFetch("/api/settings/ai-provider", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...config, api_key: apiKey }),

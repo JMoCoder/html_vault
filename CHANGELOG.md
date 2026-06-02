@@ -23,6 +23,8 @@ versioning after the initial public release.
   API, enabling local notebook mode without inline script configuration.
 - README now documents real local notebook startup with `data/content`,
   `data/meta`, the API server, and the static web server.
+- Added reusable deployment security baseline docs and backend API token/CORS
+  configuration for VPS production preparation.
 
 ## [0.4.10] - 2026-06-02
 

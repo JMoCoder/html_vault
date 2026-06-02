@@ -2,6 +2,8 @@
 
 Languages: [English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
 
+Deployment: [Security baseline](DEPLOYMENT.md)
+
 HTML Vault is a static-first workspace for HTML knowledge assets. Put HTML files
 in a content directory, build a manifest, and publish a card-based knowledge
 library that can be hosted by any static web server.
@@ -100,6 +102,9 @@ Open `http://127.0.0.1:8080`. On localhost, the frontend automatically connects
 to `http://127.0.0.1:8787`, enabling real HTML upload, metadata persistence,
 filtering, archive state, and rebuilds.
 
+For VPS or public deployments, read [DEPLOYMENT.md](DEPLOYMENT.md) before
+exposing the API.
+
 ## Content Model
 
 HTML files are stored under `content/` or any directory passed to
@@ -180,6 +185,8 @@ The first backend slice is available through the optional `agent` extra:
 pip install -e ".[agent]"
 HTML_VAULT_CONTENT=examples/content \
 HTML_VAULT_META=examples/meta \
+HTML_VAULT_API_TOKEN=dev-token \
+HTML_VAULT_CORS_ORIGINS=http://127.0.0.1:8080 \
 html-vault serve-api --port 8787
 ```
 
@@ -241,6 +248,10 @@ YAML sidecar file, rebuilds `public/`, and returns the re-indexed item.
 
 `DELETE /api/items/{id}` only accepts archived items. It permanently removes
 the HTML file and sidecar metadata, then rebuilds `public/`.
+
+Set `HTML_VAULT_API_TOKEN` to require `Authorization: Bearer <token>` on API
+requests. `HTML_VAULT_CORS_ORIGINS` should be set to exact frontend origins in
+production.
 
 ## AI Provider Settings
 

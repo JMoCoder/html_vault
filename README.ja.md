@@ -2,6 +2,8 @@
 
 Languages: [English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
 
+Deployment: [Security baseline](DEPLOYMENT.md)
+
 HTML Vault は静的優先の HTML ナレッジワークスペースです。HTML ファイルをコンテンツディレクトリに置き、manifest を生成すると、任意の静的 Web サーバーでホストできるカード型ナレッジベースを公開できます。
 
 ## 機能
@@ -65,6 +67,8 @@ python -m http.server 8080 --directory public
 
 `http://127.0.0.1:8080` を開きます。localhost では、フロントエンドが自動的に `http://127.0.0.1:8787` へ接続し、実際の HTML アップロード、メタデータ永続化、フィルター、アーカイブ状態、再ビルドを有効にします。
 
+VPS または公開デプロイの前に [DEPLOYMENT.md](DEPLOYMENT.md) を確認してください。
+
 ## AI プロバイダー設定
 
 設定ページの API Key は `localStorage` に保存されません。静的モードでは、プロバイダー、モデル名、Base URL、temperature、max tokens などの非機密設定のみ保存します。
@@ -79,6 +83,8 @@ Full モードでは、API Key は HTTPS またはプライベートネットワ
 pip install -e ".[agent]"
 HTML_VAULT_CONTENT=examples/content \
 HTML_VAULT_META=examples/meta \
+HTML_VAULT_API_TOKEN=dev-token \
+HTML_VAULT_CORS_ORIGINS=http://127.0.0.1:8080 \
 html-vault serve-api --port 8787
 ```
 
@@ -120,6 +126,8 @@ html-vault serve-api --port 8787
 `PATCH /api/items/{id}/state` は `favorite` と `archived` の boolean 状態を YAML sidecar に永続化し、`public/` を再ビルドして、再インデックス済みの項目を返します。
 
 `DELETE /api/items/{id}` はアーカイブ済み項目のみ受け付けます。HTML ファイルと sidecar metadata を完全に削除し、その後 `public/` を再ビルドします。
+
+`HTML_VAULT_API_TOKEN` を設定すると、API リクエストには `Authorization: Bearer <token>` が必要です。本番環境では `HTML_VAULT_CORS_ORIGINS` を正確なフロントエンド origin に設定してください。
 
 ## サイドバー管理
 

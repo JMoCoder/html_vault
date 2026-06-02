@@ -2,6 +2,8 @@
 
 语言：[English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
 
+部署：[安全基线](DEPLOYMENT.zh-CN.md)
+
 HTML Vault 是一个静态优先的 HTML 知识工作台。把 HTML 文件放进内容目录，构建 manifest，就可以发布一个卡片式知识库，可托管在任意静态 Web 服务器上。
 
 ## 功能
@@ -65,6 +67,8 @@ python -m http.server 8080 --directory public
 
 打开 `http://127.0.0.1:8080`。在 localhost 下，前端会自动连接 `http://127.0.0.1:8787`，从而启用真实 HTML 上传、元信息持久化、筛选、归档状态和重建。
 
+VPS 或公网部署前，请先阅读 [DEPLOYMENT.zh-CN.md](DEPLOYMENT.zh-CN.md)。
+
 ## AI 服务商配置
 
 设置页中的 API Key 不会保存到 `localStorage`。静态模式只保存服务商、模型名、Base URL、temperature、max tokens 等非敏感偏好。
@@ -79,6 +83,8 @@ Full 模式下，API Key 应只通过 HTTPS 或私有网络发送到受保护的
 pip install -e ".[agent]"
 HTML_VAULT_CONTENT=examples/content \
 HTML_VAULT_META=examples/meta \
+HTML_VAULT_API_TOKEN=dev-token \
+HTML_VAULT_CORS_ORIGINS=http://127.0.0.1:8080 \
 html-vault serve-api --port 8787
 ```
 
@@ -120,6 +126,8 @@ html-vault serve-api --port 8787
 `PATCH /api/items/{id}/state` 会把 `favorite` 与 `archived` 布尔状态持久化到 YAML sidecar，重新构建 `public/`，并返回重新索引后的条目。
 
 `DELETE /api/items/{id}` 只接受已归档条目。它会永久删除 HTML 文件和 sidecar metadata，然后重新构建 `public/`。
+
+设置 `HTML_VAULT_API_TOKEN` 后，API 请求必须带 `Authorization: Bearer <token>`。生产环境应将 `HTML_VAULT_CORS_ORIGINS` 设置为准确的前端来源。
 
 ## 侧栏管理
 
