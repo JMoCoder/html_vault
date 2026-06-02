@@ -7,6 +7,17 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.10] - 2026-06-02
+
+### Fixed
+
+- Fixed a startup crash when a stale cached HTML shell loaded the newer import
+  button script before the hidden import file input existed.
+- The PWA service worker now prefers the network for navigation and asset GET
+  requests, while keeping cached fallbacks for offline use.
+- Updated app and PWA cache version to `0.4.10` so browsers request the fixed
+  shell and script instead of reusing stale `0.4.9` assets.
+
 ## [0.4.9] - 2026-06-02
 
 ### Changed

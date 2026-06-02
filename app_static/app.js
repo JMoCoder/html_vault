@@ -138,7 +138,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current archived edit lock release: 0.4.9.",
+    aboutVersion: "Current stale-cache startup fix release: 0.4.10.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -377,7 +377,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前归档编辑锁定版本：0.4.9。",
+    aboutVersion: "当前旧缓存启动修复版本：0.4.10。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -616,7 +616,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在のアーカイブ編集ロックバージョン: 0.4.9。",
+    aboutVersion: "現在の古いキャッシュ起動修正バージョン: 0.4.10。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -768,7 +768,7 @@ const elements = {
   navSectionToggles: document.querySelectorAll("[data-nav-section-toggle]"),
   navSections: document.querySelectorAll("[data-nav-section]"),
   importEntries: document.querySelectorAll("[data-import-entry]"),
-  htmlImportFile: document.querySelector("#html-import-file"),
+  htmlImportFile: ensureHtmlImportInput(),
   siteTitle: document.querySelector("#site-title"),
   languageSelect: document.querySelector("#language-select"),
   themeModeButtons: document.querySelectorAll("[data-theme-mode]"),
@@ -861,6 +861,18 @@ const elements = {
   metadataCancel: document.querySelector("#metadata-cancel"),
   metadataCancelIcon: document.querySelector("#metadata-cancel-icon"),
 };
+
+function ensureHtmlImportInput() {
+  const existing = document.querySelector("#html-import-file");
+  if (existing) return existing;
+  const input = document.createElement("input");
+  input.id = "html-import-file";
+  input.type = "file";
+  input.accept = ".html,.htm,text/html";
+  input.hidden = true;
+  document.body.append(input);
+  return input;
+}
 
 async function boot() {
   applyTheme();
