@@ -202,6 +202,9 @@ const i18n = {
     submittingJob: "Submitting job...",
     queuedJob: "Queued job {jobId}",
     agentUnavailable: "Agent Server is unavailable.",
+    importingHtml: "Importing HTML file...",
+    importHtmlDone: "Imported {title}",
+    importHtmlFailed: "HTML import failed.",
     noSummary: "No summary yet.",
     read: "Read",
     original: "Original",
@@ -438,6 +441,9 @@ const i18n = {
     submittingJob: "正在提交任务...",
     queuedJob: "已加入任务队列 {jobId}",
     agentUnavailable: "Agent Server 不可用。",
+    importingHtml: "正在导入 HTML 文件...",
+    importHtmlDone: "已导入 {title}",
+    importHtmlFailed: "HTML 导入失败。",
     noSummary: "暂无摘要。",
     read: "阅读",
     original: "原文",
@@ -674,6 +680,9 @@ const i18n = {
     submittingJob: "ジョブを送信中...",
     queuedJob: "ジョブをキューに追加しました {jobId}",
     agentUnavailable: "Agent Server を利用できません。",
+    importingHtml: "HTML ファイルをインポート中...",
+    importHtmlDone: "{title} をインポートしました",
+    importHtmlFailed: "HTML インポートに失敗しました。",
     noSummary: "概要はまだありません。",
     read: "読む",
     original: "原文",
@@ -759,6 +768,7 @@ const elements = {
   navSectionToggles: document.querySelectorAll("[data-nav-section-toggle]"),
   navSections: document.querySelectorAll("[data-nav-section]"),
   importEntries: document.querySelectorAll("[data-import-entry]"),
+  htmlImportFile: document.querySelector("#html-import-file"),
   siteTitle: document.querySelector("#site-title"),
   languageSelect: document.querySelector("#language-select"),
   themeModeButtons: document.querySelectorAll("[data-theme-mode]"),
@@ -1307,6 +1317,46 @@ async function submitNewItem(event) {
     setFeedback("queuedJob", { jobId: result.job_id || "" });
   } catch (error) {
     setFeedback("agentUnavailable");
+    console.error(error);
+  }
+}
+
+function openHtmlImportPicker() {
+  elements.htmlImportFile.value = "";
+  elements.htmlImportFile.click();
+}
+
+async function importHtmlFile(file) {
+  if (!file) return;
+  if (!state.agentUrl) {
+    setFeedback("agentNotConfigured");
+    return;
+  }
+  setFeedback("importingHtml");
+  const formData = new FormData();
+  formData.append("file", file);
+  try {
+    const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/uploads/html`, {
+      method: "POST",
+      body: formData,
+    });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    const result = await response.json();
+    if (result.item) {
+      const index = state.items.findIndex((item) => item.id === result.item.id);
+      if (index >= 0) state.items[index] = result.item;
+      else state.items.unshift(result.item);
+    }
+    renderLibraryNav();
+    renderCollectionNav();
+    renderTagNav();
+    renderMultiFilterOptions();
+    renderManagementLists();
+    renderGrid();
+    renderAiContext();
+    setFeedback("importHtmlDone", { title: result.item?.title || file.name });
+  } catch (error) {
+    setFeedback("importHtmlFailed");
     console.error(error);
   }
 }
@@ -2437,12 +2487,6 @@ function testProviderConfig() {
   elements.settingsFeedback.textContent = t("settingsAgentFailed");
 }
 
-function focusImportEntry() {
-  returnToWorkspace();
-  elements.inputType.value = "file";
-  elements.newItemInput.focus();
-}
-
 function openLuckyItem() {
   const items = filteredItems();
   if (items.length === 0) return;
@@ -2716,8 +2760,9 @@ elements.metadataEditor.addEventListener("click", (event) => {
   if (event.target === elements.metadataEditor) closeMetadataEditor();
 });
 elements.importEntries.forEach((button) => {
-  button.addEventListener("click", focusImportEntry);
+  button.addEventListener("click", openHtmlImportPicker);
 });
+elements.htmlImportFile.addEventListener("change", (event) => importHtmlFile(event.target.files?.[0]));
 window.addEventListener("hashchange", openFromHash);
 window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener("change", () => {
   if (state.themeMode === "system") applyTheme();
