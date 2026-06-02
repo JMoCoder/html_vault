@@ -10,6 +10,8 @@
 - 新增 `POST /api/rebuild` 与 `GET /api/rebuild/{job_id}`，用于显式触发重建并查询状态。
 - 新增 `GET /api/uploads/{upload_id}`，上传 HTML 时也会返回 `job_id`，便于导入完成后继续查询。
 - 新增完整核心 API smoke 测试，覆盖上传、列表查询、元信息编辑、搜索、内容读取、收藏、归档、取消归档和永久删除。
+- localhost 前端现在默认使用 `http://127.0.0.1:8787` 作为后端 API，无需内联脚本配置即可进入本地笔记本模式。
+- README 新增真实本地笔记本启动说明，覆盖 `data/content`、`data/meta`、API 服务和静态 Web 服务。
 
 ## [0.4.10] - 2026-06-02
 

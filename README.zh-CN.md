@@ -41,6 +41,30 @@ python -m http.server 8080 --directory public
 
 打开 `http://localhost:8080`。
 
+## 本地笔记本模式
+
+如果要把项目作为真实本地 HTML 笔记本使用，需要同时运行静态前端和后端 API。后端会把导入的 HTML 写入 `data/content`，把 sidecar metadata 写入 `data/meta`，并重新构建 `public`。
+
+```bash
+mkdir -p data
+cp -a examples/content data/content
+cp -a examples/meta data/meta
+html-vault build --content data/content --meta data/meta --out public --title "HTML Vault"
+HTML_VAULT_CONTENT=data/content \
+HTML_VAULT_META=data/meta \
+HTML_VAULT_PUBLIC=public \
+HTML_VAULT_TITLE="HTML Vault" \
+html-vault serve-api --host 127.0.0.1 --port 8787
+```
+
+另开一个终端：
+
+```bash
+python -m http.server 8080 --directory public
+```
+
+打开 `http://127.0.0.1:8080`。在 localhost 下，前端会自动连接 `http://127.0.0.1:8787`，从而启用真实 HTML 上传、元信息持久化、筛选、归档状态和重建。
+
 ## AI 服务商配置
 
 设置页中的 API Key 不会保存到 `localStorage`。静态模式只保存服务商、模型名、Base URL、temperature、max tokens 等非敏感偏好。

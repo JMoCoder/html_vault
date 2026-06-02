@@ -10,6 +10,8 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 - 明示的な再ビルド実行と状態照会のために `POST /api/rebuild` と `GET /api/rebuild/{job_id}` を追加しました。
 - HTML インポート完了後に照会できるよう、`GET /api/uploads/{upload_id}` とアップロードレスポンスの `job_id` を追加しました。
 - アップロード、一覧、メタデータ編集、検索、本文取得、お気に入り、アーカイブ、アーカイブ解除、完全削除をカバーするコア API smoke テストを追加しました。
+- localhost のフロントエンドはバックエンド API として `http://127.0.0.1:8787` を既定で使うようになり、インラインスクリプト設定なしでローカルノートブックモードを利用できます。
+- README に `data/content`、`data/meta`、API サーバー、静的 Web サーバーを使った実際のローカルノートブック起動手順を追加しました。
 
 ## [0.4.10] - 2026-06-02
 

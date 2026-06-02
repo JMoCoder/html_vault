@@ -41,6 +41,30 @@ python -m http.server 8080 --directory public
 
 `http://localhost:8080` を開きます。
 
+## ローカルノートブックモード
+
+実際のローカル HTML ノートブックとして使う場合は、静的フロントエンドとバックエンド API の両方を起動します。バックエンドはインポートした HTML を `data/content` に、sidecar metadata を `data/meta` に書き込み、`public` を再ビルドします。
+
+```bash
+mkdir -p data
+cp -a examples/content data/content
+cp -a examples/meta data/meta
+html-vault build --content data/content --meta data/meta --out public --title "HTML Vault"
+HTML_VAULT_CONTENT=data/content \
+HTML_VAULT_META=data/meta \
+HTML_VAULT_PUBLIC=public \
+HTML_VAULT_TITLE="HTML Vault" \
+html-vault serve-api --host 127.0.0.1 --port 8787
+```
+
+別のターミナルで:
+
+```bash
+python -m http.server 8080 --directory public
+```
+
+`http://127.0.0.1:8080` を開きます。localhost では、フロントエンドが自動的に `http://127.0.0.1:8787` へ接続し、実際の HTML アップロード、メタデータ永続化、フィルター、アーカイブ状態、再ビルドを有効にします。
+
 ## AI プロバイダー設定
 
 設定ページの API Key は `localStorage` に保存されません。静的モードでは、プロバイダー、モデル名、Base URL、temperature、max tokens などの非機密設定のみ保存します。

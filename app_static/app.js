@@ -728,12 +728,19 @@ const libraryFilterDefinitions = [
   { value: "archived", labelKey: "archived", test: (item) => isArchived(item) },
 ];
 
+function getDefaultAgentUrl() {
+  if (window.HTML_VAULT_AGENT_URL) return window.HTML_VAULT_AGENT_URL;
+  const host = window.location.hostname;
+  if (host === "127.0.0.1" || host === "localhost") return "http://127.0.0.1:8787";
+  return "";
+}
+
 const state = {
   manifest: null,
   items: [],
   filter: { type: "library", value: "all" },
   query: "",
-  agentUrl: window.HTML_VAULT_AGENT_URL || "",
+  agentUrl: getDefaultAgentUrl(),
   language: getInitialLanguage(),
   themeMode: getInitialThemeMode(),
   feedbackKey: "connectAgent",
@@ -879,9 +886,7 @@ async function boot() {
   applyTranslations();
   try {
     await loadRemoteNavConfig();
-    const response = await fetch("manifest.json", { cache: "no-store" });
-    if (!response.ok) throw new Error(`Unable to load manifest: ${response.status}`);
-    state.manifest = await response.json();
+    state.manifest = await loadManifest();
     state.items = Array.isArray(state.manifest.items) ? state.manifest.items : [];
     renderApp();
     openFromHash();
@@ -889,6 +894,20 @@ async function boot() {
     elements.contentGrid.innerHTML = `<div class="empty-state">${t("manifestMissing")}</div>`;
     console.error(error);
   }
+}
+
+async function loadManifest() {
+  if (state.agentUrl) {
+    try {
+      const response = await fetch(`${state.agentUrl.replace(/\/$/, "")}/api/manifest`, { cache: "no-store" });
+      if (response.ok) return response.json();
+    } catch (error) {
+      console.warn("Agent manifest unavailable, falling back to static manifest.", error);
+    }
+  }
+  const response = await fetch("manifest.json", { cache: "no-store" });
+  if (!response.ok) throw new Error(`Unable to load manifest: ${response.status}`);
+  return response.json();
 }
 
 function renderApp() {

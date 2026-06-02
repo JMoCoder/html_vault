@@ -19,6 +19,10 @@ versioning after the initial public release.
   imports can be queried after completion.
 - Added a full core API smoke test covering upload, list, metadata edit,
   search, content read, favorite, archive, unarchive, and permanent delete.
+- Localhost frontends now default to `http://127.0.0.1:8787` for the backend
+  API, enabling local notebook mode without inline script configuration.
+- README now documents real local notebook startup with `data/content`,
+  `data/meta`, the API server, and the static web server.
 
 ## [0.4.10] - 2026-06-02
 

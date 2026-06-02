@@ -72,6 +72,34 @@ python -m http.server 8080 --directory public
 
 Open `http://localhost:8080`.
 
+## Local Notebook Mode
+
+For real local notebook usage, run both the static web app and the backend API.
+The backend writes imported HTML to `data/content`, writes sidecar metadata to
+`data/meta`, and rebuilds `public`.
+
+```bash
+mkdir -p data
+cp -a examples/content data/content
+cp -a examples/meta data/meta
+html-vault build --content data/content --meta data/meta --out public --title "HTML Vault"
+HTML_VAULT_CONTENT=data/content \
+HTML_VAULT_META=data/meta \
+HTML_VAULT_PUBLIC=public \
+HTML_VAULT_TITLE="HTML Vault" \
+html-vault serve-api --host 127.0.0.1 --port 8787
+```
+
+In another terminal:
+
+```bash
+python -m http.server 8080 --directory public
+```
+
+Open `http://127.0.0.1:8080`. On localhost, the frontend automatically connects
+to `http://127.0.0.1:8787`, enabling real HTML upload, metadata persistence,
+filtering, archive state, and rebuilds.
+
 ## Content Model
 
 HTML files are stored under `content/` or any directory passed to
