@@ -1,0 +1,37 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    env_file:
+      - .env
+    environment:
+      HTML_VAULT_CONTENT: /data/content
+      HTML_VAULT_META: /data/meta
+      HTML_VAULT_PUBLIC: /public
+    volumes:
+      - ./data/content:/data/content
+      - ./data/meta:/data/meta
+      - ./public:/public
+    expose:
+      - "8787"
+    restart: unless-stopped
+
+  web:
+    image: caddy:2-alpine
+    depends_on:
+      - api
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+    volumes:
+      - ./public:/srv/html-vault/public:ro
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

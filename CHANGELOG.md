@@ -7,6 +7,22 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.13] - 2026-06-02
+
+### Added
+
+- Added reusable production Docker deployment assets: `Dockerfile.api`,
+  `compose.prod.yml`, `deploy/Caddyfile`, and a backend container entrypoint.
+- Added runtime frontend `config.js` support so deployed sites can use
+  same-origin API access without embedding backend tokens in browser code.
+- Added `.dockerignore` and expanded deployment docs for VPS startup, updates,
+  backups, and rollback.
+
+### Changed
+
+- The existing `docker-compose.yml` is now explicitly documented as a static
+  demo path; real notebook deployments should use `compose.prod.yml`.
+
 ## [0.4.12] - 2026-06-02
 
 ### Added

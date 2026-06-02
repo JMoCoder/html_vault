@@ -1,9 +1,10 @@
-const CACHE_NAME = "html-vault-v0.4.12";
+const CACHE_NAME = "html-vault-v0.4.13";
 const APP_SHELL = [
   "./",
   "index.html",
   "style.css",
   "app.js",
+  "config.js",
   "manifest.webmanifest",
   "assets/html-vault-logo.svg",
 ];

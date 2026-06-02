@@ -2,6 +2,18 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.13] - 2026-06-02
+
+### 新增
+
+- 新增可复用生产 Docker 部署资产：`Dockerfile.api`、`compose.prod.yml`、`deploy/Caddyfile` 和后端容器入口脚本。
+- 新增前端运行时 `config.js` 支持，让部署站点可以同源访问 API，同时不把后端 token 写入浏览器代码。
+- 新增 `.dockerignore`，并扩展 VPS 启动、更新、备份、回滚部署文档。
+
+### 变更
+
+- 将现有 `docker-compose.yml` 明确标注为静态演示路径；真实笔记本部署应使用 `compose.prod.yml`。
+
 ## [0.4.12] - 2026-06-02
 
 ### 新增

@@ -739,8 +739,11 @@ const libraryFilterDefinitions = [
 
 function getDefaultAgentUrl() {
   if (window.HTML_VAULT_AGENT_URL) return window.HTML_VAULT_AGENT_URL;
+  if (window.location.protocol === "file:") return "";
   const host = window.location.hostname;
-  if (host === "127.0.0.1" || host === "localhost") return "http://127.0.0.1:8787";
+  const port = window.location.port;
+  const isLocalHost = host === "127.0.0.1" || host === "localhost";
+  if (isLocalHost && port && port !== "80" && port !== "443") return "http://127.0.0.1:8787";
   return "";
 }
 
@@ -755,7 +758,7 @@ const state = {
   query: "",
   agentUrl: getDefaultAgentUrl(),
   agentToken: getDefaultAgentToken(),
-  currentVersion: "0.4.12",
+  currentVersion: "0.4.13",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,

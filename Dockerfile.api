@@ -1,0 +1,19 @@
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+WORKDIR /app
+
+COPY pyproject.toml README.md LICENSE ./
+COPY html_vault ./html_vault
+COPY app_static ./app_static
+COPY deploy/api-entrypoint.sh /usr/local/bin/html-vault-api-entrypoint
+
+RUN pip install --no-cache-dir ".[agent]" \
+    && chmod +x /usr/local/bin/html-vault-api-entrypoint
+
+EXPOSE 8787
+
+ENTRYPOINT ["html-vault-api-entrypoint"]

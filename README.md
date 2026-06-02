@@ -2,7 +2,7 @@
 
 Languages: [English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
 
-Deployment: [Security baseline](DEPLOYMENT.md)
+Deployment: [Production Docker and security baseline](DEPLOYMENT.md)
 
 HTML Vault is a static-first workspace for HTML knowledge assets. Put HTML files
 in a content directory, build a manifest, and publish a card-based knowledge
@@ -50,7 +50,8 @@ the source of truth, while metadata lives in optional YAML sidecar files.
   item from the current workspace view.
 - Static build output that works on GitHub Pages, Cloudflare Pages, Caddy,
   Nginx, NAS, or any static file server.
-- Docker image for quick static hosting.
+- Production Docker Compose deployment with a Caddy reverse proxy, persistent
+  data directories, and an internal API service.
 
 ## Repository Layout
 
@@ -104,6 +105,42 @@ filtering, archive state, and rebuilds.
 
 For VPS or public deployments, read [DEPLOYMENT.md](DEPLOYMENT.md) before
 exposing the API.
+
+## Production Docker
+
+The reusable production path is `compose.prod.yml`. It runs:
+
+- `web`: Caddy serving `public/` and reverse-proxying `/api/*`;
+- `api`: the HTML Vault backend, writing to mounted `data/` and rebuilding
+  `public/`.
+
+```bash
+cp .env.example .env
+python3 - <<'PY'
+import secrets
+print("HTML_VAULT_API_TOKEN=" + secrets.token_urlsafe(32))
+PY
+docker run --rm caddy:2-alpine caddy hash-password --plaintext 'change-this-login-password'
+```
+
+Edit `.env`, set `HTML_VAULT_API_TOKEN` to the generated value, and set
+`HTML_VAULT_BASIC_AUTH_HASH` to the Caddy hash output. Set
+`HTML_VAULT_CORS_ORIGINS` to your public origin.
+
+When pasting the Caddy hash into `.env`, replace each `$` with `$$` so Docker
+Compose does not treat hash segments as environment variables.
+
+```bash
+mkdir -p data/content data/meta public
+docker compose -f compose.prod.yml up -d --build
+```
+
+Open `http://your-vps-ip` or the domain behind your reverse proxy. Uploaded
+HTML files and metadata stay in `data/`; they are not committed to GitHub.
+
+The default production Caddyfile requires Basic Auth before serving the app and
+injects the API token only on the server side. The browser can call same-origin
+`/api/*` after login without receiving the long-lived backend token.
 
 ## Content Model
 
@@ -308,13 +345,14 @@ The global AI sidebar is the future home for context-aware chat and HTML note
 generation. It is UI-only for now: no model request is sent, and note creation
 still requires a future Agent Server.
 
-## Docker
+## Static Docker Demo
 
 ```bash
 docker compose up --build
 ```
 
-Then open `http://localhost:8080`.
+Then open `http://localhost:8080`. This demo image builds the example content
+only; use `compose.prod.yml` for a real notebook with uploads and persistence.
 
 ## Development
 

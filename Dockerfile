@@ -1,6 +1,7 @@
 FROM python:3.12-slim AS builder
 
 WORKDIR /app
+ENV PYTHONPATH=/app
 COPY . .
 RUN pip install --no-cache-dir .
 RUN html-vault build --content examples/content --meta examples/meta --out /site

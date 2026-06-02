@@ -3,3 +3,6 @@ services:
     build: .
     ports:
       - "8080:80"
+
+# Static demo only. Use compose.prod.yml for a real notebook deployment with
+# API persistence and mounted data directories.

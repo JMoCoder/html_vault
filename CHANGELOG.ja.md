@@ -2,6 +2,18 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.13] - 2026-06-02
+
+### Added
+
+- 再利用可能な本番 Docker デプロイ資産として、`Dockerfile.api`、`compose.prod.yml`、`deploy/Caddyfile`、バックエンドコンテナ entrypoint を追加しました。
+- デプロイ済みサイトがブラウザーコードにバックエンド token を埋め込まず、同一 origin API を使えるようにするランタイム `config.js` サポートを追加しました。
+- `.dockerignore` を追加し、VPS 起動、更新、バックアップ、ロールバックのデプロイドキュメントを拡張しました。
+
+### Changed
+
+- 既存の `docker-compose.yml` は静的デモ用であることを明記しました。実際のノートブックデプロイには `compose.prod.yml` を使用します。
+
 ## [0.4.12] - 2026-06-02
 
 ### Added
