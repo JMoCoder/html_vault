@@ -138,7 +138,7 @@ const i18n = {
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
     aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
-    aboutVersion: "Current backend search API release: 0.4.8.",
+    aboutVersion: "Current archived edit lock release: 0.4.9.",
     updatesIntro: "Project updates are tracked in the repository and local planning docs.",
     updatesChangelog: "Public release notes live in CHANGELOG.md.",
     updatesDocsLocal: "Product planning documents under docs/ are local-only and ignored by Git.",
@@ -377,7 +377,7 @@ const i18n = {
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
     aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
-    aboutVersion: "当前后端搜索 API 版本：0.4.8。",
+    aboutVersion: "当前归档编辑锁定版本：0.4.9。",
     updatesIntro: "项目更新记录在仓库与本地规划文档中。",
     updatesChangelog: "公开发布记录保存在 CHANGELOG.md。",
     updatesDocsLocal: "docs/ 下的产品规划文档仅保存在本地，并被 Git 忽略。",
@@ -616,7 +616,7 @@ const i18n = {
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
     aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
-    aboutVersion: "現在のバックエンド検索 API バージョン: 0.4.8。",
+    aboutVersion: "現在のアーカイブ編集ロックバージョン: 0.4.9。",
     updatesIntro: "プロジェクト更新はリポジトリとローカル計画ドキュメントで管理します。",
     updatesChangelog: "公開リリースノートは CHANGELOG.md にあります。",
     updatesDocsLocal: "docs/ 配下の製品計画ドキュメントはローカル専用で、Git から除外されます。",
@@ -1068,7 +1068,7 @@ function renderCard(item) {
     <div class="card-topline">
       <span class="source-type">${escapeHtml(collectionLabel)} / ${escapeHtml(sourceLabel)}</span>
       <div class="item-actions">
-        ${itemActionButton("edit", item)}
+        ${isArchived(item) ? "" : itemActionButton("edit", item)}
         ${itemActionButton("favorite", item)}
         ${itemActionButton("archive", item)}
         ${itemActionButton(isArchived(item) ? "delete" : "ai-context", item)}
@@ -1086,7 +1086,7 @@ function renderCard(item) {
     </div>
   `;
   card.querySelector("[data-read]").addEventListener("click", () => openReader(item));
-  card.querySelector("[data-item-action='edit']").addEventListener("click", (event) => {
+  card.querySelector("[data-item-action='edit']")?.addEventListener("click", (event) => {
     event.stopPropagation();
     openMetadataEditor(item.id);
   });
@@ -1429,12 +1429,15 @@ function toggleManualAiContext(id) {
 }
 
 function renderReaderActions(item) {
-  elements.readerEdit.innerHTML = editIcon();
-  setIconButtonLabel(elements.readerEdit, "editMetadata");
   const favorite = isFavorite(item);
   const archived = isArchived(item);
   const favoriteLabel = t(favorite ? "unfavoriteAction" : "favoriteAction");
   const archiveLabel = t(archived ? "unarchiveAction" : "archiveAction");
+  elements.readerEdit.hidden = archived;
+  if (!archived) {
+    elements.readerEdit.innerHTML = editIcon();
+    setIconButtonLabel(elements.readerEdit, "editMetadata");
+  }
   elements.readerFavorite.classList.toggle("active", favorite);
   elements.readerFavorite.innerHTML = starIcon(favorite);
   elements.readerFavorite.setAttribute("aria-label", favoriteLabel);
@@ -1617,6 +1620,7 @@ function removeItemLocally(id) {
 function openMetadataEditor(id) {
   const item = getItemById(id);
   if (!item) return;
+  if (isArchived(item)) return;
   state.editingItemId = id;
   elements.metadataTitle.value = getItemTitle(item);
   elements.metadataSummary.value = getItemSummary(item);

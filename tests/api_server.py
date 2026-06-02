@@ -89,6 +89,22 @@ class ApiServer:
             },
         )
 
+    def json_error(self, method: str, path: str, data: Any) -> tuple[int, Any]:
+        body = json.dumps(data).encode("utf-8")
+        try:
+            self.request(
+                method,
+                path,
+                body=body,
+                headers={
+                    "Content-Type": "application/json",
+                    "Content-Length": str(len(body)),
+                },
+            )
+        except urllib.error.HTTPError as exc:
+            return exc.code, json.loads(exc.read().decode("utf-8"))
+        raise AssertionError("Expected HTTP error response.")
+
     def request_text(self, method: str, path: str, *, query: dict[str, str] | None = None, body: bytes | None = None, headers: dict[str, str] | None = None) -> str:
         url = f"http://127.0.0.1:{self.port}{path}"
         if query:

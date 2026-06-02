@@ -86,6 +86,8 @@ class ItemService:
         item = self.get_item(item_id)
         if not item:
             raise ItemMetadataError("Item not found.")
+        if bool(item.get("archived")):
+            raise ItemMetadataError("Archived items cannot be edited.")
 
         metadata = {
             "title": normalize_metadata_text(values.get("title")) or item.get("title") or "Untitled",

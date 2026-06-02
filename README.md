@@ -196,7 +196,8 @@ inside the configured content directory.
 
 `PATCH /api/items/{id}/metadata` persists per-note edits to the YAML sidecar
 file, rebuilds `public/`, and returns the re-indexed item. The current writable
-fields are `title`, `summary`, `collection`, and `tags`.
+fields are `title`, `summary`, `collection`, and `tags`. Archived items reject
+metadata edits until they are unarchived.
 
 `PATCH /api/items/{id}/state` persists `favorite` and `archived` booleans to the
 YAML sidecar file, rebuilds `public/`, and returns the re-indexed item.

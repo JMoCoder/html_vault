@@ -7,6 +7,15 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.9] - 2026-06-02
+
+### Changed
+
+- Archived item cards and reader pages no longer show metadata edit actions.
+- `PATCH /api/items/{id}/metadata` now rejects archived items until they are
+  unarchived.
+- Archived items still allow favorite toggles, unarchive, and permanent delete.
+
 ## [0.4.8] - 2026-06-01
 
 ### Added

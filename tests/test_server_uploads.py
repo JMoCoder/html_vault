@@ -110,6 +110,26 @@ def test_metadata_update_api(tmp_path: Path) -> None:
         server.close()
 
 
+def test_metadata_update_api_rejects_archived_item(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Archived Metadata API Test")
+    try:
+        archived = server.json("PATCH", "/api/items/imported/docker-network.html/state", {"archived": True})
+        status, error = server.json_error(
+            "PATCH",
+            "/api/items/imported/docker-network.html/metadata",
+            {"title": "Should Not Save"},
+        )
+        restored = server.json("PATCH", "/api/items/imported/docker-network.html/state", {"archived": False})
+
+        assert archived["archived"] is True
+        assert status == 400
+        assert error["detail"] == "Archived items cannot be edited."
+        assert restored["archived"] is False
+    finally:
+        server.close()
+
+
 def test_item_state_update_api(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
     server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="State API Test")

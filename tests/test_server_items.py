@@ -5,7 +5,7 @@ import shutil
 import pytest
 
 from html_vault.server.config import ServerSettings
-from html_vault.server.items import ItemContentError, ItemService, normalize_query
+from html_vault.server.items import ItemContentError, ItemMetadataError, ItemService, normalize_query
 from tests.api_server import run_api_server
 
 
@@ -150,6 +150,26 @@ def test_item_service_updates_metadata_and_rebuilds(tmp_path: Path) -> None:
     assert updated["tags"] == ["Docker", "Networking", "MCP"]
     assert "title: Updated Docker Note" in metadata_text
     assert manifest_item["summary"] == "Updated summary."
+
+
+def test_item_service_rejects_metadata_update_for_archived_item(tmp_path: Path) -> None:
+    content_dir = tmp_path / "content"
+    meta_dir = tmp_path / "meta"
+    public_dir = tmp_path / "public"
+    shutil.copytree(ROOT / "examples" / "content", content_dir)
+    shutil.copytree(ROOT / "examples" / "meta", meta_dir)
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Archived Metadata Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    service = ItemService(settings)
+    service.update_item_state("imported/docker-network.html", {"archived": True})
+
+    with pytest.raises(ItemMetadataError):
+        service.update_item_metadata("imported/docker-network.html", {"title": "Should Not Save"})
 
 
 def test_item_service_updates_favorite_and_archive_state(tmp_path: Path) -> None:
