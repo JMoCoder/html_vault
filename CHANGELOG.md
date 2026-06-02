@@ -7,6 +7,19 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.11] - 2026-06-02
+
+### Added
+
+- Added persistent lightweight backend job records stored in
+  `meta/config/jobs.json`.
+- Added `POST /api/rebuild` and `GET /api/rebuild/{job_id}` for explicit
+  rebuild execution and status lookup.
+- Added `GET /api/uploads/{upload_id}` and upload `job_id` responses so HTML
+  imports can be queried after completion.
+- Added a full core API smoke test covering upload, list, metadata edit,
+  search, content read, favorite, archive, unarchive, and permanent delete.
+
 ## [0.4.10] - 2026-06-02
 
 ### Fixed

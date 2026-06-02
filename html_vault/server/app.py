@@ -16,6 +16,7 @@ from html_vault import __version__
 
 from .config import ServerSettings, load_settings
 from .items import ItemContentError, ItemDeleteError, ItemMetadataError, ItemService, ItemStateError, normalize_query
+from .jobs import JobError, JobService
 from .navigation import NavigationConfigError, NavigationConfigService
 from .uploads import UploadError, UploadService
 
@@ -37,6 +38,10 @@ def get_navigation_service(settings: Annotated[ServerSettings, Depends(get_setti
     return NavigationConfigService(settings)
 
 
+def get_job_service(settings: Annotated[ServerSettings, Depends(get_settings)]) -> JobService:
+    return JobService(settings)
+
+
 def create_app() -> FastAPI:
     app = FastAPI(title="HTML Vault Agent Server", version=__version__)
     app.add_middleware(
@@ -54,6 +59,23 @@ def create_app() -> FastAPI:
     @app.get("/api/manifest")
     def manifest(service: Annotated[ItemService, Depends(get_item_service)]) -> dict:
         return service.manifest()
+
+    @app.post("/api/rebuild")
+    def rebuild(service: Annotated[JobService, Depends(get_job_service)]) -> dict:
+        try:
+            return service.rebuild()
+        except JobError as exc:
+            raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+    @app.get("/api/rebuild/{job_id}")
+    def rebuild_job(job_id: str, service: Annotated[JobService, Depends(get_job_service)]) -> dict:
+        try:
+            job = service.get_job(job_id)
+        except JobError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        if job.get("kind") != "rebuild":
+            raise HTTPException(status_code=404, detail="Rebuild job not found.")
+        return job
 
     @app.get("/api/items")
     def items(
@@ -170,9 +192,17 @@ def create_app() -> FastAPI:
             status = 404 if message == "Item not found." else 400
             raise HTTPException(status_code=status, detail=message) from exc
 
+    @app.get("/api/uploads/{upload_id}")
+    def upload_status(upload_id: str, service: Annotated[JobService, Depends(get_job_service)]) -> dict:
+        try:
+            return service.get_upload(upload_id)
+        except JobError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
     @app.post("/api/uploads/html")
     async def upload_html(
         service: Annotated[UploadService, Depends(get_upload_service)],
+        jobs: Annotated[JobService, Depends(get_job_service)],
         file: Annotated[UploadFile, File()],
         title: Annotated[str, Form()] = "",
         summary: Annotated[str, Form()] = "",
@@ -191,8 +221,10 @@ def create_app() -> FastAPI:
             )
         except UploadError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+        job = jobs.record_upload(upload_id=result.upload_id, item_id=result.item_id, status=result.status)
         return {
             "upload_id": result.upload_id,
+            "job_id": job["job_id"],
             "item_id": result.item_id,
             "status": result.status,
             "item": result.item,

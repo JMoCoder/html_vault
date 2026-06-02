@@ -69,9 +69,12 @@ html-vault serve-api --port 8787
 - `GET /api/items/{id}`
 - `GET /api/items/{id}/content`
 - `GET /api/items/{id}/raw`
+- `POST /api/rebuild`
+- `GET /api/rebuild/{job_id}`
 - `PATCH /api/items/{id}/metadata`
 - `PATCH /api/items/{id}/state`
 - `POST /api/uploads/html`
+- `GET /api/uploads/{upload_id}`
 - `DELETE /api/items/{id}`
 
 `GET /api/items` 支持当前前端列表逻辑：资料库筛选、集合、逗号分隔标签、`tag_match=any|all`、收藏/归档筛选、搜索、排序和 limit。
@@ -81,6 +84,10 @@ html-vault serve-api --port 8787
 `GET /api/navigation` 与 `PUT /api/navigation` 会把资料库视图、集合和标签的侧栏显隐偏好持久化到 `meta/config/navigation.json`。
 
 `POST /api/uploads/html` 接收 multipart HTML 文件，并支持可选 `title`、`summary`、`collection`、逗号分隔 `tags`。成功导入后会写入 `content/imported/YYYY/MM/`，生成 sidecar metadata，重新构建 `public/`，并返回已索引条目。
+
+`GET /api/uploads/{upload_id}` 返回已持久化的上传任务状态。任务记录保存在 `meta/config/jobs.json`。
+
+`POST /api/rebuild` 会重新构建静态输出并记录一个轻量任务。`GET /api/rebuild/{job_id}` 返回该重建任务状态。
 
 `GET /api/items/{id}/content` 返回用于 iframe 阅读的源 HTML。`GET /api/items/{id}/raw` 返回用于原文访问的同一份源 HTML。两个接口都会校验条目必须存在于 manifest，且路径不能逃逸配置的内容目录。
 

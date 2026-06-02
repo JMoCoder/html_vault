@@ -80,8 +80,73 @@ def test_upload_html_api(tmp_path: Path) -> None:
             content_type="text/html",
         )
         assert data["status"] == "indexed"
+        assert data["job_id"].startswith("upl_job_")
         assert data["item"]["source_type"] == "imported"
         assert data["item"]["tags"] == ["API", "Upload"]
+        upload = server.request("GET", f"/api/uploads/{data['upload_id']}")
+        assert upload["kind"] == "upload"
+        assert upload["status"] == "completed"
+        assert upload["item_id"] == data["item_id"]
+    finally:
+        server.close()
+
+
+def test_full_core_api_smoke(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Core Smoke Test")
+    try:
+        uploaded = server.multipart(
+            "/api/uploads/html",
+            fields={
+                "title": "Smoke Note",
+                "summary": "Initial smoke summary.",
+                "collection": "Smoke",
+                "tags": "Smoke,API",
+            },
+            file_field="file",
+            filename="smoke-note.html",
+            content=b"<html><head><title>Smoke</title></head><body>Smoke body for API tests.</body></html>",
+            content_type="text/html",
+        )
+        item_id = uploaded["item_id"]
+
+        upload_status = server.request("GET", f"/api/uploads/{uploaded['upload_id']}")
+        listed = server.request("GET", "/api/items", query={"collection": "Smoke"})
+        updated = server.json(
+            "PATCH",
+            f"/api/items/{item_id}/metadata",
+            {
+                "title": "Smoke Note Updated",
+                "summary": "Updated smoke summary.",
+                "collection": "Smoke Ops",
+                "tags": ["Smoke", "Verified"],
+            },
+        )
+        search = server.request("GET", "/api/search", query={"q": "updated", "tags": "Smoke,Verified", "tag_match": "all"})
+        content = server.request_text("GET", f"/api/items/{item_id}/content")
+        favorited = server.json("PATCH", f"/api/items/{item_id}/state", {"favorite": True})
+        archived = server.json("PATCH", f"/api/items/{item_id}/state", {"archived": True})
+        archived_items = server.request("GET", "/api/items", query={"library": "archived"})
+        restored = server.json("PATCH", f"/api/items/{item_id}/state", {"archived": False})
+        archived_again = server.json("PATCH", f"/api/items/{item_id}/state", {"archived": True})
+        deleted = server.request("DELETE", f"/api/items/{item_id}")
+
+        assert uploaded["status"] == "indexed"
+        assert upload_status["status"] == "completed"
+        assert listed["count"] == 1
+        assert listed["items"][0]["id"] == item_id
+        assert updated["title"] == "Smoke Note Updated"
+        assert search["count"] == 1
+        assert search["items"][0]["item"]["id"] == item_id
+        assert "Smoke body for API tests." in content
+        assert favorited["favorite"] is True
+        assert archived["archived"] is True
+        assert item_id in [item["id"] for item in archived_items["items"]]
+        assert restored["archived"] is False
+        assert restored["favorite"] is True
+        assert archived_again["archived"] is True
+        assert deleted == {"id": item_id, "deleted": True}
+        assert not (content_dir / item_id).exists()
     finally:
         server.close()
 

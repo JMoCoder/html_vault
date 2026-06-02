@@ -2,6 +2,15 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.11] - 2026-06-02
+
+### 新增
+
+- 新增轻量后端任务记录，持久化保存到 `meta/config/jobs.json`。
+- 新增 `POST /api/rebuild` 与 `GET /api/rebuild/{job_id}`，用于显式触发重建并查询状态。
+- 新增 `GET /api/uploads/{upload_id}`，上传 HTML 时也会返回 `job_id`，便于导入完成后继续查询。
+- 新增完整核心 API smoke 测试，覆盖上传、列表查询、元信息编辑、搜索、内容读取、收藏、归档、取消归档和永久删除。
+
 ## [0.4.10] - 2026-06-02
 
 ### 修复

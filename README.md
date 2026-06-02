@@ -166,9 +166,12 @@ Implemented endpoints:
 - `GET /api/items/{id}`
 - `GET /api/items/{id}/content`
 - `GET /api/items/{id}/raw`
+- `POST /api/rebuild`
+- `GET /api/rebuild/{job_id}`
 - `PATCH /api/items/{id}/metadata`
 - `PATCH /api/items/{id}/state`
 - `POST /api/uploads/html`
+- `GET /api/uploads/{upload_id}`
 - `DELETE /api/items/{id}`
 
 `GET /api/items` supports the current frontend list logic: library filters,
@@ -187,7 +190,13 @@ preferences for library views, collections, and tags in
 `POST /api/uploads/html` accepts a multipart HTML file plus optional `title`,
 `summary`, `collection`, and comma-separated `tags`. Successful imports write
 to `content/imported/YYYY/MM/`, create sidecar metadata, rebuild `public/`, and
-return the indexed item.
+return the indexed item plus an upload job id.
+
+`GET /api/uploads/{upload_id}` returns the persisted upload job status. Job
+records are stored in `meta/config/jobs.json`.
+
+`POST /api/rebuild` rebuilds the static output and records a lightweight job.
+`GET /api/rebuild/{job_id}` returns that rebuild job status.
 
 `GET /api/items/{id}/content` returns the source HTML for iframe reading.
 `GET /api/items/{id}/raw` returns the same source HTML for original-file access.

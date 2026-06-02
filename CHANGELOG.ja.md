@@ -2,6 +2,15 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.11] - 2026-06-02
+
+### Added
+
+- `meta/config/jobs.json` に保存する軽量バックエンド Job レコードを追加しました。
+- 明示的な再ビルド実行と状態照会のために `POST /api/rebuild` と `GET /api/rebuild/{job_id}` を追加しました。
+- HTML インポート完了後に照会できるよう、`GET /api/uploads/{upload_id}` とアップロードレスポンスの `job_id` を追加しました。
+- アップロード、一覧、メタデータ編集、検索、本文取得、お気に入り、アーカイブ、アーカイブ解除、完全削除をカバーするコア API smoke テストを追加しました。
+
 ## [0.4.10] - 2026-06-02
 
 ### Fixed

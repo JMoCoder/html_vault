@@ -69,9 +69,12 @@ html-vault serve-api --port 8787
 - `GET /api/items/{id}`
 - `GET /api/items/{id}/content`
 - `GET /api/items/{id}/raw`
+- `POST /api/rebuild`
+- `GET /api/rebuild/{job_id}`
 - `PATCH /api/items/{id}/metadata`
 - `PATCH /api/items/{id}/state`
 - `POST /api/uploads/html`
+- `GET /api/uploads/{upload_id}`
 - `DELETE /api/items/{id}`
 
 `GET /api/items` は現在のフロントエンド一覧ロジックに対応します。ライブラリ、コレクション、カンマ区切りタグ、`tag_match=any|all`、お気に入り/アーカイブ、検索、並び替え、limit を指定できます。
@@ -80,7 +83,11 @@ html-vault serve-api --port 8787
 
 `GET /api/navigation` と `PUT /api/navigation` は、ライブラリ表示、コレクション、タグのサイドバー表示設定を `meta/config/navigation.json` に永続化します。
 
-`POST /api/uploads/html` は multipart HTML ファイルを受け取り、任意で `title`、`summary`、`collection`、カンマ区切り `tags` を指定できます。成功時は `content/imported/YYYY/MM/` に保存し、sidecar metadata を生成し、`public/` を再ビルドして、インデックス済み項目を返します。
+`POST /api/uploads/html` は multipart HTML ファイルを受け取り、任意で `title`、`summary`、`collection`、カンマ区切り `tags` を指定できます。成功時は `content/imported/YYYY/MM/` に保存し、sidecar metadata を生成し、`public/` を再ビルドして、インデックス済み項目とアップロード Job ID を返します。
+
+`GET /api/uploads/{upload_id}` は永続化されたアップロード Job 状態を返します。Job レコードは `meta/config/jobs.json` に保存されます。
+
+`POST /api/rebuild` は静的出力を再ビルドし、軽量 Job を記録します。`GET /api/rebuild/{job_id}` はその再ビルド Job 状態を返します。
 
 `GET /api/items/{id}/content` は iframe 読み取り用のソース HTML を返します。`GET /api/items/{id}/raw` は原文アクセス用に同じソース HTML を返します。どちらも項目が manifest に存在し、設定された content ディレクトリ外へ出ないことを検証します。
 
