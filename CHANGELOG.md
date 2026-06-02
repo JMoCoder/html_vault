@@ -7,6 +7,17 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.4.14] - 2026-06-02
+
+### Changed
+
+- Changed the default Docker Compose path to a single-container self-hosted
+  notebook deployment that serves both the frontend and `/api/*`.
+- Moved Caddy Basic Auth into an optional public deployment example instead of
+  requiring it for the default startup path.
+- Simplified default Docker environment variables so local and LAN deployments
+  can run without a generated `.env` file.
+
 ## [0.4.13] - 2026-06-02
 
 ### Added
@@ -20,8 +31,8 @@ versioning after the initial public release.
 
 ### Changed
 
-- The existing `docker-compose.yml` is now explicitly documented as a static
-  demo path; real notebook deployments should use `compose.prod.yml`.
+- The initial production compose path used `compose.prod.yml`; the default
+  compose path was later simplified in `0.4.14`.
 
 ## [0.4.12] - 2026-06-02
 

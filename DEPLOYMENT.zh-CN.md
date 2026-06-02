@@ -21,7 +21,7 @@
 - 后端设置 `HTML_VAULT_API_TOKEN`。
 - 设置 `HTML_VAULT_CORS_ORIGINS` 为准确的前端公网来源。
 - 静态前端和 API 都放在 HTTPS 后面。
-- 使用反向代理登录认证保护整个站点。内置 Docker Caddyfile 默认启用 Basic Auth。
+- 使用反向代理登录认证保护整个站点。认证边界由部署者按自己的公网部署栈手动配置。
 - `data/content`、`data/meta` 和备份目录放在 Git 仓库之外。
 - API Key 和后续模型凭据只保存在服务端。
 - 用 `HTML_VAULT_MAX_UPLOAD_BYTES` 限制上传大小。
@@ -37,11 +37,9 @@ HTML_VAULT_TITLE="HTML Vault"
 HTML_VAULT_MAX_UPLOAD_BYTES=10485760
 HTML_VAULT_API_TOKEN="replace-with-a-long-random-token"
 HTML_VAULT_CORS_ORIGINS="https://vault.example.com"
-HTML_VAULT_BASIC_AUTH_USER="admin"
-HTML_VAULT_BASIC_AUTH_HASH="replace-with-caddy-hash"
 ```
 
-自托管 Docker compose 会在容器内使用 `/data/content`、`/data/meta` 和 `/public`。如果不修改 compose 文件，宿主机路径就是仓库目录下的 `./data/...` 与 `./public`。
+默认 Docker compose 会在应用容器内使用 `/data/content`、`/data/meta` 和 `/public`。如果不修改 compose 文件，宿主机路径就是仓库目录下的 `./data/...` 与 `./public`。
 
 后端只监听 localhost 或私有网络地址：
 
@@ -81,11 +79,13 @@ Browser
 - 设置上传 body 大小限制；
 - 不记录 Authorization header 或 query token。
 
-内置的 `deploy/Caddyfile` 实现 Basic Auth 加同源部署形态：
+默认 Docker 部署由单个应用容器同时提供前端和 `/api/*`。公网部署时，应把该容器放到你偏好的 HTTPS/认证边界之后。
+
+可选的 `deploy/caddy-basic-auth.Caddyfile` 提供一种公网部署示例：
 
 ```text
-Browser -> Caddy :80 -> public/ 静态文件
-Browser -> Caddy :80 /api/* -> api:8787
+Browser -> Caddy :80 with Basic Auth -> public/ 静态文件
+Browser -> Caddy :80 with Basic Auth -> /api/* -> api:8787
 ```
 
 Caddy 会先要求用户登录，再只在反代到内部 API 服务时注入 `Authorization: Bearer {$HTML_VAULT_API_TOKEN}`。浏览器不需要保存，也不会看到长期后端 token。
@@ -98,7 +98,17 @@ Caddy 会先要求用户登录，再只在反代到内部 API 服务时注入 `A
 git clone https://github.com/JMoCoder/html_vault.git /srv/html-vault
 cd /srv/html-vault
 git checkout main
-cp .env.example .env
+docker compose up -d --build
+```
+
+打开 `http://localhost:8080` 或 `http://你的主机-ip:8080`。
+
+首次启动会自动创建 `data/content`、`data/meta` 和 `public` 绑定目录。上传的 HTML 保存到 `data/content`，元数据保存到 `data/meta`，重建后的静态资产保存到 `public`。
+
+公网部署时，不要在没有认证边界的情况下暴露默认 compose。你可以使用自己的反向代理，也可以使用可选 Caddy Basic Auth 示例：
+
+```bash
+cp .env.secure.example .env
 python3 - <<'PY'
 import secrets
 print("HTML_VAULT_API_TOKEN=" + secrets.token_urlsafe(32))
@@ -106,30 +116,13 @@ PY
 docker run --rm caddy:2-alpine caddy hash-password --plaintext 'change-this-login-password'
 ```
 
-编辑 `.env`：
+编辑 `.env`，填入生成的 token 和 Caddy 密码 hash，并将 `HTML_VAULT_CORS_ORIGINS` 设置为你的公网来源。Caddy 密码 hash 包含 `$`。写入 `.env` 时必须把每个 `$` 转义为 `$$`。例如 `$2a$14$...` 应粘贴为 `$$2a$$14$$...`。
+
+然后运行：
 
 ```bash
-HTML_VAULT_TITLE=HTML Vault
-HTML_VAULT_MAX_UPLOAD_BYTES=10485760
-HTML_VAULT_API_TOKEN=上一步生成的长随机值
-HTML_VAULT_CORS_ORIGINS=https://vault.example.com
-HTML_VAULT_BASIC_AUTH_USER=admin
-HTML_VAULT_BASIC_AUTH_HASH=Caddy 输出的 hash
-```
-
-注意：Caddy 密码 hash 包含 `$`。写入 `.env` 时必须把每个 `$` 转义为 `$$`，否则 Docker Compose 会把 hash 片段当成变量引用。例如 `$2a$14$...` 应粘贴为 `$$2a$$14$$...`。
-
-创建运行时目录并启动：
-
-```bash
-mkdir -p data/content data/meta public
 docker compose -f compose.prod.yml up -d --build
-docker compose -f compose.prod.yml logs -f
 ```
-
-首次启动会根据挂载的 content/meta 目录构建 `public/`。上传的 HTML 保存到 `data/content`，元数据保存到 `data/meta`，重建后的静态资产保存到 `public`。
-
-本机测试可以打开 `http://localhost`。局域网内其他设备访问时，打开 `http://你的主机-ip`。绑定公网域名和 HTTPS 时，可以把本项目放到已有 HTTPS 反向代理之后，或在 DNS 指向主机后把 Caddyfile 调整为真实站点地址。
 
 ## 生产更新
 
@@ -143,8 +136,8 @@ git fetch origin
 git checkout main
 git pull --ff-only
 tar -czf "../html-vault-data-$(date +%Y%m%d-%H%M%S).tgz" data
-docker compose -f compose.prod.yml up -d --build
-docker compose -f compose.prod.yml logs -f
+docker compose up -d --build
+docker compose logs -f
 ```
 
 如果某个版本有数据迁移说明，运行新容器前必须备份 `data/`。回滚时切回旧 tag 或旧 commit 并重启 compose；如果版本改变了数据结构，还要恢复对应的 `data/` 备份。
@@ -156,7 +149,7 @@ docker compose -f compose.prod.yml logs -f
 3. 将 `develop` 合并到 `main` 作为生产发布。
 4. 自托管 Docker 主机拉取 `main`。
 5. 备份 `/srv/html-vault/data`。
-6. 通过 `docker compose -f compose.prod.yml up -d --build` 重建/重启容器。
+6. 通过 `docker compose up -d --build` 重建/重启容器。
 7. 验证登录、上传、搜索、阅读、归档、版本显示和备份。
 
 ## 数据策略

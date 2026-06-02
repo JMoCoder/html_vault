@@ -3,6 +3,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from html_vault.builder import build_site
+
 from tests.api_server import run_api_server
 
 
@@ -59,5 +61,23 @@ def test_api_token_query_allows_iframe_content(tmp_path: Path) -> None:
             headers={"Authorization": ""},
         )
         assert "Docker Network Quick Notes" in content
+    finally:
+        server.close()
+
+
+def test_api_server_serves_static_frontend(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    build_site(content_dir, meta_dir, public_dir, "Static Test")
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Static Test",
+    )
+    try:
+        index = server.request_text("GET", "/")
+        assert "<title>HTML Vault</title>" in index
+        health = server.request("GET", "/api/health")
+        assert health["status"] == "ok"
     finally:
         server.close()

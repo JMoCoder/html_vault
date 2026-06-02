@@ -50,8 +50,8 @@ the source of truth, while metadata lives in optional YAML sidecar files.
   item from the current workspace view.
 - Static build output that works on GitHub Pages, Cloudflare Pages, Caddy,
   Nginx, NAS, or any static file server.
-- Self-hosted Docker Compose deployment with a Caddy reverse proxy, persistent
-  data directories, and an internal API service.
+- Self-hosted Docker Compose deployment with persistent data directories and a
+  single app container.
 
 ## Repository Layout
 
@@ -108,41 +108,23 @@ For self-hosted Docker, LAN, VPS, NAS, or public deployments, read
 
 ## Self-Hosted Docker
 
-The reusable long-running Docker path is `compose.prod.yml`. It can run on a
-local computer, NAS, LAN server, or VPS. It runs:
-
-- `web`: Caddy serving `public/` and reverse-proxying `/api/*`;
-- `api`: the HTML Vault backend, writing to mounted `data/` and rebuilding
-  `public/`.
+The default Docker path can run on a local computer, NAS, LAN server, or VPS.
+It starts one app container that serves both the frontend and `/api/*`.
 
 ```bash
-cp .env.example .env
-python3 - <<'PY'
-import secrets
-print("HTML_VAULT_API_TOKEN=" + secrets.token_urlsafe(32))
-PY
-docker run --rm caddy:2-alpine caddy hash-password --plaintext 'change-this-login-password'
+git clone https://github.com/JMoCoder/html_vault.git
+cd html_vault
+docker compose up -d --build
 ```
 
-Edit `.env`, set `HTML_VAULT_API_TOKEN` to the generated value, and set
-`HTML_VAULT_BASIC_AUTH_HASH` to the Caddy hash output. Set
-`HTML_VAULT_CORS_ORIGINS` to your public origin.
+Open `http://localhost:8080` or `http://your-host-ip:8080`. Uploaded HTML files
+and metadata stay in `data/`; they are not committed to GitHub.
 
-When pasting the Caddy hash into `.env`, replace each `$` with `$$` so Docker
-Compose does not treat hash segments as environment variables.
-
-```bash
-mkdir -p data/content data/meta public
-docker compose -f compose.prod.yml up -d --build
-```
-
-Open `http://localhost`, `http://your-host-ip`, or the domain behind your
-reverse proxy. Uploaded HTML files and metadata stay in `data/`; they are not
-committed to GitHub.
-
-The default production Caddyfile requires Basic Auth before serving the app and
-injects the API token only on the server side. The browser can call same-origin
-`/api/*` after login without receiving the long-lived backend token.
+This default path is intended for local, LAN, and private self-hosting. For
+public internet deployment, add HTTPS and an authentication boundary with your
+preferred reverse proxy. A Caddy Basic Auth example is provided in
+`compose.prod.yml`, `.env.secure.example`, and
+`deploy/caddy-basic-auth.Caddyfile`.
 
 ## Content Model
 
@@ -346,15 +328,6 @@ development-in-progress message without changing data.
 The global AI sidebar is the future home for context-aware chat and HTML note
 generation. It is UI-only for now: no model request is sent, and note creation
 still requires a future Agent Server.
-
-## Static Docker Demo
-
-```bash
-docker compose up --build
-```
-
-Then open `http://localhost:8080`. This demo image builds the example content
-only; use `compose.prod.yml` for a real notebook with uploads and persistence.
 
 ## Development
 

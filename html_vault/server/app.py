@@ -7,6 +7,7 @@ try:
     from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Query, UploadFile
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.responses import HTMLResponse
+    from fastapi.staticfiles import StaticFiles
 except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static-only installs
     raise RuntimeError(
         "The backend server requires the agent extra: pip install 'html-vault[agent]'",
@@ -258,6 +259,9 @@ def create_app() -> FastAPI:
             "status": result.status,
             "item": result.item,
         }
+
+    if settings.public_dir.exists():
+        app.mount("/", StaticFiles(directory=settings.public_dir, html=True), name="static")
 
     return app
 

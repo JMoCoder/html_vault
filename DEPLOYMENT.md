@@ -27,8 +27,8 @@ Required project-level controls:
 - Set `HTML_VAULT_API_TOKEN` for the backend API.
 - Set `HTML_VAULT_CORS_ORIGINS` to the exact public frontend origin.
 - Put the static frontend and API behind HTTPS.
-- Use reverse-proxy authentication for the whole site. The bundled Docker
-  Caddyfile enables Basic Auth by default.
+- Use reverse-proxy authentication for the whole site. Configure this with your
+  preferred public deployment stack.
 - Keep `data/content`, `data/meta`, and backups outside the Git repository.
 - Keep API keys and future model credentials on the server only.
 - Limit upload size with `HTML_VAULT_MAX_UPLOAD_BYTES`.
@@ -44,11 +44,9 @@ HTML_VAULT_TITLE="HTML Vault"
 HTML_VAULT_MAX_UPLOAD_BYTES=10485760
 HTML_VAULT_API_TOKEN="replace-with-a-long-random-token"
 HTML_VAULT_CORS_ORIGINS="https://vault.example.com"
-HTML_VAULT_BASIC_AUTH_USER="admin"
-HTML_VAULT_BASIC_AUTH_HASH="replace-with-caddy-hash"
 ```
 
-The Docker production compose mounts those paths inside containers as
+The default Docker compose mounts those paths inside the app container as
 `/data/content`, `/data/meta`, and `/public`; host-side directories remain
 `./data/...` and `./public` relative to the checked-out repository unless you
 change the compose file.
@@ -94,12 +92,16 @@ The reverse proxy should:
 - set upload body limits;
 - avoid logging Authorization headers or query tokens.
 
-The bundled `deploy/Caddyfile` implements Basic Auth plus the same-origin
+The default Docker deployment serves both the frontend and `/api/*` from the
+single app container. Public deployments should put that container behind your
+preferred HTTPS/authentication boundary.
+
+The optional `deploy/caddy-basic-auth.Caddyfile` implements one possible public
 deployment shape:
 
 ```text
-Browser -> Caddy :80 -> public/ static files
-Browser -> Caddy :80 /api/* -> api:8787
+Browser -> Caddy :80 with Basic Auth -> public/ static files
+Browser -> Caddy :80 with Basic Auth -> /api/* -> api:8787
 ```
 
 Caddy asks users to log in before serving the app, then injects
@@ -115,7 +117,22 @@ On a fresh host:
 git clone https://github.com/JMoCoder/html_vault.git /srv/html-vault
 cd /srv/html-vault
 git checkout main
-cp .env.example .env
+docker compose up -d --build
+```
+
+Open `http://localhost:8080` or `http://your-host-ip:8080`.
+
+The first start creates `data/content`, `data/meta`, and `public` bind-mounted
+directories if they do not already exist. Uploaded HTML files are stored under
+`data/content`, metadata under `data/meta`, and rebuilt static assets under
+`public`.
+
+For public internet deployment, do not expose the default compose stack without
+an authentication boundary. You can use your own reverse proxy, or the optional
+Caddy Basic Auth example:
+
+```bash
+cp .env.secure.example .env
 python3 - <<'PY'
 import secrets
 print("HTML_VAULT_API_TOKEN=" + secrets.token_urlsafe(32))
@@ -123,37 +140,16 @@ PY
 docker run --rm caddy:2-alpine caddy hash-password --plaintext 'change-this-login-password'
 ```
 
-Edit `.env`:
+Edit `.env`, paste the generated token, paste the Caddy password hash, and set
+`HTML_VAULT_CORS_ORIGINS` to your public origin. Caddy password hashes contain
+`$`; in `.env`, escape every `$` as `$$`. For example, `$2a$14$...` must be
+pasted as `$$2a$$14$$...`.
+
+Then run:
 
 ```bash
-HTML_VAULT_TITLE=HTML Vault
-HTML_VAULT_MAX_UPLOAD_BYTES=10485760
-HTML_VAULT_API_TOKEN=the-generated-long-token
-HTML_VAULT_CORS_ORIGINS=https://vault.example.com
-HTML_VAULT_BASIC_AUTH_USER=admin
-HTML_VAULT_BASIC_AUTH_HASH=the-caddy-hash-output
+docker compose up -d --build
 ```
-
-Important: Caddy password hashes contain `$`. In `.env`, escape every `$` as
-`$$`; otherwise Docker Compose will treat hash segments as variable references.
-For example, `$2a$14$...` must be pasted as `$$2a$$14$$...`.
-
-Create runtime directories and start:
-
-```bash
-mkdir -p data/content data/meta public
-docker compose -f compose.prod.yml up -d --build
-docker compose -f compose.prod.yml logs -f
-```
-
-The first start builds `public/` from the mounted content/meta directories.
-Uploaded HTML files are stored under `data/content`, metadata under
-`data/meta`, and rebuilt static assets under `public`.
-
-For a local-only test, open `http://localhost`. For another device on the same
-LAN, open `http://your-host-ip`. For a public domain and HTTPS, put this stack
-behind your existing HTTPS reverse proxy, or adapt the Caddyfile to a real site
-address after DNS points to the host.
 
 ## Production Updates
 
@@ -168,8 +164,8 @@ git fetch origin
 git checkout main
 git pull --ff-only
 tar -czf "../html-vault-data-$(date +%Y%m%d-%H%M%S).tgz" data
-docker compose -f compose.prod.yml up -d --build
-docker compose -f compose.prod.yml logs -f
+docker compose up -d --build
+docker compose logs -f
 ```
 
 If a release has a data migration note, back up `data/` before running the new
@@ -184,7 +180,7 @@ changed data structure.
 3. Merge `develop` into `main` for production release.
 4. Pull `main` on the self-hosted Docker host.
 5. Back up `/srv/html-vault/data`.
-6. Rebuild/recreate containers with `docker compose -f compose.prod.yml up -d --build`.
+6. Rebuild/recreate containers with `docker compose up -d --build`.
 7. Verify login, upload, search, read, archive, version display, and backup.
 
 ## Data Policy

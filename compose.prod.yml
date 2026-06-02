@@ -1,14 +1,18 @@
+# Optional public-facing example with Caddy Basic Auth in front of the app.
+# The default self-hosted deployment is docker-compose.yml.
 services:
   api:
     build:
       context: .
       dockerfile: Dockerfile.api
-    env_file:
-      - .env
     environment:
       HTML_VAULT_CONTENT: /data/content
       HTML_VAULT_META: /data/meta
       HTML_VAULT_PUBLIC: /public
+      HTML_VAULT_TITLE: ${HTML_VAULT_TITLE:-HTML Vault}
+      HTML_VAULT_MAX_UPLOAD_BYTES: ${HTML_VAULT_MAX_UPLOAD_BYTES:-10485760}
+      HTML_VAULT_API_TOKEN: ${HTML_VAULT_API_TOKEN:?Set HTML_VAULT_API_TOKEN in .env}
+      HTML_VAULT_CORS_ORIGINS: ${HTML_VAULT_CORS_ORIGINS:-http://localhost,http://127.0.0.1}
     volumes:
       - ./data/content:/data/content
       - ./data/meta:/data/meta
@@ -24,10 +28,10 @@ services:
     env_file:
       - .env
     ports:
-      - "80:80"
+      - "${HTML_VAULT_HTTP_PORT:-8080}:80"
     volumes:
       - ./public:/srv/html-vault/public:ro
-      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./deploy/caddy-basic-auth.Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     restart: unless-stopped

@@ -1,8 +1,20 @@
 services:
   html-vault:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      HTML_VAULT_CONTENT: /data/content
+      HTML_VAULT_META: /data/meta
+      HTML_VAULT_PUBLIC: /public
+      HTML_VAULT_TITLE: ${HTML_VAULT_TITLE:-HTML Vault}
+      HTML_VAULT_MAX_UPLOAD_BYTES: ${HTML_VAULT_MAX_UPLOAD_BYTES:-10485760}
+      HTML_VAULT_API_TOKEN: ${HTML_VAULT_API_TOKEN:-}
+      HTML_VAULT_CORS_ORIGINS: ${HTML_VAULT_CORS_ORIGINS:-http://localhost,http://127.0.0.1}
+    volumes:
+      - ./data/content:/data/content
+      - ./data/meta:/data/meta
+      - ./public:/public
     ports:
-      - "8080:80"
-
-# Static demo only. Use compose.prod.yml for a real notebook deployment with
-# API persistence and mounted data directories.
+      - "${HTML_VAULT_HTTP_PORT:-8080}:8787"
+    restart: unless-stopped

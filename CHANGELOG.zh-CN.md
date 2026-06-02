@@ -2,6 +2,14 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.14] - 2026-06-02
+
+### 变更
+
+- 将默认 Docker Compose 路径改为单容器自托管笔记本部署，同时提供前端和 `/api/*`。
+- 将 Caddy Basic Auth 下沉为可选公网部署示例，不再作为默认启动依赖。
+- 简化默认 Docker 环境变量，本地与局域网部署无需生成 `.env` 也能启动。
+
 ## [0.4.13] - 2026-06-02
 
 ### 新增
@@ -12,7 +20,7 @@
 
 ### 变更
 
-- 将现有 `docker-compose.yml` 明确标注为静态演示路径；真实笔记本部署应使用 `compose.prod.yml`。
+- 初始生产 compose 路径使用 `compose.prod.yml`；默认 compose 路径已在 `0.4.14` 简化。
 
 ## [0.4.12] - 2026-06-02
 

@@ -71,32 +71,17 @@ python -m http.server 8080 --directory public
 
 ## Self-Hosted Docker
 
-再利用可能な長期実行 Docker デプロイ入口は `compose.prod.yml` です。ローカル PC、NAS、LAN サーバー、VPS で実行できます。これは次のサービスを起動します:
-
-- `web`: Caddy が `public/` を配信し、`/api/*` をバックエンドへリバースプロキシします。
-- `api`: HTML Vault バックエンドがマウントされた `data/` に書き込み、`public/` を再ビルドします。
+既定の Docker パスはローカル PC、NAS、LAN サーバー、VPS で実行できます。1 つのアプリコンテナがフロントエンドと `/api/*` の両方を提供します。
 
 ```bash
-cp .env.example .env
-python3 - <<'PY'
-import secrets
-print("HTML_VAULT_API_TOKEN=" + secrets.token_urlsafe(32))
-PY
-docker run --rm caddy:2-alpine caddy hash-password --plaintext 'change-this-login-password'
+git clone https://github.com/JMoCoder/html_vault.git
+cd html_vault
+docker compose up -d --build
 ```
 
-`.env` を編集し、`HTML_VAULT_API_TOKEN` を生成値に設定し、`HTML_VAULT_BASIC_AUTH_HASH` を Caddy の hash 出力に設定します。`HTML_VAULT_CORS_ORIGINS` は公開 origin に設定します。
+`http://localhost:8080` または `http://your-host-ip:8080` を開きます。アップロードした HTML とメタデータは `data/` に保存され、GitHub にはコミットされません。
 
-Caddy hash を `.env` に貼り付けるときは、Docker Compose が hash の一部を環境変数として展開しないよう、各 `$` を `$$` に置き換えてください。
-
-```bash
-mkdir -p data/content data/meta public
-docker compose -f compose.prod.yml up -d --build
-```
-
-`http://localhost`、`http://your-host-ip`、または設定したドメインを開きます。アップロードした HTML とメタデータは `data/` に保存され、GitHub にはコミットされません。
-
-既定の本番 Caddyfile はまず Basic Auth ログインを要求し、その後サーバー側で API token を注入します。ブラウザーは長期バックエンド token を受け取らず、ログイン後に同一 origin の `/api/*` を呼び出せます。
+この既定パスはローカル、LAN、プライベートなセルフホスト向けです。公開インターネットに出す場合は、好みのリバースプロキシで HTTPS と認証境界を手動で追加してください。Caddy Basic Auth 例として `compose.prod.yml`、`.env.secure.example`、`deploy/caddy-basic-auth.Caddyfile` を用意しています。
 
 ## AI プロバイダー設定
 

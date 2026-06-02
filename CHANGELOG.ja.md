@@ -2,6 +2,14 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.4.14] - 2026-06-02
+
+### Changed
+
+- 既定の Docker Compose パスを、フロントエンドと `/api/*` の両方を提供する単一コンテナのセルフホストノートブックデプロイへ変更しました。
+- Caddy Basic Auth は既定起動の必須要件ではなく、任意の公開デプロイ例へ移動しました。
+- 既定の Docker 環境変数を簡素化し、ローカルと LAN デプロイでは `.env` を生成せずに起動できるようにしました。
+
 ## [0.4.13] - 2026-06-02
 
 ### Added
@@ -12,7 +20,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ### Changed
 
-- 既存の `docker-compose.yml` は静的デモ用であることを明記しました。実際のノートブックデプロイには `compose.prod.yml` を使用します。
+- 初期の本番 compose パスは `compose.prod.yml` を使用しました。既定 compose パスは `0.4.14` で簡素化されました。
 
 ## [0.4.12] - 2026-06-02
 

@@ -15,4 +15,5 @@ uploads
 .env
 .env.*
 !.env.example
+!.env.secure.example
 .DS_Store

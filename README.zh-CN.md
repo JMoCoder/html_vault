@@ -71,32 +71,17 @@ python -m http.server 8080 --directory public
 
 ## 自托管 Docker
 
-可复用的长期运行 Docker 部署入口是 `compose.prod.yml`。它可以运行在本地电脑、NAS、局域网服务器或 VPS 上。它会启动：
-
-- `web`：Caddy 托管 `public/`，并把 `/api/*` 反向代理到后端；
-- `api`：HTML Vault 后端，写入挂载的 `data/`，并重新构建 `public/`。
+默认 Docker 路径可以运行在本地电脑、NAS、局域网服务器或 VPS 上。它启动一个应用容器，同时提供前端和 `/api/*`。
 
 ```bash
-cp .env.example .env
-python3 - <<'PY'
-import secrets
-print("HTML_VAULT_API_TOKEN=" + secrets.token_urlsafe(32))
-PY
-docker run --rm caddy:2-alpine caddy hash-password --plaintext 'change-this-login-password'
+git clone https://github.com/JMoCoder/html_vault.git
+cd html_vault
+docker compose up -d --build
 ```
 
-编辑 `.env`，把 `HTML_VAULT_API_TOKEN` 设置为生成值，把 `HTML_VAULT_BASIC_AUTH_HASH` 设置为 Caddy 输出的 hash，并将 `HTML_VAULT_CORS_ORIGINS` 设置为你的公网来源。
+打开 `http://localhost:8080` 或 `http://你的主机-ip:8080`。上传的 HTML 和元数据保存在 `data/`，不会提交到 GitHub。
 
-把 Caddy hash 粘贴到 `.env` 时，需要把每个 `$` 替换成 `$$`，避免 Docker Compose 把 hash 片段当作环境变量插值。
-
-```bash
-mkdir -p data/content data/meta public
-docker compose -f compose.prod.yml up -d --build
-```
-
-打开 `http://localhost`、`http://你的主机-ip` 或绑定的域名。上传的 HTML 和元数据保存在 `data/`，不会提交到 GitHub。
-
-默认生产 Caddyfile 会先要求 Basic Auth 登录，再在服务端内部注入 API token。因此浏览器登录后可以同源访问 `/api/*`，但不会拿到长期后端 token。
+默认路径适合本地、局域网和私有自托管。公网部署时，请用你熟悉的反向代理手动增加 HTTPS 和登录认证边界。项目提供 Caddy Basic Auth 示例：`compose.prod.yml`、`.env.secure.example` 和 `deploy/caddy-basic-auth.Caddyfile`。
 
 ## AI 服务商配置
 
