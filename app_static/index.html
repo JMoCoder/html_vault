@@ -496,13 +496,14 @@
             </div>
             <div class="settings-form profile-settings-card">
               <div class="profile-card-header">
-                <span class="profile-avatar-large" id="settings-profile-avatar" aria-hidden="true"></span>
+                <button type="button" class="profile-avatar-upload" id="avatar-upload-trigger" aria-label="Upload avatar" title="Upload avatar" data-i18n-attr="aria-label:uploadAvatar,title:uploadAvatar">
+                  <span class="profile-avatar-large" id="settings-profile-avatar" aria-hidden="true"></span>
+                </button>
                 <div>
                   <strong id="settings-profile-name"></strong>
                   <span id="settings-profile-id"></span>
                 </div>
                 <div class="profile-actions">
-                  <button type="button" class="secondary-button" id="avatar-upload-trigger" data-i18n="uploadAvatar"></button>
                   <button type="button" class="logout-button" id="logout-button" data-i18n="logout"></button>
                 </div>
               </div>

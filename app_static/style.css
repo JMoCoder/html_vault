@@ -436,6 +436,23 @@ textarea {
   color: var(--accent-dark);
 }
 
+.profile-avatar-upload {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.profile-avatar-upload:hover {
+  border-color: var(--accent);
+}
+
 .profile-avatar-mini {
   width: 24px;
   height: 24px;
@@ -456,13 +473,9 @@ textarea {
 
 .profile-card-header {
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr);
+  grid-template-columns: 54px minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
-}
-
-.profile-card-header .profile-actions {
-  margin-top: 10px;
 }
 
 .profile-card-header strong,
@@ -500,6 +513,7 @@ textarea {
 .profile-actions {
   display: flex;
   gap: 8px;
+  justify-content: flex-end;
 }
 
 .profile-actions button {
@@ -1421,6 +1435,7 @@ textarea {
   grid-template-rows: auto minmax(0, 1fr);
   background: var(--panel);
   z-index: 10;
+  transition: left 220ms ease, right 180ms ease;
 }
 
 .sidebar-collapsed .reader {
@@ -1701,6 +1716,7 @@ a.icon-action {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   background: var(--bg);
+  transition: left 220ms ease, right 180ms ease;
 }
 
 .sidebar-collapsed .settings-page {
