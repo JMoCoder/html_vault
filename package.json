@@ -1,0 +1,12 @@
+{
+  "name": "html-vault",
+  "version": "0.5.1",
+  "private": true,
+  "description": "Development tooling for HTML Vault frontend and static demo checks.",
+  "scripts": {
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}
