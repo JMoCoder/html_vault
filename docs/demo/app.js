@@ -792,7 +792,7 @@ const state = {
   authenticated: false,
   authChecked: false,
   loginSubmitting: false,
-  currentVersion: "0.6.2",
+  currentVersion: "0.6.3",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -2911,7 +2911,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = window.HTML_VAULT_STATIC_DEMO ? "sw.js?v=0.6.2-demo" : "sw.js";
+    const swPath = window.HTML_VAULT_STATIC_DEMO ? "sw.js?v=0.6.3-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });

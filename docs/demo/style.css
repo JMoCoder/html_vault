@@ -1071,9 +1071,11 @@ textarea {
 }
 
 .new-feedback {
-  margin-top: 10px;
+  min-height: 22px;
+  margin: 16px 0 0;
   color: var(--muted);
   font-size: 13px;
+  line-height: 1.5;
 }
 
 .content-grid {

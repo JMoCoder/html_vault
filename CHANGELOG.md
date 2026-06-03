@@ -7,6 +7,15 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.6.3] - 2026-06-03
+
+### Changed
+
+- Increased the spacing and line stability of the import/create feedback row so
+  messages such as `Imported {title}` no longer sit too close to the interaction
+  form.
+- Updated package, app, PWA, and demo cache versions to `0.6.3`.
+
 ## [0.6.2] - 2026-06-03
 
 ### Changed
