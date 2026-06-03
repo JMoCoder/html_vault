@@ -19,7 +19,7 @@
 项目层面必需控制：
 
 - 后端设置 `HTML_VAULT_API_TOKEN`。
-- 设置 `HTML_VAULT_AUTH_USERNAME`、`HTML_VAULT_AUTH_PASSWORD` 和 `HTML_VAULT_SESSION_SECRET` 启用内置浏览器登录，或在服务前面提供等价认证边界。
+- 公网访问前必须替换默认本地/测试账号 `admin` / `test-password`，并设置 `HTML_VAULT_AUTH_USERNAME`、`HTML_VAULT_AUTH_PASSWORD` 和 `HTML_VAULT_SESSION_SECRET`。
 - HTTPS 部署时设置 `HTML_VAULT_SESSION_SECURE=true`。
 - 设置 `HTML_VAULT_CORS_ORIGINS` 为准确的前端公网来源。
 - 静态前端和 API 都放在 HTTPS 后面。
@@ -45,6 +45,8 @@ HTML_VAULT_CORS_ORIGINS="https://vault.example.com"
 ```
 
 默认 Docker compose 会在应用容器内使用 `/data/content`、`/data/meta` 和 `/public`。如果不修改 compose 文件，宿主机路径就是仓库目录下的 `./data/...` 与 `./public`。
+
+默认 `docker-compose.yml` 已启用内置登录，账号为 `admin` / `test-password`，并使用开发 session secret，便于本地测试开箱即用。任何公网部署前都必须在 `.env` 中替换这些值。
 
 后端只监听 localhost 或私有网络地址：
 

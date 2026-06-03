@@ -1,6 +1,6 @@
 {
   "name": "html-vault",
-  "version": "0.6.0",
+  "version": "0.6.2",
   "private": true,
   "description": "Development tooling for HTML Vault frontend and static demo checks.",
   "scripts": {

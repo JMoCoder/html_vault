@@ -89,6 +89,13 @@ Open:
 http://localhost:8080
 ```
 
+Default local/test login:
+
+```text
+Username: admin
+Password: test-password
+```
+
 or from another device on the same network:
 
 ```text
@@ -103,10 +110,12 @@ data/meta      YAML sidecar metadata and runtime config
 public         Generated web app output
 ```
 
-Do not expose the default compose stack directly to the public internet. For
-public deployment, add HTTPS and authentication with your preferred reverse
-proxy. A Caddy Basic Auth example is provided in `compose.prod.yml`,
-`.env.secure.example`, and `deploy/caddy-basic-auth.Caddyfile`.
+Do not expose the default compose stack directly to the public internet with
+the default credentials. For public deployment, change
+`HTML_VAULT_AUTH_USERNAME`, `HTML_VAULT_AUTH_PASSWORD`, and
+`HTML_VAULT_SESSION_SECRET`, then put the service behind HTTPS. A Caddy Basic
+Auth example is provided in `compose.prod.yml`, `.env.secure.example`, and
+`deploy/caddy-basic-auth.Caddyfile`.
 
 ## Static Build
 
@@ -201,10 +210,10 @@ checks.
 ## Security Model
 
 Default Docker mode is optimized for local, LAN, and private self-hosted use.
-When `HTML_VAULT_AUTH_USERNAME`, `HTML_VAULT_AUTH_PASSWORD`, and
-`HTML_VAULT_SESSION_SECRET` are set, the browser opens a login screen first and
-uses an HttpOnly session cookie after sign-in. Registration is disabled; the
-test user is configured by the deployer.
+Default Docker starts with the local/test login `admin` / `test-password` and a
+development session secret. The browser opens a login screen first and uses an
+HttpOnly session cookie after sign-in. Registration is disabled; production
+deployments must replace the default username, password, and session secret.
 
 When you expose HTML Vault publicly:
 

@@ -2,6 +2,15 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.6.2] - 2026-06-03
+
+### 变更
+
+- 将内置登录流程提升为 `0.6.2` 稳定版。
+- 默认 Docker 现在启用本地/测试登录账号 `admin` / `test-password` 和开发 session secret，新部署会直接进入登录页。
+- README 与部署文档明确提示：公网访问前必须修改默认用户名、密码和 session secret。
+- 包版本、应用版本、PWA、Demo 与官网缓存版本更新为 `0.6.2`。
+
 ## [0.6.0] - 2026-06-03
 
 ### 新增

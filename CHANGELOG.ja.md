@@ -2,6 +2,15 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.6.2] - 2026-06-03
+
+### Changed
+
+- 内蔵ログインフローを `0.6.2` 安定版として昇格しました。
+- 既定 Docker は `admin` / `test-password` と開発用 session secret によるローカル/テストログインを有効化し、新規デプロイでログイン画面を表示します。
+- README とデプロイドキュメントで、公開アクセス前に既定のユーザー名、パスワード、session secret を変更する必要があることを明記しました。
+- パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを `0.6.2` に更新しました。
+
 ## [0.6.0] - 2026-06-03
 
 ### Added

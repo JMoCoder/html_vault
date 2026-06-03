@@ -25,9 +25,9 @@ authentication boundary.
 Required project-level controls:
 
 - Set `HTML_VAULT_API_TOKEN` for the backend API.
-- Set `HTML_VAULT_AUTH_USERNAME`, `HTML_VAULT_AUTH_PASSWORD`, and
-  `HTML_VAULT_SESSION_SECRET` for built-in browser login, or provide an
-  equivalent authentication boundary in front of the service.
+- Replace the default local/test login `admin` / `test-password` before public
+  access by setting `HTML_VAULT_AUTH_USERNAME`,
+  `HTML_VAULT_AUTH_PASSWORD`, and `HTML_VAULT_SESSION_SECRET`.
 - Set `HTML_VAULT_SESSION_SECURE=true` when served over HTTPS.
 - Set `HTML_VAULT_CORS_ORIGINS` to the exact public frontend origin.
 - Put the static frontend and API behind HTTPS.
@@ -56,6 +56,10 @@ The default Docker compose mounts those paths inside the app container as
 `/data/content`, `/data/meta`, and `/public`; host-side directories remain
 `./data/...` and `./public` relative to the checked-out repository unless you
 change the compose file.
+
+The default `docker-compose.yml` enables built-in login with
+`admin` / `test-password` and a development session secret so local tests work
+immediately. Change those values in `.env` before any public deployment.
 
 Run the backend only on localhost or a private network address:
 

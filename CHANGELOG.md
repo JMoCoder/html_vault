@@ -7,6 +7,17 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.6.2] - 2026-06-03
+
+### Changed
+
+- Promoted the built-in login flow to the stable `0.6.2` release.
+- Default Docker now enables local/test login with `admin` / `test-password`
+  and a development session secret so fresh deployments open the login screen.
+- README and deployment docs now clearly require changing the default username,
+  password, and session secret before public access.
+- Updated package, app, PWA, demo, and homepage cache versions to `0.6.2`.
+
 ## [0.6.0] - 2026-06-03
 
 ### Added
