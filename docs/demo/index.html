@@ -87,39 +87,12 @@
 
       <div class="sidebar-tools">
         <div class="sidebar-tool-group">
-          <button class="profile-toggle" type="button" id="profile-open" aria-label="User menu" title="User menu" data-i18n-attr="aria-label:userMenu,title:userMenu">
+          <div class="profile-status" id="profile-status" aria-label="User profile" title="User profile" data-i18n-attr="aria-label:userProfile,title:userProfile">
             <span class="profile-avatar-mini" id="profile-avatar-mini" aria-hidden="true"></span>
-          </button>
+          </div>
           <button class="settings-toggle" type="button" id="settings-open" aria-label="Settings" title="Settings" data-i18n-attr="aria-label:settings,title:settings">
             <span aria-hidden="true">⚙</span>
           </button>
-        </div>
-        <div class="profile-popover" id="profile-popover" hidden>
-          <div class="profile-card-header">
-            <span class="profile-avatar-large" id="profile-avatar-large" aria-hidden="true"></span>
-            <div>
-              <strong id="profile-display-name"></strong>
-              <span id="profile-user-id"></span>
-            </div>
-          </div>
-          <div class="profile-stats">
-            <span data-i18n="subscriptionStatus"></span>
-            <strong data-i18n="subscriptionSelfHosted"></strong>
-            <span data-i18n="aiCreditsBalance"></span>
-            <strong id="profile-ai-credits">0</strong>
-          </div>
-          <div class="avatar-options" role="group" aria-label="Avatar options" data-i18n-attr="aria-label:avatarOptions">
-            <button type="button" data-avatar-symbol="triangle" aria-label="Triangle" title="Triangle"></button>
-            <button type="button" data-avatar-symbol="circle" aria-label="Circle" title="Circle"></button>
-            <button type="button" data-avatar-symbol="x" aria-label="X" title="X"></button>
-            <button type="button" data-avatar-symbol="square" aria-label="Square" title="Square"></button>
-            <button type="button" data-avatar-symbol="diamond" aria-label="Diamond" title="Diamond"></button>
-          </div>
-          <div class="profile-actions">
-            <button type="button" class="secondary-button" id="avatar-upload-trigger" data-i18n="uploadAvatar"></button>
-            <button type="button" class="logout-button" id="profile-logout-button" data-i18n="logout"></button>
-          </div>
-          <input id="avatar-upload" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
         </div>
         <a class="github-link" href="https://github.com/JMoCoder/html_vault" target="_blank" rel="noreferrer" aria-label="GitHub repository" title="GitHub repository">
           <svg class="github-mark" viewBox="0 0 16 16" aria-hidden="true">
@@ -529,6 +502,18 @@
                   <span id="settings-profile-id"></span>
                 </div>
               </div>
+              <div class="avatar-options" role="group" aria-label="Avatar options" data-i18n-attr="aria-label:avatarOptions">
+                <button type="button" data-avatar-symbol="triangle" aria-label="Triangle" title="Triangle"></button>
+                <button type="button" data-avatar-symbol="circle" aria-label="Circle" title="Circle"></button>
+                <button type="button" data-avatar-symbol="x" aria-label="X" title="X"></button>
+                <button type="button" data-avatar-symbol="square" aria-label="Square" title="Square"></button>
+                <button type="button" data-avatar-symbol="diamond" aria-label="Diamond" title="Diamond"></button>
+              </div>
+              <div class="profile-actions">
+                <button type="button" class="secondary-button" id="avatar-upload-trigger" data-i18n="uploadAvatar"></button>
+                <button type="button" class="logout-button" id="logout-button" data-i18n="logout"></button>
+              </div>
+              <input id="avatar-upload" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
               <div class="profile-stats">
                 <span data-i18n="subscriptionStatus"></span>
                 <strong data-i18n="subscriptionSelfHosted"></strong>
@@ -546,7 +531,6 @@
             <div class="placeholder-panel">
               <strong data-i18n="developmentInProgress"></strong>
               <p data-i18n="accountSecurityPlaceholder"></p>
-              <button type="button" class="logout-button" id="logout-button" data-i18n="logout"></button>
             </div>
           </section>
 

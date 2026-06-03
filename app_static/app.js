@@ -814,7 +814,6 @@ const state = {
   authChecked: false,
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
-  profileOpen: false,
   loginSubmitting: false,
   currentVersion: "0.6.5",
   latestVersion: "",
@@ -855,17 +854,10 @@ const elements = {
   loginPassword: document.querySelector("#login-password"),
   loginFeedback: document.querySelector("#login-feedback"),
   logoutButton: document.querySelector("#logout-button"),
-  profileOpen: document.querySelector("#profile-open"),
-  profilePopover: document.querySelector("#profile-popover"),
-  profileLogoutButton: document.querySelector("#profile-logout-button"),
   profileAvatarMini: document.querySelector("#profile-avatar-mini"),
-  profileAvatarLarge: document.querySelector("#profile-avatar-large"),
   settingsProfileAvatar: document.querySelector("#settings-profile-avatar"),
   settingsProfileName: document.querySelector("#settings-profile-name"),
   settingsProfileId: document.querySelector("#settings-profile-id"),
-  profileDisplayName: document.querySelector("#profile-display-name"),
-  profileUserId: document.querySelector("#profile-user-id"),
-  profileAiCredits: document.querySelector("#profile-ai-credits"),
   avatarUploadTrigger: document.querySelector("#avatar-upload-trigger"),
   avatarUpload: document.querySelector("#avatar-upload"),
   avatarSymbolButtons: document.querySelectorAll("[data-avatar-symbol]"),
@@ -1041,7 +1033,6 @@ function hideLoginScreen() {
 }
 
 async function submitLogout() {
-  setProfilePopover(false);
   if (!state.agentUrl || !state.authEnabled) return;
   try {
     await apiFetch("/api/auth/logout", { method: "POST" });
@@ -2363,17 +2354,6 @@ function closeSortPopover() {
   applySortState();
 }
 
-function toggleProfilePopover() {
-  setProfilePopover(!state.profileOpen);
-}
-
-function setProfilePopover(open) {
-  state.profileOpen = open;
-  elements.profilePopover.hidden = !open;
-  elements.profileOpen.classList.toggle("active", open);
-  if (open) renderProfile();
-}
-
 function setAvatarSymbol(symbol) {
   state.profile.avatarType = "symbol";
   state.profile.avatarSymbol = symbol || "circle";
@@ -2586,11 +2566,7 @@ function saveProfile() {
 function renderProfile() {
   const username = state.currentUser.username || "Guest";
   const dataId = state.currentUser.dataId || "static";
-  if (elements.profileDisplayName) elements.profileDisplayName.textContent = username;
-  if (elements.profileUserId) elements.profileUserId.textContent = `ID: ${dataId}`;
-  if (elements.profileAiCredits) elements.profileAiCredits.textContent = "0";
   renderAvatar(elements.profileAvatarMini, false);
-  renderAvatar(elements.profileAvatarLarge, true);
   renderAvatar(elements.settingsProfileAvatar, true);
   if (elements.settingsProfileName) elements.settingsProfileName.textContent = username;
   if (elements.settingsProfileId) elements.settingsProfileId.textContent = `ID: ${dataId}`;
@@ -3222,25 +3198,15 @@ document.addEventListener("click", (event) => {
   if (elements.sortPopover.contains(event.target) || elements.sortToggle.contains(event.target)) return;
   closeSortPopover();
 });
-document.addEventListener("click", (event) => {
-  if (!state.profileOpen) return;
-  if (elements.profilePopover.contains(event.target) || elements.profileOpen.contains(event.target)) return;
-  setProfilePopover(false);
-});
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !elements.metadataEditor.hidden) {
     closeMetadataEditor();
-  }
-  if (event.key === "Escape" && state.profileOpen) {
-    setProfilePopover(false);
   }
 });
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
 elements.themeModeButtons.forEach((button) => {
   button.addEventListener("click", () => setThemeMode(button.dataset.themeMode));
 });
-elements.profileOpen.addEventListener("click", toggleProfilePopover);
-elements.profileLogoutButton.addEventListener("click", submitLogout);
 elements.avatarUploadTrigger.addEventListener("click", () => elements.avatarUpload.click());
 elements.avatarUpload.addEventListener("change", (event) => uploadAvatar(event.target.files?.[0]));
 elements.avatarSymbolButtons.forEach((button) => {

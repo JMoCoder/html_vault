@@ -390,7 +390,7 @@ textarea {
   align-items: center;
 }
 
-.profile-toggle,
+.profile-status,
 .settings-toggle,
 .github-link {
   min-width: 42px;
@@ -405,9 +405,11 @@ textarea {
   text-decoration: none;
 }
 
-.profile-toggle {
+.profile-status {
   width: 42px;
   padding: 0;
+  cursor: default;
+  background: var(--panel-soft);
 }
 
 .profile-avatar-mini,
@@ -437,25 +439,6 @@ textarea {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.profile-popover {
-  position: absolute;
-  left: 0;
-  bottom: calc(100% + 10px);
-  width: min(292px, calc(var(--sidebar-width) - 24px));
-  z-index: 35;
-  display: grid;
-  gap: 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 14px;
-  background: var(--panel);
-  box-shadow: var(--shadow);
-}
-
-.profile-popover[hidden] {
-  display: none;
 }
 
 .profile-card-header {
@@ -544,7 +527,6 @@ textarea {
   color: var(--accent-dark);
 }
 
-.profile-toggle:hover,
 .settings-toggle:hover {
   border-color: var(--accent);
   color: var(--accent-dark);
