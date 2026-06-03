@@ -2,6 +2,18 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.5.2] - 2026-06-03
+
+### 新增
+
+- 新增 Playwright E2E 覆盖，用于验证静态 Demo 布局与工作台 Logo 导航。
+- 新增可配置的 `HTML_VAULT_PAGES_URL`，真实工作台的品牌区可跳转到公开 GitHub Pages 主页。
+
+### 变更
+
+- Demo 工作台品牌区现在返回静态 Pages 主页，而不是停留在 Demo 工作台内部。
+- 包版本、应用版本、PWA、Demo 与官网缓存版本更新为 `0.5.2`。
+
 ## [0.5.1] - 2026-06-02
 
 ### 新增

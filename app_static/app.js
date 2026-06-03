@@ -762,7 +762,7 @@ const state = {
   query: "",
   agentUrl: getDefaultAgentUrl(),
   agentToken: getDefaultAgentToken(),
-  currentVersion: "0.5.1",
+  currentVersion: "0.5.2",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,

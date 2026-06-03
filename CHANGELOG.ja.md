@@ -2,6 +2,18 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.5.2] - 2026-06-03
+
+### Added
+
+- 静的 Demo のレイアウトとワークスペースロゴのナビゲーションを検証する Playwright E2E カバレッジを追加しました。
+- 実アプリのブランド領域から公開 GitHub Pages ホームページを開けるよう、設定可能な `HTML_VAULT_PAGES_URL` を追加しました。
+
+### Changed
+
+- Demo ワークスペースのブランド領域は、Demo 内に留まるのではなく静的 Pages ホームページへ戻るようになりました。
+- パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを `0.5.2` に更新しました。
+
 ## [0.5.1] - 2026-06-02
 
 ### Added

@@ -7,6 +7,21 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.5.2] - 2026-06-03
+
+### Added
+
+- Added Playwright E2E coverage for the static demo layout and workspace logo
+  navigation.
+- Added configurable `HTML_VAULT_PAGES_URL` support so workspace branding can
+  open the public GitHub Pages homepage from the real app.
+
+### Changed
+
+- Demo workspace branding now returns to the static Pages homepage instead of
+  staying inside the demo workspace.
+- Updated package, app, PWA, demo, and homepage cache versions to `0.5.2`.
+
 ## [0.5.1] - 2026-06-02
 
 ### Added

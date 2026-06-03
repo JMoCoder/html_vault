@@ -765,7 +765,7 @@ const state = {
   query: "",
   agentUrl: getDefaultAgentUrl(),
   agentToken: getDefaultAgentToken(),
-  currentVersion: "0.5.1",
+  currentVersion: "0.5.2",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -2802,7 +2802,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js?v=0.5.1-demo.3").catch((error) => {
+    navigator.serviceWorker.register("sw.js?v=0.5.2-demo").catch((error) => {
       console.warn("Service worker registration failed", error);
     });
   });
