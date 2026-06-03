@@ -87,12 +87,27 @@
 
       <div class="sidebar-tools">
         <div class="sidebar-tool-group">
-          <button class="profile-status" type="button" id="profile-status" aria-label="User profile" title="User profile" data-i18n-attr="aria-label:userProfile,title:userProfile">
+          <button class="profile-status" type="button" id="profile-status" aria-label="User profile" title="User profile" aria-expanded="false" data-i18n-attr="aria-label:userProfile,title:userProfile">
             <span class="profile-avatar-mini" id="profile-avatar-mini" aria-hidden="true"></span>
           </button>
           <button class="settings-toggle" type="button" id="settings-open" aria-label="Settings" title="Settings" data-i18n-attr="aria-label:settings,title:settings">
             <span aria-hidden="true">⚙</span>
           </button>
+        </div>
+        <div class="profile-summary-popover" id="profile-summary-popover" hidden>
+          <div class="profile-card-header">
+            <span class="profile-avatar-large" id="profile-summary-avatar" aria-hidden="true"></span>
+            <div>
+              <strong id="profile-summary-name"></strong>
+              <span id="profile-summary-id"></span>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <span data-i18n="subscriptionStatus"></span>
+            <strong data-i18n="subscriptionSelfHosted"></strong>
+            <span data-i18n="aiCreditsBalance"></span>
+            <strong id="profile-summary-ai-credits">0</strong>
+          </div>
         </div>
         <a class="github-link" href="https://github.com/JMoCoder/html_vault" target="_blank" rel="noreferrer" aria-label="GitHub repository" title="GitHub repository">
           <svg class="github-mark" viewBox="0 0 16 16" aria-hidden="true">

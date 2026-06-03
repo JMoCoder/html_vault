@@ -844,6 +844,7 @@ const state = {
   currentReaderItemId: "",
   editingItemId: "",
   editingTags: new Set(),
+  profileSummaryOpen: false,
 };
 
 const elements = {
@@ -855,7 +856,12 @@ const elements = {
   loginFeedback: document.querySelector("#login-feedback"),
   logoutButton: document.querySelector("#logout-button"),
   profileStatus: document.querySelector("#profile-status"),
+  profileSummaryPopover: document.querySelector("#profile-summary-popover"),
   profileAvatarMini: document.querySelector("#profile-avatar-mini"),
+  profileSummaryAvatar: document.querySelector("#profile-summary-avatar"),
+  profileSummaryName: document.querySelector("#profile-summary-name"),
+  profileSummaryId: document.querySelector("#profile-summary-id"),
+  profileSummaryAiCredits: document.querySelector("#profile-summary-ai-credits"),
   settingsProfileAvatar: document.querySelector("#settings-profile-avatar"),
   settingsProfileName: document.querySelector("#settings-profile-name"),
   settingsProfileId: document.querySelector("#settings-profile-id"),
@@ -2558,7 +2564,11 @@ function renderProfile() {
   const username = state.currentUser.username || "Guest";
   const dataId = state.currentUser.dataId || "static";
   renderAvatar(elements.profileAvatarMini, false);
+  renderAvatar(elements.profileSummaryAvatar, true);
   renderAvatar(elements.settingsProfileAvatar, true);
+  if (elements.profileSummaryName) elements.profileSummaryName.textContent = username;
+  if (elements.profileSummaryId) elements.profileSummaryId.textContent = `ID: ${dataId}`;
+  if (elements.profileSummaryAiCredits) elements.profileSummaryAiCredits.textContent = "0";
   if (elements.settingsProfileName) elements.settingsProfileName.textContent = username;
   if (elements.settingsProfileId) elements.settingsProfileId.textContent = `ID: ${dataId}`;
 }
@@ -2572,8 +2582,16 @@ function renderAvatar(target, large) {
   target.innerHTML = `<img src="assets/html-vault-logo.svg" alt="">`;
 }
 
-function openProfileSettings() {
-  openSettings("profile");
+function toggleProfileSummary() {
+  setProfileSummary(!state.profileSummaryOpen);
+}
+
+function setProfileSummary(open) {
+  state.profileSummaryOpen = open;
+  elements.profileSummaryPopover.hidden = !open;
+  elements.profileStatus.classList.toggle("active", open);
+  elements.profileStatus.setAttribute("aria-expanded", String(open));
+  if (open) renderProfile();
 }
 
 function loadItemState() {
@@ -3151,7 +3169,11 @@ elements.searchInput.addEventListener("input", (event) => {
 elements.brandHome.addEventListener("click", openPagesHome);
 elements.sidebarCollapse.addEventListener("click", toggleSidebar);
 elements.sidebarResize.addEventListener("pointerdown", startSidebarResize);
-elements.profileStatus.addEventListener("click", openProfileSettings);
+elements.profileStatus.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  toggleProfileSummary();
+});
 elements.navSectionToggles.forEach((button) => {
   button.addEventListener("click", () => toggleNavSection(button.dataset.navSectionToggle));
 });
@@ -3180,9 +3202,17 @@ document.addEventListener("click", (event) => {
   if (elements.sortPopover.contains(event.target) || elements.sortToggle.contains(event.target)) return;
   closeSortPopover();
 });
+document.addEventListener("click", (event) => {
+  if (!state.profileSummaryOpen) return;
+  if (elements.profileSummaryPopover.contains(event.target) || elements.profileStatus.contains(event.target)) return;
+  setProfileSummary(false);
+});
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !elements.metadataEditor.hidden) {
     closeMetadataEditor();
+  }
+  if (event.key === "Escape" && state.profileSummaryOpen) {
+    setProfileSummary(false);
   }
 });
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));

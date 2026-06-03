@@ -222,7 +222,7 @@ textarea {
   position: sticky;
   top: 0;
   height: 100vh;
-  overflow: hidden;
+  overflow: visible;
   padding: 22px 18px;
   display: flex;
   flex-direction: column;
@@ -436,6 +436,31 @@ textarea {
   color: var(--accent-dark);
 }
 
+.profile-status.active {
+  border-color: var(--accent);
+  color: var(--accent-dark);
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+}
+
+.profile-summary-popover {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  z-index: 45;
+  width: min(300px, calc(var(--sidebar-width) - 24px));
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.profile-summary-popover[hidden] {
+  display: none;
+}
+
 .profile-avatar-upload {
   width: 54px;
   height: 54px;
@@ -559,7 +584,6 @@ textarea {
   width: var(--sidebar-collapsed-width);
   min-width: var(--sidebar-collapsed-width);
   padding: 18px 10px;
-  overflow: hidden;
 }
 
 .sidebar-collapsed .sidebar-resize {
@@ -617,6 +641,11 @@ textarea {
 
 .sidebar-collapsed .sidebar-tool-group {
   flex-direction: column;
+}
+
+.sidebar-collapsed .profile-summary-popover {
+  left: 0;
+  width: 260px;
 }
 
 .nav-section {
