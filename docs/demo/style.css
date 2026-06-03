@@ -201,7 +201,7 @@ textarea {
   min-height: 100vh;
   display: grid;
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
-  transition: grid-template-columns 160ms ease;
+  transition: grid-template-columns 220ms ease, width 220ms ease;
 }
 
 .sidebar-collapsed .shell {
@@ -211,6 +211,7 @@ textarea {
 .ai-panel-open .shell {
   width: calc(100% - var(--ai-panel-width, 420px));
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  transition: width 180ms ease, grid-template-columns 220ms ease;
 }
 
 .sidebar-collapsed.ai-panel-open .shell {
@@ -227,6 +228,7 @@ textarea {
   flex-direction: column;
   background: var(--panel-soft);
   border-right: 1px solid var(--line);
+  transition: padding 220ms ease;
 }
 
 .sidebar-resize {
@@ -269,6 +271,7 @@ textarea {
   color: var(--text);
   text-align: left;
   cursor: pointer;
+  transition: justify-content 220ms ease;
 }
 
 .brand:hover h1 {
@@ -282,6 +285,7 @@ textarea {
   display: block;
   object-fit: contain;
   box-shadow: 0 0 0 1px rgba(20, 26, 23, 0.08);
+  transition: width 220ms ease, height 220ms ease, border-radius 220ms ease;
 }
 
 [data-theme="dark"] .brand-mark {
@@ -292,6 +296,8 @@ textarea {
   min-width: 0;
   display: grid;
   gap: 3px;
+  transform-origin: left center;
+  transition: opacity 160ms ease, transform 220ms ease, max-width 220ms ease;
 }
 
 .sidebar-collapse-toggle {
@@ -304,6 +310,7 @@ textarea {
   background: transparent;
   color: var(--muted);
   cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease, justify-self 220ms ease;
 }
 
 .sidebar-collapse-toggle:hover {
@@ -362,6 +369,7 @@ textarea {
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: none;
+  transition: opacity 160ms ease, transform 220ms ease, max-height 220ms ease;
 }
 
 .sidebar-main:hover,
@@ -382,6 +390,7 @@ textarea {
   gap: 10px;
   align-items: center;
   position: relative;
+  transition: justify-content 220ms ease;
 }
 
 .sidebar-tool-group {
@@ -408,7 +417,6 @@ textarea {
 .profile-status {
   width: 42px;
   padding: 0;
-  cursor: default;
   background: var(--panel-soft);
 }
 
@@ -421,6 +429,11 @@ textarea {
   background: var(--accent);
   color: var(--accent-contrast);
   font-weight: 850;
+}
+
+.profile-status:hover {
+  border-color: var(--accent);
+  color: var(--accent-dark);
 }
 
 .profile-avatar-mini {
@@ -448,6 +461,10 @@ textarea {
   align-items: center;
 }
 
+.profile-card-header .profile-actions {
+  margin-top: 10px;
+}
+
 .profile-card-header strong,
 .profile-card-header span {
   display: block;
@@ -469,27 +486,15 @@ textarea {
   padding: 10px;
   border-radius: 8px;
   background: var(--panel-soft);
-}
-
-.avatar-options {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-}
-
-.avatar-options button {
-  height: 36px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--panel-soft);
   color: var(--text);
-  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.35;
 }
 
-.avatar-options button.active {
-  border-color: var(--accent);
-  color: var(--accent-dark);
-  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+.profile-stats strong {
+  font-size: 13px;
+  font-weight: 760;
+  text-align: right;
 }
 
 .profile-actions {
@@ -562,15 +567,38 @@ textarea {
   border-radius: 8px;
 }
 
-.sidebar-collapsed .brand-copy,
-.sidebar-collapsed .sidebar-main,
+.sidebar-collapsed .brand-copy {
+  max-width: 0;
+  opacity: 0;
+  transform: translateX(-8px);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sidebar-collapsed .sidebar-main {
+  max-height: 0;
+  opacity: 0;
+  transform: translateX(-8px);
+  pointer-events: none;
+}
+
 .sidebar-collapsed .github-link {
+  width: 42px;
+  min-width: 42px;
+  padding: 0;
+  overflow: hidden;
+  color: var(--muted);
+}
+
+.sidebar-collapsed .github-link span {
   display: none;
 }
 
 .sidebar-collapsed .sidebar-tools {
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 8px;
 }
 
 .sidebar-collapsed .sidebar-tool-group {

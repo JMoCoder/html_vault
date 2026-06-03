@@ -87,9 +87,9 @@
 
       <div class="sidebar-tools">
         <div class="sidebar-tool-group">
-          <div class="profile-status" id="profile-status" aria-label="User profile" title="User profile" data-i18n-attr="aria-label:userProfile,title:userProfile">
+          <button class="profile-status" type="button" id="profile-status" aria-label="User profile" title="User profile" data-i18n-attr="aria-label:userProfile,title:userProfile">
             <span class="profile-avatar-mini" id="profile-avatar-mini" aria-hidden="true"></span>
-          </div>
+          </button>
           <button class="settings-toggle" type="button" id="settings-open" aria-label="Settings" title="Settings" data-i18n-attr="aria-label:settings,title:settings">
             <span aria-hidden="true">⚙</span>
           </button>
@@ -501,17 +501,10 @@
                   <strong id="settings-profile-name"></strong>
                   <span id="settings-profile-id"></span>
                 </div>
-              </div>
-              <div class="avatar-options" role="group" aria-label="Avatar options" data-i18n-attr="aria-label:avatarOptions">
-                <button type="button" data-avatar-symbol="triangle" aria-label="Triangle" title="Triangle"></button>
-                <button type="button" data-avatar-symbol="circle" aria-label="Circle" title="Circle"></button>
-                <button type="button" data-avatar-symbol="x" aria-label="X" title="X"></button>
-                <button type="button" data-avatar-symbol="square" aria-label="Square" title="Square"></button>
-                <button type="button" data-avatar-symbol="diamond" aria-label="Diamond" title="Diamond"></button>
-              </div>
-              <div class="profile-actions">
-                <button type="button" class="secondary-button" id="avatar-upload-trigger" data-i18n="uploadAvatar"></button>
-                <button type="button" class="logout-button" id="logout-button" data-i18n="logout"></button>
+                <div class="profile-actions">
+                  <button type="button" class="secondary-button" id="avatar-upload-trigger" data-i18n="uploadAvatar"></button>
+                  <button type="button" class="logout-button" id="logout-button" data-i18n="logout"></button>
+                </div>
               </div>
               <input id="avatar-upload" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
               <div class="profile-stats">

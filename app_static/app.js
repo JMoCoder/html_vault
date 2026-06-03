@@ -854,13 +854,13 @@ const elements = {
   loginPassword: document.querySelector("#login-password"),
   loginFeedback: document.querySelector("#login-feedback"),
   logoutButton: document.querySelector("#logout-button"),
+  profileStatus: document.querySelector("#profile-status"),
   profileAvatarMini: document.querySelector("#profile-avatar-mini"),
   settingsProfileAvatar: document.querySelector("#settings-profile-avatar"),
   settingsProfileName: document.querySelector("#settings-profile-name"),
   settingsProfileId: document.querySelector("#settings-profile-id"),
   avatarUploadTrigger: document.querySelector("#avatar-upload-trigger"),
   avatarUpload: document.querySelector("#avatar-upload"),
-  avatarSymbolButtons: document.querySelectorAll("[data-avatar-symbol]"),
   brandHome: document.querySelector("#brand-home"),
   sidebarCollapse: document.querySelector("#sidebar-collapse"),
   sidebarResize: document.querySelector("#sidebar-resize"),
@@ -2354,14 +2354,6 @@ function closeSortPopover() {
   applySortState();
 }
 
-function setAvatarSymbol(symbol) {
-  state.profile.avatarType = "symbol";
-  state.profile.avatarSymbol = symbol || "circle";
-  state.profile.avatarImage = "";
-  saveProfile();
-  renderProfile();
-}
-
 function uploadAvatar(file) {
   if (!file) return;
   const reader = new FileReader();
@@ -2549,13 +2541,12 @@ function loadDataConfig() {
 function loadProfile() {
   try {
     return {
-      avatarType: "symbol",
-      avatarSymbol: "circle",
+      avatarType: "brand",
       avatarImage: "",
       ...JSON.parse(localStorage.getItem("html-vault-profile") || "{}"),
     };
   } catch {
-    return { avatarType: "symbol", avatarSymbol: "circle", avatarImage: "" };
+    return { avatarType: "brand", avatarImage: "" };
   }
 }
 
@@ -2570,10 +2561,6 @@ function renderProfile() {
   renderAvatar(elements.settingsProfileAvatar, true);
   if (elements.settingsProfileName) elements.settingsProfileName.textContent = username;
   if (elements.settingsProfileId) elements.settingsProfileId.textContent = `ID: ${dataId}`;
-  elements.avatarSymbolButtons.forEach((button) => {
-    button.classList.toggle("active", state.profile.avatarType === "symbol" && state.profile.avatarSymbol === button.dataset.avatarSymbol);
-    button.innerHTML = avatarSymbolMarkup(button.dataset.avatarSymbol);
-  });
 }
 
 function renderAvatar(target, large) {
@@ -2582,17 +2569,11 @@ function renderAvatar(target, large) {
     target.innerHTML = `<img src="${escapeHtml(state.profile.avatarImage)}" alt="">`;
     return;
   }
-  target.innerHTML = avatarSymbolMarkup(state.profile.avatarSymbol || "circle", large);
+  target.innerHTML = `<img src="assets/html-vault-logo.svg" alt="">`;
 }
 
-function avatarSymbolMarkup(symbol, large = false) {
-  const size = large ? 28 : 17;
-  const stroke = large ? 2.4 : 2.6;
-  if (symbol === "triangle") return `<svg class="button-icon" style="width:${size}px;height:${size}px" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 21 20H3Z" stroke-width="${stroke}"></path></svg>`;
-  if (symbol === "x") return `<svg class="button-icon" style="width:${size}px;height:${size}px" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-width="${stroke}"></path></svg>`;
-  if (symbol === "square") return `<svg class="button-icon" style="width:${size}px;height:${size}px" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h12v12H6Z" stroke-width="${stroke}"></path></svg>`;
-  if (symbol === "diamond") return `<svg class="button-icon" style="width:${size}px;height:${size}px" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 8 8-8 8-8-8Z" stroke-width="${stroke}"></path></svg>`;
-  return `<svg class="button-icon" style="width:${size}px;height:${size}px" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14Z" stroke-width="${stroke}"></path></svg>`;
+function openProfileSettings() {
+  openSettings("profile");
 }
 
 function loadItemState() {
@@ -3170,6 +3151,7 @@ elements.searchInput.addEventListener("input", (event) => {
 elements.brandHome.addEventListener("click", openPagesHome);
 elements.sidebarCollapse.addEventListener("click", toggleSidebar);
 elements.sidebarResize.addEventListener("pointerdown", startSidebarResize);
+elements.profileStatus.addEventListener("click", openProfileSettings);
 elements.navSectionToggles.forEach((button) => {
   button.addEventListener("click", () => toggleNavSection(button.dataset.navSectionToggle));
 });
@@ -3209,9 +3191,6 @@ elements.themeModeButtons.forEach((button) => {
 });
 elements.avatarUploadTrigger.addEventListener("click", () => elements.avatarUpload.click());
 elements.avatarUpload.addEventListener("change", (event) => uploadAvatar(event.target.files?.[0]));
-elements.avatarSymbolButtons.forEach((button) => {
-  button.addEventListener("click", () => setAvatarSymbol(button.dataset.avatarSymbol));
-});
 elements.settingsOpen.addEventListener("click", toggleSettings);
 elements.settingsBack.addEventListener("click", closeSettings);
 elements.settingsTabs.forEach((tab) => {
