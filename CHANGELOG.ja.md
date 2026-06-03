@@ -6,7 +6,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ### Added
 
-- 未追跡の GitHub Pages 用 `site/` 静的ホームページと読み取り専用 Demo を追加しました。
+- GitHub Pages 用 `docs/` 静的ホームページと読み取り専用 Demo を追加しました。
 - 公開ホームページに英語、中国語、日本語の直接切り替えボタンを追加しました。
 - ホームページから Demo へ言語を引き継ぐため、`demo/?lang=zh-CN`、`demo/?lang=en`、`demo/?lang=ja` をサポートしました。
 - 言語別 Demo manifest と、各言語の完全な README/CHANGELOG HTML デモノートを追加しました。

@@ -6,7 +6,7 @@
 
 ### 新增
 
-- 新增未跟踪的 GitHub Pages `site/` 静态官网与只读 Demo。
+- 新增 GitHub Pages `docs/` 静态官网与只读 Demo。
 - 官网新增英文、中文、日语直接切换按钮。
 - 新增从官网语言进入 Demo 的传递逻辑，支持 `demo/?lang=zh-CN`、`demo/?lang=en` 和 `demo/?lang=ja`。
 - 新增按语言区分的 Demo manifest，并为每种语言生成完整 README/CHANGELOG HTML 示例笔记。

@@ -11,7 +11,7 @@ versioning after the initial public release.
 
 ### Added
 
-- Added the untracked GitHub Pages `site/` static homepage and read-only demo.
+- Added the GitHub Pages `docs/` static homepage and read-only demo.
 - Added direct English, Chinese, and Japanese language switching for the public
   homepage.
 - Added language handoff from the homepage to the demo with

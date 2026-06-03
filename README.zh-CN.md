@@ -215,7 +215,8 @@ html_vault/        Python 构建器、manifest 逻辑和后端 API
 examples/          示例内容与元数据
 tests/             构建器和后端 API 测试
 deploy/            可选部署示例
-docs/              本地规划文档，Git 忽略
+docs/              GitHub Pages 官网与只读 Demo
+documents/         本地规划文档，Git 忽略
 ```
 
 ## 开发

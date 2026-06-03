@@ -250,7 +250,8 @@ html_vault/        Python builder, manifest logic, and backend API
 examples/          Example content and metadata
 tests/             Pytest coverage for builder and backend APIs
 deploy/            Optional deployment examples
-docs/              Local planning documents, ignored by Git
+docs/              GitHub Pages homepage and read-only demo
+documents/         Local planning documents, ignored by Git
 ```
 
 ## Development

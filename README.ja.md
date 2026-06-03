@@ -215,7 +215,8 @@ html_vault/        Python ビルダー、manifest ロジック、バックエン
 examples/          サンプルコンテンツとメタデータ
 tests/             ビルダーとバックエンド API のテスト
 deploy/            任意のデプロイ例
-docs/              ローカル計画ドキュメント、Git では無視
+docs/              GitHub Pages ホームページと読み取り専用 Demo
+documents/         ローカル計画ドキュメント、Git では無視
 ```
 
 ## Development
