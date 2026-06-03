@@ -39,5 +39,5 @@ test("demo workspace logo opens the Pages homepage", async ({ page }) => {
 
   await page.locator("#brand-home").click();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.locator(".hero h1")).toBeVisible();
+  await expect(page.locator(".cover h1")).toBeVisible();
 });

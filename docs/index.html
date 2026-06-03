@@ -3,241 +3,312 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="HTML Vault is a self-hosted HTML knowledge workspace for importing, reading, filtering, archiving, and preparing AI-assisted notebook workflows.">
-  <title>HTML Vault - Self-hosted HTML knowledge workspace</title>
+  <meta name="description" content="HTML Vault — turn scattered HTML files into a reader and a knowledge base, grow a personal learning flywheel with AI, and publish a free static site to build your personal brand.">
+  <title>HTML Vault — Your HTML, your vault, your brand.</title>
   <link rel="icon" href="assets/html-vault-logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Noto+Serif+SC:wght@600;900&family=Noto+Serif+JP:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-  <div class="page-shell">
-    <header class="top-header">
+  <!-- ============ MASTHEAD ============ -->
+  <header class="masthead">
+    <div class="masthead-inner">
       <a class="brand" href="./" aria-label="HTML Vault home">
         <img src="assets/html-vault-logo.svg" alt="">
-        <span>HTMLvault</span>
+        <span class="brand-name">HTML<em>Vault</em></span>
       </a>
       <nav class="main-nav" aria-label="Site navigation">
-        <a href="#workspace" data-i18n="navWorkspace">Workspace</a>
-        <a href="#features" data-i18n="navFeatures">Features</a>
+        <a href="#issue" data-i18n="navIssue">The Idea</a>
+        <a href="#ch01" data-i18n="navReader">Reader + Vault</a>
+        <a href="#ch02" data-i18n="navFlywheel">AI Flywheel</a>
+        <a href="#ch03" data-i18n="navPublish">Publish</a>
         <a href="#deploy" data-i18n="navDeploy">Deploy</a>
-        <a href="#roadmap" data-i18n="navRoadmap">Roadmap</a>
       </nav>
-      <div class="header-actions">
-        <div class="language-switch" aria-label="Language switch">
+      <div class="masthead-actions">
+        <div class="language-switch" role="group" aria-label="Language switch">
           <button type="button" data-lang="en">EN</button>
-          <button type="button" data-lang="zh">中文</button>
-          <button type="button" data-lang="ja">日本語</button>
+          <button type="button" data-lang="zh">中</button>
+          <button type="button" data-lang="ja">日</button>
         </div>
-        <a class="ghost-link" href="demo/" data-demo-link data-i18n="liveDemo">Live demo</a>
-        <a class="primary-link" href="https://github.com/JMoCoder/html_vault">GitHub</a>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" title="Toggle theme"></button>
+        <a class="ink-link" href="demo/" data-demo-link data-i18n="liveDemo">Live demo</a>
+        <a class="ink-link solid" href="https://github.com/JMoCoder/html_vault">GitHub</a>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <main>
-      <section class="hero" id="workspace">
-        <div class="hero-copy">
-          <p class="eyebrow" data-i18n="heroEyebrow">Self-hosted HTML notebook</p>
-          <h1 data-i18n="heroTitle">Build a private knowledge vault from real HTML files.</h1>
-          <p data-i18n="heroText">
-            HTML Vault keeps notes portable, searchable, and ready for future AI
-            workflows. Import existing HTML, browse by collection and tag, archive
-            finished material, and deploy the same app locally or on your server.
-          </p>
-          <div class="hero-actions">
-            <a class="primary-link large" href="demo/" data-demo-link data-i18n="openDemo">Open static demo</a>
-            <a class="secondary-link large" href="#deploy" data-i18n="deployDocker">Deploy with Docker</a>
-          </div>
-          <div class="status-row" aria-label="Current project status">
-            <span data-i18n-html="statusVersion"><strong>0.6.6</strong> stable profile UI update</span>
-            <span data-i18n-html="statusDocker"><strong>Docker</strong> single container</span>
-            <span data-i18n-html="statusPwa"><strong>PWA</strong> browser app</span>
-          </div>
+  <main>
+    <!-- ============ COVER / HERO ============ -->
+    <section class="cover" id="issue">
+      <div class="cover-meta">
+        <span data-i18n="coverIssue">Issue 0.6.6</span>
+        <span class="dot">·</span>
+        <span data-i18n="coverEdition">Self-hosted Edition</span>
+        <span class="dot">·</span>
+        <span data-i18n="coverMit">MIT / Open Source</span>
+      </div>
+      <p class="cover-kicker" data-i18n="coverKicker">A knowledge tool that keeps your files yours</p>
+      <h1 class="cover-title">
+        <span class="line" data-i18n="coverLine1">Scattered HTML files,</span>
+        <span class="line accent" data-i18n="coverLine2">finally a home.</span>
+      </h1>
+      <p class="cover-lede" data-i18n="coverLede">
+        HTML Vault gathers the HTML files spread across your disk into one place — a reader
+        and a knowledge base at the same time. AI keeps extending, iterating and settling
+        what you learn, and a free static host turns any note into a shareable page that
+        builds your personal brand.
+      </p>
+      <div class="cover-actions">
+        <a class="btn-primary" href="demo/" data-demo-link data-i18n="openDemo">Open the live demo</a>
+        <a class="btn-ghost" href="#ch01" data-i18n="readStory">Read the story ↓</a>
+      </div>
+
+      <ul class="cover-index" aria-label="Contents">
+        <li>
+          <span class="idx-no">01</span>
+          <span class="idx-name" data-i18n="idx01">Reader &amp; Vault</span>
+          <span class="idx-desc" data-i18n="idx01d">One library for every HTML file</span>
+        </li>
+        <li>
+          <span class="idx-no">02</span>
+          <span class="idx-name" data-i18n="idx02">The Learning Flywheel</span>
+          <span class="idx-desc" data-i18n="idx02d">AI extends, iterates, settles</span>
+        </li>
+        <li>
+          <span class="idx-no">03</span>
+          <span class="idx-name" data-i18n="idx03">Publish &amp; Brand</span>
+          <span class="idx-desc" data-i18n="idx03d">Free static hosting, instant share</span>
+        </li>
+      </ul>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============ CHAPTER 01 ============ -->
+    <section class="chapter" id="ch01">
+      <div class="chapter-head">
+        <span class="chapter-no">01</span>
+        <div>
+          <p class="chapter-eyebrow" data-i18n="ch01Eyebrow">Reader + Knowledge base</p>
+          <h2 class="chapter-title" data-i18n="ch01Title">Every HTML file you saved, in one place you can actually read.</h2>
         </div>
-
-        <div class="product-frame" aria-label="HTML Vault product preview">
-          <div class="app-window">
-            <aside class="preview-sidebar">
-              <div class="preview-logo">
-                <img src="assets/html-vault-logo.svg" alt="">
-                <span>HTMLvault</span>
-              </div>
-              <div class="preview-section">
-                <div class="preview-section-title" data-i18n="previewLibrary">Library</div>
-                <div class="preview-nav active"><span data-i18n="previewAll">All notes</span><b>3</b></div>
-                <div class="preview-nav"><span data-i18n="previewProject">Project</span><b>1</b></div>
-                <div class="preview-nav"><span data-i18n="previewRelease">Release</span><b>1</b></div>
-                <div class="preview-nav"><span data-i18n="previewDeploy">Deploy</span><b>1</b></div>
-              </div>
-              <div class="preview-section">
-                <div class="preview-section-title" data-i18n="previewTags">Tags</div>
-                <div class="preview-chip">README</div>
-                <div class="preview-chip">Docker</div>
-                <div class="preview-chip">CHANGELOG</div>
-              </div>
-            </aside>
-            <section class="preview-main">
-              <div class="preview-toolbar">
-                <div class="toolbar-buttons">
-                  <span class="tool import">+</span>
-                  <span class="tool"></span>
-                  <span class="tool"></span>
-                  <span class="tool favorite"></span>
-                </div>
-                <div class="preview-search"></div>
-                <span class="tool ai"></span>
-              </div>
-              <div class="metric-grid">
-                <article>
-                  <span data-i18n="metricNotes">Total notes</span>
-                  <strong>3</strong>
-                </article>
-                <article>
-                  <span data-i18n="metricCollections">Collections</span>
-                  <strong>3</strong>
-                </article>
-                <article>
-                  <span data-i18n="metricTags">Tags</span>
-                  <strong>9</strong>
-                </article>
-              </div>
-              <div class="card-grid">
-                <article class="note-card">
-                  <div class="card-top">
-                    <span data-i18n="previewCardOneMeta">Project / README</span>
-                    <div class="card-icons"><i></i><i></i><i></i></div>
-                  </div>
-                  <h3 data-i18n="previewCardOneTitle">HTML Vault Project Overview</h3>
-                  <p data-i18n="previewCardOneText">Trilingual overview of portable HTML notes, metadata, Docker, PWA, and AI-ready architecture.</p>
-                  <div class="card-bottom">
-                    <span>2026-06-02</span>
-                    <div><b>README</b><b>Docs</b></div>
-                  </div>
-                </article>
-                <article class="note-card">
-                  <div class="card-top">
-                    <span data-i18n="previewCardTwoMeta">Release / CHANGELOG</span>
-                    <div class="card-icons"><i></i><i></i><i></i></div>
-                  </div>
-                  <h3 data-i18n="previewCardTwoTitle">HTML Vault 0.6.6 Release Board</h3>
-                  <p data-i18n="previewCardTwoText">Release notes covering stable scope, deployment changes, API progress, and roadmap.</p>
-                  <div class="card-bottom">
-                    <span>2026-06-02</span>
-                    <div><b>Release</b><b>Roadmap</b></div>
-                  </div>
-                </article>
-              </div>
-            </section>
-          </div>
-        </div>
-      </section>
-
-      <section class="section feature-band" id="features">
-        <div class="section-heading">
-          <p class="eyebrow" data-i18n="featuresEyebrow">Product modules</p>
-          <h2 data-i18n="featuresTitle">A notebook interface designed like an operations workspace.</h2>
-          <p data-i18n="featuresText">
-            The design follows a compact admin-workbench pattern: persistent
-            navigation, dense cards, direct actions, explicit metadata, and
-            status panels that remain useful on a laptop screen.
+      </div>
+      <div class="chapter-body">
+        <div class="chapter-lead">
+          <p class="dropcap" data-i18n="ch01Lead">
+            HTML files pile up everywhere — exported articles, AI answers saved to disk,
+            old reports, single-page apps. HTML Vault imports them into one library, reads
+            them in a clean card workspace, and organizes them with collections, tags,
+            favorites and search. It is a reader and a knowledge base in the same window.
           </p>
         </div>
-        <div class="module-grid">
-          <article>
-            <span class="module-icon">01</span>
-            <h3 data-i18n="moduleImportTitle">Import and storage</h3>
-            <p data-i18n="moduleImportText">Upload HTML into generated or imported libraries while keeping raw content outside Git.</p>
-          </article>
-          <article>
-            <span class="module-icon">02</span>
-            <h3 data-i18n="moduleBrowseTitle">Browse and filter</h3>
-            <p data-i18n="moduleBrowseText">Use collections, tags, favorites, archive state, search, sorting, and tag AND/OR filters.</p>
-          </article>
-          <article>
-            <span class="module-icon">03</span>
-            <h3 data-i18n="moduleReaderTitle">Reader workflow</h3>
-            <p data-i18n="moduleReaderText">Open full HTML notes, copy links, share entries, edit metadata, favorite, archive, or restore.</p>
-          </article>
-          <article>
-            <span class="module-icon">04</span>
-            <h3 data-i18n="moduleAiTitle">AI-ready sidebar</h3>
-            <p data-i18n="moduleAiText">Prepare contextual Q&amp;A and note generation with manually selected context files.</p>
-          </article>
-          <article>
-            <span class="module-icon">05</span>
-            <h3 data-i18n="moduleSettingsTitle">Settings and data</h3>
-            <p data-i18n="moduleSettingsText">Scaffold provider settings, data backup, WebDAV, export, theme, language, and account modules.</p>
-          </article>
-          <article>
-            <span class="module-icon">06</span>
-            <h3 data-i18n="moduleDeployTitle">Deployable app</h3>
-            <p data-i18n="moduleDeployText">Run as a PWA with a static frontend and optional API backend in one Docker service.</p>
-          </article>
+        <div class="chapter-aside">
+          <p data-i18n="ch01Aside1"><strong>Files stay portable.</strong> Notes remain real HTML on disk — inspect, copy, back up, or serve them with ordinary web tools. Nothing locked in a database.</p>
+          <p data-i18n="ch01Aside2"><strong>Organize without friction.</strong> Collections, multi-select tags with AND/OR, favorites, archive, sort and full-text search keep a growing library navigable.</p>
+          <p data-i18n="ch01Aside3"><strong>Read, don't dig.</strong> Open any note full-screen, view the original file, copy or share its link — the reading view is the workspace.</p>
         </div>
-      </section>
+      </div>
+      <figure class="spread">
+        <div class="spread-window" aria-label="HTML Vault workspace preview">
+          <aside class="sw-side">
+            <div class="sw-logo"><img src="assets/html-vault-logo.svg" alt=""><span>HTMLvault</span></div>
+            <div class="sw-group">
+              <div class="sw-grouptitle" data-i18n="swLibrary">Library</div>
+              <div class="sw-nav active"><span data-i18n="swAll">All notes</span><b>128</b></div>
+              <div class="sw-nav"><span data-i18n="swReading">Reading</span><b>42</b></div>
+              <div class="sw-nav"><span data-i18n="swGenerated">AI generated</span><b>57</b></div>
+              <div class="sw-nav"><span data-i18n="swImported">Imported</span><b>29</b></div>
+            </div>
+            <div class="sw-group">
+              <div class="sw-grouptitle" data-i18n="swTags">Tags</div>
+              <div class="sw-chips"><span>MCP</span><span>Docker</span><span>Design</span><span>LLM</span><span>Notes</span></div>
+            </div>
+          </aside>
+          <section class="sw-main">
+            <div class="sw-bar"><span class="sw-search" data-i18n="swSearch">Search your vault…</span><span class="sw-ai" data-i18n="swAiBtn">AI</span></div>
+            <div class="sw-cards">
+              <article><span class="sw-tag" data-i18n="swCard1Meta">AI / MCP</span><h4 data-i18n="swCard1">MCP Server Security Model</h4><p data-i18n="swCard1d">Trust boundaries, permissions and tool-call risks.</p></article>
+              <article><span class="sw-tag" data-i18n="swCard2Meta">Reading / Design</span><h4 data-i18n="swCard2">Notes on Editorial Layout</h4><p data-i18n="swCard2d">Grids, rhythm and hierarchy for dense reading.</p></article>
+              <article><span class="sw-tag" data-i18n="swCard3Meta">Deploy / Docker</span><h4 data-i18n="swCard3">Single-container Deployment</h4><p data-i18n="swCard3d">One service, persistent data, simple backup.</p></article>
+              <article><span class="sw-tag" data-i18n="swCard4Meta">LLM / Notes</span><h4 data-i18n="swCard4">Prompting Patterns I Reuse</h4><p data-i18n="swCard4d">A living page, extended after every session.</p></article>
+            </div>
+          </section>
+        </div>
+        <figcaption data-i18n="spreadCap">The card workspace — reader and library in a single view.</figcaption>
+      </figure>
+    </section>
 
-      <section class="section deploy-section" id="deploy">
-        <div class="deploy-copy">
-          <p class="eyebrow" data-i18n="deployEyebrow">Reusable deployment</p>
-          <h2 data-i18n="deployTitle">One project, two modes: static preview and Docker notebook.</h2>
-          <p data-i18n="deployText">
-            GitHub Pages can host the public intro and read-only demo. Docker
-            runs the real notebook with the backend API, upload handling, metadata
-            persistence, archive delete protection, and rebuild flow.
+    <div class="rule"></div>
+
+    <!-- ============ CHAPTER 02 ============ -->
+    <section class="chapter dark-chapter" id="ch02">
+      <div class="chapter-head">
+        <span class="chapter-no">02</span>
+        <div>
+          <p class="chapter-eyebrow" data-i18n="ch02Eyebrow">The learning flywheel</p>
+          <h2 class="chapter-title" data-i18n="ch02Title">Knowledge that compounds: AI extends it, iterates it, settles it.</h2>
+        </div>
+      </div>
+      <div class="chapter-body">
+        <div class="chapter-lead">
+          <p class="dropcap" data-i18n="ch02Lead">
+            A note isn't a dead file. Ask AI over your own library and the answer becomes a
+            new HTML note. Revisit it, refine it, and the page deepens. Each turn feeds the
+            next — extend, iterate, settle — until scattered reading becomes a personal body
+            of knowledge that quietly compounds over time.
           </p>
         </div>
-        <div class="deploy-panel">
-          <div class="panel-tabs">
-            <span class="active">Docker</span>
-            <span>Pages</span>
-            <span>PWA</span>
-          </div>
-          <pre><code>git clone https://github.com/JMoCoder/html_vault.git
+        <div class="chapter-aside">
+          <p data-i18n="ch02Aside1"><strong>Grounded in your vault.</strong> The AI layer works over notes you choose as context — answers stay tied to what you've actually collected.</p>
+          <p data-i18n="ch02Aside2"><strong>Output is a note, not a chat bubble.</strong> Generated HTML lands back in the library, ready to read, tag, and grow.</p>
+          <p data-i18n="ch02Aside3"><strong>Credentials stay server-side.</strong> Model keys live in the backend, never baked into the static frontend.</p>
+        </div>
+      </div>
+
+      <!-- Flywheel diagram: a readable four-step cycle -->
+      <figure class="flywheel" aria-label="Learning flywheel: capture, extend, iterate, settle">
+        <div class="fw-track">
+          <article class="fw-step">
+            <span class="fw-step-no">01</span>
+            <h4 class="fw-step-title" data-i18n="fwCapture">Capture</h4>
+            <p class="fw-step-desc" data-i18n="fwCaptureDesc">Save an HTML note — an article, an idea, an AI answer — into your vault.</p>
+          </article>
+          <span class="fw-link" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <article class="fw-step">
+            <span class="fw-step-no">02</span>
+            <h4 class="fw-step-title" data-i18n="fwExtend">Extend</h4>
+            <p class="fw-step-desc" data-i18n="fwExtendDesc">Ask AI across your library; the reply comes back as a new note.</p>
+          </article>
+          <span class="fw-link" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <article class="fw-step">
+            <span class="fw-step-no">03</span>
+            <h4 class="fw-step-title" data-i18n="fwIterate">Iterate</h4>
+            <p class="fw-step-desc" data-i18n="fwIterateDesc">Revisit and refine it; the page deepens with every pass.</p>
+          </article>
+          <span class="fw-link" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <article class="fw-step">
+            <span class="fw-step-no">04</span>
+            <h4 class="fw-step-title" data-i18n="fwSettle">Settle</h4>
+            <p class="fw-step-desc" data-i18n="fwSettleDesc">It settles into your library — tagged, searchable, and reusable.</p>
+          </article>
+        </div>
+        <div class="fw-return">
+          <svg class="fw-return-svg" viewBox="0 0 1000 60" fill="none" stroke="currentColor" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <marker id="fw-rev" markerWidth="10" markerHeight="10" refX="6" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+                <path d="M10,1 L2,5 L10,9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </marker>
+            </defs>
+            <path d="M986,8 C986,46 740,52 500,52 C260,52 14,46 14,8" stroke-width="1.4" stroke-dasharray="2 7" marker-end="url(#fw-rev)" vector-effect="non-scaling-stroke"/>
+          </svg>
+          <span class="fw-return-label" data-i18n="fwLoop">↻ Repeat — scattered reading compounds into your own knowledge</span>
+        </div>
+      </figure>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============ CHAPTER 03 ============ -->
+    <section class="chapter" id="ch03">
+      <div class="chapter-head">
+        <span class="chapter-no">03</span>
+        <div>
+          <p class="chapter-eyebrow" data-i18n="ch03Eyebrow">Publish &amp; personal brand</p>
+          <h2 class="chapter-title" data-i18n="ch03Title">A free static host for your HTML — share in a click, build a name.</h2>
+        </div>
+      </div>
+      <div class="chapter-body">
+        <div class="chapter-lead">
+          <p class="dropcap" data-i18n="ch03Lead">
+            Any note can become a public page. HTML Vault builds a static site from your
+            content — host it for free on Pages-style infrastructure, send a link, and your
+            work is online. No build pipeline, no server bill. Over time your published
+            notes become a body of work — the quiet foundation of a personal brand.
+          </p>
+        </div>
+        <div class="chapter-aside">
+          <p data-i18n="ch03Aside1"><strong>Static by design.</strong> Build a read-only site from existing content and metadata, then serve it anywhere static files live.</p>
+          <p data-i18n="ch03Aside2"><strong>Free to host, instant to share.</strong> No subscription to publish — copy a link and your page is live for anyone.</p>
+          <p data-i18n="ch03Aside3"><strong>Installable as a PWA.</strong> A manifest and service worker make the workspace feel like an app on any device.</p>
+        </div>
+      </div>
+
+      <div class="publish-cards">
+        <article class="pcard"><span class="pc-no">Aa</span><h4 data-i18n="pcReadTitle">Reads like a page</h4><p data-i18n="pcReadText">Polished, fast, mobile-ready HTML — not a database export.</p></article>
+        <article class="pcard"><span class="pc-no">↗</span><h4 data-i18n="pcShareTitle">Share in one link</h4><p data-i18n="pcShareText">Copy and send. The recipient just opens a URL.</p></article>
+        <article class="pcard"><span class="pc-no">∅</span><h4 data-i18n="pcCostTitle">Free hosting</h4><p data-i18n="pcCostText">Static output runs on free Pages-style hosts.</p></article>
+        <article class="pcard"><span class="pc-no">★</span><h4 data-i18n="pcBrandTitle">Build a brand</h4><p data-i18n="pcBrandText">A growing set of published notes becomes your portfolio.</p></article>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============ FEATURE SPREAD ============ -->
+    <section class="features" id="features">
+      <div class="features-head">
+        <p class="chapter-eyebrow" data-i18n="featEyebrow">In the box</p>
+        <h2 class="chapter-title" data-i18n="featTitle">Built like an operations workbench, not a toy.</h2>
+      </div>
+      <div class="feat-grid">
+        <article><span class="feat-no">01</span><h3 data-i18n="feat1">Import &amp; storage</h3><p data-i18n="feat1d">Upload HTML into generated or imported libraries, raw content kept outside Git.</p></article>
+        <article><span class="feat-no">02</span><h3 data-i18n="feat2">Browse &amp; filter</h3><p data-i18n="feat2d">Collections, tags, favorites, archive, search, sort, and AND/OR tag filters.</p></article>
+        <article><span class="feat-no">03</span><h3 data-i18n="feat3">Reader workflow</h3><p data-i18n="feat3d">Full HTML reading, original-file access, copy/share, metadata editing, archive &amp; restore.</p></article>
+        <article><span class="feat-no">04</span><h3 data-i18n="feat4">AI-ready sidebar</h3><p data-i18n="feat4d">Contextual Q&amp;A and note generation grounded in manually selected files.</p></article>
+        <article><span class="feat-no">05</span><h3 data-i18n="feat5">Self-hosted &amp; multi-user</h3><p data-i18n="feat5d">Built-in login, HttpOnly sessions, per-user notebooks, documented security boundary.</p></article>
+        <article><span class="feat-no">06</span><h3 data-i18n="feat6">Deploy anywhere</h3><p data-i18n="feat6d">One Docker service, a static build mode, and a PWA — pick what fits.</p></article>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- ============ DEPLOY ============ -->
+    <section class="deploy" id="deploy">
+      <div class="deploy-copy">
+        <p class="chapter-eyebrow" data-i18n="deployEyebrow">Two minutes to running</p>
+        <h2 class="chapter-title" data-i18n="deployTitle">Your data, your machine.</h2>
+        <p class="deploy-text" data-i18n="deployText">Run the full notebook in a single Docker container on a laptop, NAS, LAN box or private VPS. Or build a static site for free public hosting. The files never leave your control.</p>
+        <div class="deploy-actions">
+          <a class="btn-primary" href="demo/" data-demo-link data-i18n="openDemo2">Open the live demo</a>
+          <a class="btn-ghost" href="https://github.com/JMoCoder/html_vault" data-i18n="viewSource">View source</a>
+        </div>
+      </div>
+      <div class="deploy-terminal">
+        <div class="term-bar"><span></span><span></span><span></span></div>
+        <pre><code>git clone https://github.com/JMoCoder/html_vault.git
 cd html_vault
 docker compose up -d --build
 
-# <span data-i18n="codeOpen">open</span> http://localhost:8080</code></pre>
-        </div>
-      </section>
+<span class="term-comment"># <span data-i18n="termOpen">open</span> http://localhost:8080</span></code></pre>
+      </div>
+    </section>
+  </main>
 
-      <section class="section roadmap-section" id="roadmap">
-        <div class="section-heading compact">
-          <p class="eyebrow" data-i18n="roadmapEyebrow">Delivery plan</p>
-          <h2 data-i18n="roadmapTitle">Current capability and next build targets.</h2>
-        </div>
-        <div class="roadmap-table" role="table" aria-label="HTML Vault roadmap">
-          <div class="roadmap-row header" role="row">
-            <span data-i18n="roadmapStatus">Status</span>
-            <span data-i18n="roadmapArea">Area</span>
-            <span data-i18n="roadmapFocus">Focus</span>
-          </div>
-          <div class="roadmap-row" role="row">
-            <span class="badge done" data-i18n="roadmapBuilt">Built</span>
-            <span data-i18n="roadmapCore">Core notebook</span>
-            <span data-i18n="roadmapCoreText">Import, browse, search, tag filters, favorites, archive, metadata editing.</span>
-          </div>
-          <div class="roadmap-row" role="row">
-            <span class="badge active" data-i18n="roadmapNext">Next</span>
-            <span data-i18n="roadmapBackend">Backend depth</span>
-            <span data-i18n="roadmapBackendText">Backup, restore, WebDAV, validation, richer persistence, production hardening.</span>
-          </div>
-          <div class="roadmap-row" role="row">
-            <span class="badge planned" data-i18n="roadmapPlanned">Planned</span>
-            <span data-i18n="roadmapAi">AI workflows</span>
-            <span data-i18n="roadmapAiText">Provider configuration, contextual Q&amp;A, AI tagging, generated HTML notes.</span>
-          </div>
-          <div class="roadmap-row" role="row">
-            <span class="badge planned" data-i18n="roadmapPlanned">Planned</span>
-            <span data-i18n="roadmapCloud">Cloud services</span>
-            <span data-i18n="roadmapCloudText">User accounts, sync, hosted AI services, commercial deployment options.</span>
-          </div>
-        </div>
-      </section>
-    </main>
+  <button type="button" class="scroll-next" id="scroll-next" aria-label="Next section" title="Next section">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 9l6 6 6-6"/>
+    </svg>
+  </button>
 
-    <footer class="site-footer">
-      <span>HTML Vault 0.6.6</span>
-      <span data-i18n="footerText">MIT licensed. Your HTML files remain yours.</span>
-    </footer>
-  </div>
+  <!-- ============ COLOPHON / FOOTER ============ -->
+  <footer class="colophon">
+    <div class="colophon-inner">
+      <div class="colo-brand">
+        <span class="brand-name">HTML<em>Vault</em></span>
+        <p data-i18n="footerTag">Your HTML, your vault, your brand.</p>
+      </div>
+      <div class="colo-meta">
+        <span data-i18n="footerVersion">Issue 0.6.6 · MIT licensed</span>
+        <span data-i18n="footerRights">Your HTML files remain yours.</span>
+      </div>
+      <div class="colo-links">
+        <a href="demo/" data-demo-link data-i18n="liveDemo">Live demo</a>
+        <a href="https://github.com/JMoCoder/html_vault">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
   <script src="assets/site.js"></script>
 </body>
 </html>
