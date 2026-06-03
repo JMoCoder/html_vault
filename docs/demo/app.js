@@ -748,6 +748,12 @@ function getDefaultAgentUrl() {
   return "";
 }
 
+function getPagesHomeUrl() {
+  if (window.HTML_VAULT_PAGES_URL) return window.HTML_VAULT_PAGES_URL;
+  if (window.HTML_VAULT_STATIC_DEMO) return "../";
+  return "https://jmocoder.github.io/html_vault/";
+}
+
 function getDefaultAgentToken() {
   return window.HTML_VAULT_AGENT_TOKEN || localStorage.getItem("html-vault-agent-token") || "";
 }
@@ -1333,6 +1339,10 @@ function goHome() {
   clearMultiFilters(false);
   returnToWorkspace();
   renderApp();
+}
+
+function openPagesHome() {
+  window.location.href = getPagesHomeUrl();
 }
 
 function selectLibraryFilter(value) {
@@ -2858,7 +2868,7 @@ elements.searchInput.addEventListener("input", (event) => {
   renderGrid();
   renderAiContext();
 });
-elements.brandHome.addEventListener("click", goHome);
+elements.brandHome.addEventListener("click", openPagesHome);
 elements.sidebarCollapse.addEventListener("click", toggleSidebar);
 elements.sidebarResize.addEventListener("pointerdown", startSidebarResize);
 elements.navSectionToggles.forEach((button) => {

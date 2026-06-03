@@ -18,3 +18,11 @@ test("demo Home button stays outside the AI panel", async ({ page }) => {
   const homeRight = homeBox.x + homeBox.width;
   expect(homeRight).toBeLessThanOrEqual(panelBox.x - 12);
 });
+
+test("demo workspace logo opens the Pages homepage", async ({ page }) => {
+  await page.goto("/demo/?lang=zh-CN");
+
+  await page.locator("#brand-home").click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator(".hero h1")).toBeVisible();
+});
