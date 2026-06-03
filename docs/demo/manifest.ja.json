@@ -35,7 +35,7 @@
     {
       "id": "demo-notes/changelog.ja.html",
       "title": "HTML Vault 変更履歴",
-      "summary": "日本語 CHANGELOG 全文を HTML 化し、0.5.2 安定版と過去の開発マイルストーンをリリーストラック形式で表示します。",
+      "summary": "日本語 CHANGELOG 全文を HTML 化し、0.5.3 安定版と過去の開発マイルストーンをリリーストラック形式で表示します。",
       "path": "content/demo-notes/changelog.ja.html",
       "source_type": "html",
       "source_url": null,

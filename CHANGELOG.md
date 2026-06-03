@@ -7,6 +7,15 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.5.3] - 2026-06-03
+
+### Changed
+
+- Changed the default workspace and static demo language fallback to English
+  for first-time deployments, while preserving saved user preferences and
+  homepage-to-demo language handoff.
+- Updated package, app, PWA, demo, and homepage cache versions to `0.5.3`.
+
 ## [0.5.2] - 2026-06-03
 
 ### Added

@@ -765,7 +765,7 @@ const state = {
   query: "",
   agentUrl: getDefaultAgentUrl(),
   agentToken: getDefaultAgentToken(),
-  currentVersion: "0.5.2",
+  currentVersion: "0.5.3",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -1854,7 +1854,7 @@ function getInitialLanguage() {
   }
   const saved = localStorage.getItem("html-vault-language");
   if (saved && i18n[saved]) return saved;
-  return "zh-CN";
+  return "en";
 }
 
 function normalizeLanguage(language) {
@@ -2802,7 +2802,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js?v=0.5.2-demo").catch((error) => {
+    navigator.serviceWorker.register("sw.js?v=0.5.3-demo").catch((error) => {
       console.warn("Service worker registration failed", error);
     });
   });

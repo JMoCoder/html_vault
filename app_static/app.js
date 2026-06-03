@@ -762,7 +762,7 @@ const state = {
   query: "",
   agentUrl: getDefaultAgentUrl(),
   agentToken: getDefaultAgentToken(),
-  currentVersion: "0.5.2",
+  currentVersion: "0.5.3",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -1840,7 +1840,7 @@ function renderAfterItemStateChange(item) {
 function getInitialLanguage() {
   const saved = localStorage.getItem("html-vault-language");
   if (saved && i18n[saved]) return saved;
-  return "zh-CN";
+  return "en";
 }
 
 function setLanguage(language) {
