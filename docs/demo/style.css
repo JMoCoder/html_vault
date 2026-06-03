@@ -1896,6 +1896,11 @@ a.icon-action {
   font-size: 14px;
   font-weight: 760;
   text-decoration: none;
+  transition: right 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.ai-panel-open .demo-home-link {
+  right: calc(var(--ai-panel-width, 420px) + 22px);
 }
 
 .demo-home-link svg {
@@ -1906,6 +1911,7 @@ a.icon-action {
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+  flex: 0 0 auto;
 }
 
 .demo-home-link:hover {
@@ -1918,5 +1924,9 @@ a.icon-action {
     bottom: 14px;
     min-height: 40px;
     padding: 0 12px;
+  }
+
+  .ai-panel-open .demo-home-link {
+    right: 14px;
   }
 }
