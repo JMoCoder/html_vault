@@ -35,7 +35,7 @@
     {
       "id": "demo-notes/changelog.zh-CN.html",
       "title": "HTML Vault 更新日志",
-      "summary": "完整中文 CHANGELOG 转换为 HTML，以发布轨迹风格展示 0.5.3 稳定版和早期版本变更。",
+      "summary": "完整中文 CHANGELOG 转换为 HTML，以发布轨迹风格展示 0.6.0 和早期版本变更。",
       "path": "content/demo-notes/changelog.zh-CN.html",
       "source_type": "html",
       "source_url": null,

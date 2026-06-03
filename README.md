@@ -201,15 +201,17 @@ checks.
 ## Security Model
 
 Default Docker mode is optimized for local, LAN, and private self-hosted use.
-It does not require `HTML_VAULT_API_TOKEN`, so the frontend can call the same
-origin API directly.
+When `HTML_VAULT_AUTH_USERNAME`, `HTML_VAULT_AUTH_PASSWORD`, and
+`HTML_VAULT_SESSION_SECRET` are set, the browser opens a login screen first and
+uses an HttpOnly session cookie after sign-in. Registration is disabled; the
+test user is configured by the deployer.
 
 When you expose HTML Vault publicly:
 
 - Put it behind HTTPS.
-- Require login/session/authentication before serving the app.
-- Set `HTML_VAULT_API_TOKEN` for backend API protection.
-- Let the reverse proxy inject the backend token server-side.
+- Enable built-in login or place an equivalent authentication boundary in front.
+- Set `HTML_VAULT_SESSION_SECURE=true` when served over HTTPS.
+- Set `HTML_VAULT_API_TOKEN` for script, automation, or reverse-proxy API access.
 - Do not embed long-lived API tokens in frontend JavaScript.
 - Back up `data/` before upgrades and before any schema-changing release.
 

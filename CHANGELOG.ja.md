@@ -2,6 +2,20 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.6.0] - 2026-06-03
+
+### Added
+
+- サーバー側認証が設定されている場合、ワークスペースの最初の画面として標準ログイン画面を追加しました。
+- HttpOnly 署名付き session Cookie を使う `/api/auth/status`、`/api/auth/login`、`/api/auth/logout` を追加しました。
+- `HTML_VAULT_AUTH_USERNAME`、`HTML_VAULT_AUTH_PASSWORD`、`HTML_VAULT_SESSION_SECRET` によるテストユーザー認証情報の環境変数設定を追加しました。
+- バックエンド API、`manifest.json`、ノート本文ファイルは、有効な API token またはブラウザーログイン session で保護されるようになりました。
+- ログイン、失敗ログイン、API 保護、静的コンテンツ保護のバックエンド統合テストを追加しました。
+
+### Changed
+
+- パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを `0.6.0` に更新しました。
+
 ## [0.5.3] - 2026-06-03
 
 ### Changed

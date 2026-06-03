@@ -8,9 +8,34 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/html-vault-logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/html-vault-logo.svg">
-  <link rel="stylesheet" href="style.css?v=0.5.3">
+  <link rel="stylesheet" href="style.css?v=0.6.0">
 </head>
 <body>
+  <section class="login-screen" id="login-screen" hidden>
+    <div class="login-panel">
+      <div class="login-brand">
+        <img class="login-logo" src="assets/html-vault-logo.svg" alt="" aria-hidden="true">
+        <div>
+          <p class="login-eyebrow" data-i18n="loginEyebrow"></p>
+          <h1>HTMLvault</h1>
+        </div>
+      </div>
+      <form class="login-form" id="login-form">
+        <label>
+          <span data-i18n="loginUsername"></span>
+          <input id="login-username" type="text" autocomplete="username" required>
+        </label>
+        <label>
+          <span data-i18n="loginPassword"></span>
+          <input id="login-password" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="login-submit" type="submit" data-i18n="loginSubmit"></button>
+        <p class="login-feedback" id="login-feedback"></p>
+      </form>
+      <p class="login-note" data-i18n="loginNoRegister"></p>
+    </div>
+  </section>
+
   <div class="shell">
     <aside class="sidebar" aria-label="Vault navigation" data-i18n-attr="aria-label:sidebarAria">
       <div class="sidebar-resize" id="sidebar-resize" role="separator" aria-orientation="vertical" aria-label="Resize sidebar" data-i18n-attr="aria-label:resizeSidebar"></div>
@@ -476,6 +501,7 @@
             <div class="placeholder-panel">
               <strong data-i18n="developmentInProgress"></strong>
               <p data-i18n="accountSecurityPlaceholder"></p>
+              <button type="button" class="logout-button" id="logout-button" data-i18n="logout"></button>
             </div>
           </section>
 
@@ -580,6 +606,6 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="app.js?v=0.5.3" type="module"></script>
+  <script src="app.js?v=0.6.0" type="module"></script>
 </body>
 </html>

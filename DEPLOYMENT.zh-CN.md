@@ -19,9 +19,10 @@
 项目层面必需控制：
 
 - 后端设置 `HTML_VAULT_API_TOKEN`。
+- 设置 `HTML_VAULT_AUTH_USERNAME`、`HTML_VAULT_AUTH_PASSWORD` 和 `HTML_VAULT_SESSION_SECRET` 启用内置浏览器登录，或在服务前面提供等价认证边界。
+- HTTPS 部署时设置 `HTML_VAULT_SESSION_SECURE=true`。
 - 设置 `HTML_VAULT_CORS_ORIGINS` 为准确的前端公网来源。
 - 静态前端和 API 都放在 HTTPS 后面。
-- 使用反向代理登录认证保护整个站点。认证边界由部署者按自己的公网部署栈手动配置。
 - `data/content`、`data/meta` 和备份目录放在 Git 仓库之外。
 - API Key 和后续模型凭据只保存在服务端。
 - 用 `HTML_VAULT_MAX_UPLOAD_BYTES` 限制上传大小。
@@ -36,6 +37,10 @@ HTML_VAULT_PUBLIC=/srv/html-vault/public
 HTML_VAULT_TITLE="HTML Vault"
 HTML_VAULT_MAX_UPLOAD_BYTES=10485760
 HTML_VAULT_API_TOKEN="replace-with-a-long-random-token"
+HTML_VAULT_AUTH_USERNAME="admin"
+HTML_VAULT_AUTH_PASSWORD="replace-with-a-strong-login-password"
+HTML_VAULT_SESSION_SECRET="replace-with-a-long-random-session-secret"
+HTML_VAULT_SESSION_SECURE=true
 HTML_VAULT_CORS_ORIGINS="https://vault.example.com"
 ```
 
@@ -58,7 +63,7 @@ html-vault serve-api --host 127.0.0.1 --port 8787
 </script>
 ```
 
-前端也会读取 `localStorage.html-vault-agent-token`，方便开发调试。生产环境优先使用反向代理登录/session 保护，不建议把长期 token 直接写进前端 HTML。为了兼容 iframe/raw HTML 访问，项目支持 query token，但它不应作为公网唯一安全边界。
+前端也会读取 `localStorage.html-vault-agent-token`，方便开发调试。生产环境优先使用内置浏览器登录，或使用反向代理登录/session 边界，不建议把长期 token 直接写进前端 HTML。为了兼容 iframe/raw HTML 访问，项目支持 query token，但它不应作为公网唯一安全边界。
 
 ## 反向代理边界
 
@@ -66,15 +71,16 @@ html-vault serve-api --host 127.0.0.1 --port 8787
 
 ```text
 Browser
-  -> 带登录/session 的 HTTPS 反向代理
-    -> static public/ frontend
-    -> /api/* 反代到 127.0.0.1:8787
+  -> HTTPS 反向代理
+    -> HTML Vault 内置登录/session
+      -> static public/ frontend
+      -> /api/*
 ```
 
 反向代理应当：
 
 - 终止 TLS；
-- 访问应用前要求登录；
+- 使用 HTML Vault 内置登录，或在访问应用前要求登录；
 - 只转发明确需要的路径；
 - 设置上传 body 大小限制；
 - 不记录 Authorization header 或 query token。

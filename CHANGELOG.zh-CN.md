@@ -2,6 +2,20 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.6.0] - 2026-06-03
+
+### 新增
+
+- 当服务端配置登录认证后，访问工作台首先进入标准登录页面。
+- 新增 `/api/auth/status`、`/api/auth/login` 和 `/api/auth/logout`，使用 HttpOnly 签名 session Cookie。
+- 新增通过环境变量配置测试用户账户：`HTML_VAULT_AUTH_USERNAME`、`HTML_VAULT_AUTH_PASSWORD` 和 `HTML_VAULT_SESSION_SECRET`。
+- 后端 API、`manifest.json` 与笔记正文文件现在可由有效 API token 或浏览器登录 session 保护。
+- 新增登录、错误登录、API 保护和静态内容保护的后端集成测试。
+
+### 变更
+
+- 包版本、应用版本、PWA、Demo 与官网缓存版本更新为 `0.6.0`。
+
 ## [0.5.3] - 2026-06-03
 
 ### 变更

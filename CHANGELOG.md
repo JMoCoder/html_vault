@@ -7,6 +7,26 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.6.0] - 2026-06-03
+
+### Added
+
+- Added a standard login screen as the first workspace view when server-side
+  authentication is configured.
+- Added `/api/auth/status`, `/api/auth/login`, and `/api/auth/logout` with
+  HttpOnly signed session cookies.
+- Added environment-configured test-user credentials via
+  `HTML_VAULT_AUTH_USERNAME`, `HTML_VAULT_AUTH_PASSWORD`, and
+  `HTML_VAULT_SESSION_SECRET`.
+- Protected backend APIs, `manifest.json`, and note content files with either
+  a valid API token or browser login session.
+- Added backend integration tests for login, failed login, API protection, and
+  static content protection.
+
+### Changed
+
+- Updated package, app, PWA, demo, and homepage cache versions to `0.6.0`.
+
 ## [0.5.3] - 2026-06-03
 
 ### Changed

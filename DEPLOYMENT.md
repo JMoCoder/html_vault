@@ -25,10 +25,12 @@ authentication boundary.
 Required project-level controls:
 
 - Set `HTML_VAULT_API_TOKEN` for the backend API.
+- Set `HTML_VAULT_AUTH_USERNAME`, `HTML_VAULT_AUTH_PASSWORD`, and
+  `HTML_VAULT_SESSION_SECRET` for built-in browser login, or provide an
+  equivalent authentication boundary in front of the service.
+- Set `HTML_VAULT_SESSION_SECURE=true` when served over HTTPS.
 - Set `HTML_VAULT_CORS_ORIGINS` to the exact public frontend origin.
 - Put the static frontend and API behind HTTPS.
-- Use reverse-proxy authentication for the whole site. Configure this with your
-  preferred public deployment stack.
 - Keep `data/content`, `data/meta`, and backups outside the Git repository.
 - Keep API keys and future model credentials on the server only.
 - Limit upload size with `HTML_VAULT_MAX_UPLOAD_BYTES`.
@@ -43,6 +45,10 @@ HTML_VAULT_PUBLIC=/srv/html-vault/public
 HTML_VAULT_TITLE="HTML Vault"
 HTML_VAULT_MAX_UPLOAD_BYTES=10485760
 HTML_VAULT_API_TOKEN="replace-with-a-long-random-token"
+HTML_VAULT_AUTH_USERNAME="admin"
+HTML_VAULT_AUTH_PASSWORD="replace-with-a-strong-login-password"
+HTML_VAULT_SESSION_SECRET="replace-with-a-long-random-session-secret"
+HTML_VAULT_SESSION_SECURE=true
 HTML_VAULT_CORS_ORIGINS="https://vault.example.com"
 ```
 
@@ -69,9 +75,10 @@ For local testing, the frontend can read:
 ```
 
 The frontend also reads `localStorage.html-vault-agent-token` for development.
-For production, prefer reverse-proxy login/session protection over exposing a
-long-lived token in frontend HTML. Query-token support exists for iframe/raw
-HTML access compatibility and should not be the only public security boundary.
+For production, prefer the built-in browser login or a reverse-proxy
+login/session boundary over exposing a long-lived token in frontend HTML.
+Query-token support exists for iframe/raw HTML access compatibility and should
+not be the only public security boundary.
 
 ## Reverse Proxy Boundary
 
@@ -79,15 +86,16 @@ Recommended production layout:
 
 ```text
 Browser
-  -> HTTPS reverse proxy with login/session
-    -> static public/ frontend
-    -> /api/* reverse proxy to 127.0.0.1:8787
+  -> HTTPS reverse proxy
+    -> HTML Vault built-in login/session
+      -> static public/ frontend
+      -> /api/*
 ```
 
 The reverse proxy should:
 
 - terminate TLS;
-- require login before serving the app;
+- either rely on HTML Vault built-in login or require login before serving the app;
 - forward only intended paths;
 - set upload body limits;
 - avoid logging Authorization headers or query tokens.

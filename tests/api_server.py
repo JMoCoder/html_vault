@@ -9,6 +9,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from http.cookiejar import CookieJar
 from pathlib import Path
 from typing import Any
 
@@ -28,9 +29,14 @@ class ApiServer:
         public_dir: Path,
         site_title: str = "Test Vault",
         api_token: str = "",
+        auth_username: str = "",
+        auth_password: str = "",
+        session_secret: str = "",
     ) -> None:
         self.port = free_port()
         self.api_token = api_token
+        self.cookie_jar = CookieJar()
+        self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cookie_jar))
         env = os.environ.copy()
         env.update(
             {
@@ -39,6 +45,9 @@ class ApiServer:
                 "HTML_VAULT_PUBLIC": str(public_dir),
                 "HTML_VAULT_TITLE": site_title,
                 "HTML_VAULT_API_TOKEN": api_token,
+                "HTML_VAULT_AUTH_USERNAME": auth_username,
+                "HTML_VAULT_AUTH_PASSWORD": auth_password,
+                "HTML_VAULT_SESSION_SECRET": session_secret,
             },
         )
         self.process = subprocess.Popen(
@@ -123,7 +132,7 @@ class ApiServer:
         if self.api_token and "Authorization" not in request_headers:
             request_headers["Authorization"] = f"Bearer {self.api_token}"
         request = urllib.request.Request(url, data=body, method=method, headers=request_headers)
-        with urllib.request.urlopen(request, timeout=5) as response:
+        with self.opener.open(request, timeout=5) as response:
             return response.read().decode("utf-8")
 
     def multipart(self, path: str, *, fields: dict[str, str], file_field: str, filename: str, content: bytes, content_type: str) -> Any:
@@ -167,6 +176,9 @@ def run_api_server(
     public_dir: Path,
     site_title: str = "Test Vault",
     api_token: str = "",
+    auth_username: str = "",
+    auth_password: str = "",
+    session_secret: str = "",
 ) -> ApiServer:
     return ApiServer(
         content_dir=content_dir,
@@ -174,4 +186,7 @@ def run_api_server(
         public_dir=public_dir,
         site_title=site_title,
         api_token=api_token,
+        auth_username=auth_username,
+        auth_password=auth_password,
+        session_secret=session_secret,
     )

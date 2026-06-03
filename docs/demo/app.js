@@ -161,6 +161,14 @@ const i18n = {
     generatedSource: "Generated",
     importedSource: "Imported",
     archived: "Archived",
+    loginEyebrow: "Private workspace",
+    loginUsername: "Username",
+    loginPassword: "Password",
+    loginSubmit: "Sign in",
+    loginNoRegister: "Registration is disabled. Use the account configured by the server administrator.",
+    loginFailed: "Invalid username or password.",
+    loginUnavailable: "Login service is unavailable.",
+    logout: "Sign out",
     knowledgeWorkspace: "Knowledge Workspace",
     feelingLucky: "I'm feeling lucky",
     viewStyle: "View style",
@@ -403,6 +411,14 @@ const i18n = {
     generatedSource: "生成",
     importedSource: "导入",
     archived: "已归档",
+    loginEyebrow: "私有工作台",
+    loginUsername: "用户名",
+    loginPassword: "密码",
+    loginSubmit: "登录",
+    loginNoRegister: "当前不开放注册。请使用服务器管理员配置的账户。",
+    loginFailed: "用户名或密码错误。",
+    loginUnavailable: "登录服务不可用。",
+    logout: "退出登录",
     knowledgeWorkspace: "知识工作台",
     feelingLucky: "手气不错",
     viewStyle: "视图样式",
@@ -645,6 +661,14 @@ const i18n = {
     generatedSource: "生成",
     importedSource: "インポート",
     archived: "アーカイブ済み",
+    loginEyebrow: "プライベートワークスペース",
+    loginUsername: "ユーザー名",
+    loginPassword: "パスワード",
+    loginSubmit: "ログイン",
+    loginNoRegister: "登録は無効です。サーバー管理者が設定したアカウントを使用してください。",
+    loginFailed: "ユーザー名またはパスワードが正しくありません。",
+    loginUnavailable: "ログインサービスを利用できません。",
+    logout: "ログアウト",
     knowledgeWorkspace: "ナレッジワークスペース",
     feelingLucky: "おまかせ表示",
     viewStyle: "表示形式",
@@ -749,9 +773,8 @@ function getDefaultAgentUrl() {
 }
 
 function getPagesHomeUrl() {
-  if (window.HTML_VAULT_PAGES_URL) return window.HTML_VAULT_PAGES_URL;
   if (window.HTML_VAULT_STATIC_DEMO) return "../";
-  return "https://jmocoder.github.io/html_vault/";
+  return window.HTML_VAULT_PAGES_URL || "https://jmocoder.github.io/html_vault/";
 }
 
 function getDefaultAgentToken() {
@@ -765,7 +788,11 @@ const state = {
   query: "",
   agentUrl: getDefaultAgentUrl(),
   agentToken: getDefaultAgentToken(),
-  currentVersion: "0.5.3",
+  authEnabled: false,
+  authenticated: false,
+  authChecked: false,
+  loginSubmitting: false,
+  currentVersion: "0.6.0",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -797,6 +824,12 @@ const state = {
 
 const elements = {
   body: document.body,
+  loginScreen: document.querySelector("#login-screen"),
+  loginForm: document.querySelector("#login-form"),
+  loginUsername: document.querySelector("#login-username"),
+  loginPassword: document.querySelector("#login-password"),
+  loginFeedback: document.querySelector("#login-feedback"),
+  logoutButton: document.querySelector("#logout-button"),
   brandHome: document.querySelector("#brand-home"),
   sidebarCollapse: document.querySelector("#sidebar-collapse"),
   sidebarResize: document.querySelector("#sidebar-resize"),
@@ -914,6 +947,12 @@ async function boot() {
   applyTheme();
   applyTranslations();
   try {
+    await checkAuthStatus();
+    if (state.authEnabled && !state.authenticated) {
+      showLoginScreen();
+      return;
+    }
+    hideLoginScreen();
     await loadRemoteNavConfig();
     state.manifest = await loadManifest();
     state.items = Array.isArray(state.manifest.items) ? state.manifest.items : [];
@@ -926,6 +965,92 @@ async function boot() {
   }
 }
 
+async function checkAuthStatus() {
+  if (!state.agentUrl) {
+    state.authEnabled = false;
+    state.authenticated = true;
+    state.authChecked = true;
+    return;
+  }
+  const response = await apiFetch("/api/auth/status", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Unable to check auth status: ${response.status}`);
+  }
+  const data = await response.json();
+  state.authEnabled = Boolean(data.enabled);
+  state.authenticated = Boolean(data.authenticated);
+  state.authChecked = true;
+}
+
+function showLoginScreen(messageKey = "") {
+  elements.body.classList.add("auth-required");
+  elements.body.classList.remove("auth-session-active");
+  elements.loginScreen.hidden = false;
+  elements.loginFeedback.textContent = messageKey ? t(messageKey) : "";
+  elements.loginUsername.focus();
+}
+
+function hideLoginScreen() {
+  elements.body.classList.remove("auth-required");
+  elements.body.classList.toggle("auth-session-active", state.authEnabled && state.authenticated);
+  elements.loginScreen.hidden = true;
+  elements.loginFeedback.textContent = "";
+  elements.loginPassword.value = "";
+}
+
+async function submitLogout() {
+  if (!state.agentUrl || !state.authEnabled) return;
+  try {
+    await apiFetch("/api/auth/logout", { method: "POST" });
+  } catch (error) {
+    console.warn("Logout failed.", error);
+  }
+  state.authenticated = false;
+  state.manifest = null;
+  state.items = [];
+  closeSettings();
+  closeAiPanel();
+  closeReader();
+  showLoginScreen();
+}
+
+async function submitLogin(event) {
+  event.preventDefault();
+  if (!state.agentUrl || state.loginSubmitting) return;
+  state.loginSubmitting = true;
+  elements.loginFeedback.textContent = "";
+  elements.loginForm.querySelector("button[type='submit']").disabled = true;
+  try {
+    const response = await apiFetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: elements.loginUsername.value,
+        password: elements.loginPassword.value,
+      }),
+    });
+    if (!response.ok) {
+      showLoginScreen(response.status === 401 ? "loginFailed" : "loginUnavailable");
+      return;
+    }
+    const data = await response.json();
+    state.authEnabled = Boolean(data.enabled);
+    state.authenticated = Boolean(data.authenticated);
+    if (!state.authenticated) {
+      showLoginScreen("loginFailed");
+      return;
+    }
+    hideLoginScreen();
+    await boot();
+  } catch (error) {
+    console.error(error);
+    showLoginScreen("loginUnavailable");
+  } finally {
+    state.loginSubmitting = false;
+    elements.loginForm.querySelector("button[type='submit']").disabled = false;
+  }
+}
+
 async function loadManifest() {
   if (state.agentUrl) {
     try {
@@ -935,8 +1060,7 @@ async function loadManifest() {
       console.warn("Agent manifest unavailable, falling back to static manifest.", error);
     }
   }
-  const manifestPath = state.language === "zh-CN" ? "manifest.json" : `manifest.${state.language}.json`;
-  const response = await fetch(manifestPath, { cache: "no-store" });
+  const response = await fetch("manifest.json", { cache: "no-store" });
   if (!response.ok) throw new Error(`Unable to load manifest: ${response.status}`);
   return response.json();
 }
@@ -955,6 +1079,7 @@ function getApiHeaders(headers = {}) {
 function apiFetch(path, options = {}) {
   return fetch(buildApiUrl(path), {
     ...options,
+    credentials: "same-origin",
     headers: getApiHeaders(options.headers || {}),
   });
 }
@@ -1842,25 +1967,9 @@ function renderAfterItemStateChange(item) {
 }
 
 function getInitialLanguage() {
-  const requested = normalizeLanguage(new URLSearchParams(window.location.search).get("lang"));
-  if (requested) {
-    localStorage.setItem("html-vault-language", requested);
-    return requested;
-  }
-  const siteLanguage = normalizeLanguage(localStorage.getItem("html-vault-site-lang"));
-  if (siteLanguage) {
-    localStorage.setItem("html-vault-language", siteLanguage);
-    return siteLanguage;
-  }
   const saved = localStorage.getItem("html-vault-language");
   if (saved && i18n[saved]) return saved;
   return "en";
-}
-
-function normalizeLanguage(language) {
-  if (language === "zh") return "zh-CN";
-  if (language && i18n[language]) return language;
-  return "";
 }
 
 function setLanguage(language) {
@@ -2802,7 +2911,8 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js?v=0.5.3-demo").catch((error) => {
+    const swPath = window.HTML_VAULT_STATIC_DEMO ? "sw.js?v=0.6.0-demo" : "sw.js";
+    navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });
   });
@@ -2958,6 +3068,8 @@ window.addEventListener("hashchange", openFromHash);
 window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener("change", () => {
   if (state.themeMode === "system") applyTheme();
 });
+elements.loginForm.addEventListener("submit", submitLogin);
+elements.logoutButton.addEventListener("click", submitLogout);
 
 boot();
 registerServiceWorker();

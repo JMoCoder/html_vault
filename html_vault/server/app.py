@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Annotated
 
 try:
-    from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Query, UploadFile
+    from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Query, Request, Response, UploadFile
     from fastapi.middleware.cors import CORSMiddleware
-    from fastapi.responses import HTMLResponse
-    from fastapi.staticfiles import StaticFiles
+    from fastapi.responses import FileResponse, HTMLResponse
 except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static-only installs
     raise RuntimeError(
         "The backend server requires the agent extra: pip install 'html-vault[agent]'",
@@ -15,6 +15,7 @@ except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static
 
 from html_vault import __version__
 
+from .auth import login, logout, require_session, session_status
 from .config import ServerSettings, load_settings
 from .items import ItemContentError, ItemDeleteError, ItemMetadataError, ItemService, ItemStateError, normalize_query
 from .jobs import JobError, JobService
@@ -45,16 +46,20 @@ def get_job_service(settings: Annotated[ServerSettings, Depends(get_settings)]) 
 
 def verify_api_token(
     settings: Annotated[ServerSettings, Depends(get_settings)],
+    request: Request,
     authorization: Annotated[str, Header()] = "",
     access_token: str = "",
 ) -> None:
+    if settings.api_token:
+        scheme, _, token = authorization.partition(" ")
+        if (scheme.lower() == "bearer" and token == settings.api_token) or access_token == settings.api_token:
+            return
+    if settings.auth_enabled:
+        require_session(settings, request)
+        return
     if not settings.api_token:
         return
-    scheme, _, token = authorization.partition(" ")
-    if (scheme.lower() == "bearer" and token == settings.api_token) or access_token == settings.api_token:
-        return
-    else:
-        raise HTTPException(status_code=401, detail="API token required.")
+    raise HTTPException(status_code=401, detail="API token or login session required.")
 
 
 ApiAuth = Annotated[None, Depends(verify_api_token)]
@@ -74,6 +79,20 @@ def create_app() -> FastAPI:
     @app.get("/api/health")
     def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    @app.get("/api/auth/status")
+    def auth_status(request: Request) -> dict:
+        return session_status(settings, request)
+
+    @app.post("/api/auth/login")
+    def auth_login(values: dict, response: Response) -> dict:
+        username = str(values.get("username", ""))
+        password = str(values.get("password", ""))
+        return login(settings, response, username=username, password=password)
+
+    @app.post("/api/auth/logout")
+    def auth_logout(response: Response) -> dict:
+        return logout(settings, response)
 
     @app.get("/api/manifest")
     def manifest(_: ApiAuth, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:
@@ -261,9 +280,36 @@ def create_app() -> FastAPI:
         }
 
     if settings.public_dir.exists():
-        app.mount("/", StaticFiles(directory=settings.public_dir, html=True), name="static")
+        @app.get("/{path:path}")
+        def static_file(path: str, request: Request) -> FileResponse:
+            return serve_static(settings, request, path)
 
     return app
 
 
 app = create_app()
+
+
+def serve_static(settings: ServerSettings, request: Request, path: str) -> FileResponse:
+    public_dir = settings.public_dir.resolve()
+    requested = (public_dir / (path or "index.html")).resolve()
+    if requested.is_dir():
+        requested = (requested / "index.html").resolve()
+    if public_dir not in requested.parents and requested != public_dir:
+        raise HTTPException(status_code=404, detail="File not found.")
+    if not requested.exists() or not requested.is_file():
+        raise HTTPException(status_code=404, detail="File not found.")
+    if static_requires_auth(requested.relative_to(public_dir)):
+        require_session(settings, request)
+    return FileResponse(requested)
+
+
+def static_requires_auth(path: Path) -> bool:
+    parts = path.parts
+    if not parts:
+        return False
+    if parts[0] == "content":
+        return True
+    if path.name == "manifest.json":
+        return True
+    return False

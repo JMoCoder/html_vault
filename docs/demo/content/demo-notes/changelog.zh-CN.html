@@ -15,11 +15,16 @@
 <p class="eyebrow">发布记录</p>
 <h1>HTML Vault 更新日志</h1>
 </article>
-<aside class="stat"><span class="badge">0.5.3</span></aside>
+<aside class="stat"><span class="badge">0.6.0</span></aside>
 </section>
 <section class="timeline doc">
 <h1>更新日志</h1>
 <p>语言：<a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
+<h2>[0.6.0] - 2026-06-03</h2>
+<h3>新增</h3>
+<ul><li>服务端配置登录认证后，工作台首先显示标准登录页面。</li><li>新增基于 HttpOnly 签名 session Cookie 的 <code>/api/auth/status</code>、<code>/api/auth/login</code> 与 <code>/api/auth/logout</code>。</li><li>后端 API、<code>manifest.json</code> 与笔记正文文件现在可由有效 API token 或浏览器登录 session 保护。</li></ul>
+<h3>变更</h3>
+<ul><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.0</code>。</li></ul>
 <h2>[0.5.3] - 2026-06-03</h2>
 <h3>变更</h3>
 <ul><li>首次部署或无语言偏好时，真实工作台与静态 Demo 默认回落为英文；已保存的用户语言偏好和官网进入 Demo 的语言传递保持不变。</li><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.5.3</code>。</li></ul>

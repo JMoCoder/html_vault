@@ -15,11 +15,16 @@
 <p class="eyebrow">リリース履歴</p>
 <h1>HTML Vault 変更履歴</h1>
 </article>
-<aside class="stat"><span class="badge">0.5.3</span></aside>
+<aside class="stat"><span class="badge">0.6.0</span></aside>
 </section>
 <section class="timeline doc">
 <h1>Changelog</h1>
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
+<h2>[0.6.0] - 2026-06-03</h2>
+<h3>Added</h3>
+<ul><li>サーバー側認証が設定されている場合、ワークスペースの最初の画面として標準ログイン画面を追加しました。</li><li>HttpOnly 署名付き session Cookie による <code>/api/auth/status</code>、<code>/api/auth/login</code>、<code>/api/auth/logout</code> を追加しました。</li><li>バックエンド API、<code>manifest.json</code>、ノート本文ファイルは、有効な API token またはブラウザーログイン session で保護されるようになりました。</li></ul>
+<h3>Changed</h3>
+<ul><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.0</code> に更新しました。</li></ul>
 <h2>[0.5.3] - 2026-06-03</h2>
 <h3>Changed</h3>
 <ul><li>初回デプロイまたは言語設定が保存されていない場合、実ワークスペースと静的 Demo の既定言語を英語へ変更しました。保存済みのユーザー設定とホームページから Demo への言語引き継ぎは維持されます。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.5.3</code> に更新しました。</li></ul>
