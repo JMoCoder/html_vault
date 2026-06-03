@@ -20,14 +20,19 @@ from .users import AuthenticatedUser, UserStore, user_from_record
 
 def session_status(settings: ServerSettings, request: Request) -> dict[str, Any]:
     if not settings.auth_enabled:
-        return {"enabled": False, "authenticated": True, "user": None}
+        return {"enabled": False, "authenticated": True, "user": None, "data_id": None}
     user = read_session(settings, request)
-    return {"enabled": True, "authenticated": bool(user), "user": user.username if user else None}
+    return {
+        "enabled": True,
+        "authenticated": bool(user),
+        "user": user.username if user else None,
+        "data_id": user.data_id if user else None,
+    }
 
 
 def login(settings: ServerSettings, response: Response, username: str, password: str) -> dict[str, Any]:
     if not settings.auth_enabled:
-        return {"enabled": False, "authenticated": True, "user": None}
+        return {"enabled": False, "authenticated": True, "user": None, "data_id": None}
     store = UserStore(settings)
     store.ensure_bootstrap_admin()
     user = store.authenticate(username, password)
@@ -43,7 +48,7 @@ def login(settings: ServerSettings, response: Response, username: str, password:
         samesite="lax",
         path="/",
     )
-    return {"enabled": True, "authenticated": True, "user": user.username}
+    return {"enabled": True, "authenticated": True, "user": user.username, "data_id": user.data_id}
 
 
 def logout(settings: ServerSettings, response: Response) -> dict[str, Any]:

@@ -100,7 +100,7 @@ def test_login_session_protects_api_and_content(tmp_path: Path) -> None:
     )
     try:
         status = server.request("GET", "/api/auth/status")
-        assert status == {"enabled": True, "authenticated": False, "user": None}
+        assert status == {"enabled": True, "authenticated": False, "user": None, "data_id": None}
 
         for path in ["/api/manifest", "/manifest.json", "/content/imported/docker-network.html"]:
             try:
@@ -130,7 +130,7 @@ def test_login_session_protects_api_and_content(tmp_path: Path) -> None:
             body=body,
             headers={"Content-Type": "application/json", "Content-Length": str(len(body))},
         )
-        assert login == {"enabled": True, "authenticated": True, "user": "admin"}
+        assert login == {"enabled": True, "authenticated": True, "user": "admin", "data_id": "default"}
 
         manifest = server.request("GET", "/api/manifest")
         assert manifest["version"] == 2
@@ -165,7 +165,7 @@ def test_login_bootstraps_users_file_from_env(tmp_path: Path) -> None:
         assert data["users"][0]["password_hash"].startswith("pbkdf2_sha256$")
 
         login = server.json("POST", "/api/auth/login", {"username": "ADMIN", "password": "correct-password"})
-        assert login == {"enabled": True, "authenticated": True, "user": "admin"}
+        assert login == {"enabled": True, "authenticated": True, "user": "admin", "data_id": "default"}
     finally:
         server.close()
 

@@ -381,6 +381,7 @@ textarea {
   justify-content: space-between;
   gap: 10px;
   align-items: center;
+  position: relative;
 }
 
 .sidebar-tool-group {
@@ -389,8 +390,8 @@ textarea {
   align-items: center;
 }
 
+.profile-toggle,
 .settings-toggle,
-.theme-toggle,
 .github-link {
   min-width: 42px;
   height: 36px;
@@ -402,6 +403,125 @@ textarea {
   color: var(--text);
   cursor: pointer;
   text-decoration: none;
+}
+
+.profile-toggle {
+  width: 42px;
+  padding: 0;
+}
+
+.profile-avatar-mini,
+.profile-avatar-large {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 850;
+}
+
+.profile-avatar-mini {
+  width: 24px;
+  height: 24px;
+}
+
+.profile-avatar-large {
+  width: 54px;
+  height: 54px;
+  border-radius: 10px;
+}
+
+.profile-avatar-mini img,
+.profile-avatar-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-popover {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  width: min(292px, calc(var(--sidebar-width) - 24px));
+  z-index: 35;
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.profile-popover[hidden] {
+  display: none;
+}
+
+.profile-card-header {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.profile-card-header strong,
+.profile-card-header span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-card-header span,
+.profile-stats span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 12px;
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.avatar-options {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.avatar-options button {
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.avatar-options button.active {
+  border-color: var(--accent);
+  color: var(--accent-dark);
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+}
+
+.profile-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-actions button {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: var(--panel-soft);
+  color: var(--text);
+  cursor: pointer;
 }
 
 .github-link {
@@ -424,17 +544,13 @@ textarea {
   color: var(--accent-dark);
 }
 
-.settings-toggle:hover,
-.theme-toggle:hover {
+.profile-toggle:hover,
+.settings-toggle:hover {
   border-color: var(--accent);
   color: var(--accent-dark);
 }
 
 .settings-toggle {
-  width: 42px;
-}
-
-.theme-toggle {
   width: 42px;
 }
 
@@ -1314,6 +1430,29 @@ textarea {
   border-bottom: 1px solid var(--line);
   max-height: 188px;
   overflow: hidden;
+  transition: padding 0.16s ease, max-height 0.16s ease;
+}
+
+.reader.compact-reader-header .reader-header {
+  align-items: center;
+  padding: 10px 14px;
+  max-height: 64px;
+}
+
+.reader.compact-reader-header .reader-heading {
+  gap: 0;
+}
+
+.reader.compact-reader-header .reader-heading .eyebrow,
+.reader.compact-reader-header .reader-heading p,
+.reader.compact-reader-header .reader-tags {
+  display: none;
+}
+
+.reader.compact-reader-header .reader-heading h2 {
+  font-size: 17px;
+  line-height: 1.28;
+  -webkit-line-clamp: 1;
 }
 
 .icon-button {
@@ -1467,7 +1606,8 @@ a.icon-action {
 }
 
 .metadata-dialog input,
-.metadata-dialog textarea {
+.metadata-dialog textarea,
+.metadata-dialog select {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0 11px;
@@ -1475,7 +1615,8 @@ a.icon-action {
   color: var(--text);
 }
 
-.metadata-dialog input {
+.metadata-dialog input,
+.metadata-dialog select {
   height: 40px;
 }
 
@@ -1506,6 +1647,41 @@ a.icon-action {
   border-color: var(--line);
   background: var(--panel-soft);
   color: var(--text);
+}
+
+.metadata-tag-picker {
+  min-height: 40px;
+  max-height: 154px;
+  overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px;
+  background: var(--panel-soft);
+}
+
+.metadata-chip {
+  min-height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 10px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.metadata-chip.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+  color: var(--accent-dark);
+}
+
+.metadata-chip.add-chip {
+  border-style: dashed;
+  color: var(--accent-dark);
 }
 
 .settings-page {

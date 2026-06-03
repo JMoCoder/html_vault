@@ -9,6 +9,12 @@ const i18n = {
     collapseSidebar: "Collapse sidebar",
     expandSidebar: "Expand sidebar",
     resizeSidebar: "Resize sidebar",
+    userMenu: "User menu",
+    subscriptionStatus: "Subscription",
+    subscriptionSelfHosted: "Self-hosted",
+    aiCreditsBalance: "AI credits",
+    uploadAvatar: "Upload avatar",
+    avatarOptions: "Avatar options",
     importHtmlFile: "Import HTML file",
     collapseNavSection: "Collapse {name}",
     expandNavSection: "Expand {name}",
@@ -228,7 +234,8 @@ const i18n = {
     metadataSummary: "Summary",
     metadataCollection: "Collection",
     metadataTags: "Tags",
-    metadataTagsPlaceholder: "Comma-separated tags",
+    metadataAddCollection: "Add collection...",
+    metadataAddTag: "Add tag...",
     metadataStorageNote: "With Agent Server connected, changes are written to YAML metadata. Static mode saves local browser overrides only.",
     save: "Save",
     cancel: "Cancel",
@@ -259,6 +266,12 @@ const i18n = {
     collapseSidebar: "收起侧栏",
     expandSidebar: "展开侧栏",
     resizeSidebar: "调整侧栏宽度",
+    userMenu: "用户菜单",
+    subscriptionStatus: "订阅状态",
+    subscriptionSelfHosted: "自托管",
+    aiCreditsBalance: "AI 点数",
+    uploadAvatar: "上传头像",
+    avatarOptions: "头像选项",
     importHtmlFile: "导入HTML文件",
     collapseNavSection: "折叠{name}",
     expandNavSection: "展开{name}",
@@ -478,7 +491,8 @@ const i18n = {
     metadataSummary: "摘要",
     metadataCollection: "集合",
     metadataTags: "标签",
-    metadataTagsPlaceholder: "用英文逗号分隔多个标签",
+    metadataAddCollection: "新增集合...",
+    metadataAddTag: "新增标签...",
     metadataStorageNote: "连接 Agent Server 时会写回 YAML 元数据；静态模式仅保存浏览器本地覆盖。",
     save: "保存",
     cancel: "取消",
@@ -509,6 +523,12 @@ const i18n = {
     collapseSidebar: "サイドバーを折りたたむ",
     expandSidebar: "サイドバーを展開",
     resizeSidebar: "サイドバー幅を調整",
+    userMenu: "ユーザーメニュー",
+    subscriptionStatus: "サブスクリプション",
+    subscriptionSelfHosted: "セルフホスト",
+    aiCreditsBalance: "AI クレジット",
+    uploadAvatar: "アバターをアップロード",
+    avatarOptions: "アバター選択",
     importHtmlFile: "HTML ファイルをインポート",
     collapseNavSection: "{name}を折りたたむ",
     expandNavSection: "{name}を展開",
@@ -728,7 +748,8 @@ const i18n = {
     metadataSummary: "概要",
     metadataCollection: "コレクション",
     metadataTags: "タグ",
-    metadataTagsPlaceholder: "カンマ区切りのタグ",
+    metadataAddCollection: "コレクションを追加...",
+    metadataAddTag: "タグを追加...",
     metadataStorageNote: "Agent Server 接続時は YAML メタデータへ書き戻します。静的モードではブラウザー内のローカル上書きのみ保存します。",
     save: "保存",
     cancel: "キャンセル",
@@ -791,6 +812,9 @@ const state = {
   authEnabled: false,
   authenticated: false,
   authChecked: false,
+  currentUser: { username: "", dataId: "" },
+  profile: loadProfile(),
+  profileOpen: false,
   loginSubmitting: false,
   currentVersion: "0.6.5",
   latestVersion: "",
@@ -820,6 +844,7 @@ const state = {
   onlyFavorites: getInitialFavoriteFilter(),
   currentReaderItemId: "",
   editingItemId: "",
+  editingTags: new Set(),
 };
 
 const elements = {
@@ -830,6 +855,20 @@ const elements = {
   loginPassword: document.querySelector("#login-password"),
   loginFeedback: document.querySelector("#login-feedback"),
   logoutButton: document.querySelector("#logout-button"),
+  profileOpen: document.querySelector("#profile-open"),
+  profilePopover: document.querySelector("#profile-popover"),
+  profileLogoutButton: document.querySelector("#profile-logout-button"),
+  profileAvatarMini: document.querySelector("#profile-avatar-mini"),
+  profileAvatarLarge: document.querySelector("#profile-avatar-large"),
+  settingsProfileAvatar: document.querySelector("#settings-profile-avatar"),
+  settingsProfileName: document.querySelector("#settings-profile-name"),
+  settingsProfileId: document.querySelector("#settings-profile-id"),
+  profileDisplayName: document.querySelector("#profile-display-name"),
+  profileUserId: document.querySelector("#profile-user-id"),
+  profileAiCredits: document.querySelector("#profile-ai-credits"),
+  avatarUploadTrigger: document.querySelector("#avatar-upload-trigger"),
+  avatarUpload: document.querySelector("#avatar-upload"),
+  avatarSymbolButtons: document.querySelectorAll("[data-avatar-symbol]"),
   brandHome: document.querySelector("#brand-home"),
   sidebarCollapse: document.querySelector("#sidebar-collapse"),
   sidebarResize: document.querySelector("#sidebar-resize"),
@@ -840,7 +879,6 @@ const elements = {
   siteTitle: document.querySelector("#site-title"),
   languageSelect: document.querySelector("#language-select"),
   themeModeButtons: document.querySelectorAll("[data-theme-mode]"),
-  themeToggle: document.querySelector("#theme-toggle"),
   settingsOpen: document.querySelector("#settings-open"),
   settingsBack: document.querySelector("#settings-back"),
   settingsPage: document.querySelector("#settings-page"),
@@ -926,7 +964,7 @@ const elements = {
   metadataTitle: document.querySelector("#metadata-title"),
   metadataSummary: document.querySelector("#metadata-summary"),
   metadataCollection: document.querySelector("#metadata-collection"),
-  metadataTags: document.querySelector("#metadata-tags"),
+  metadataTagPicker: document.querySelector("#metadata-tag-picker"),
   metadataCancel: document.querySelector("#metadata-cancel"),
   metadataCancelIcon: document.querySelector("#metadata-cancel-icon"),
 };
@@ -979,6 +1017,10 @@ async function checkAuthStatus() {
   const data = await response.json();
   state.authEnabled = Boolean(data.enabled);
   state.authenticated = Boolean(data.authenticated);
+  state.currentUser = {
+    username: data.user || "",
+    dataId: data.data_id || "",
+  };
   state.authChecked = true;
 }
 
@@ -999,6 +1041,7 @@ function hideLoginScreen() {
 }
 
 async function submitLogout() {
+  setProfilePopover(false);
   if (!state.agentUrl || !state.authEnabled) return;
   try {
     await apiFetch("/api/auth/logout", { method: "POST" });
@@ -1006,6 +1049,7 @@ async function submitLogout() {
     console.warn("Logout failed.", error);
   }
   state.authenticated = false;
+  state.currentUser = { username: "", dataId: "" };
   state.manifest = null;
   state.items = [];
   closeSettings();
@@ -1036,6 +1080,10 @@ async function submitLogin(event) {
     const data = await response.json();
     state.authEnabled = Boolean(data.enabled);
     state.authenticated = Boolean(data.authenticated);
+    state.currentUser = {
+      username: data.user || elements.loginUsername.value,
+      dataId: data.data_id || "",
+    };
     if (!state.authenticated) {
       showLoginScreen("loginFailed");
       return;
@@ -1096,6 +1144,7 @@ function renderApp() {
   applyNavSectionState();
   applyAiPanelState();
   applyTheme();
+  renderProfile();
   applyViewMode();
   applyFavoriteFilter();
   applyTranslations();
@@ -1407,6 +1456,7 @@ function itemActionButton(action, item) {
 function openReader(item) {
   state.currentReaderItemId = item.id;
   elements.reader.hidden = false;
+  elements.reader.classList.remove("compact-reader-header");
   renderReaderMetadata(item);
   elements.readerFrame.src = getReaderContentUrl(item);
   renderReaderActions(item);
@@ -1436,9 +1486,27 @@ function getReaderRawUrl(item) {
   return withApiAccessToken(buildApiUrl(`/api/items/${encodeURIComponent(item.id)}/raw`));
 }
 
+function bindReaderFrameScroll() {
+  elements.reader.classList.remove("compact-reader-header");
+  try {
+    const readerWindow = elements.readerFrame.contentWindow;
+    const readerDocument = elements.readerFrame.contentDocument;
+    if (!readerWindow || !readerDocument) return;
+    const update = () => {
+      const scrollTop = readerWindow.scrollY || readerDocument.documentElement.scrollTop || readerDocument.body.scrollTop || 0;
+      elements.reader.classList.toggle("compact-reader-header", scrollTop > 24);
+    };
+    readerWindow.addEventListener("scroll", update, { passive: true });
+    update();
+  } catch {
+    elements.reader.classList.remove("compact-reader-header");
+  }
+}
+
 function closeReader() {
   state.currentReaderItemId = "";
   elements.reader.hidden = true;
+  elements.reader.classList.remove("compact-reader-header");
   elements.readerFrame.removeAttribute("src");
   if (window.location.hash) {
     history.pushState("", document.title, window.location.pathname + window.location.search);
@@ -1449,6 +1517,7 @@ function closeReader() {
 function returnToWorkspace() {
   state.currentReaderItemId = "";
   elements.reader.hidden = true;
+  elements.reader.classList.remove("compact-reader-header");
   elements.readerFrame.removeAttribute("src");
   elements.settingsPage.hidden = true;
   if (window.location.hash) {
@@ -1896,10 +1965,11 @@ function openMetadataEditor(id) {
   if (!item) return;
   if (isArchived(item)) return;
   state.editingItemId = id;
+  state.editingTags = new Set(getItemTags(item));
   elements.metadataTitle.value = getItemTitle(item);
   elements.metadataSummary.value = getItemSummary(item);
-  elements.metadataCollection.value = getItemCollection(item);
-  elements.metadataTags.value = getItemTags(item).join(", ");
+  renderMetadataCollectionOptions(getItemCollection(item));
+  renderMetadataTagPicker();
   elements.metadataEditor.hidden = false;
   elements.metadataTitle.focus();
   elements.metadataTitle.select();
@@ -1907,7 +1977,74 @@ function openMetadataEditor(id) {
 
 function closeMetadataEditor() {
   state.editingItemId = "";
+  state.editingTags = new Set();
   elements.metadataEditor.hidden = true;
+}
+
+function renderMetadataCollectionOptions(selectedCollection) {
+  const names = new Set(getCollectionOptions().map((collection) => collection.name));
+  names.add(selectedCollection || "Inbox");
+  elements.metadataCollection.replaceChildren();
+  const addOption = document.createElement("option");
+  addOption.value = "__add__";
+  addOption.textContent = t("metadataAddCollection");
+  elements.metadataCollection.append(addOption);
+  [...names].filter(Boolean).sort((a, b) => a.localeCompare(b)).forEach((name) => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    elements.metadataCollection.append(option);
+  });
+  elements.metadataCollection.value = selectedCollection || "Inbox";
+}
+
+function renderMetadataTagPicker() {
+  elements.metadataTagPicker.replaceChildren();
+  const addButton = document.createElement("button");
+  addButton.type = "button";
+  addButton.className = "metadata-chip add-chip";
+  addButton.textContent = `+ ${t("metadataAddTag")}`;
+  addButton.addEventListener("click", addMetadataTag);
+  elements.metadataTagPicker.append(addButton);
+  const names = new Set(getTagOptions().map((tag) => tag.name));
+  state.editingTags.forEach((tag) => names.add(tag));
+  [...names].filter(Boolean).sort((a, b) => a.localeCompare(b)).forEach((name) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "metadata-chip";
+    button.classList.toggle("active", state.editingTags.has(name));
+    button.textContent = `#${name}`;
+    button.addEventListener("click", () => {
+      if (state.editingTags.has(name)) state.editingTags.delete(name);
+      else state.editingTags.add(name);
+      renderMetadataTagPicker();
+    });
+    elements.metadataTagPicker.append(button);
+  });
+}
+
+function addMetadataCollection() {
+  const name = window.prompt(t("addCollection"));
+  const cleaned = String(name || "").trim();
+  if (!cleaned) {
+    elements.metadataCollection.value = getCurrentMetadataCollectionFallback();
+    return;
+  }
+  renderMetadataCollectionOptions(cleaned);
+  elements.metadataCollection.value = cleaned;
+}
+
+function addMetadataTag() {
+  const name = window.prompt(t("addTag"));
+  const cleaned = String(name || "").trim().replace(/^#/, "");
+  if (!cleaned) return;
+  state.editingTags.add(cleaned);
+  renderMetadataTagPicker();
+}
+
+function getCurrentMetadataCollectionFallback() {
+  const item = getItemById(state.editingItemId);
+  return item ? getItemCollection(item) : "Inbox";
 }
 
 async function saveMetadataEditor(event) {
@@ -1921,7 +2058,7 @@ async function saveMetadataEditor(event) {
     title: elements.metadataTitle.value.trim() || item.title || t("item"),
     summary: elements.metadataSummary.value.trim(),
     collection: elements.metadataCollection.value.trim() || "Inbox",
-    tags: parseTagInput(elements.metadataTags.value),
+    tags: [...state.editingTags],
   };
 
   if (state.agentUrl) {
@@ -2226,6 +2363,37 @@ function closeSortPopover() {
   applySortState();
 }
 
+function toggleProfilePopover() {
+  setProfilePopover(!state.profileOpen);
+}
+
+function setProfilePopover(open) {
+  state.profileOpen = open;
+  elements.profilePopover.hidden = !open;
+  elements.profileOpen.classList.toggle("active", open);
+  if (open) renderProfile();
+}
+
+function setAvatarSymbol(symbol) {
+  state.profile.avatarType = "symbol";
+  state.profile.avatarSymbol = symbol || "circle";
+  state.profile.avatarImage = "";
+  saveProfile();
+  renderProfile();
+}
+
+function uploadAvatar(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    state.profile.avatarType = "image";
+    state.profile.avatarImage = String(reader.result || "");
+    saveProfile();
+    renderProfile();
+  });
+  reader.readAsDataURL(file);
+}
+
 function applyMultiFilterState() {
   elements.multiFilterPopover.hidden = !state.multiFilterOpen;
   elements.multiFilterToggle.classList.toggle("open", state.multiFilterOpen);
@@ -2367,11 +2535,7 @@ function applyTheme() {
   elements.themeModeButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.themeMode === state.themeMode);
   });
-  updateThemeToggle(resolvedTheme);
-}
-
-function toggleThemeMode() {
-  setThemeMode(getResolvedTheme() === "dark" ? "light" : "dark");
+  updateThemeMetaColor(resolvedTheme);
 }
 
 function getResolvedTheme() {
@@ -2382,12 +2546,8 @@ function getSystemTheme() {
   return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-function updateThemeToggle(resolvedTheme) {
-  const targetMode = resolvedTheme === "dark" ? "light" : "dark";
-  const label = t(targetMode === "dark" ? "themeDark" : "themeLight");
-  elements.themeToggle.innerHTML = targetMode === "dark" ? moonIcon() : sunIcon();
-  elements.themeToggle.setAttribute("aria-label", label);
-  elements.themeToggle.setAttribute("title", label);
+function updateThemeMetaColor(resolvedTheme) {
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", resolvedTheme === "dark" ? "#111827" : "#0f766e");
 }
 
 function loadAiConfig() {
@@ -2404,6 +2564,59 @@ function loadDataConfig() {
   } catch {
     return {};
   }
+}
+
+function loadProfile() {
+  try {
+    return {
+      avatarType: "symbol",
+      avatarSymbol: "circle",
+      avatarImage: "",
+      ...JSON.parse(localStorage.getItem("html-vault-profile") || "{}"),
+    };
+  } catch {
+    return { avatarType: "symbol", avatarSymbol: "circle", avatarImage: "" };
+  }
+}
+
+function saveProfile() {
+  localStorage.setItem("html-vault-profile", JSON.stringify(state.profile));
+}
+
+function renderProfile() {
+  const username = state.currentUser.username || "Guest";
+  const dataId = state.currentUser.dataId || "static";
+  if (elements.profileDisplayName) elements.profileDisplayName.textContent = username;
+  if (elements.profileUserId) elements.profileUserId.textContent = `ID: ${dataId}`;
+  if (elements.profileAiCredits) elements.profileAiCredits.textContent = "0";
+  renderAvatar(elements.profileAvatarMini, false);
+  renderAvatar(elements.profileAvatarLarge, true);
+  renderAvatar(elements.settingsProfileAvatar, true);
+  if (elements.settingsProfileName) elements.settingsProfileName.textContent = username;
+  if (elements.settingsProfileId) elements.settingsProfileId.textContent = `ID: ${dataId}`;
+  elements.avatarSymbolButtons.forEach((button) => {
+    button.classList.toggle("active", state.profile.avatarType === "symbol" && state.profile.avatarSymbol === button.dataset.avatarSymbol);
+    button.innerHTML = avatarSymbolMarkup(button.dataset.avatarSymbol);
+  });
+}
+
+function renderAvatar(target, large) {
+  if (!target) return;
+  if (state.profile.avatarType === "image" && state.profile.avatarImage) {
+    target.innerHTML = `<img src="${escapeHtml(state.profile.avatarImage)}" alt="">`;
+    return;
+  }
+  target.innerHTML = avatarSymbolMarkup(state.profile.avatarSymbol || "circle", large);
+}
+
+function avatarSymbolMarkup(symbol, large = false) {
+  const size = large ? 28 : 17;
+  const stroke = large ? 2.4 : 2.6;
+  if (symbol === "triangle") return `<svg class="button-icon" style="width:${size}px;height:${size}px" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 21 20H3Z" stroke-width="${stroke}"></path></svg>`;
+  if (symbol === "x") return `<svg class="button-icon" style="width:${size}px;height:${size}px" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-width="${stroke}"></path></svg>`;
+  if (symbol === "square") return `<svg class="button-icon" style="width:${size}px;height:${size}px" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h12v12H6Z" stroke-width="${stroke}"></path></svg>`;
+  if (symbol === "diamond") return `<svg class="button-icon" style="width:${size}px;height:${size}px" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 8 8-8 8-8-8Z" stroke-width="${stroke}"></path></svg>`;
+  return `<svg class="button-icon" style="width:${size}px;height:${size}px" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14Z" stroke-width="${stroke}"></path></svg>`;
 }
 
 function loadItemState() {
@@ -2944,7 +3157,7 @@ function applyTranslations() {
   applyFavoriteFilter();
   applyMultiFilterState();
   applySortState();
-  updateThemeToggle(getResolvedTheme());
+  updateThemeMetaColor(getResolvedTheme());
   renderVersionStatus();
 }
 
@@ -3009,16 +3222,30 @@ document.addEventListener("click", (event) => {
   if (elements.sortPopover.contains(event.target) || elements.sortToggle.contains(event.target)) return;
   closeSortPopover();
 });
+document.addEventListener("click", (event) => {
+  if (!state.profileOpen) return;
+  if (elements.profilePopover.contains(event.target) || elements.profileOpen.contains(event.target)) return;
+  setProfilePopover(false);
+});
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !elements.metadataEditor.hidden) {
     closeMetadataEditor();
+  }
+  if (event.key === "Escape" && state.profileOpen) {
+    setProfilePopover(false);
   }
 });
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
 elements.themeModeButtons.forEach((button) => {
   button.addEventListener("click", () => setThemeMode(button.dataset.themeMode));
 });
-elements.themeToggle.addEventListener("click", toggleThemeMode);
+elements.profileOpen.addEventListener("click", toggleProfilePopover);
+elements.profileLogoutButton.addEventListener("click", submitLogout);
+elements.avatarUploadTrigger.addEventListener("click", () => elements.avatarUpload.click());
+elements.avatarUpload.addEventListener("change", (event) => uploadAvatar(event.target.files?.[0]));
+elements.avatarSymbolButtons.forEach((button) => {
+  button.addEventListener("click", () => setAvatarSymbol(button.dataset.avatarSymbol));
+});
 elements.settingsOpen.addEventListener("click", toggleSettings);
 elements.settingsBack.addEventListener("click", closeSettings);
 elements.settingsTabs.forEach((tab) => {
@@ -3054,11 +3281,15 @@ elements.readerAiPanelOpen.addEventListener("click", () => {
   else openAiPanel();
 });
 elements.readerCopy.addEventListener("click", copyReaderLink);
+elements.readerFrame.addEventListener("load", bindReaderFrameScroll);
 elements.metadataForm.addEventListener("submit", saveMetadataEditor);
 elements.metadataCancel.addEventListener("click", closeMetadataEditor);
 elements.metadataCancelIcon.addEventListener("click", closeMetadataEditor);
 elements.metadataEditor.addEventListener("click", (event) => {
   if (event.target === elements.metadataEditor) closeMetadataEditor();
+});
+elements.metadataCollection.addEventListener("change", () => {
+  if (elements.metadataCollection.value === "__add__") addMetadataCollection();
 });
 elements.importEntries.forEach((button) => {
   button.addEventListener("click", openHtmlImportPicker);
@@ -3069,7 +3300,7 @@ window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener("change", (
   if (state.themeMode === "system") applyTheme();
 });
 elements.loginForm.addEventListener("submit", submitLogin);
-elements.logoutButton.addEventListener("click", submitLogout);
+elements.logoutButton?.addEventListener("click", submitLogout);
 
 boot();
 registerServiceWorker();
