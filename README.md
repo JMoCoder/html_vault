@@ -42,11 +42,15 @@ Implemented today:
 
 - Single-container Docker deployment with `docker compose up -d --build`.
 - Built-in login screen with HttpOnly session cookies and backend-configured
-  test-user credentials.
+  self-hosted user credentials.
+- File-backed multi-user login for self-hosted deployments, with
+  case-insensitive usernames and per-user notebook storage.
 - Static-first frontend generated from `app_static/`.
 - Backend API for real notebook operation.
 - HTML upload/import into `data/content`.
 - YAML metadata persistence in `data/meta`.
+- User account persistence in `data/users.json`.
+- Extra users' notebooks stored under `data/users/<data_id>/`.
 - Automatic rebuild of `public/` after imports and metadata/state changes.
 - Card workspace with collection, library, tag, favorite, search, and sort
   workflows.
@@ -69,7 +73,6 @@ Not implemented yet:
 - Real AI model calls.
 - AI-generated HTML notes.
 - AI-powered reclassification/tagging jobs.
-- Multi-user accounts.
 - Cloud sync or hosted subscription service.
 - Full backup/restore and WebDAV execution.
 - Batch collection/tag rename, merge, or delete operations.
@@ -107,16 +110,37 @@ http://your-host-ip:8080
 Runtime data is stored outside Git:
 
 ```text
-data/content   Imported HTML files
-data/meta      YAML sidecar metadata and runtime config
-public         Generated web app output
+data/content             Default admin imported/generated HTML files
+data/meta                Default admin YAML metadata and runtime config
+data/users.json          Self-hosted login users with hashed passwords
+data/users/<data_id>/    Extra users' content, metadata, jobs, and public output
+public                   Default admin generated web app output
 ```
+
+The first env-configured admin keeps using the root `data/content`,
+`data/meta`, and `public` paths for backwards compatibility. Users added later
+are isolated under `data/users/<data_id>/`.
+
+Add another self-hosted user:
+
+```bash
+docker compose run --rm html-vault \
+  html-vault user-add \
+  --users-file /data/users.json \
+  --username alice \
+  --password "change-this-password"
+```
+
+Usernames are matched case-insensitively. Passwords remain case-sensitive and
+are stored as PBKDF2 hashes, not plaintext.
 
 Do not expose the default compose stack directly to the public internet with
 the default credentials. For public deployment, change
 `HTML_VAULT_AUTH_USERNAME`, `HTML_VAULT_AUTH_PASSWORD`, and
-`HTML_VAULT_SESSION_SECRET`, then put the service behind HTTPS. A Caddy Basic
-Auth example is provided in `compose.prod.yml`, `.env.secure.example`, and
+`HTML_VAULT_SESSION_SECRET`, then put the service behind HTTPS. The env
+username/password only bootstrap the first admin when `data/users.json` does
+not exist; after that, `users.json` is the source of truth. A Caddy Basic Auth
+example is provided in `compose.prod.yml`, `.env.secure.example`, and
 `deploy/caddy-basic-auth.Caddyfile`.
 
 ## Update Existing Docker Deployment
@@ -243,6 +267,8 @@ Default Docker starts with the local/test login `admin` / `test-password` and a
 development session secret. The browser opens a login screen first and uses an
 HttpOnly session cookie after sign-in. Registration is disabled; production
 deployments must replace the default username, password, and session secret.
+Self-hosted users are stored in `data/users.json`; each additional user's
+notebook data is stored separately under `data/users/<data_id>/`.
 
 When you expose HTML Vault publicly:
 

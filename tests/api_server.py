@@ -31,6 +31,8 @@ class ApiServer:
         api_token: str = "",
         auth_username: str = "",
         auth_password: str = "",
+        users_file: Path | None = None,
+        user_data_dir: Path | None = None,
         session_secret: str = "",
     ) -> None:
         self.port = free_port()
@@ -50,6 +52,10 @@ class ApiServer:
                 "HTML_VAULT_SESSION_SECRET": session_secret,
             },
         )
+        if users_file:
+            env["HTML_VAULT_USERS_FILE"] = str(users_file)
+        if user_data_dir:
+            env["HTML_VAULT_USER_DATA_DIR"] = str(user_data_dir)
         self.process = subprocess.Popen(
             [
                 sys.executable,
@@ -178,6 +184,8 @@ def run_api_server(
     api_token: str = "",
     auth_username: str = "",
     auth_password: str = "",
+    users_file: Path | None = None,
+    user_data_dir: Path | None = None,
     session_secret: str = "",
 ) -> ApiServer:
     return ApiServer(
@@ -188,5 +196,7 @@ def run_api_server(
         api_token=api_token,
         auth_username=auth_username,
         auth_password=auth_password,
+        users_file=users_file,
+        user_data_dir=user_data_dir,
         session_secret=session_secret,
     )

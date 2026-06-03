@@ -5,8 +5,13 @@ CONTENT_DIR="${HTML_VAULT_CONTENT:-/data/content}"
 META_DIR="${HTML_VAULT_META:-/data/meta}"
 PUBLIC_DIR="${HTML_VAULT_PUBLIC:-/public}"
 SITE_TITLE="${HTML_VAULT_TITLE:-HTML Vault}"
+USER_DATA_DIR="${HTML_VAULT_USER_DATA_DIR:-/data/users}"
 
-mkdir -p "$CONTENT_DIR" "$META_DIR/items" "$META_DIR/config" "$PUBLIC_DIR"
+mkdir -p "$CONTENT_DIR" "$META_DIR/items" "$META_DIR/config" "$PUBLIC_DIR" "$USER_DATA_DIR"
+
+if [ "$#" -gt 0 ]; then
+  exec "$@"
+fi
 
 html-vault build \
   --content "$CONTENT_DIR" \

@@ -12,12 +12,13 @@ services:
       HTML_VAULT_API_TOKEN: ${HTML_VAULT_API_TOKEN:-}
       HTML_VAULT_AUTH_USERNAME: ${HTML_VAULT_AUTH_USERNAME:-admin}
       HTML_VAULT_AUTH_PASSWORD: ${HTML_VAULT_AUTH_PASSWORD:-test-password}
+      HTML_VAULT_USERS_FILE: ${HTML_VAULT_USERS_FILE:-/data/users.json}
+      HTML_VAULT_USER_DATA_DIR: ${HTML_VAULT_USER_DATA_DIR:-/data/users}
       HTML_VAULT_SESSION_SECRET: ${HTML_VAULT_SESSION_SECRET:-html-vault-local-dev-session-secret-change-me}
       HTML_VAULT_SESSION_SECURE: ${HTML_VAULT_SESSION_SECURE:-false}
       HTML_VAULT_CORS_ORIGINS: ${HTML_VAULT_CORS_ORIGINS:-http://localhost,http://127.0.0.1}
     volumes:
-      - ./data/content:/data/content
-      - ./data/meta:/data/meta
+      - ./data:/data
       - ./public:/public
     ports:
       - "${HTML_VAULT_HTTP_PORT:-8080}:8787"

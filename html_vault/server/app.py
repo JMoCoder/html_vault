@@ -15,7 +15,7 @@ except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static
 
 from html_vault import __version__
 
-from .auth import login, logout, require_session, session_status
+from .auth import current_user, login, logout, read_session, require_session, session_status
 from .config import ServerSettings, load_settings
 from .items import ItemContentError, ItemDeleteError, ItemMetadataError, ItemService, ItemStateError, normalize_query
 from .jobs import JobError, JobService
@@ -28,19 +28,27 @@ def get_settings() -> ServerSettings:
     return load_settings()
 
 
-def get_item_service(settings: Annotated[ServerSettings, Depends(get_settings)]) -> ItemService:
+def get_request_settings(
+    settings: Annotated[ServerSettings, Depends(get_settings)],
+    request: Request,
+) -> ServerSettings:
+    user = read_session(settings, request) if settings.auth_enabled else None
+    return settings.for_user(user.data_id) if user else settings
+
+
+def get_item_service(settings: Annotated[ServerSettings, Depends(get_request_settings)]) -> ItemService:
     return ItemService(settings)
 
 
-def get_upload_service(settings: Annotated[ServerSettings, Depends(get_settings)]) -> UploadService:
+def get_upload_service(settings: Annotated[ServerSettings, Depends(get_request_settings)]) -> UploadService:
     return UploadService(settings)
 
 
-def get_navigation_service(settings: Annotated[ServerSettings, Depends(get_settings)]) -> NavigationConfigService:
+def get_navigation_service(settings: Annotated[ServerSettings, Depends(get_request_settings)]) -> NavigationConfigService:
     return NavigationConfigService(settings)
 
 
-def get_job_service(settings: Annotated[ServerSettings, Depends(get_settings)]) -> JobService:
+def get_job_service(settings: Annotated[ServerSettings, Depends(get_request_settings)]) -> JobService:
     return JobService(settings)
 
 
@@ -67,6 +75,10 @@ ApiAuth = Annotated[None, Depends(verify_api_token)]
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    if settings.auth_enabled:
+        from .users import UserStore
+
+        UserStore(settings).ensure_bootstrap_admin()
     app = FastAPI(title="HTML Vault Agent Server", version=__version__)
     app.add_middleware(
         CORSMiddleware,
@@ -291,8 +303,14 @@ app = create_app()
 
 
 def serve_static(settings: ServerSettings, request: Request, path: str) -> FileResponse:
-    public_dir = settings.public_dir.resolve()
-    requested = (public_dir / (path or "index.html")).resolve()
+    relative_path = Path(path or "index.html")
+    if static_requires_auth(relative_path):
+        user = read_session(settings, request) if settings.auth_enabled else None
+        active_settings = settings.for_user(user.data_id) if user else settings
+    else:
+        active_settings = settings
+    public_dir = active_settings.public_dir.resolve()
+    requested = (public_dir / relative_path).resolve()
     if requested.is_dir():
         requested = (requested / "index.html").resolve()
     if public_dir not in requested.parents and requested != public_dir:

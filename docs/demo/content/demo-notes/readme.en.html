@@ -15,7 +15,7 @@
 <p class="eyebrow">Project manual</p>
 <h1>HTML Vault Complete README</h1>
 </article>
-<aside class="stat"><span class="badge">Full README</span><strong>0.6.4</strong></aside>
+<aside class="stat"><span class="badge">Full README</span><strong>0.6.5</strong></aside>
 </section>
 <section class="doc">
 <h1>HTML Vault</h1>
@@ -26,12 +26,12 @@
 <h2>Why HTML Vault</h2>
 <p>Most knowledge tools either store content as opaque database rows or focus on Markdown-first authoring. HTML Vault takes a different path:</p>
 <ul><li><strong>HTML files are the durable content layer.</strong> Notes can be inspected, copied, archived, backed up, and served by ordinary web infrastructure.</li><li><strong>YAML sidecar metadata keeps organization explicit.</strong> Titles, summaries, collections, tags, favorite state, archive state, and source metadata live beside the content.</li><li><strong>The web app is the primary client.</strong> The project targets browser + mobile PWA usage instead of a separate desktop application.</li><li><strong>AI is treated as an optional service layer.</strong> The current app already has the UI architecture for AI-assisted workflows, while credentials and model calls are kept out of the static frontend.</li></ul>
-<h2>0.5.0 Stable Scope</h2>
-<p>Version <code>0.5.0</code> is the first stable self-hosted notebook release. It focuses on real local or private-network use: Docker deployment, HTML import, persistent metadata, filtering, reading, archiving, and a documented security boundary for public deployment.</p>
+<h2>0.6.x Current Scope</h2>
+<p>The current <code>0.6.x</code> line is the authenticated self-hosted notebook line. It focuses on Docker deployment, built-in login, multi-user local accounts, per-user notebook persistence, HTML import, metadata, filtering, reading, archiving, and a documented security boundary for public deployment.</p>
 <p>Implemented today:</p>
 <ul><li>Single-container Docker deployment with <code>docker compose up -d --build</code>.</li><li>Static-first frontend generated from <code>app_static/</code>.</li><li>Backend API for real notebook operation.</li><li>HTML upload/import into <code>data/content</code>.</li><li>YAML metadata persistence in <code>data/meta</code>.</li><li>Automatic rebuild of <code>public/</code> after imports and metadata/state changes.</li><li>Card workspace with collection, library, tag, favorite, search, and sort workflows.</li><li>Tag multi-select filters with OR/AND matching.</li><li>Reader view with iframe reading, original-file access, copy/share actions, favorite/archive actions, and metadata editing.</li><li>Archive behavior with edit lock and permanent delete for archived notes.</li><li>Sidebar visibility management for library views, collections, and tags.</li><li>Global AI sidebar UI scaffold with context labels.</li><li>AI provider, data, user, account/security, project info, and update sections in settings.</li><li>PWA manifest and service worker.</li><li>Chinese, English, and Japanese system UI labels.</li><li>Light/dark theme switching and resizable sidebars.</li><li><code>GET /api/version</code> and update hints from GitHub releases/tags.</li><li>Optional Caddy Basic Auth example for public deployments.</li></ul>
 <p>Not implemented yet:</p>
-<ul><li>Real AI model calls.</li><li>AI-generated HTML notes.</li><li>AI-powered reclassification/tagging jobs.</li><li>Multi-user accounts.</li><li>Cloud sync or hosted subscription service.</li><li>Full backup/restore and WebDAV execution.</li><li>Batch collection/tag rename, merge, or delete operations.</li></ul>
+<ul><li>Real AI model calls.</li><li>AI-generated HTML notes.</li><li>AI-powered reclassification/tagging jobs.</li><li>Cloud sync or hosted subscription service.</li><li>Full backup/restore and WebDAV execution.</li><li>Batch collection/tag rename, merge, or delete operations.</li></ul>
 <h2>Quick Docker Start</h2>
 <p>The default deployment is intended for local machines, NAS, LAN servers, or a private VPS. It does not require a token or Caddy.</p>
 <pre><code>git clone https://github.com/JMoCoder/html_vault.git

@@ -15,13 +15,18 @@
 <p class="eyebrow">Release history</p>
 <h1>HTML Vault Changelog</h1>
 </article>
-<aside class="stat"><span class="badge">0.6.4</span></aside>
+<aside class="stat"><span class="badge">0.6.5</span></aside>
 </section>
 <section class="timeline doc">
 <h1>Changelog</h1>
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
 <p>All notable changes to HTML Vault will be documented in this file.</p>
 <p>The format is based on Keep a Changelog, and this project uses semantic versioning after the initial public release.</p>
+<h2>[0.6.5] - 2026-06-03</h2>
+<h3>Added</h3>
+<ul><li>Added file-backed self-hosted multi-user login support through <code>data/users.json</code>.</li><li>Added per-user persistent notebook partitions under <code>data/users/&lt;data_id&gt;/</code> for each user's imported/generated HTML, metadata, runtime config, jobs, and generated public output.</li><li>Added <code>html-vault user-add</code> for creating or replacing self-hosted users without storing plaintext passwords.</li><li>Added backend integration coverage for env bootstrap, case-insensitive multi-user login, and cross-user upload isolation.</li></ul>
+<h3>Changed</h3>
+<ul><li>Default env credentials now bootstrap the first admin user into <code>users.json</code>; that bootstrap admin keeps the existing root notebook data for backwards compatibility.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.5</code>.</li></ul>
 <h2>[0.6.4] - 2026-06-03</h2>
 <h3>Changed</h3>
 <ul><li>Login usernames are now matched case-insensitively while passwords remain case-sensitive.</li><li>Login sessions store and return the configured canonical username.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.4</code>.</li></ul>

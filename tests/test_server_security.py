@@ -7,6 +7,8 @@ from pathlib import Path
 from html_vault.builder import build_site
 
 from tests.api_server import run_api_server
+from html_vault.server.config import ServerSettings
+from html_vault.server.users import UserStore
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -138,3 +140,91 @@ def test_login_session_protects_api_and_content(tmp_path: Path) -> None:
         assert "Docker Network Quick Notes" in content
     finally:
         server.close()
+
+
+def test_login_bootstraps_users_file_from_env(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    users_file = tmp_path / "users.json"
+    build_site(content_dir, meta_dir, public_dir, "Auth Test")
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Auth Test",
+        auth_username="admin",
+        auth_password="correct-password",
+        users_file=users_file,
+        user_data_dir=tmp_path / "users",
+        session_secret="test-session-secret",
+    )
+    try:
+        assert users_file.exists()
+        data = json.loads(users_file.read_text(encoding="utf-8"))
+        assert data["users"][0]["username"] == "admin"
+        assert data["users"][0]["data_id"] == "default"
+        assert data["users"][0]["password_hash"].startswith("pbkdf2_sha256$")
+
+        login = server.json("POST", "/api/auth/login", {"username": "ADMIN", "password": "correct-password"})
+        assert login == {"enabled": True, "authenticated": True, "user": "admin"}
+    finally:
+        server.close()
+
+
+def test_multi_user_uploads_are_persisted_in_separate_partitions(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    users_file = tmp_path / "users.json"
+    user_data_dir = tmp_path / "users"
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Auth Test",
+        max_upload_bytes=10 * 1024 * 1024,
+        users_file=users_file,
+    )
+    store = UserStore(settings)
+    store.add_user(username="alice", password="alice-password", data_id="alice")
+    store.add_user(username="bob", password="bob-password", data_id="bob")
+
+    build_site(content_dir, meta_dir, public_dir, "Auth Test")
+    alice = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Auth Test",
+        users_file=users_file,
+        user_data_dir=user_data_dir,
+        session_secret="test-session-secret",
+    )
+    bob = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Auth Test",
+        users_file=users_file,
+        user_data_dir=user_data_dir,
+        session_secret="test-session-secret",
+    )
+    try:
+        alice.json("POST", "/api/auth/login", {"username": "ALICE", "password": "alice-password"})
+        bob.json("POST", "/api/auth/login", {"username": "bob", "password": "bob-password"})
+
+        alice_upload = alice.multipart(
+            "/api/uploads/html",
+            fields={"title": "Alice Note", "summary": "", "collection": "Inbox", "tags": "private"},
+            file_field="file",
+            filename="alice-note.html",
+            content=b"<html><head><title>Alice Private</title></head><body>Alice only</body></html>",
+            content_type="text/html",
+        )
+        bob_manifest = bob.request("GET", "/api/manifest")
+        alice_manifest = alice.request("GET", "/api/manifest")
+
+        assert alice_upload["item_id"].startswith("imported/")
+        assert [item["title"] for item in alice_manifest["items"]] == ["Alice Note"]
+        assert bob_manifest["items"] == []
+        assert (user_data_dir / "alice" / "content" / alice_upload["item_id"]).exists()
+        assert not (user_data_dir / "bob" / "content" / alice_upload["item_id"]).exists()
+    finally:
+        alice.close()
+        bob.close()

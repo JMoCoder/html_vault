@@ -15,11 +15,16 @@
 <p class="eyebrow">リリース履歴</p>
 <h1>HTML Vault 変更履歴</h1>
 </article>
-<aside class="stat"><span class="badge">0.6.4</span></aside>
+<aside class="stat"><span class="badge">0.6.5</span></aside>
 </section>
 <section class="timeline doc">
 <h1>Changelog</h1>
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
+<h2>[0.6.5] - 2026-06-03</h2>
+<h3>Added</h3>
+<ul><li><code>data/users.json</code> によるセルフホスト向けマルチユーザーログインを追加しました。</li><li>ユーザーごとの永続化ノートブック領域 <code>data/users/&lt;data_id&gt;/</code> を追加し、各ユーザーのインポート/生成 HTML、メタデータ、実行時設定、ジョブ記録、生成済み public 出力を分離して保存します。</li><li>平文パスワードを保存せずにセルフホストユーザーを作成または置換できる <code>html-vault user-add</code> コマンドを追加しました。</li><li>env による初期管理者作成、大文字小文字を区別しないマルチユーザーログイン、ユーザー間アップロード分離を検証するバックエンド統合テストを追加しました。</li></ul>
+<h3>Changed</h3>
+<ul><li>既定 env 認証情報は最初の管理者を <code>users.json</code> に作成します。既存デプロイとの互換性のため、この初期管理者は従来のルートノートブックデータを引き続き使用します。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.5</code> に更新しました。</li></ul>
 <h2>[0.6.4] - 2026-06-03</h2>
 <h3>Changed</h3>
 <ul><li>ログインユーザー名は大文字小文字を区別せずに照合し、パスワードは引き続き大文字小文字を区別します。</li><li>ログイン session は、バックエンドで設定された正規のユーザー名を保存して返すようになりました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.4</code> に更新しました。</li></ul>

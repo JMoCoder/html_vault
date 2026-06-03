@@ -17,9 +17,7 @@ def build_site(
     output_dir: Path,
     site_title: str = "HTML Vault",
 ) -> dict:
-    if not content_dir.exists():
-        raise FileNotFoundError(f"Content directory does not exist: {content_dir}")
-
+    content_dir.mkdir(parents=True, exist_ok=True)
     output_dir.mkdir(parents=True, exist_ok=True)
     copy_static_app(output_dir)
     copy_content(content_dir, output_dir / "content")
@@ -47,4 +45,7 @@ def copy_static_app(output_dir: Path) -> None:
 def copy_content(content_dir: Path, target_dir: Path) -> None:
     if target_dir.exists():
         shutil.rmtree(target_dir)
-    shutil.copytree(content_dir, target_dir)
+    if content_dir.exists():
+        shutil.copytree(content_dir, target_dir)
+    else:
+        target_dir.mkdir(parents=True, exist_ok=True)

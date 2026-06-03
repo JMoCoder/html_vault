@@ -15,7 +15,7 @@
 <p class="eyebrow">プロジェクト説明</p>
 <h1>HTML Vault README 完全版</h1>
 </article>
-<aside class="stat"><span class="badge">README 全文</span><strong>0.6.4</strong></aside>
+<aside class="stat"><span class="badge">README 全文</span><strong>0.6.5</strong></aside>
 </section>
 <section class="doc">
 <h1>HTML Vault</h1>
@@ -26,12 +26,12 @@
 <h2>HTML Vault を選ぶ理由</h2>
 <p>多くのナレッジツールは、内容を不透明なデータベース行として保存するか、Markdown 執筆を中心にしています。HTML Vault は別の方針を取ります:</p>
 <ul><li><strong>HTML ファイルを永続的なコンテンツ層にします。</strong> ノートは確認、コピー、アーカイブ、バックアップでき、一般的な Web インフラで配信できます。</li><li><strong>YAML サイドカーメタデータで整理情報を明示します。</strong> タイトル、概要、コレクション、タグ、お気に入り、アーカイブ、ソース情報はコンテンツとは別に保存されます。</li><li><strong>Web アプリを主クライアントにします。</strong> 別のデスクトップアプリではなく、ブラウザーとモバイル PWA を主な利用形態にします。</li><li><strong>AI は任意のサービス層です。</strong> 現在のアプリには AI ワークフロー用 UI とコンテキスト設計がありますが、認証情報とモデル呼び出しは静的フロントエンドには保存しません。</li></ul>
-<h2>0.5.0 安定版の範囲</h2>
-<p><code>0.5.0</code> は最初の安定したセルフホストノートブックリリースです。Docker デプロイ、HTML インポート、メタデータ永続化、フィルター、読書、アーカイブ、公開デプロイの安全境界を中心にしています。</p>
+<h2>0.6.x 現在の範囲</h2>
+<p>現在の <code>0.6.x</code> は、認証付きセルフホストノートブックラインです。Docker デプロイ、内蔵ログイン、ローカルマルチユーザー、ユーザー別ノートブック永続化、HTML インポート、メタデータ、フィルター、読書、アーカイブ、公開デプロイの安全境界を中心にしています。</p>
 <p>現在実装済み:</p>
 <ul><li><code>docker compose up -d --build</code> による単一コンテナ Docker デプロイ。</li><li><code>app_static/</code> から生成される静的優先フロントエンド。</li><li>実際のノートブック運用向けバックエンド API。</li><li>HTML アップロードと <code>data/content</code> へのインポート。</li><li>YAML メタデータの <code>data/meta</code> への永続化。</li><li>インポート、メタデータ変更、状態変更後の <code>public/</code> 自動再ビルド。</li><li>ライブラリ、コレクション、タグ、お気に入り、検索、並び替えを備えたカードワークスペース。</li><li>OR/AND 一致を選べる複数タグフィルター。</li><li>iframe 読書、原文アクセス、コピー/共有、お気に入り/アーカイブ、メタデータ編集を備えたリーダー。</li><li>アーカイブ済みノートの編集ロックと完全削除。</li><li>ライブラリ、コレクション、タグのサイドバー表示管理。</li><li>グローバル AI サイドバー UI スキャフォールドとコンテキストラベル。</li><li>AI プロバイダー、データ、ユーザー、アカウントセキュリティ、プロジェクト情報、更新情報の設定セクション。</li><li>PWA manifest と Service Worker。</li><li>中国語、英語、日本語のシステム UI。</li><li>ライト/ダークテーマ切り替えとリサイズ可能なサイドバー。</li><li><code>GET /api/version</code> と GitHub releases/tags による更新ヒント。</li><li>任意の Caddy Basic Auth 公開デプロイ例。</li></ul>
 <p>未実装:</p>
-<ul><li>実際の AI モデル呼び出し。</li><li>AI 生成 HTML ノート。</li><li>AI による再分類、再タグ付けなどのバッチ処理。</li><li>マルチユーザーアカウント。</li><li>クラウド同期またはホスト型サブスクリプションサービス。</li><li>完全なバックアップ/復元と WebDAV 実行。</li><li>コレクション/タグの一括リネーム、統合、削除。</li></ul>
+<ul><li>実際の AI モデル呼び出し。</li><li>AI 生成 HTML ノート。</li><li>AI による再分類、再タグ付けなどのバッチ処理。</li><li>クラウド同期またはホスト型サブスクリプションサービス。</li><li>完全なバックアップ/復元と WebDAV 実行。</li><li>コレクション/タグの一括リネーム、統合、削除。</li></ul>
 <h2>Docker クイックスタート</h2>
 <p>既定の Docker パスはローカル PC、NAS、LAN サーバー、プライベート VPS 向けです。token も Caddy も必須ではありません。</p>
 <pre><code>git clone https://github.com/JMoCoder/html_vault.git

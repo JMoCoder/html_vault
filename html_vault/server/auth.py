@@ -15,21 +15,25 @@ except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static
     ) from exc
 
 from .config import ServerSettings
+from .users import AuthenticatedUser, UserStore, user_from_record
 
 
 def session_status(settings: ServerSettings, request: Request) -> dict[str, Any]:
     if not settings.auth_enabled:
         return {"enabled": False, "authenticated": True, "user": None}
-    username = read_session(settings, request)
-    return {"enabled": True, "authenticated": bool(username), "user": username or None}
+    user = read_session(settings, request)
+    return {"enabled": True, "authenticated": bool(user), "user": user.username if user else None}
 
 
 def login(settings: ServerSettings, response: Response, username: str, password: str) -> dict[str, Any]:
     if not settings.auth_enabled:
         return {"enabled": False, "authenticated": True, "user": None}
-    if not username_matches(username, settings.auth_username) or not constant_time_equal(password, settings.auth_password):
+    store = UserStore(settings)
+    store.ensure_bootstrap_admin()
+    user = store.authenticate(username, password)
+    if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password.")
-    token = make_session_token(settings, settings.auth_username)
+    token = make_session_token(settings, user.username)
     response.set_cookie(
         settings.session_cookie_name,
         token,
@@ -39,7 +43,7 @@ def login(settings: ServerSettings, response: Response, username: str, password:
         samesite="lax",
         path="/",
     )
-    return {"enabled": True, "authenticated": True, "user": settings.auth_username}
+    return {"enabled": True, "authenticated": True, "user": user.username}
 
 
 def logout(settings: ServerSettings, response: Response) -> dict[str, Any]:
@@ -47,10 +51,10 @@ def logout(settings: ServerSettings, response: Response) -> dict[str, Any]:
     return {"enabled": settings.auth_enabled, "authenticated": False, "user": None}
 
 
-def read_session(settings: ServerSettings, request: Request) -> str:
+def read_session(settings: ServerSettings, request: Request) -> AuthenticatedUser | None:
     token = request.cookies.get(settings.session_cookie_name, "")
     if not token:
-        return ""
+        return None
     return verify_session_token(settings, token)
 
 
@@ -62,6 +66,15 @@ def require_session(settings: ServerSettings, request: Request) -> None:
     raise HTTPException(status_code=401, detail="Login required.")
 
 
+def current_user(settings: ServerSettings, request: Request) -> AuthenticatedUser | None:
+    if not settings.auth_enabled:
+        return None
+    user = read_session(settings, request)
+    if user:
+        return user
+    raise HTTPException(status_code=401, detail="Login required.")
+
+
 def make_session_token(settings: ServerSettings, username: str) -> str:
     expires_at = int(time.time()) + settings.session_max_age_seconds
     payload = encode_json({"sub": username, "exp": expires_at})
@@ -69,24 +82,27 @@ def make_session_token(settings: ServerSettings, username: str) -> str:
     return f"{payload}.{signature}"
 
 
-def verify_session_token(settings: ServerSettings, token: str) -> str:
+def verify_session_token(settings: ServerSettings, token: str) -> AuthenticatedUser | None:
     payload, separator, signature = token.partition(".")
     if not separator or not payload or not signature:
-        return ""
+        return None
     expected = sign(settings, payload)
     if not constant_time_equal(signature, expected):
-        return ""
+        return None
     try:
         data = json.loads(base64.urlsafe_b64decode(pad_base64(payload)).decode("utf-8"))
     except (ValueError, json.JSONDecodeError):
-        return ""
+        return None
     username = str(data.get("sub", ""))
     expires_at = int(data.get("exp", 0))
     if expires_at < int(time.time()):
-        return ""
-    if not username_matches(username, settings.auth_username):
-        return ""
-    return settings.auth_username
+        return None
+    store = UserStore(settings)
+    store.ensure_bootstrap_admin()
+    record = store.find_user(username)
+    if not record or not bool(record.get("enabled", True)):
+        return None
+    return user_from_record(record)
 
 
 def sign(settings: ServerSettings, payload: str) -> str:

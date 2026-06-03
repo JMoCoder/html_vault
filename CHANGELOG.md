@@ -7,6 +7,27 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.6.5] - 2026-06-03
+
+### Added
+
+- Added file-backed self-hosted multi-user login support through
+  `data/users.json`.
+- Added per-user persistent notebook partitions under `data/users/<data_id>/`
+  for each user's imported/generated HTML, metadata, runtime config, jobs, and
+  generated public output.
+- Added `html-vault user-add` for creating or replacing self-hosted users
+  without storing plaintext passwords.
+- Added backend integration coverage for env bootstrap, case-insensitive
+  multi-user login, and cross-user upload isolation.
+
+### Changed
+
+- Default env credentials now bootstrap the first admin user into
+  `users.json`; that bootstrap admin keeps the existing root notebook data for
+  backwards compatibility.
+- Updated package, app, PWA, demo, and homepage cache versions to `0.6.5`.
+
 ## [0.6.4] - 2026-06-03
 
 ### Changed

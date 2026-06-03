@@ -17,7 +17,7 @@ def build_manifest(
     metadata = MetadataStore.load(meta_dir)
     items = [
         build_item(path, content_dir, metadata)
-        for path in sorted(content_dir.rglob("*.html"))
+        for path in sorted(content_dir.rglob("*.html")) if content_dir.exists()
         if path.is_file()
     ]
     pinned = [item for item in items if item["pinned"]]
