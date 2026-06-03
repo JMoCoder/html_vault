@@ -31,16 +31,18 @@ Markdown-first authoring. HTML Vault takes a different path:
   the UI architecture for AI-assisted workflows, while credentials and model
   calls are kept out of the static frontend.
 
-## 0.5.0 Stable Scope
+## 0.6.x Current Scope
 
-Version `0.5.0` is the first stable self-hosted notebook release. It focuses on
-real local or private-network use: Docker deployment, HTML import, persistent
-metadata, filtering, reading, archiving, and a documented security boundary for
-public deployment.
+The current `0.6.x` line is the first authenticated self-hosted notebook line.
+It focuses on real local or private-network use: Docker deployment, built-in
+login, HTML import, persistent metadata, filtering, reading, archiving, and a
+documented security boundary for public deployment.
 
 Implemented today:
 
 - Single-container Docker deployment with `docker compose up -d --build`.
+- Built-in login screen with HttpOnly session cookies and backend-configured
+  test-user credentials.
 - Static-first frontend generated from `app_static/`.
 - Backend API for real notebook operation.
 - HTML upload/import into `data/content`.
@@ -116,6 +118,33 @@ the default credentials. For public deployment, change
 `HTML_VAULT_SESSION_SECRET`, then put the service behind HTTPS. A Caddy Basic
 Auth example is provided in `compose.prod.yml`, `.env.secure.example`, and
 `deploy/caddy-basic-auth.Caddyfile`.
+
+## Update Existing Docker Deployment
+
+HTML Vault does not update the host automatically. The app only shows update
+hints from GitHub releases/tags.
+
+Before updating, back up `data/`:
+
+```bash
+cp -a data "data.backup.$(date +%Y%m%d-%H%M%S)"
+```
+
+Check what will change:
+
+```bash
+git fetch
+git log --oneline HEAD..origin/main
+git diff --stat HEAD..origin/main
+```
+
+Apply the update:
+
+```bash
+git pull --ff-only
+docker compose up -d --build
+docker compose logs -f
+```
 
 ## Static Build
 

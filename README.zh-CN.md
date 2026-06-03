@@ -17,13 +17,14 @@ HTML Vault 是一个自托管 HTML 知识库工作台，用于保存、浏览、
 - **Web 应用是主客户端。** 项目目标是浏览器和移动端 PWA，而不是额外开发桌面端。
 - **AI 是可选服务层。** 当前已经具备 AI 工作流的界面和上下文架构，但凭据与模型调用不会写入静态前端。
 
-## 0.5.0 稳定版范围
+## 0.6.x 当前范围
 
-`0.5.0` 是第一个稳定的自托管笔记本版本，重点是本地或私有网络中的真实使用：Docker 部署、HTML 导入、元数据持久化、筛选、阅读、归档，以及公网部署安全边界文档。
+当前 `0.6.x` 是第一条带内置登录认证的自托管笔记本版本线，重点是本地或私有网络中的真实使用：Docker 部署、内置登录、HTML 导入、元数据持久化、筛选、阅读、归档，以及公网部署安全边界文档。
 
 当前已实现：
 
 - 单容器 Docker 部署：`docker compose up -d --build`。
+- 内置登录页，使用 HttpOnly session Cookie，测试用户由后端配置。
 - 从 `app_static/` 生成的静态优先前端。
 - 用于真实笔记本运行的后端 API。
 - HTML 文件上传并导入到 `data/content`。
@@ -90,6 +91,32 @@ public         生成后的 Web 应用输出
 ```
 
 不要使用默认账号把 compose 栈直接暴露到公网。公网部署时，必须修改 `HTML_VAULT_AUTH_USERNAME`、`HTML_VAULT_AUTH_PASSWORD` 和 `HTML_VAULT_SESSION_SECRET`，并放在 HTTPS 后面。项目提供 Caddy Basic Auth 示例：`compose.prod.yml`、`.env.secure.example` 和 `deploy/caddy-basic-auth.Caddyfile`。
+
+## 更新现有 Docker 部署
+
+HTML Vault 不会自动更新宿主机。应用只会根据 GitHub releases/tags 显示更新提示。
+
+更新前先备份 `data/`：
+
+```bash
+cp -a data "data.backup.$(date +%Y%m%d-%H%M%S)"
+```
+
+查看版本差异：
+
+```bash
+git fetch
+git log --oneline HEAD..origin/main
+git diff --stat HEAD..origin/main
+```
+
+执行更新：
+
+```bash
+git pull --ff-only
+docker compose up -d --build
+docker compose logs -f
+```
 
 ## 静态构建
 
