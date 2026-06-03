@@ -7,6 +7,15 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.6.4] - 2026-06-03
+
+### Changed
+
+- Login usernames are now matched case-insensitively while passwords remain
+  case-sensitive.
+- Login sessions store and return the configured canonical username.
+- Updated package, app, PWA, demo, and homepage cache versions to `0.6.4`.
+
 ## [0.6.3] - 2026-06-03
 
 ### Changed

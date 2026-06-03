@@ -27,9 +27,9 @@ def session_status(settings: ServerSettings, request: Request) -> dict[str, Any]
 def login(settings: ServerSettings, response: Response, username: str, password: str) -> dict[str, Any]:
     if not settings.auth_enabled:
         return {"enabled": False, "authenticated": True, "user": None}
-    if not constant_time_equal(username, settings.auth_username) or not constant_time_equal(password, settings.auth_password):
+    if not username_matches(username, settings.auth_username) or not constant_time_equal(password, settings.auth_password):
         raise HTTPException(status_code=401, detail="Invalid username or password.")
-    token = make_session_token(settings, username)
+    token = make_session_token(settings, settings.auth_username)
     response.set_cookie(
         settings.session_cookie_name,
         token,
@@ -39,7 +39,7 @@ def login(settings: ServerSettings, response: Response, username: str, password:
         samesite="lax",
         path="/",
     )
-    return {"enabled": True, "authenticated": True, "user": username}
+    return {"enabled": True, "authenticated": True, "user": settings.auth_username}
 
 
 def logout(settings: ServerSettings, response: Response) -> dict[str, Any]:
@@ -84,9 +84,9 @@ def verify_session_token(settings: ServerSettings, token: str) -> str:
     expires_at = int(data.get("exp", 0))
     if expires_at < int(time.time()):
         return ""
-    if not constant_time_equal(username, settings.auth_username):
+    if not username_matches(username, settings.auth_username):
         return ""
-    return username
+    return settings.auth_username
 
 
 def sign(settings: ServerSettings, payload: str) -> str:
@@ -105,3 +105,7 @@ def pad_base64(value: str) -> bytes:
 
 def constant_time_equal(left: str, right: str) -> bool:
     return hmac.compare_digest(left.encode("utf-8"), right.encode("utf-8"))
+
+
+def username_matches(input_username: str, configured_username: str) -> bool:
+    return constant_time_equal(input_username.casefold(), configured_username.casefold())

@@ -121,7 +121,7 @@ def test_login_session_protects_api_and_content(tmp_path: Path) -> None:
         else:
             raise AssertionError("Expected invalid login to fail.")
 
-        body = json.dumps({"username": "admin", "password": "correct-password"}).encode("utf-8")
+        body = json.dumps({"username": "ADMIN", "password": "correct-password"}).encode("utf-8")
         login = server.request(
             "POST",
             "/api/auth/login",
