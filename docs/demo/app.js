@@ -2792,7 +2792,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js?v=0.5.1-demo").catch((error) => {
+    navigator.serviceWorker.register("sw.js?v=0.5.1-demo.2").catch((error) => {
       console.warn("Service worker registration failed", error);
     });
   });

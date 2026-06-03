@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-06-02T08:00:00.000000+00:00",
+  "generated_at": "2026-06-03T02:30:00.000000+00:00",
   "site": {
     "title": "HTML Vault Demo",
     "layout": "cards"
@@ -15,9 +15,9 @@
       "source_url": null,
       "collection": "プロジェクト文書",
       "tags": [
-        "README",
-        "README 全文",
-        "HTML Vault"
+        "説明文書",
+        "プロジェクト概要",
+        "セルフホスト"
       ],
       "status": "ready",
       "review_status": "reviewed",
@@ -41,9 +41,9 @@
       "source_url": null,
       "collection": "リリース記録",
       "tags": [
-        "CHANGELOG",
-        "CHANGELOG 全文",
-        "Release"
+        "変更履歴",
+        "リリース記録",
+        "バージョン履歴"
       ],
       "status": "ready",
       "review_status": "reviewed",
@@ -73,27 +73,27 @@
   ],
   "tags": [
     {
-      "name": "CHANGELOG",
+      "name": "セルフホスト",
       "count": 1
     },
     {
-      "name": "HTML Vault",
+      "name": "バージョン履歴",
       "count": 1
     },
     {
-      "name": "README",
+      "name": "プロジェクト概要",
       "count": 1
     },
     {
-      "name": "Release",
+      "name": "リリース記録",
       "count": 1
     },
     {
-      "name": "README 全文",
+      "name": "変更履歴",
       "count": 1
     },
     {
-      "name": "CHANGELOG 全文",
+      "name": "説明文書",
       "count": 1
     }
   ]

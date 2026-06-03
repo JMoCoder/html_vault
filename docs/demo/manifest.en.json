@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-06-02T08:00:00.000000+00:00",
+  "generated_at": "2026-06-03T02:30:00.000000+00:00",
   "site": {
     "title": "HTML Vault Demo",
     "layout": "cards"
@@ -16,8 +16,8 @@
       "collection": "Project Docs",
       "tags": [
         "README",
-        "Full README",
-        "HTML Vault"
+        "Project Overview",
+        "Self-hosted"
       ],
       "status": "ready",
       "review_status": "reviewed",
@@ -41,9 +41,9 @@
       "source_url": null,
       "collection": "Release Notes",
       "tags": [
-        "CHANGELOG",
-        "Full CHANGELOG",
-        "Release"
+        "Changelog",
+        "Release Notes",
+        "Version History"
       ],
       "status": "ready",
       "review_status": "reviewed",
@@ -73,11 +73,11 @@
   ],
   "tags": [
     {
-      "name": "CHANGELOG",
+      "name": "Changelog",
       "count": 1
     },
     {
-      "name": "HTML Vault",
+      "name": "Project Overview",
       "count": 1
     },
     {
@@ -85,15 +85,15 @@
       "count": 1
     },
     {
-      "name": "Release",
+      "name": "Release Notes",
       "count": 1
     },
     {
-      "name": "Full README",
+      "name": "Self-hosted",
       "count": 1
     },
     {
-      "name": "Full CHANGELOG",
+      "name": "Version History",
       "count": 1
     }
   ]

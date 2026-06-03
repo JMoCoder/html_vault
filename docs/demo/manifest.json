@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-06-02T08:00:00.000000+00:00",
+  "generated_at": "2026-06-03T02:30:00.000000+00:00",
   "site": {
     "title": "HTML Vault Demo",
     "layout": "cards"
@@ -15,9 +15,9 @@
       "source_url": null,
       "collection": "项目文档",
       "tags": [
-        "README",
-        "完整 README",
-        "HTML Vault"
+        "说明文档",
+        "项目概览",
+        "自托管"
       ],
       "status": "ready",
       "review_status": "reviewed",
@@ -41,9 +41,9 @@
       "source_url": null,
       "collection": "发布记录",
       "tags": [
-        "CHANGELOG",
-        "完整 CHANGELOG",
-        "Release"
+        "更新日志",
+        "发布记录",
+        "版本历史"
       ],
       "status": "ready",
       "review_status": "reviewed",
@@ -73,27 +73,27 @@
   ],
   "tags": [
     {
-      "name": "CHANGELOG",
+      "name": "发布记录",
       "count": 1
     },
     {
-      "name": "HTML Vault",
+      "name": "版本历史",
       "count": 1
     },
     {
-      "name": "README",
+      "name": "说明文档",
       "count": 1
     },
     {
-      "name": "Release",
+      "name": "项目概览",
       "count": 1
     },
     {
-      "name": "完整 README",
+      "name": "自托管",
       "count": 1
     },
     {
-      "name": "完整 CHANGELOG",
+      "name": "更新日志",
       "count": 1
     }
   ]

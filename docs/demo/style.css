@@ -1122,16 +1122,23 @@ textarea {
 }
 
 .card-tags {
-  max-height: 30px;
+  min-height: 28px;
+  max-height: 28px;
+  align-items: center;
+  align-content: center;
 }
 
 .card-tags span,
 .reader-tags span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   padding: 4px 7px;
   border-radius: 999px;
   background: var(--panel-soft);
   color: var(--warm);
   font-size: 12px;
+  line-height: 1;
 }
 
 .card-links,
