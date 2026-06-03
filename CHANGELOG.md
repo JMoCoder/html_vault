@@ -7,6 +7,19 @@ All notable changes to HTML Vault will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.6.6] - 2026-06-03
+
+### Changed
+
+- Refined the sidebar profile area: the footer avatar now opens a compact user
+  status popover with avatar, username, ID, subscription status, and AI credit
+  balance instead of navigating away.
+- Moved profile management controls into Settings > User profile, made the
+  avatar itself the upload target, and aligned sign out on the same profile row.
+- Smoothed collapsed sidebar behavior across the main workspace, reader, and
+  settings overlays.
+- Updated package, app, PWA, demo, and homepage cache versions to `0.6.6`.
+
 ## [0.6.5] - 2026-06-03
 
 ### Added

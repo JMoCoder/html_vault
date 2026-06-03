@@ -15,11 +15,14 @@
 <p class="eyebrow">发布记录</p>
 <h1>HTML Vault 更新日志</h1>
 </article>
-<aside class="stat"><span class="badge">0.6.5</span></aside>
+<aside class="stat"><span class="badge">0.6.6</span></aside>
 </section>
 <section class="timeline doc">
 <h1>更新日志</h1>
 <p>语言：<a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
+<h2>[0.6.6] - 2026-06-03</h2>
+<h3>变更</h3>
+<ul><li>优化左侧边栏用户区域：底部头像现在弹出紧凑的用户状态浮层，展示头像、用户名、ID、订阅状态和 AI 点数余额，不再跳转页面。</li><li>用户资料管理入口收拢到“设置 &gt; 用户资料”，头像本身作为上传入口，退出登录按钮与头像信息保持同一行。</li><li>优化主工作台、阅读页和设置页的左侧边栏收起/展开过渡效果。</li><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.6</code>。</li></ul>
 <h2>[0.6.5] - 2026-06-03</h2>
 <h3>新增</h3>
 <ul><li>新增基于 <code>data/users.json</code> 的自托管多用户登录支持。</li><li>新增按用户隔离的持久化资料库分区：<code>data/users/&lt;data_id&gt;/</code>，用于保存该用户上传/生成的 HTML、元数据、运行配置、任务记录和生成后的 public 输出。</li><li>新增 <code>html-vault user-add</code> 命令，可在不保存明文密码的情况下创建或替换自托管用户。</li><li>新增后端集成测试，覆盖 env 引导管理员、大小写不敏感的多用户登录，以及不同用户上传内容的隔离。</li></ul>
