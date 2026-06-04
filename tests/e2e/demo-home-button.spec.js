@@ -41,3 +41,52 @@ test("demo workspace logo opens the Pages homepage", async ({ page }) => {
   await expect(page).toHaveURL(/\/$/);
   await expect(page.locator(".cover h1")).toBeVisible();
 });
+
+test("card original links use raw API in same-origin app mode", async ({ page }) => {
+  await page.route("**/demo/config.js", async (route) => {
+    await route.fulfill({
+      contentType: "application/javascript",
+      body: 'window.HTML_LORE_AGENT_URL = "http://127.0.0.1:8090";',
+    });
+  });
+  await page.route("**/api/auth/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ enabled: false, authenticated: true, user: null, data_id: null }),
+    });
+  });
+  await page.route("**/api/manifest", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        version: 2,
+        title: "HTMlore Test",
+        items: [
+          {
+            id: "imported/2026/06/imported-note-6.html",
+            title: "Imported Note",
+            summary: "Imported note summary",
+            collection: "Inbox",
+            tags: ["HTML"],
+            source: "imported",
+            updated: "2026-06-04T00:00:00Z",
+            path: "content/imported/2026/06/imported-note-6.html",
+          },
+        ],
+      }),
+    });
+  });
+  await page.goto("/demo/?lang=en");
+
+  const original = page.locator(".item-card .card-links a").first();
+  await expect(original).toBeVisible();
+  await expect(original).toHaveAttribute("href", /\/api\/items\/.+\/raw$/);
+});
+
+test("card original links keep static content paths in demo mode", async ({ page }) => {
+  await page.goto("/demo/?lang=en");
+
+  const original = page.locator(".item-card .card-links a").first();
+  await expect(original).toBeVisible();
+  await expect(original).toHaveAttribute("href", /^content\/.+\.html$/);
+});

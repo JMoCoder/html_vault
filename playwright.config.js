@@ -14,6 +14,7 @@ module.exports = defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "off",
+    serviceWorkers: "block",
     launchOptions: {
       args: ["--no-sandbox"],
     },

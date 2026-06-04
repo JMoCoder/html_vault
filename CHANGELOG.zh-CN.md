@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-06-04
+
+### 修复
+
+- 修复部署环境中卡片层级“原文”链接错误走静态 `content/...` 路径的问题，现在会使用带登录会话的 raw item API，避免被 SPA fallback 路由拦截成工作台页面。
+- 为自托管 HTTP/HTTPS 部署增加同源 API 自动识别，同时保持 GitHub Pages 和静态 Demo 不接入后端。
+- Playwright 检查中屏蔽 service worker，并新增 API 模式与静态 Demo 模式下卡片“原文”链接的覆盖。
+- 包版本、应用版本、PWA 与 Demo 缓存版本更新为 `0.7.1`。
+
 ## [0.7.0] - 2026-06-04
 
 ### 变更

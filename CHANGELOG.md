@@ -9,6 +9,15 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-06-04
+
+### Fixed
+
+- Fixed card-level Original links in deployed workspaces so they use the authenticated raw item API instead of static `content/...` paths that can be intercepted by SPA fallback routing.
+- Added same-origin API detection for self-hosted HTTP/HTTPS deployments while keeping GitHub Pages and static demo mode backend-free.
+- Blocked service workers during Playwright checks and added coverage for card Original links in API-backed and static demo modes.
+- Updated package, app, PWA, and demo cache versions to `0.7.1`.
+
 ## [0.7.0] - 2026-06-04
 
 ### Changed

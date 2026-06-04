@@ -823,6 +823,8 @@ function getDefaultAgentUrl() {
   const port = window.location.port;
   const isLocalHost = host === "127.0.0.1" || host === "localhost";
   if (isLocalHost && port && port !== "80" && port !== "443") return "http://127.0.0.1:8787";
+  if (host.endsWith("github.io")) return "";
+  if (window.location.protocol === "http:" || window.location.protocol === "https:") return window.location.origin;
   return "";
 }
 
@@ -848,7 +850,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.7.0",
+  currentVersion: "0.7.1",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -1438,7 +1440,7 @@ function renderCard(item) {
       <span class="card-date">${escapeHtml(formatDate(item.updated))}</span>
       <div class="card-links">
         <button type="button" data-read>${escapeHtml(t("read"))}</button>
-        <a href="${encodeURI(item.path)}" target="_blank" rel="noreferrer">${escapeHtml(t("original"))}</a>
+        <a href="${escapeHtml(getReaderRawUrl(item))}" target="_blank" rel="noreferrer">${escapeHtml(t("original"))}</a>
       </div>
     </div>
   `;
@@ -3141,7 +3143,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.7.0-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.7.1-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });

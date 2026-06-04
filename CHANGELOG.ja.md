@@ -4,6 +4,15 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-06-04
+
+### Fixed
+
+- デプロイ済みワークスペースでカード上の Original リンクが静的な `content/...` パスを開き、SPA fallback によってアプリ画面へ置き換わる問題を修正しました。ログインセッション付きの raw item API を使うようになりました。
+- セルフホスト HTTP/HTTPS デプロイで同一 origin の API を自動検出しつつ、GitHub Pages と静的 Demo はバックエンドなしのまま維持しました。
+- Playwright 検証中は service worker をブロックし、API 連携モードと静的 Demo モードのカード Original リンクをカバーするテストを追加しました。
+- パッケージ、アプリ、PWA、Demo のキャッシュバージョンを `0.7.1` に更新しました。
+
 ## [0.7.0] - 2026-06-04
 
 ### Changed
