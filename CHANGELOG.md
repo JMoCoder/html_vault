@@ -16,6 +16,9 @@ versioning after the initial public release.
 - Added share safety checks that block executable HTML, form/embed content,
   dangerous URL schemes, local/private references, and likely secrets before a
   public share can be created.
+- Added a narrow safe-share conversion for local `toggleGroup('id')`
+  collapsible note interactions while stripping source scripts and external
+  font/resource links from the public share page.
 - Added workspace share UI on reader pages, share-link management in Settings,
   and removed the internal copy-link reader action.
 

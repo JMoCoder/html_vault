@@ -24,9 +24,11 @@ SHARE_DURATIONS = {
     "forever": None,
 }
 
-DANGEROUS_TAGS = {"script", "iframe", "object", "embed", "form", "input", "button", "textarea", "select", "base", "link"}
-SANITIZER_BLOCK_TAGS = DANGEROUS_TAGS | {"style", "meta"}
+DANGEROUS_TAGS = {"iframe", "object", "embed", "form", "input", "button", "textarea", "select", "base"}
+SANITIZER_BLOCK_TAGS = DANGEROUS_TAGS | {"script", "style", "meta", "link"}
+SANITIZER_SKIP_CONTENT_TAGS = {"script", "style", "iframe", "object", "embed", "form", "textarea", "select", "button"}
 DANGEROUS_EXTENSIONS = {".exe", ".dmg", ".apk", ".msi", ".bat", ".cmd", ".sh", ".ps1", ".scr", ".jar"}
+SAFE_TOGGLE_HANDLER = re.compile(r"^toggleGroup\(\s*['\"]([A-Za-z][A-Za-z0-9_-]{0,63})['\"]\s*\)\s*;?\s*$")
 SECRET_PATTERNS = [
     re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
     re.compile(r"\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b"),
@@ -319,6 +321,8 @@ def scan_share_content(content: str) -> dict[str, Any]:
     scanner = SafetyScanner()
     scanner.feed(content)
     reasons = list(scanner.reasons)
+    if scanner.saw_script and not scanner.only_safe_toggle_script():
+        reasons.append("blocked-tag:script")
     text = html.unescape(strip_tags(content))
     for pattern in SECRET_PATTERNS:
         if pattern.search(text):
@@ -335,9 +339,16 @@ class SafetyScanner(HTMLParser):
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
         self.reasons: list[str] = []
+        self.saw_script = False
+        self.script_stack = 0
+        self.script_parts: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         name = tag.lower()
+        if name == "script":
+            self.saw_script = True
+            self.script_stack += 1
+            return
         if name in DANGEROUS_TAGS:
             self.reasons.append(f"blocked-tag:{name}")
         if name == "meta" and is_meta_refresh(attrs):
@@ -345,12 +356,23 @@ class SafetyScanner(HTMLParser):
         for attr_name, attr_value in attrs:
             attr = attr_name.lower()
             value = (attr_value or "").strip()
-            if attr.startswith("on"):
+            if attr.startswith("on") and not (attr == "onclick" and safe_toggle_target(value)):
                 self.reasons.append("inline-event-handler")
             if attr in {"href", "src", "action", "formaction"}:
                 reason = unsafe_url_reason(value)
                 if reason and reason != "external-link":
                     self.reasons.append(reason)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() == "script" and self.script_stack > 0:
+            self.script_stack -= 1
+
+    def handle_data(self, data: str) -> None:
+        if self.script_stack > 0:
+            self.script_parts.append(data)
+
+    def only_safe_toggle_script(self) -> bool:
+        return is_safe_toggle_script("\n".join(self.script_parts))
 
 
 def unsafe_url_reason(value: str) -> str:
@@ -373,6 +395,27 @@ def is_meta_refresh(attrs: list[tuple[str, str | None]]) -> bool:
     return values.get("http-equiv") == "refresh"
 
 
+def safe_toggle_target(value: str) -> str:
+    match = SAFE_TOGGLE_HANDLER.fullmatch(value.strip())
+    return match.group(1) if match else ""
+
+
+def is_safe_toggle_script(value: str) -> bool:
+    compact = re.sub(r"\s+", "", value)
+    return bool(
+        re.fullmatch(
+            r"functiontoggleGroup\(id\)\{constel=document\.getElementById\(id\);el\.classList\.toggle\('open'\);\}"
+            r"(//Openfirstgroupbydefault\(alreadysetviaclass\))?"
+            r"(//Addkeyboardshortcut:press'\?'toexpandall)?"
+            r"document\.addEventListener\('keydown',e=>\{"
+            r"if\(e\.key==='\?'\)\{document\.querySelectorAll\('\.qgroup'\)\.forEach\(g=>g\.classList\.add\('open'\)\);\}"
+            r"if\(e\.key==='/'\)\{document\.querySelectorAll\('\.qgroup'\)\.forEach\(g=>g\.classList\.remove\('open'\)\);document\.getElementById\('g1'\)\.classList\.add\('open'\);\}"
+            r"\}\);",
+            compact,
+        ),
+    )
+
+
 def sanitize_shared_html(content: str) -> str:
     sanitizer = ShareSanitizer()
     sanitizer.feed(content)
@@ -388,16 +431,22 @@ class ShareSanitizer(HTMLParser):
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         name = tag.lower()
         if name in SANITIZER_BLOCK_TAGS or (name == "meta" and is_meta_refresh(attrs)):
-            self.skip_stack.append(name)
+            if name in SANITIZER_SKIP_CONTENT_TAGS:
+                self.skip_stack.append(name)
             return
         if self.skip_stack:
             return
         clean_attrs: list[str] = []
         for attr_name, attr_value in attrs:
             attr = attr_name.lower()
+            value = attr_value or ""
+            if attr == "onclick":
+                target = safe_toggle_target(value)
+                if target:
+                    clean_attrs.append(f'data-share-toggle="{html.escape(target, quote=True)}"')
+                continue
             if attr.startswith("on"):
                 continue
-            value = attr_value or ""
             if name == "a" and attr == "href":
                 continue
             if attr in {"href", "src", "action", "formaction"}:

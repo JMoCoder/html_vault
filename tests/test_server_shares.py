@@ -79,6 +79,74 @@ def test_share_creation_blocks_scripted_html(tmp_path: Path) -> None:
         server.close()
 
 
+def test_share_allows_safe_toggle_interaction_without_source_script(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    collapsible = content_dir / "imported" / "collapsible.html"
+    collapsible.parent.mkdir(parents=True, exist_ok=True)
+    collapsible.write_text(
+        """<html>
+<head>
+  <title>Collapsible</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="qgroup-header" onclick="toggleGroup('g1')">Open group</div>
+  <div class="qgroup open" id="g1">Group body</div>
+  <script>
+    function toggleGroup(id) {
+      const el = document.getElementById(id);
+      el.classList.toggle('open');
+    }
+
+    // Open first group by default (already set via class)
+    // Add keyboard shortcut: press '?' to expand all
+    document.addEventListener('keydown', e => {
+      if (e.key === '?') {
+        document.querySelectorAll('.qgroup').forEach(g => g.classList.add('open'));
+      }
+      if (e.key === '/') {
+        document.querySelectorAll('.qgroup').forEach(g => g.classList.remove('open'));
+        document.getElementById('g1').classList.add('open');
+      }
+    });
+  </script>
+</body>
+</html>""",
+        encoding="utf-8",
+    )
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
+    try:
+        created = server.json("POST", "/api/shares", {"item_id": "imported/collapsible.html", "duration": "1d"})
+        public_page = urllib.request.urlopen(
+            f"http://127.0.0.1:{server.port}{created['url_path']}",
+            timeout=5,
+        ).read().decode("utf-8")
+
+        assert created["share"]["active"] is True
+        assert 'data-share-toggle="g1"' in public_page
+        assert "onclick=" not in public_page
+        assert "fonts.googleapis.com" not in public_page
+        assert "function toggleGroup" not in public_page
+    finally:
+        server.close()
+
+
+def test_share_still_blocks_unsafe_inline_handlers(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    unsafe = content_dir / "imported" / "unsafe-handler.html"
+    unsafe.parent.mkdir(parents=True, exist_ok=True)
+    unsafe.write_text("<html><body><div onclick=\"fetch('/api/items')\">bad</div></body></html>", encoding="utf-8")
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
+    try:
+        status, error = server.json_error("POST", "/api/shares", {"item_id": "imported/unsafe-handler.html", "duration": "1d"})
+
+        assert status == 400
+        assert "inline-event-handler" in error["detail"]["safety"]["reasons"]
+    finally:
+        server.close()
+
+
 def test_shared_page_disables_external_links(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
     linked = content_dir / "imported" / "linked.html"

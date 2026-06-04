@@ -441,6 +441,14 @@ def render_share_page(data: dict) -> str:
     </header>
     <article>{body}</article>
   </main>
+  <script>
+    document.addEventListener("click", (event) => {{
+      const trigger = event.target.closest("[data-share-toggle]");
+      if (!trigger) return;
+      const target = document.getElementById(trigger.getAttribute("data-share-toggle"));
+      if (target) target.classList.toggle("open");
+    }});
+  </script>
 </body>
 </html>"""
 
