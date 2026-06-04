@@ -406,6 +406,7 @@ def render_share_page(data: dict) -> str:
     title = escape_html(item.get("title") or "Shared note")
     summary = escape_html(item.get("summary") or "")
     body = data.get("html") or ""
+    styles = data.get("styles") or ""
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -416,31 +417,32 @@ def render_share_page(data: dict) -> str:
   <style>
     :root {{ color-scheme: light dark; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }}
     body {{ margin: 0; background: #f8fafc; color: #172033; }}
-    main {{ max-width: 900px; margin: 0 auto; padding: 32px 20px 56px; }}
-    header {{ border-bottom: 1px solid #d9e2ec; margin-bottom: 28px; padding-bottom: 18px; }}
-    .brand {{ color: #0f766e; font-size: 0.8rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }}
-    h1 {{ margin: 8px 0; font-size: clamp(1.8rem, 4vw, 3rem); line-height: 1.1; }}
-    .summary {{ color: #607086; font-size: 1rem; line-height: 1.6; }}
-    article {{ background: #fff; border: 1px solid #d9e2ec; border-radius: 8px; padding: 28px; overflow-wrap: anywhere; }}
-    a {{ color: inherit; text-decoration: none; pointer-events: none; }}
-    img, video {{ max-width: 100%; height: auto; }}
+    .share-shell {{ padding: 18px 20px 56px; }}
+    .share-banner {{ max-width: 1100px; margin: 0 auto 18px; border-bottom: 1px solid #d9e2ec; padding-bottom: 14px; }}
+    .share-brand {{ color: #0f766e; font-size: 0.8rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }}
+    .share-title {{ margin: 8px 0; font-size: clamp(1.45rem, 3vw, 2.25rem); line-height: 1.15; }}
+    .share-summary {{ color: #607086; font-size: 0.95rem; line-height: 1.55; }}
+    .share-content {{ overflow-wrap: anywhere; }}
+    .share-content a:not([href]) {{ color: inherit; text-decoration: none; pointer-events: none; }}
+    .share-content a[href^="#"] {{ pointer-events: auto; }}
+    .share-content img, .share-content video {{ max-width: 100%; height: auto; }}
     @media (prefers-color-scheme: dark) {{
       body {{ background: #101820; color: #e6edf3; }}
-      header, article {{ border-color: #334155; }}
-      article {{ background: #141f2b; }}
-      .summary {{ color: #a9b6c6; }}
+      .share-banner {{ border-color: #334155; }}
+      .share-summary {{ color: #a9b6c6; }}
     }}
   </style>
+  {styles}
 </head>
 <body>
-  <main>
-    <header>
-      <div class="brand">HTMlore shared note</div>
-      <h1>{title}</h1>
-      <p class="summary">{summary}</p>
-    </header>
-    <article>{body}</article>
-  </main>
+  <div class="share-shell">
+    <div class="share-banner">
+      <div class="share-brand">HTMlore shared note</div>
+      <h1 class="share-title">{title}</h1>
+      <p class="share-summary">{summary}</p>
+    </div>
+    <div class="share-content">{body}</div>
+  </div>
   <script>
     document.addEventListener("click", (event) => {{
       const trigger = event.target.closest("[data-share-toggle]");

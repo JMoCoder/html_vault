@@ -56,6 +56,9 @@ def test_share_link_allows_public_sanitized_note_without_login(tmp_path: Path) -
         assert "Docker Network Quick Notes" in public_json
         assert "Docker Network Quick Notes" in public_page
         assert "HTMlore shared note" in public_page
+        assert public_page.count("<html") == 1
+        assert public_page.count("<head") == 1
+        assert public_page.count("<body") == 1
     finally:
         server.close()
 
@@ -166,6 +169,94 @@ def test_shared_page_disables_external_links(tmp_path: Path) -> None:
         assert "Linked" in public_page
         assert "external" in public_page
         assert "https://example.com" not in public_page
+    finally:
+        server.close()
+
+
+def test_shared_page_preserves_safe_styles_and_fragment_links(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    styled = content_dir / "imported" / "styled.html"
+    styled.parent.mkdir(parents=True, exist_ok=True)
+    styled.write_text(
+        """<html>
+<head>
+  <title>Styled</title>
+  <style>
+    :root { --accent: #0f766e; }
+    html { scroll-behavior: smooth; }
+    body { color: #172033; }
+    .card { border: 1px solid #d9e2ec; border-radius: 8px; }
+    .hero { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='4' cy='4' r='4'/%3E%3C/svg%3E"); }
+  </style>
+</head>
+<body>
+  <a href="#overview">overview</a>
+  <a href="https://example.com">external</a>
+  <section id="overview" class="card">Styled body</section>
+</body>
+</html>""",
+        encoding="utf-8",
+    )
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
+    try:
+        created = server.json("POST", "/api/shares", {"item_id": "imported/styled.html", "duration": "1d"})
+        public_page = urllib.request.urlopen(
+            f"http://127.0.0.1:{server.port}{created['url_path']}",
+            timeout=5,
+        ).read().decode("utf-8")
+
+        assert "<style>" in public_page
+        assert "border-radius: 8px" in public_page
+        assert "scroll-behavior: smooth" in public_page
+        assert "data:image/svg+xml" in public_page
+        assert 'href="#overview"' in public_page
+        assert "https://example.com" not in public_page
+        assert public_page.count("<html") == 1
+        assert public_page.count("<head") == 1
+        assert public_page.count("<body") == 1
+    finally:
+        server.close()
+
+
+def test_share_blocks_unsafe_css_resources(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    unsafe = content_dir / "imported" / "unsafe-css.html"
+    unsafe.parent.mkdir(parents=True, exist_ok=True)
+    unsafe.write_text(
+        "<html><head><style>@import url('https://example.com/a.css'); body{background:url(file:///tmp/x)} .x{behavior:url(#default#VML)}</style></head><body>bad</body></html>",
+        encoding="utf-8",
+    )
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
+    try:
+        status, error = server.json_error("POST", "/api/shares", {"item_id": "imported/unsafe-css.html", "duration": "1d"})
+
+        assert status == 400
+        reasons = error["detail"]["safety"]["reasons"]
+        assert "css-import" in reasons
+        assert "css-url" in reasons
+    finally:
+        server.close()
+
+
+def test_share_identifies_chart_notes_as_static_export_required(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    chart = content_dir / "imported" / "chart.html"
+    chart.parent.mkdir(parents=True, exist_ok=True)
+    chart.write_text(
+        """<html>
+<head><script src="https://cdn.example.com/chart.umd.min.js"></script></head>
+<body><canvas id="chart"></canvas><script>new Chart(document.getElementById('chart'), {});</script></body>
+</html>""",
+        encoding="utf-8",
+    )
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
+    try:
+        status, error = server.json_error("POST", "/api/shares", {"item_id": "imported/chart.html", "duration": "1d"})
+
+        assert status == 400
+        reasons = error["detail"]["safety"]["reasons"]
+        assert "blocked-tag:script" in reasons
+        assert "requires-static-export:chart" in reasons
     finally:
         server.close()
 

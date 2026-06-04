@@ -9,6 +9,25 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.7.3] - 2026-06-04
+
+### Added
+
+- Preserved safe inline CSS and same-page `#anchor` links on public share pages
+  while still blocking external CSS resources and dangerous CSS features.
+- Added explicit `requires-static-export:chart` share safety feedback for
+  Chart.js/canvas notes that need static chart export instead of script
+  execution.
+
+### Fixed
+
+- Fixed public share pages so sanitized full HTML documents render as body
+  content plus safe head styles instead of nesting `<html>/<head>/<body>` inside
+  the share wrapper.
+- Increased import feedback spacing and card-summary breathing room to avoid
+  cramped upload messages and slight summary/tag overlap.
+- Updated package, app, PWA, and demo cache versions to `0.7.3`.
+
 ## [0.7.2] - 2026-06-04
 
 ### Added

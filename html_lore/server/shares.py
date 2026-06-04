@@ -25,10 +25,20 @@ SHARE_DURATIONS = {
 }
 
 DANGEROUS_TAGS = {"iframe", "object", "embed", "form", "input", "button", "textarea", "select", "base"}
-SANITIZER_BLOCK_TAGS = DANGEROUS_TAGS | {"script", "style", "meta", "link"}
-SANITIZER_SKIP_CONTENT_TAGS = {"script", "style", "iframe", "object", "embed", "form", "textarea", "select", "button"}
+SANITIZER_BLOCK_TAGS = DANGEROUS_TAGS | {"script", "meta", "link"}
+SANITIZER_SKIP_CONTENT_TAGS = {"script", "iframe", "object", "embed", "form", "textarea", "select", "button"}
 DANGEROUS_EXTENSIONS = {".exe", ".dmg", ".apk", ".msi", ".bat", ".cmd", ".sh", ".ps1", ".scr", ".jar"}
 SAFE_TOGGLE_HANDLER = re.compile(r"^toggleGroup\(\s*['\"]([A-Za-z][A-Za-z0-9_-]{0,63})['\"]\s*\)\s*;?\s*$")
+SAFE_FRAGMENT_HREF = re.compile(r"^#[A-Za-z][A-Za-z0-9_.:-]{0,127}$")
+CHART_SCRIPT_PATTERN = re.compile(r"\bchart(?:\.umd)?(?:\.min)?\.js\b|new\s+Chart\s*\(|<canvas\b", re.I)
+CSS_UNSAFE_PATTERNS = [
+    ("css-import", re.compile(r"@import\b", re.I)),
+    ("css-expression", re.compile(r"\bexpression\s*\(", re.I)),
+    ("css-behavior", re.compile(r"(?<![-\w])behavior\s*:", re.I)),
+    ("css-binding", re.compile(r"-moz-binding\s*:", re.I)),
+    ("css-dangerous-scheme", re.compile(r"(?:javascript|vbscript|file|data\s*:\s*text/html)\s*:", re.I)),
+]
+CSS_URL_PATTERN = re.compile(r"\burl\s*\(\s*(['\"]?)(.*?)\1\s*\)", re.I | re.S)
 SECRET_PATTERNS = [
     re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
     re.compile(r"\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b"),
@@ -162,7 +172,8 @@ class ShareService:
                 "tags": item.get("tags") or [],
                 "updated": item.get("updated") or "",
             },
-            "html": rendered,
+            "html": rendered["body_html"],
+            "styles": rendered["styles"],
         }
 
     def _find_by_token_hash(self, token_hash: str) -> dict[str, Any] | None:
@@ -323,6 +334,10 @@ def scan_share_content(content: str) -> dict[str, Any]:
     reasons = list(scanner.reasons)
     if scanner.saw_script and not scanner.only_safe_toggle_script():
         reasons.append("blocked-tag:script")
+    if scanner.requires_static_chart:
+        reasons.append("requires-static-export:chart")
+    for reason in unsafe_css_reasons("\n".join(scanner.style_parts)):
+        reasons.append(reason)
     text = html.unescape(strip_tags(content))
     for pattern in SECRET_PATTERNS:
         if pattern.search(text):
@@ -340,15 +355,26 @@ class SafetyScanner(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.reasons: list[str] = []
         self.saw_script = False
+        self.requires_static_chart = False
         self.script_stack = 0
         self.script_parts: list[str] = []
+        self.style_stack = 0
+        self.style_parts: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         name = tag.lower()
         if name == "script":
             self.saw_script = True
+            values = {attr.lower(): (value or "").strip() for attr, value in attrs}
+            if CHART_SCRIPT_PATTERN.search(values.get("src", "")):
+                self.requires_static_chart = True
             self.script_stack += 1
             return
+        if name == "style":
+            self.style_stack += 1
+            return
+        if name == "canvas":
+            self.requires_static_chart = True
         if name in DANGEROUS_TAGS:
             self.reasons.append(f"blocked-tag:{name}")
         if name == "meta" and is_meta_refresh(attrs):
@@ -366,10 +392,16 @@ class SafetyScanner(HTMLParser):
     def handle_endtag(self, tag: str) -> None:
         if tag.lower() == "script" and self.script_stack > 0:
             self.script_stack -= 1
+        if tag.lower() == "style" and self.style_stack > 0:
+            self.style_stack -= 1
 
     def handle_data(self, data: str) -> None:
         if self.script_stack > 0:
             self.script_parts.append(data)
+            if CHART_SCRIPT_PATTERN.search(data):
+                self.requires_static_chart = True
+        if self.style_stack > 0:
+            self.style_parts.append(data)
 
     def only_safe_toggle_script(self) -> bool:
         return is_safe_toggle_script("\n".join(self.script_parts))
@@ -395,6 +427,36 @@ def is_meta_refresh(attrs: list[tuple[str, str | None]]) -> bool:
     return values.get("http-equiv") == "refresh"
 
 
+def is_safe_fragment_href(value: str) -> bool:
+    return bool(SAFE_FRAGMENT_HREF.fullmatch(value.strip()))
+
+
+def unsafe_css_reasons(value: str) -> list[str]:
+    if not value:
+        return []
+    reasons = [reason for reason, pattern in CSS_UNSAFE_PATTERNS if pattern.search(value)]
+    for raw_url in CSS_URL_PATTERN.findall(value):
+        url_value = raw_url[1].strip()
+        if is_safe_css_data_image(url_value):
+            continue
+        parsed = urlsplit(url_value)
+        if parsed.scheme or url_value.startswith(("//", "/", "\\")):
+            reasons.append("css-url")
+    return sorted(set(reasons))
+
+
+def is_safe_css_data_image(value: str) -> bool:
+    lowered = value.strip().lower()
+    if not lowered.startswith("data:image/svg+xml"):
+        return False
+    if ";base64" in lowered:
+        return False
+    decoded = html.unescape(value)
+    decoded = re.sub(r"%([0-9a-fA-F]{2})", lambda match: chr(int(match.group(1), 16)), decoded)
+    lowered_decoded = decoded.lower()
+    return not re.search(r"<\s*script\b|on[a-z]+\s*=|javascript\s*:|data\s*:\s*text/html", lowered_decoded)
+
+
 def safe_toggle_target(value: str) -> str:
     match = SAFE_TOGGLE_HANDLER.fullmatch(value.strip())
     return match.group(1) if match else ""
@@ -416,7 +478,7 @@ def is_safe_toggle_script(value: str) -> bool:
     )
 
 
-def sanitize_shared_html(content: str) -> str:
+def sanitize_shared_html(content: str) -> dict[str, str]:
     sanitizer = ShareSanitizer()
     sanitizer.feed(content)
     return sanitizer.output()
@@ -426,15 +488,41 @@ class ShareSanitizer(HTMLParser):
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
         self.parts: list[str] = []
+        self.head_parts: list[str] = []
+        self.body_parts: list[str] = []
         self.skip_stack: list[str] = []
+        self.style_stack = 0
+        self.style_parts: list[str] = []
+        self.in_head = False
+        self.in_body = False
+
+    @property
+    def active_parts(self) -> list[str]:
+        if self.in_head:
+            return self.head_parts
+        if self.in_body:
+            return self.body_parts
+        return self.parts
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         name = tag.lower()
+        if name == "html":
+            return
+        if name == "head":
+            self.in_head = True
+            return
+        if name == "body":
+            self.in_body = True
+            return
         if name in SANITIZER_BLOCK_TAGS or (name == "meta" and is_meta_refresh(attrs)):
             if name in SANITIZER_SKIP_CONTENT_TAGS:
                 self.skip_stack.append(name)
             return
         if self.skip_stack:
+            return
+        if name == "style":
+            self.style_stack += 1
+            self.style_parts = []
             return
         clean_attrs: list[str] = []
         for attr_name, attr_value in attrs:
@@ -448,37 +536,64 @@ class ShareSanitizer(HTMLParser):
             if attr.startswith("on"):
                 continue
             if name == "a" and attr == "href":
+                if is_safe_fragment_href(value):
+                    clean_attrs.append(f'href="{html.escape(value.strip(), quote=True)}"')
                 continue
             if attr in {"href", "src", "action", "formaction"}:
                 if unsafe_url_reason(value):
                     continue
             clean_attrs.append(f'{html.escape(attr, quote=True)}="{html.escape(value, quote=True)}"')
         attr_text = f" {' '.join(clean_attrs)}" if clean_attrs else ""
-        self.parts.append(f"<{html.escape(name)}{attr_text}>")
+        self.active_parts.append(f"<{html.escape(name)}{attr_text}>")
 
     def handle_endtag(self, tag: str) -> None:
         name = tag.lower()
+        if name == "html":
+            return
+        if name == "head":
+            self.in_head = False
+            return
+        if name == "body":
+            self.in_body = False
+            return
+        if name == "style" and self.style_stack > 0:
+            self.style_stack -= 1
+            if self.style_stack == 0:
+                css = "".join(self.style_parts)
+                if not unsafe_css_reasons(css):
+                    self.head_parts.append(f"<style>{css}</style>")
+                self.style_parts = []
+            return
         if self.skip_stack:
             if self.skip_stack[-1] == name:
                 self.skip_stack.pop()
             return
         if name not in DANGEROUS_TAGS:
-            self.parts.append(f"</{html.escape(name)}>")
+            self.active_parts.append(f"</{html.escape(name)}>")
 
     def handle_data(self, data: str) -> None:
+        if self.style_stack > 0:
+            self.style_parts.append(data)
+            return
         if not self.skip_stack:
-            self.parts.append(html.escape(data))
+            self.active_parts.append(html.escape(data))
 
     def handle_entityref(self, name: str) -> None:
         if not self.skip_stack:
-            self.parts.append(f"&{name};")
+            self.active_parts.append(f"&{name};")
 
     def handle_charref(self, name: str) -> None:
         if not self.skip_stack:
-            self.parts.append(f"&#{name};")
+            self.active_parts.append(f"&#{name};")
 
-    def output(self) -> str:
-        return "".join(self.parts)
+    def output(self) -> dict[str, str]:
+        body = "".join(self.body_parts).strip()
+        if not body:
+            body = "".join(self.parts).strip()
+        return {
+            "body_html": body,
+            "styles": "".join(self.head_parts).strip(),
+        }
 
 
 def strip_tags(content: str) -> str:
