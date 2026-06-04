@@ -10,6 +10,10 @@
 		reverse_proxy api:8787
 	}
 
+	handle /share/* {
+		reverse_proxy api:8787
+	}
+
 	handle {
 		try_files {path} /index.html
 		file_server

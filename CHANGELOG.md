@@ -9,6 +9,19 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.7.5] - 2026-06-04
+
+### Fixed
+
+- Fixed the Caddy deployment route for public share pages by proxying
+  `/share/*` to the backend API instead of letting the static app fallback
+  return the workspace shell.
+- Updated the optional Basic Auth Caddy example so `/share/*` and
+  `/api/public/shares/*` remain publicly reachable while the workspace and
+  private API routes stay protected.
+- Added deployment-config tests covering public share routing.
+- Updated package, app, PWA, and demo cache versions to `0.7.5`.
+
 ## [0.7.4] - 2026-06-04
 
 ### Fixed

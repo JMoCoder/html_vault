@@ -2,21 +2,31 @@
 	root * /srv/html-lore/public
 	encode zstd gzip
 
-	basic_auth {
-		{$HTML_LORE_BASIC_AUTH_USER} {$HTML_LORE_BASIC_AUTH_HASH}
-	}
-
 	request_body {
 		max_size 10MB
 	}
 
+	handle /share/* {
+		reverse_proxy api:8787
+	}
+
+	handle /api/public/shares/* {
+		reverse_proxy api:8787
+	}
+
 	handle /api/* {
+		basic_auth {
+			{$HTML_LORE_BASIC_AUTH_USER} {$HTML_LORE_BASIC_AUTH_HASH}
+		}
 		reverse_proxy api:8787 {
 			header_up Authorization "Bearer {$HTML_LORE_API_TOKEN}"
 		}
 	}
 
 	handle {
+		basic_auth {
+			{$HTML_LORE_BASIC_AUTH_USER} {$HTML_LORE_BASIC_AUTH_HASH}
+		}
 		try_files {path} /index.html
 		file_server
 	}

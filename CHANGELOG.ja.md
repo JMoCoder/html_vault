@@ -4,6 +4,18 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ## [Unreleased]
 
+## [0.7.5] - 2026-06-04
+
+### Fixed
+
+- Caddy デプロイの公開共有ページルートを修正しました。`/share/*` は
+  静的アプリの fallback ではなく、バックエンド API へ reverse proxy されます。
+- 任意の Basic Auth Caddy 例を更新し、`/share/*` と
+  `/api/public/shares/*` は公開アクセス可能なまま、ワークスペースと
+  非公開 API ルートは保護されるようにしました。
+- 公開共有ルートを確認するデプロイ設定テストを追加しました。
+- パッケージ、アプリ、PWA、Demo のキャッシュバージョンを `0.7.5` に更新しました。
+
 ## [0.7.4] - 2026-06-04
 
 ### Fixed
