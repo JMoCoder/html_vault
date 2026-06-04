@@ -2,6 +2,26 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.6.7] - 2026-06-04
+
+### Added
+
+- 新しい `html-lore` CLI エントリを追加し、0.x 互換期間中は従来の
+  `html-vault` コマンドも引き続き利用できるようにしました。
+- 既存実装パッケージを指す互換入口として、`html_lore` Python 公開名前空間を追加しました。
+- `HTML_LORE_*` 実行時設定名を追加し、従来の `HTML_VAULT_*` 環境変数も fallback として読み取ります。
+- ブラウザ設定を `html-vault-*` localStorage キーから `html-lore-*` キーへコピーする移行処理を追加しました。旧キーは削除しません。
+
+### Changed
+
+- 公開プロダクトブランドを `HTMlore` に統一し、アプリシェル、ログイン画面、PWA manifest、Pages サイト、静的 demo、README、デプロイ文書、バージョンメタデータへ反映しました。
+- 既定のリポジトリとリリース確認 URL を `JMoCoder/html_lore` に更新しました。
+- パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを `0.6.7` に更新しました。
+
+### Compatibility
+
+- 既存の `html_vault` Python import、`html-vault` CLI、`HTML_VAULT_*` 環境変数、`html-vault-*` ブラウザ設定、`html-vault-backup` インポートは引き続きサポートします。
+
 ## [0.6.6] - 2026-06-03
 
 ### Changed
@@ -17,7 +37,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 - `data/users.json` によるセルフホスト向けマルチユーザーログインを追加しました。
 - ユーザーごとの永続化ノートブック領域 `data/users/<data_id>/` を追加し、各ユーザーのインポート/生成 HTML、メタデータ、実行時設定、ジョブ記録、生成済み public 出力を分離して保存します。
-- 平文パスワードを保存せずにセルフホストユーザーを作成または置換できる `html-vault user-add` コマンドを追加しました。
+- 平文パスワードを保存せずにセルフホストユーザーを作成または置換できる `html-lore user-add` コマンドを追加しました。
 - env による初期管理者作成、大文字小文字を区別しないマルチユーザーログイン、ユーザー間アップロード分離を検証するバックエンド統合テストを追加しました。
 
 ### Changed
@@ -55,7 +75,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 - サーバー側認証が設定されている場合、ワークスペースの最初の画面として標準ログイン画面を追加しました。
 - HttpOnly 署名付き session Cookie を使う `/api/auth/status`、`/api/auth/login`、`/api/auth/logout` を追加しました。
-- `HTML_VAULT_AUTH_USERNAME`、`HTML_VAULT_AUTH_PASSWORD`、`HTML_VAULT_SESSION_SECRET` によるテストユーザー認証情報の環境変数設定を追加しました。
+- `HTML_LORE_AUTH_USERNAME`、`HTML_LORE_AUTH_PASSWORD`、`HTML_LORE_SESSION_SECRET` によるテストユーザー認証情報の環境変数設定を追加しました。
 - バックエンド API、`manifest.json`、ノート本文ファイルは、有効な API token またはブラウザーログイン session で保護されるようになりました。
 - ログイン、失敗ログイン、API 保護、静的コンテンツ保護のバックエンド統合テストを追加しました。
 
@@ -75,7 +95,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 ### Added
 
 - 静的 Demo のレイアウトとワークスペースロゴのナビゲーションを検証する Playwright E2E カバレッジを追加しました。
-- 実アプリのブランド領域から公開 GitHub Pages ホームページを開けるよう、設定可能な `HTML_VAULT_PAGES_URL` を追加しました。
+- 実アプリのブランド領域から公開 GitHub Pages ホームページを開けるよう、設定可能な `HTML_LORE_PAGES_URL` を追加しました。
 
 ### Changed
 
@@ -225,7 +245,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 - 最初のバックエンド開発スライスとして、任意の Agent Server API スケルトン、`GET /api/health`、`GET /api/manifest`、`GET /api/items`、`GET /api/items/{id}` を追加しました。
 - `GET /api/items` は現在のフロントエンド一覧ロジックに合わせ、ライブラリ、コレクション、タグ OR/AND、お気に入り/アーカイブ、検索、並び替え、limit をサポートします。
-- `html-vault serve-api` と、項目クエリ層のサービス/API テストを追加しました。
+- `html-lore serve-api` と、項目クエリ層のサービス/API テストを追加しました。
 
 ### Fixed
 
@@ -272,7 +292,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ### Changed
 
-- サイドバーのブランド表示を常に `HTMLvault` にし、件数のサブテキストを削除しました。
+- サイドバーのブランド表示を常に `HTMlore` にし、件数のサブテキストを削除しました。
 - 左右のリサイズレールはホバー/ドラッグ時のハイライト線を表示しないようにしました。
 - リーダーの「原文 / リンクをコピー」をアイコンボタンにし、AI ボタンを右端に固定して、再クリックで右パネルを閉じられるようにしました。
 - リーダーヘッダーのタイトル、概要、タグをクランプし、AI パネル幅変更時にヘッダーが伸び続けないようにしました。
@@ -297,7 +317,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ### Changed
 
-- サイドバーのブランドマークを再設計版 HTMLvault アイコンに更新し、ライト/ダークテーマでのブランド領域と折りたたみボタンの整列を改善しました。
+- サイドバーのブランドマークを再設計版 HTMlore アイコンに更新し、ライト/ダークテーマでのブランド領域と折りたたみボタンの整列を改善しました。
 - サイドバーとページのスクロールバーは、ホバーまたはキーボードフォーカス時のみ表示されます。
 - AI 作成フォームの入力タイプ選択で、右端に寄りすぎていた矢印を内側のカスタム矢印に変更しました。
 - パッケージ、アプリ、PWA キャッシュのバージョンを `0.3.16` に更新。
@@ -481,7 +501,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ### Added
 
-- 初期の静的優先 HTML Vault MVP。
+- 初期の静的優先 HTMlore MVP。
 - Manifest v2 ナレッジ項目モデル。
 - サイドカー YAML メタデータ対応。
 - Karakeep 風カードワークスペースとサイドバー絞り込み。

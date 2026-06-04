@@ -6,10 +6,10 @@
       navIssue: "The Idea", navReader: "Reader + Vault", navFlywheel: "AI Flywheel",
       navPublish: "Publish", navDeploy: "Deploy", liveDemo: "Live demo",
 
-      coverIssue: "Issue 0.6.6", coverEdition: "Self-hosted Edition", coverMit: "MIT / Open Source",
+      coverIssue: "Issue 0.6.7", coverEdition: "Self-hosted Edition", coverMit: "MIT / Open Source",
       coverKicker: "A knowledge tool that keeps your files yours",
       coverLine1: "Scattered HTML files,", coverLine2: "finally a home.",
-      coverLede: "HTML Vault gathers the HTML files spread across your disk into one place — a reader and a knowledge base at the same time. AI keeps extending, iterating and settling what you learn, and a free static host turns any note into a shareable page that builds your personal brand.",
+      coverLede: "HTMlore gathers the HTML files spread across your disk into one place — a reader and a knowledge base at the same time. AI keeps extending, iterating and settling what you learn, and a free static host turns any note into a shareable page that builds your personal brand.",
       openDemo: "Open the live demo", readStory: "Read the story ↓",
       idx01: "Reader & Vault", idx01d: "One library for every HTML file",
       idx02: "The Learning Flywheel", idx02d: "AI extends, iterates, settles",
@@ -17,7 +17,7 @@
 
       ch01Eyebrow: "Reader + Knowledge base",
       ch01Title: "Every HTML file you saved, in one place you can actually read.",
-      ch01Lead: "HTML files pile up everywhere — exported articles, AI answers saved to disk, old reports, single-page apps. HTML Vault imports them into one library, reads them in a clean card workspace, and organizes them with collections, tags, favorites and search. It is a reader and a knowledge base in the same window.",
+      ch01Lead: "HTML files pile up everywhere — exported articles, AI answers saved to disk, old reports, single-page apps. HTMlore imports them into one library, reads them in a clean card workspace, and organizes them with collections, tags, favorites and search. It is a reader and a knowledge base in the same window.",
       ch01Aside1: "<strong>Files stay portable.</strong> Notes remain real HTML on disk — inspect, copy, back up, or serve them with ordinary web tools. Nothing locked in a database.",
       ch01Aside2: "<strong>Organize without friction.</strong> Collections, multi-select tags with AND/OR, favorites, archive, sort and full-text search keep a growing library navigable.",
       ch01Aside3: "<strong>Read, don't dig.</strong> Open any note full-screen, view the original file, copy or share its link — the reading view is the workspace.",
@@ -45,7 +45,7 @@
 
       ch03Eyebrow: "Publish & personal brand",
       ch03Title: "A free static host for your HTML — share in a click, build a name.",
-      ch03Lead: "Any note can become a public page. HTML Vault builds a static site from your content — host it for free on Pages-style infrastructure, send a link, and your work is online. No build pipeline, no server bill. Over time your published notes become a body of work — the quiet foundation of a personal brand.",
+      ch03Lead: "Any note can become a public page. HTMlore builds a static site from your content — host it for free on Pages-style infrastructure, send a link, and your work is online. No build pipeline, no server bill. Over time your published notes become a body of work — the quiet foundation of a personal brand.",
       ch03Aside1: "<strong>Static by design.</strong> Build a read-only site from existing content and metadata, then serve it anywhere static files live.",
       ch03Aside2: "<strong>Free to host, instant to share.</strong> No subscription to publish — copy a link and your page is live for anyone.",
       ch03Aside3: "<strong>Installable as a PWA.</strong> A manifest and service worker make the workspace feel like an app on any device.",
@@ -67,17 +67,17 @@
       openDemo2: "Open the live demo", viewSource: "View source", termOpen: "open",
 
       footerTag: "Your HTML, your vault, your brand.",
-      footerVersion: "Issue 0.6.6 · MIT licensed", footerRights: "Your HTML files remain yours."
+      footerVersion: "Issue 0.6.7 · MIT licensed", footerRights: "Your HTML files remain yours."
     },
 
     zh: {
       navIssue: "理念", navReader: "阅读器 + 知识库", navFlywheel: "AI 飞轮",
       navPublish: "发布", navDeploy: "部署", liveDemo: "在线演示",
 
-      coverIssue: "刊号 0.6.6", coverEdition: "自托管版", coverMit: "MIT / 开源",
+      coverIssue: "刊号 0.6.7", coverEdition: "自托管版", coverMit: "MIT / 开源",
       coverKicker: "一个让文件始终属于你的知识工具",
       coverLine1: "散落各处的 HTML，", coverLine2: "终于有了归处。",
-      coverLede: "HTML Vault 把散落在硬盘各处的 HTML 文件聚拢到一起 —— 它既是阅读器，也是知识库。AI 不断延展、迭代、沉淀你所学的内容；免费的静态托管又让任意一篇笔记变成可分享的页面，逐步建立起你的个人品牌。",
+      coverLede: "HTMlore 把散落在硬盘各处的 HTML 文件聚拢到一起 —— 它既是阅读器，也是知识库。AI 不断延展、迭代、沉淀你所学的内容；免费的静态托管又让任意一篇笔记变成可分享的页面，逐步建立起你的个人品牌。",
       openDemo: "打开在线演示", readStory: "往下读 ↓",
       idx01: "阅读器 & 知识库", idx01d: "所有 HTML 文件归于一处",
       idx02: "学习沉淀飞轮", idx02d: "AI 延展、迭代、沉淀",
@@ -85,7 +85,7 @@
 
       ch01Eyebrow: "阅读器 + 知识库",
       ch01Title: "你存下的每个 HTML 文件，终于汇到一个能好好阅读的地方。",
-      ch01Lead: "HTML 文件遍布各处 —— 导出的文章、随手保存的 AI 回答、旧报告、单页应用。HTML Vault 把它们导入同一个库，用清爽的卡片工作区阅读，并以合集、标签、收藏与搜索加以组织。在同一个窗口里，它既是阅读器，也是知识库。",
+      ch01Lead: "HTML 文件遍布各处 —— 导出的文章、随手保存的 AI 回答、旧报告、单页应用。HTMlore 把它们导入同一个库，用清爽的卡片工作区阅读，并以合集、标签、收藏与搜索加以组织。在同一个窗口里，它既是阅读器，也是知识库。",
       ch01Aside1: "<strong>文件始终可携。</strong> 笔记在磁盘上仍是真正的 HTML —— 可查看、复制、备份，也能用普通 Web 工具直接打开，绝不锁进数据库。",
       ch01Aside2: "<strong>组织毫不费力。</strong> 合集、支持与/或的多选标签、收藏、归档、排序与全文搜索，让不断增长的库始终井然有序。",
       ch01Aside3: "<strong>只管读，不用翻。</strong> 全屏打开任意笔记、查看原始文件、复制或分享链接 —— 阅读视图本身就是工作区。",
@@ -113,7 +113,7 @@
 
       ch03Eyebrow: "发布 & 个人品牌",
       ch03Title: "免费托管你的 HTML —— 一键分享，建立名声。",
-      ch03Lead: "任意笔记都能变成一张公开页面。HTML Vault 从你的内容生成一个静态站点 —— 用 Pages 式的基础设施免费托管，发一条链接，你的作品就上线了。无需构建流水线，也没有服务器账单。日积月累，你发布的笔记汇成一份作品集 —— 这正是个人品牌悄然奠基之处。",
+      ch03Lead: "任意笔记都能变成一张公开页面。HTMlore 从你的内容生成一个静态站点 —— 用 Pages 式的基础设施免费托管，发一条链接，你的作品就上线了。无需构建流水线，也没有服务器账单。日积月累，你发布的笔记汇成一份作品集 —— 这正是个人品牌悄然奠基之处。",
       ch03Aside1: "<strong>天生静态。</strong> 从现有内容与元数据生成只读站点，可部署在任何能放静态文件的地方。",
       ch03Aside2: "<strong>托管免费，分享即时。</strong> 发布无需订阅 —— 复制链接，任何人都能立即打开你的页面。",
       ch03Aside3: "<strong>可安装为 PWA。</strong> manifest 与 Service Worker 让工作区在任意设备上都像一个原生应用。",
@@ -135,17 +135,17 @@
       openDemo2: "打开在线演示", viewSource: "查看源码", termOpen: "打开",
 
       footerTag: "你的 HTML，你的知识库，你的品牌。",
-      footerVersion: "刊号 0.6.6 · MIT 许可", footerRights: "你的 HTML 文件始终属于你。"
+      footerVersion: "刊号 0.6.7 · MIT 许可", footerRights: "你的 HTML 文件始终属于你。"
     },
 
     ja: {
       navIssue: "コンセプト", navReader: "リーダー + 書庫", navFlywheel: "AI フライホイール",
       navPublish: "公開", navDeploy: "デプロイ", liveDemo: "ライブデモ",
 
-      coverIssue: "第 0.6.6 号", coverEdition: "セルフホスト版", coverMit: "MIT / オープンソース",
+      coverIssue: "第 0.6.7 号", coverEdition: "セルフホスト版", coverMit: "MIT / オープンソース",
       coverKicker: "ファイルをあなたのものに保ち続ける知識ツール",
       coverLine1: "散らばった HTML に、", coverLine2: "ついに居場所を。",
-      coverLede: "HTML Vault は、ディスク各所に散らばった HTML ファイルを一か所に集めます —— リーダーであり、同時に知識ベースです。AI が学びを絶えず広げ、磨き、定着させ、無料の静的ホスティングが任意のノートを共有可能なページへと変え、あなたのパーソナルブランドを築きます。",
+      coverLede: "HTMlore は、ディスク各所に散らばった HTML ファイルを一か所に集めます —— リーダーであり、同時に知識ベースです。AI が学びを絶えず広げ、磨き、定着させ、無料の静的ホスティングが任意のノートを共有可能なページへと変え、あなたのパーソナルブランドを築きます。",
       openDemo: "ライブデモを開く", readStory: "続きを読む ↓",
       idx01: "リーダー & 書庫", idx01d: "すべての HTML を一つの書庫に",
       idx02: "学びのフライホイール", idx02d: "AI が広げ・磨き・定着",
@@ -153,7 +153,7 @@
 
       ch01Eyebrow: "リーダー + 知識ベース",
       ch01Title: "保存したすべての HTML を、ちゃんと読める一か所に。",
-      ch01Lead: "HTML ファイルはあちこちに溜まります —— 書き出した記事、保存した AI の回答、古いレポート、シングルページアプリ。HTML Vault はそれらを一つのライブラリに取り込み、すっきりしたカード型ワークスペースで読み、コレクション・タグ・お気に入り・検索で整理します。同じ画面で、リーダーであり知識ベースです。",
+      ch01Lead: "HTML ファイルはあちこちに溜まります —— 書き出した記事、保存した AI の回答、古いレポート、シングルページアプリ。HTMlore はそれらを一つのライブラリに取り込み、すっきりしたカード型ワークスペースで読み、コレクション・タグ・お気に入り・検索で整理します。同じ画面で、リーダーであり知識ベースです。",
       ch01Aside1: "<strong>ファイルは可搬のまま。</strong> ノートはディスク上で本物の HTML のまま —— 閲覧・コピー・バックアップでき、普通の Web ツールで開けます。データベースに閉じ込めません。",
       ch01Aside2: "<strong>摩擦なく整理。</strong> コレクション、AND/OR 対応の複数タグ、お気に入り、アーカイブ、並べ替え、全文検索が、増え続ける書庫を見通しよく保ちます。",
       ch01Aside3: "<strong>掘らずに読む。</strong> 任意のノートを全画面で開き、元ファイルを表示し、リンクをコピー・共有 —— 読書ビューがそのままワークスペースです。",
@@ -181,7 +181,7 @@
 
       ch03Eyebrow: "公開 & パーソナルブランド",
       ch03Title: "HTML の無料静的ホスト —— ワンクリックで共有し、名を築く。",
-      ch03Lead: "どのノートも公開ページにできます。HTML Vault はあなたのコンテンツから静的サイトを生成 —— Pages 風のインフラで無料ホストし、リンクを送れば作品はオンラインに。ビルドパイプラインもサーバ代も不要。公開したノートはやがて作品群となり —— それがパーソナルブランドの静かな土台になります。",
+      ch03Lead: "どのノートも公開ページにできます。HTMlore はあなたのコンテンツから静的サイトを生成 —— Pages 風のインフラで無料ホストし、リンクを送れば作品はオンラインに。ビルドパイプラインもサーバ代も不要。公開したノートはやがて作品群となり —— それがパーソナルブランドの静かな土台になります。",
       ch03Aside1: "<strong>設計からして静的。</strong> 既存のコンテンツとメタデータから読み取り専用サイトを生成し、静的ファイルが置ける場所ならどこでも配信。",
       ch03Aside2: "<strong>ホスト無料、共有は即時。</strong> 公開にサブスクは不要 —— リンクをコピーすれば誰でも開けます。",
       ch03Aside3: "<strong>PWA としてインストール可能。</strong> manifest と Service Worker で、どの端末でもアプリのように。",
@@ -203,7 +203,7 @@
       openDemo2: "ライブデモを開く", viewSource: "ソースを見る", termOpen: "開く",
 
       footerTag: "あなたの HTML、あなたの書庫、あなたのブランド。",
-      footerVersion: "第 0.6.6 号 · MIT ライセンス", footerRights: "あなたの HTML ファイルはあなたのものです。"
+      footerVersion: "第 0.6.7 号 · MIT ライセンス", footerRights: "あなたの HTML ファイルはあなたのものです。"
     }
   };
 

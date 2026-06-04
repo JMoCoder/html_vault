@@ -18,7 +18,7 @@ class ServerSettings:
     users_file: Path | None = None
     user_data_dir: Path | None = None
     session_secret: str = ""
-    session_cookie_name: str = "html_vault_session"
+    session_cookie_name: str = "html_lore_session"
     session_max_age_seconds: int = 7 * 24 * 60 * 60
     session_secure: bool = False
     cors_origins: tuple[str, ...] = ("http://127.0.0.1:8080", "http://localhost:8080")
@@ -46,22 +46,22 @@ class ServerSettings:
 
 
 def load_settings() -> ServerSettings:
-    content_dir = Path(os.getenv("HTML_VAULT_CONTENT", "content"))
-    meta_value = os.getenv("HTML_VAULT_META", "meta")
+    content_dir = Path(get_env("CONTENT", "content"))
+    meta_value = get_env("META", "meta")
     meta_dir = Path(meta_value) if meta_value else None
-    public_dir = Path(os.getenv("HTML_VAULT_PUBLIC", "public"))
-    site_title = os.getenv("HTML_VAULT_TITLE", "HTML Vault")
-    max_upload_bytes = int(os.getenv("HTML_VAULT_MAX_UPLOAD_BYTES", str(10 * 1024 * 1024)))
-    api_token = os.getenv("HTML_VAULT_API_TOKEN", "").strip()
-    auth_username = os.getenv("HTML_VAULT_AUTH_USERNAME", "").strip()
-    auth_password = os.getenv("HTML_VAULT_AUTH_PASSWORD", "")
-    users_file = parse_optional_path(os.getenv("HTML_VAULT_USERS_FILE"), content_dir.parent / "users.json")
-    user_data_dir = parse_optional_path(os.getenv("HTML_VAULT_USER_DATA_DIR"), content_dir.parent / "users")
-    session_secret = os.getenv("HTML_VAULT_SESSION_SECRET", "").strip()
-    session_cookie_name = os.getenv("HTML_VAULT_SESSION_COOKIE_NAME", "html_vault_session").strip() or "html_vault_session"
-    session_max_age_seconds = int(os.getenv("HTML_VAULT_SESSION_MAX_AGE_SECONDS", str(7 * 24 * 60 * 60)))
-    session_secure = parse_bool(os.getenv("HTML_VAULT_SESSION_SECURE", "false"))
-    cors_origins = parse_csv(os.getenv("HTML_VAULT_CORS_ORIGINS", "http://127.0.0.1:8080,http://localhost:8080"))
+    public_dir = Path(get_env("PUBLIC", "public"))
+    site_title = get_env("TITLE", "HTMlore")
+    max_upload_bytes = int(get_env("MAX_UPLOAD_BYTES", str(10 * 1024 * 1024)))
+    api_token = get_env("API_TOKEN", "").strip()
+    auth_username = get_env("AUTH_USERNAME", "").strip()
+    auth_password = get_env("AUTH_PASSWORD", "")
+    users_file = parse_optional_path(get_env("USERS_FILE"), content_dir.parent / "users.json")
+    user_data_dir = parse_optional_path(get_env("USER_DATA_DIR"), content_dir.parent / "users")
+    session_secret = get_env("SESSION_SECRET", "").strip()
+    session_cookie_name = get_env("SESSION_COOKIE_NAME", "html_lore_session").strip() or "html_lore_session"
+    session_max_age_seconds = int(get_env("SESSION_MAX_AGE_SECONDS", str(7 * 24 * 60 * 60)))
+    session_secure = parse_bool(get_env("SESSION_SECURE", "false"))
+    cors_origins = parse_csv(get_env("CORS_ORIGINS", "http://127.0.0.1:8080,http://localhost:8080"))
     return ServerSettings(
         content_dir=content_dir,
         meta_dir=meta_dir,
@@ -79,6 +79,17 @@ def load_settings() -> ServerSettings:
         session_secure=session_secure,
         cors_origins=cors_origins,
     )
+
+
+def get_env(name: str, default: str | None = None) -> str | None:
+    """Read the new HTMlore env name, then fall back to the legacy name."""
+    new_value = os.getenv(f"HTML_LORE_{name}")
+    if new_value is not None:
+        return new_value
+    old_value = os.getenv(f"HTML_VAULT_{name}")
+    if old_value is not None:
+        return old_value
+    return default
 
 
 def parse_csv(value: str) -> tuple[str, ...]:

@@ -11,7 +11,7 @@ try:
     from fastapi import HTTPException, Request, Response
 except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static-only installs
     raise RuntimeError(
-        "The backend server requires the agent extra: pip install 'html-vault[agent]'",
+        "The backend server requires the agent extra: pip install 'html-lore[agent]'",
     ) from exc
 
 from .config import ServerSettings

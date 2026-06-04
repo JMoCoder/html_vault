@@ -8,6 +8,7 @@ from html_vault.builder import build_site
 
 from tests.api_server import run_api_server
 from html_vault.server.config import ServerSettings
+from html_vault.server.config import load_settings
 from html_vault.server.users import UserStore
 
 
@@ -79,11 +80,40 @@ def test_api_server_serves_static_frontend(tmp_path: Path) -> None:
     )
     try:
         index = server.request_text("GET", "/")
-        assert "<title>HTML Vault</title>" in index
+        assert "<title>HTMlore</title>" in index
         health = server.request("GET", "/api/health")
         assert health["status"] == "ok"
     finally:
         server.close()
+
+
+def test_new_env_names_take_priority_over_legacy(monkeypatch, tmp_path: Path) -> None:
+    legacy_content = tmp_path / "legacy-content"
+    lore_content = tmp_path / "lore-content"
+    monkeypatch.setenv("HTML_VAULT_CONTENT", str(legacy_content))
+    monkeypatch.setenv("HTML_LORE_CONTENT", str(lore_content))
+    monkeypatch.setenv("HTML_VAULT_TITLE", "Legacy Title")
+    monkeypatch.setenv("HTML_LORE_TITLE", "HTMlore Title")
+    monkeypatch.setenv("HTML_LORE_SESSION_SECRET", "secret")
+
+    settings = load_settings()
+
+    assert settings.content_dir == lore_content
+    assert settings.site_title == "HTMlore Title"
+    assert settings.session_secret == "secret"
+
+
+def test_legacy_env_names_still_work(monkeypatch, tmp_path: Path) -> None:
+    content = tmp_path / "legacy-content"
+    monkeypatch.setenv("HTML_VAULT_CONTENT", str(content))
+    monkeypatch.setenv("HTML_VAULT_TITLE", "Legacy Title")
+    monkeypatch.setenv("HTML_VAULT_SESSION_SECRET", "legacy-secret")
+
+    settings = load_settings()
+
+    assert settings.content_dir == content
+    assert settings.site_title == "Legacy Title"
+    assert settings.session_secret == "legacy-secret"
 
 
 def test_login_session_protects_api_and_content(tmp_path: Path) -> None:

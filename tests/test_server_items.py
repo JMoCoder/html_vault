@@ -244,7 +244,8 @@ def test_server_version_api() -> None:
     try:
         data = server.request("GET", "/api/version")
         assert data["version"] == __version__
-        assert data["repository"] == "JMoCoder/html_vault"
-        assert data["release_url"] == "https://github.com/JMoCoder/html_vault/releases"
+        assert data["brand"] == "HTMlore"
+        assert data["repository"] == "JMoCoder/html_lore"
+        assert data["release_url"] == "https://github.com/JMoCoder/html_lore/releases"
     finally:
         server.close()

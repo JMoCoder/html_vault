@@ -2,6 +2,25 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.6.7] - 2026-06-04
+
+### 新增
+
+- 新增 `html-lore` CLI 入口，同时在 0.x 兼容期内保留旧的 `html-vault` 命令。
+- 新增 `html_lore` Python 公共命名空间，作为指向现有实现包的兼容入口。
+- 新增 `HTML_LORE_*` 运行时配置名，并兼容读取旧的 `HTML_VAULT_*` 环境变量。
+- 新增浏览器偏好迁移：启动时将 `html-vault-*` localStorage 键复制到新的 `html-lore-*`，且不删除旧键。
+
+### 变更
+
+- 将公开产品品牌统一更名为 `HTMlore`，覆盖应用外壳、登录页、PWA manifest、Pages 官网、静态 demo、README、部署文档和版本元数据。
+- 默认仓库与版本检查地址更新为 `JMoCoder/html_lore`。
+- 包版本、应用版本、PWA、Demo 与官网缓存版本更新为 `0.6.7`。
+
+### 兼容
+
+- 继续支持现有 `html_vault` Python import、`html-vault` CLI、`HTML_VAULT_*` 环境变量、`html-vault-*` 浏览器偏好以及 `html-vault-backup` 导入。
+
 ## [0.6.6] - 2026-06-03
 
 ### 变更
@@ -17,7 +36,7 @@
 
 - 新增基于 `data/users.json` 的自托管多用户登录支持。
 - 新增按用户隔离的持久化资料库分区：`data/users/<data_id>/`，用于保存该用户上传/生成的 HTML、元数据、运行配置、任务记录和生成后的 public 输出。
-- 新增 `html-vault user-add` 命令，可在不保存明文密码的情况下创建或替换自托管用户。
+- 新增 `html-lore user-add` 命令，可在不保存明文密码的情况下创建或替换自托管用户。
 - 新增后端集成测试，覆盖 env 引导管理员、大小写不敏感的多用户登录，以及不同用户上传内容的隔离。
 
 ### 变更
@@ -55,7 +74,7 @@
 
 - 当服务端配置登录认证后，访问工作台首先进入标准登录页面。
 - 新增 `/api/auth/status`、`/api/auth/login` 和 `/api/auth/logout`，使用 HttpOnly 签名 session Cookie。
-- 新增通过环境变量配置测试用户账户：`HTML_VAULT_AUTH_USERNAME`、`HTML_VAULT_AUTH_PASSWORD` 和 `HTML_VAULT_SESSION_SECRET`。
+- 新增通过环境变量配置测试用户账户：`HTML_LORE_AUTH_USERNAME`、`HTML_LORE_AUTH_PASSWORD` 和 `HTML_LORE_SESSION_SECRET`。
 - 后端 API、`manifest.json` 与笔记正文文件现在可由有效 API token 或浏览器登录 session 保护。
 - 新增登录、错误登录、API 保护和静态内容保护的后端集成测试。
 
@@ -75,7 +94,7 @@
 ### 新增
 
 - 新增 Playwright E2E 覆盖，用于验证静态 Demo 布局与工作台 Logo 导航。
-- 新增可配置的 `HTML_VAULT_PAGES_URL`，真实工作台的品牌区可跳转到公开 GitHub Pages 主页。
+- 新增可配置的 `HTML_LORE_PAGES_URL`，真实工作台的品牌区可跳转到公开 GitHub Pages 主页。
 
 ### 变更
 
@@ -225,7 +244,7 @@
 
 - 新增第一段后端开发切片：可选 Agent Server API 骨架、`GET /api/health`、`GET /api/manifest`、`GET /api/items`、`GET /api/items/{id}`。
 - `GET /api/items` 支持当前前端列表逻辑：资料库、集合、标签 OR/AND、收藏/归档、搜索、排序和 limit。
-- 新增 `html-vault serve-api`，并补充条目查询服务/API 测试。
+- 新增 `html-lore serve-api`，并补充条目查询服务/API 测试。
 
 ### 修复
 
@@ -272,7 +291,7 @@
 
 ### 变更
 
-- 左侧品牌区固定显示 `HTMLvault`，移除条目数量小字。
+- 左侧品牌区固定显示 `HTMlore`，移除条目数量小字。
 - 左侧与右侧拖动轨道不再显示悬停/拖动高亮线。
 - 阅读页“原文 / 复制链接”改为图标按钮，AI 按钮固定在最右侧，并支持二次点击关闭右侧栏。
 - 阅读页标题栏限制标题、摘要与标签高度，右侧栏变宽时不会无限换行撑高。
@@ -297,7 +316,7 @@
 
 ### 变更
 
-- 将侧栏品牌图标更新为重新设计的 HTMLvault 图标，并优化深浅色下的品牌区与收起按钮对齐。
+- 将侧栏品牌图标更新为重新设计的 HTMlore 图标，并优化深浅色下的品牌区与收起按钮对齐。
 - 左侧导航栏与页面滚动条默认隐藏，悬停或键盘聚焦时显示。
 - AI 创建区来源选择框改为内嵌自定义箭头，避免箭头贴近右边框。
 - 包版本、应用版本与 PWA 缓存版本更新为 `0.3.16`。
@@ -481,7 +500,7 @@
 
 ### 新增
 
-- 初始静态优先 HTML Vault MVP。
+- 初始静态优先 HTMlore MVP。
 - Manifest v2 知识条目模型。
 - 旁车 YAML 元数据支持。
 - 类 Karakeep 卡片工作台与侧栏筛选。

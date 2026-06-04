@@ -1,4 +1,4 @@
-const CACHE_NAME = "html-vault-demo-v0.6.6";
+const CACHE_NAME = "html-lore-v0.6.7";
 const APP_SHELL = [
   "./",
   "index.html",
@@ -6,7 +6,7 @@ const APP_SHELL = [
   "app.js",
   "config.js",
   "manifest.webmanifest",
-  "assets/html-vault-logo.svg",
+  "assets/html-lore-logo.svg",
 ];
 
 self.addEventListener("install", (event) => {

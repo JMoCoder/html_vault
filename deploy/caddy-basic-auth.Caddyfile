@@ -1,9 +1,9 @@
 :80 {
-	root * /srv/html-vault/public
+	root * /srv/html-lore/public
 	encode zstd gzip
 
 	basic_auth {
-		{$HTML_VAULT_BASIC_AUTH_USER} {$HTML_VAULT_BASIC_AUTH_HASH}
+		{$HTML_LORE_BASIC_AUTH_USER} {$HTML_LORE_BASIC_AUTH_HASH}
 	}
 
 	request_body {
@@ -12,7 +12,7 @@
 
 	handle /api/* {
 		reverse_proxy api:8787 {
-			header_up Authorization "Bearer {$HTML_VAULT_API_TOKEN}"
+			header_up Authorization "Bearer {$HTML_LORE_API_TOKEN}"
 		}
 	}
 

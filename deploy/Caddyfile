@@ -1,5 +1,5 @@
 :80 {
-	root * /srv/html-vault/public
+	root * /srv/html-lore/public
 	encode zstd gzip
 
 	request_body {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HTML Vault README 完整说明</title>
+<title>HTMlore README 完整说明</title>
 <style>
 :root{--ink:#17201c;--muted:#5f716b;--line:#d8e4df;--panel:#fff;--soft:#f3f8f6;--brand:#0f766e;--blue:#2563eb;--amber:#c27803}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:linear-gradient(180deg,#eef5f2,#f8fbfa 420px);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.68}.wrap{max-width:1080px;margin:0 auto;padding:34px 28px 70px}.hero{display:grid;grid-template-columns:minmax(0,1fr)220px;gap:18px;align-items:stretch;margin-bottom:20px}.intro,.stat,.doc{border:1px solid var(--line);border-radius:10px;background:var(--panel);box-shadow:0 18px 50px rgba(28,48,40,.08)}.intro{padding:30px}.eyebrow{margin:0 0 12px;color:var(--brand);font-size:12px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}h1{margin:0;font-size:clamp(36px,5vw,58px);line-height:1.05}h2{margin:34px 0 12px;font-size:28px}h3{margin:28px 0 10px;font-size:21px}h4{margin:22px 0 8px;font-size:17px}p{margin:0 0 14px;color:var(--muted)}a{color:var(--brand);font-weight:760}.stat{display:grid;place-items:center;padding:18px;text-align:center}.stat strong{display:block;font-size:32px}.doc{padding:30px}.doc ul{margin:0 0 18px;padding-left:22px;color:var(--muted)}.doc li{margin:7px 0}.doc code{padding:2px 5px;border-radius:5px;background:#e8f2ef;color:#064e3b}.doc pre{overflow:auto;margin:18px 0;padding:16px;border-radius:8px;background:#13231f;color:#e7f8f4}.doc pre code{padding:0;background:transparent;color:inherit}.badge{display:inline-flex;align-items:center;min-height:32px;margin-bottom:14px;padding:0 10px;border-radius:999px;color:#fff;background:var(--brand);font-weight:850;font-size:13px}@media(max-width:760px){.wrap{padding:22px 18px 54px}.hero{grid-template-columns:1fr}.doc{padding:22px}h1{font-size:36px}}
 </style>
@@ -13,18 +13,18 @@
 <section class="hero">
 <article class="intro">
 <p class="eyebrow">项目说明</p>
-<h1>HTML Vault README 完整说明</h1>
+<h1>HTMlore README 完整说明</h1>
 </article>
-<aside class="stat"><span class="badge">完整 README</span><strong>0.6.6</strong></aside>
+<aside class="stat"><span class="badge">完整 README</span><strong>0.6.7</strong></aside>
 </section>
 <section class="doc">
-<h1>HTML Vault</h1>
+<h1>HTMlore</h1>
 <p>语言：<a href="README.md">English</a> | <a href="README.zh-CN.md">中文</a> | <a href="README.ja.md">日本語</a></p>
 <p>部署：<a href="DEPLOYMENT.zh-CN.md">自托管 Docker 与安全基线</a></p>
-<p>HTML Vault 是一个自托管 HTML 知识库工作台，用于保存、浏览、阅读和未来通过 AI 讨论 HTML 形式的知识文件。它面向希望内容仍然保留为可携带文件、而不是被锁进数据库优先笔记软件的用户。</p>
+<p>HTMlore 是一个自托管 HTML 知识库工作台，用于保存、浏览、阅读和未来通过 AI 讨论 HTML 形式的知识文件。它面向希望内容仍然保留为可携带文件、而不是被锁进数据库优先笔记软件的用户。</p>
 <p>项目长期方向是一个 Web 优先的个人知识库：导入或生成 HTML 笔记，用集合和标签组织，通过精致的卡片工作台阅读，安装为 PWA，并在后续接入 AI 服务，对自己的资料库进行分类、检索、总结和多轮问答。</p>
-<h2>为什么是 HTML Vault</h2>
-<p>很多知识工具要么把内容存成不透明的数据库记录，要么以 Markdown 写作为核心。HTML Vault 选择另一条路线：</p>
+<h2>为什么是 HTMlore</h2>
+<p>很多知识工具要么把内容存成不透明的数据库记录，要么以 Markdown 写作为核心。HTMlore 选择另一条路线：</p>
 <ul><li><strong>HTML 文件是长期内容层。</strong> 笔记可以被检查、复制、归档、备份，也可以由普通 Web 基础设施托管。</li><li><strong>YAML 旁车元数据让组织方式清晰可见。</strong> 标题、摘要、集合、标签、收藏、归档和来源信息都与内容分离保存。</li><li><strong>Web 应用是主客户端。</strong> 项目目标是浏览器和移动端 PWA，而不是额外开发桌面端。</li><li><strong>AI 是可选服务层。</strong> 当前已经具备 AI 工作流的界面和上下文架构，但凭据与模型调用不会写入静态前端。</li></ul>
 <h2>0.6.x 当前范围</h2>
 <p>当前 <code>0.6.x</code> 是带认证的自托管笔记本版本线，重点是 Docker 部署、内置登录、本地多用户账号、按用户持久化资料库、HTML 导入、元数据、筛选、阅读、归档，以及公网部署安全边界文档。</p>
@@ -34,8 +34,8 @@
 <ul><li>真实 AI 模型调用。</li><li>AI 生成 HTML 笔记。</li><li>AI 重新分类、打标签等批处理任务。</li><li>云同步或托管订阅服务。</li><li>完整备份/恢复和 WebDAV 执行逻辑。</li><li>集合/标签批量重命名、合并、删除。</li></ul>
 <h2>Docker 快速开始</h2>
 <p>默认 Docker 路径适合本地电脑、NAS、局域网服务器或私有 VPS。它不需要 token，也不强制使用 Caddy。</p>
-<pre><code>git clone https://github.com/JMoCoder/html_vault.git
-cd html_vault
+<pre><code>git clone https://github.com/JMoCoder/html_lore.git
+cd html_lore
 docker compose up -d --build</code></pre>
 <p>打开：</p>
 <pre><code>http://localhost:8080</code></pre>
@@ -47,11 +47,11 @@ data/meta      YAML 旁车元数据和运行时配置
 public         生成后的 Web 应用输出</code></pre>
 <p>不要把默认 compose 栈直接暴露到公网。公网部署时，请用你熟悉的反向代理增加 HTTPS 和登录认证。项目提供 Caddy Basic Auth 示例：<code>compose.prod.yml</code>、<code>.env.secure.example</code> 和 <code>deploy/caddy-basic-auth.Caddyfile</code>。</p>
 <h2>静态构建</h2>
-<p>HTML Vault 也可以根据已有内容和元数据构建静态站点：</p>
+<p>HTMlore 也可以根据已有内容和元数据构建静态站点：</p>
 <pre><code>python -m venv .venv
 source .venv/bin/activate
 pip install -e .
-html-vault build --content examples/content --meta examples/meta --out public
+html-lore build --content examples/content --meta examples/meta --out public
 python -m http.server 8080 --directory public</code></pre>
 <p>打开 <code>http://localhost:8080</code>。</p>
 <p>静态模式适合只读发布、类似 GitHub Pages 的托管，或检查生成后的应用。真实上传和元数据持久化需要后端 API 或默认 Docker 部署。</p>
@@ -76,21 +76,21 @@ open_mode: iframe
 agent:
   generated: true
   job_id: job_demo</code></pre>
-<p>元数据会覆盖从 HTML 文档中提取的字段。没有元数据时，HTML Vault 会推断标题、摘要、集合、来源类型、时间戳和审核状态。</p>
+<p>元数据会覆盖从 HTML 文档中提取的字段。没有元数据时，HTMlore 会推断标题、摘要、集合、来源类型、时间戳和审核状态。</p>
 <h2>后端 API</h2>
 <p>后端 API 已包含在 Docker 部署中，也可以通过可选 <code>agent</code> extra 手动启动：</p>
 <pre><code>pip install -e &quot;.[agent]&quot;
-HTML_VAULT_CONTENT=data/content \
-HTML_VAULT_META=data/meta \
-HTML_VAULT_PUBLIC=public \
-html-vault serve-api --host 127.0.0.1 --port 8787</code></pre>
+HTML_LORE_CONTENT=data/content \
+HTML_LORE_META=data/meta \
+HTML_LORE_PUBLIC=public \
+html-lore serve-api --host 127.0.0.1 --port 8787</code></pre>
 <p>已实现接口：</p>
 <ul><li><code>GET /api/health</code></li><li><code>GET /api/version</code></li><li><code>GET /api/manifest</code></li><li><code>GET /api/navigation</code></li><li><code>PUT /api/navigation</code></li><li><code>GET /api/items</code></li><li><code>GET /api/search</code></li><li><code>GET /api/items/{id}</code></li><li><code>GET /api/items/{id}/content</code></li><li><code>GET /api/items/{id}/raw</code></li><li><code>POST /api/rebuild</code></li><li><code>GET /api/rebuild/{job_id}</code></li><li><code>PATCH /api/items/{id}/metadata</code></li><li><code>PATCH /api/items/{id}/state</code></li><li><code>POST /api/uploads/html</code></li><li><code>GET /api/uploads/{upload_id}</code></li><li><code>DELETE /api/items/{id}</code></li></ul>
 <p>API 覆盖当前前端核心流程：上传、列表、搜索、筛选、阅读、元信息编辑、收藏、归档、取消归档、已归档笔记永久删除、侧栏显隐持久化、重建任务和版本检查。</p>
 <h2>安全模型</h2>
-<p>默认 Docker 模式面向本地、局域网和私有自托管使用。默认不要求 <code>HTML_VAULT_API_TOKEN</code>，因此前端可以直接调用同源 API。</p>
-<p>当你把 HTML Vault 暴露到公网时：</p>
-<ul><li>必须放在 HTTPS 后面。</li><li>必须在访问应用前要求登录、session 或其他认证。</li><li>为后端 API 设置 <code>HTML_VAULT_API_TOKEN</code>。</li><li>让反向代理在服务端内部注入后端 token。</li><li>不要把长期 API token 写进前端 JavaScript。</li><li>升级前和结构性变更前备份 <code>data/</code>。</li></ul>
+<p>默认 Docker 模式面向本地、局域网和私有自托管使用。默认不要求 <code>HTML_LORE_API_TOKEN</code>，因此前端可以直接调用同源 API。</p>
+<p>当你把 HTMlore 暴露到公网时：</p>
+<ul><li>必须放在 HTTPS 后面。</li><li>必须在访问应用前要求登录、session 或其他认证。</li><li>为后端 API 设置 <code>HTML_LORE_API_TOKEN</code>。</li><li>让反向代理在服务端内部注入后端 token。</li><li>不要把长期 API token 写进前端 JavaScript。</li><li>升级前和结构性变更前备份 <code>data/</code>。</li></ul>
 <p>详见 <a href="DEPLOYMENT.zh-CN.md">DEPLOYMENT.zh-CN.md</a>，其中包含可复用安全基线和 Caddy Basic Auth 示例。</p>
 <h2>路线图</h2>
 <p>近期后端与笔记本能力：</p>
@@ -101,7 +101,7 @@ html-vault serve-api --host 127.0.0.1 --port 8787</code></pre>
 <ul><li>托管同步和跨设备使用。</li><li>用户账户与账户安全。</li><li>商业 AI/云服务集成。</li><li>更好的移动端 PWA 流程。</li><li>在保持本地优先数据所有权的前提下提供可选协作功能。</li></ul>
 <h2>仓库结构</h2>
 <pre><code>app_static/        构建时复制到输出目录的静态工作台 UI
-html_vault/        Python 构建器、manifest 逻辑和后端 API
+html_lore/        Python 构建器、manifest 逻辑和后端 API
 examples/          示例内容与元数据
 tests/             构建器和后端 API 测试
 deploy/            可选部署示例
@@ -111,7 +111,7 @@ documents/         本地规划文档，Git 忽略</code></pre>
 <pre><code>pip install -e &quot;.[dev,agent]&quot;
 pytest
 python tests/run_smoke.py
-html-vault build --content examples/content --meta examples/meta --out public</code></pre>
+html-lore build --content examples/content --meta examples/meta --out public</code></pre>
 <h2>许可证</h2>
 <p>MIT</p>
 </section>

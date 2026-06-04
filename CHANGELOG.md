@@ -2,10 +2,38 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
-All notable changes to HTML Vault will be documented in this file.
+All notable changes to HTMlore will be documented in this file.
 
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
+
+## [0.6.7] - 2026-06-04
+
+### Added
+
+- Added the new `html-lore` CLI entry point while keeping the legacy
+  `html-vault` command available during the 0.x compatibility window.
+- Added the `html_lore` public Python namespace as a compatibility entry that
+  points to the existing implementation package.
+- Added `HTML_LORE_*` runtime configuration names with fallback support for
+  legacy `HTML_VAULT_*` environment variables.
+- Added browser preference migration from `html-vault-*` localStorage keys to
+  `html-lore-*` keys, without deleting the legacy keys.
+
+### Changed
+
+- Renamed the public product brand from HTMlore's former name to `HTMlore`
+  across the app shell, login screen, PWA manifest, Pages site, static demo,
+  README, deployment docs, and version metadata.
+- Updated the default repository and release-check URLs to
+  `JMoCoder/html_lore`.
+- Updated package, app, PWA, demo, and homepage cache versions to `0.6.7`.
+
+### Compatibility
+
+- Existing `html_vault` Python imports, `html-vault` CLI commands,
+  `HTML_VAULT_*` env variables, `html-vault-*` browser preferences, and
+  `html-vault-backup` imports remain supported.
 
 ## [0.6.6] - 2026-06-03
 
@@ -29,7 +57,7 @@ versioning after the initial public release.
 - Added per-user persistent notebook partitions under `data/users/<data_id>/`
   for each user's imported/generated HTML, metadata, runtime config, jobs, and
   generated public output.
-- Added `html-vault user-add` for creating or replacing self-hosted users
+- Added `html-lore user-add` for creating or replacing self-hosted users
   without storing plaintext passwords.
 - Added backend integration coverage for env bootstrap, case-insensitive
   multi-user login, and cross-user upload isolation.
@@ -79,8 +107,8 @@ versioning after the initial public release.
 - Added `/api/auth/status`, `/api/auth/login`, and `/api/auth/logout` with
   HttpOnly signed session cookies.
 - Added environment-configured test-user credentials via
-  `HTML_VAULT_AUTH_USERNAME`, `HTML_VAULT_AUTH_PASSWORD`, and
-  `HTML_VAULT_SESSION_SECRET`.
+  `HTML_LORE_AUTH_USERNAME`, `HTML_LORE_AUTH_PASSWORD`, and
+  `HTML_LORE_SESSION_SECRET`.
 - Protected backend APIs, `manifest.json`, and note content files with either
   a valid API token or browser login session.
 - Added backend integration tests for login, failed login, API protection, and
@@ -105,7 +133,7 @@ versioning after the initial public release.
 
 - Added Playwright E2E coverage for the static demo layout and workspace logo
   navigation.
-- Added configurable `HTML_VAULT_PAGES_URL` support so workspace branding can
+- Added configurable `HTML_LORE_PAGES_URL` support so workspace branding can
   open the public GitHub Pages homepage from the real app.
 
 ### Changed
@@ -306,7 +334,7 @@ versioning after the initial public release.
   `GET /api/items/{id}`.
 - `GET /api/items` supports current frontend list behavior for library,
   collection, tag OR/AND, favorite/archive, search, sort, and limit filters.
-- Added `html-vault serve-api` and service/API tests for the item query layer.
+- Added `html-lore serve-api` and service/API tests for the item query layer.
 
 ### Fixed
 
@@ -367,7 +395,7 @@ versioning after the initial public release.
 
 ### Changed
 
-- Sidebar branding now always shows `HTMLvault` and removes the item-count
+- Sidebar branding now always shows `HTMlore` and removes the item-count
   subtitle.
 - Sidebar and AI-panel resize rails no longer show hover/drag highlight lines.
 - Reader actions now use icon buttons for original/copy, keep the AI button on
@@ -399,7 +427,7 @@ versioning after the initial public release.
 
 ### Changed
 
-- Updated the sidebar brand mark to the redesigned HTMLvault icon and refined
+- Updated the sidebar brand mark to the redesigned HTMlore icon and refined
   brand/collapse-button alignment for light and dark themes.
 - Sidebar and page scrollbars now stay hidden until hover or keyboard focus.
 - AI-create source selector now uses an inset custom chevron so the arrow no
@@ -614,7 +642,7 @@ versioning after the initial public release.
 
 ### Added
 
-- Initial static-first HTML Vault MVP.
+- Initial static-first HTMlore MVP.
 - Manifest v2 builder for HTML knowledge items.
 - Sidecar YAML metadata support.
 - Karakeep-style card workspace with sidebar filters.

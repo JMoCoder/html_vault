@@ -1,8 +1,8 @@
 {
-  "name": "html-vault",
-  "version": "0.6.6",
+  "name": "html-lore",
+  "version": "0.6.7",
   "private": true,
-  "description": "Development tooling for HTML Vault frontend and static demo checks.",
+  "description": "Development tooling for HTMlore frontend and static demo checks.",
   "scripts": {
     "test:e2e": "playwright test"
   },

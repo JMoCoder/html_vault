@@ -138,11 +138,11 @@ const i18n = {
     settingsNeedsAgent: "Agent Server is not configured. API key was not sent or saved.",
     settingsSavedAgent: "Configuration sent to Agent Server.",
     settingsAgentFailed: "Agent Server did not accept the configuration.",
-    termsIntro: "HTML Vault is designed for personal and team knowledge assets.",
+    termsIntro: "HTMlore is designed for personal and team knowledge assets.",
     termsPrivateUse: "Use it with content you own, have permission to process, or can lawfully store for private use.",
     termsCopyright: "Generated notes should summarize and cite sources instead of copying protected works wholesale.",
     termsSecurity: "You are responsible for protecting deployed Agent APIs, uploads, and model credentials.",
-    aboutIntro: "HTML Vault turns HTML files into a card-based static knowledge workspace.",
+    aboutIntro: "HTMlore turns HTML files into a card-based static knowledge workspace.",
     aboutStaticFirst: "HTML and YAML files remain the knowledge source of truth; the database should only hold optional job state.",
     aboutVersion: "Current version: {version}.",
     updateAvailable: "Update available: {version}.",
@@ -199,7 +199,7 @@ const i18n = {
     search: "Search",
     searchTitle: "Search: {query}",
     searchPlaceholder: "Title, summary, tag, path",
-    manifestMissing: "Manifest not found. Run <code>html-vault build</code> first.",
+    manifestMissing: "Manifest not found. Run <code>html-lore build</code> first.",
     noMatches: "No matching HTML knowledge items.",
     newKnowledgeItem: "New Knowledge Item",
     createHtmlNote: "Create with AI",
@@ -215,7 +215,7 @@ const i18n = {
     newItemPlaceholder: "Paste a link, choose file mode, enter a book, or describe a topic",
     create: "Create",
     emptyInput: "Enter a link, book, file path, or topic first.",
-    agentNotConfigured: "Agent Server not configured. Set window.HTML_VAULT_AGENT_URL before loading the app.",
+    agentNotConfigured: "Agent Server not configured. Set window.HTML_LORE_AGENT_URL before loading the app.",
     submittingJob: "Submitting job...",
     queuedJob: "Queued job {jobId}",
     agentUnavailable: "Agent Server is unavailable.",
@@ -395,11 +395,11 @@ const i18n = {
     settingsNeedsAgent: "尚未配置 Agent Server。API Key 没有发送，也没有保存。",
     settingsSavedAgent: "配置已发送到 Agent Server。",
     settingsAgentFailed: "Agent Server 未接受该配置。",
-    termsIntro: "HTML Vault 用于个人与团队知识资产管理。",
+    termsIntro: "HTMlore 用于个人与团队知识资产管理。",
     termsPrivateUse: "请仅处理你拥有、被授权处理，或可合法用于私有保存的内容。",
     termsCopyright: "生成笔记应以总结和来源引用为主，不应整段复制受版权保护的作品。",
     termsSecurity: "你需要自行保护部署后的 Agent API、上传文件和模型凭据。",
-    aboutIntro: "HTML Vault 将 HTML 文件变成卡片式静态知识工作台。",
+    aboutIntro: "HTMlore 将 HTML 文件变成卡片式静态知识工作台。",
     aboutStaticFirst: "HTML 与 YAML 文件是知识真源；数据库只应保存可选任务状态。",
     aboutVersion: "当前版本：{version}。",
     updateAvailable: "发现可更新版本：{version}。",
@@ -456,7 +456,7 @@ const i18n = {
     search: "搜索",
     searchTitle: "搜索：{query}",
     searchPlaceholder: "标题、摘要、标签、路径",
-    manifestMissing: "未找到 Manifest。请先运行 <code>html-vault build</code>。",
+    manifestMissing: "未找到 Manifest。请先运行 <code>html-lore build</code>。",
     noMatches: "没有匹配的 HTML 知识条目。",
     newKnowledgeItem: "新知识条目",
     createHtmlNote: "用 AI 创建",
@@ -472,7 +472,7 @@ const i18n = {
     newItemPlaceholder: "粘贴链接、切换文件模式、输入书名，或描述一个主题",
     create: "创建",
     emptyInput: "请先输入链接、书籍、文件路径或主题。",
-    agentNotConfigured: "尚未配置 Agent Server。请在加载应用前设置 window.HTML_VAULT_AGENT_URL。",
+    agentNotConfigured: "尚未配置 Agent Server。请在加载应用前设置 window.HTML_LORE_AGENT_URL。",
     submittingJob: "正在提交任务...",
     queuedJob: "已加入任务队列 {jobId}",
     agentUnavailable: "Agent Server 不可用。",
@@ -652,11 +652,11 @@ const i18n = {
     settingsNeedsAgent: "Agent Server が未設定です。API Key は送信も保存もされていません。",
     settingsSavedAgent: "設定を Agent Server に送信しました。",
     settingsAgentFailed: "Agent Server が設定を受け付けませんでした。",
-    termsIntro: "HTML Vault は個人およびチームのナレッジ資産管理向けです。",
+    termsIntro: "HTMlore は個人およびチームのナレッジ資産管理向けです。",
     termsPrivateUse: "所有している、許可を得ている、または私的保存が合法なコンテンツのみ処理してください。",
     termsCopyright: "生成ノートは保護された著作物を丸ごと複製せず、要約と出典提示を中心にしてください。",
     termsSecurity: "デプロイした Agent API、アップロード、モデル認証情報の保護は利用者の責任です。",
-    aboutIntro: "HTML Vault は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
+    aboutIntro: "HTMlore は HTML ファイルをカード型の静的ナレッジワークスペースに変換します。",
     aboutStaticFirst: "HTML と YAML ファイルがナレッジの真のソースです。データベースは任意のジョブ状態のみを保持すべきです。",
     aboutVersion: "現在のバージョン: {version}。",
     updateAvailable: "利用可能な更新: {version}。",
@@ -713,7 +713,7 @@ const i18n = {
     search: "検索",
     searchTitle: "検索: {query}",
     searchPlaceholder: "タイトル、概要、タグ、パス",
-    manifestMissing: "Manifest が見つかりません。先に <code>html-vault build</code> を実行してください。",
+    manifestMissing: "Manifest が見つかりません。先に <code>html-lore build</code> を実行してください。",
     noMatches: "一致する HTML ナレッジ項目がありません。",
     newKnowledgeItem: "新規ナレッジ項目",
     createHtmlNote: "AI で作成",
@@ -729,7 +729,7 @@ const i18n = {
     newItemPlaceholder: "リンク、ファイルモード、書名、またはトピックを入力",
     create: "作成",
     emptyInput: "リンク、書籍、ファイルパス、またはトピックを入力してください。",
-    agentNotConfigured: "Agent Server が設定されていません。アプリ読み込み前に window.HTML_VAULT_AGENT_URL を設定してください。",
+    agentNotConfigured: "Agent Server が設定されていません。アプリ読み込み前に window.HTML_LORE_AGENT_URL を設定してください。",
     submittingJob: "ジョブを送信中...",
     queuedJob: "ジョブをキューに追加しました {jobId}",
     agentUnavailable: "Agent Server を利用できません。",
@@ -782,9 +782,42 @@ const libraryFilterDefinitions = [
   { value: "archived", labelKey: "archived", test: (item) => isArchived(item) },
 ];
 
+const STORAGE_PREFIX = "html-lore-";
+const LEGACY_STORAGE_PREFIX = "html-vault-";
+
+function getRuntimeConfig(name) {
+  return window[`HTML_LORE_${name}`] ?? window[`HTML_VAULT_${name}`];
+}
+
+function hasRuntimeConfig(name) {
+  return getRuntimeConfig(name) !== undefined;
+}
+
+function storageKey(name) {
+  return `${STORAGE_PREFIX}${name}`;
+}
+
+function legacyStorageKey(name) {
+  return `${LEGACY_STORAGE_PREFIX}${name}`;
+}
+
+function getStored(name) {
+  const key = storageKey(name);
+  const current = localStorage.getItem(key);
+  if (current !== null) return current;
+  const legacy = localStorage.getItem(legacyStorageKey(name));
+  if (legacy !== null) localStorage.setItem(key, legacy);
+  return legacy;
+}
+
+function setStored(name, value) {
+  localStorage.setItem(storageKey(name), value);
+}
+
 function getDefaultAgentUrl() {
-  if (window.HTML_VAULT_STATIC_DEMO) return "";
-  if (window.HTML_VAULT_AGENT_URL) return window.HTML_VAULT_AGENT_URL;
+  if (hasRuntimeConfig("STATIC_DEMO")) return "";
+  const configuredUrl = getRuntimeConfig("AGENT_URL");
+  if (configuredUrl) return configuredUrl;
   if (window.location.protocol === "file:") return "";
   const host = window.location.hostname;
   const port = window.location.port;
@@ -794,12 +827,12 @@ function getDefaultAgentUrl() {
 }
 
 function getPagesHomeUrl() {
-  if (window.HTML_VAULT_STATIC_DEMO) return "../";
-  return window.HTML_VAULT_PAGES_URL || "https://jmocoder.github.io/html_vault/";
+  if (hasRuntimeConfig("STATIC_DEMO")) return "../";
+  return getRuntimeConfig("PAGES_URL") || "https://jmocoder.github.io/html_lore/";
 }
 
 function getDefaultAgentToken() {
-  return window.HTML_VAULT_AGENT_TOKEN || localStorage.getItem("html-vault-agent-token") || "";
+  return getRuntimeConfig("AGENT_TOKEN") || getStored("agent-token") || "";
 }
 
 const state = {
@@ -815,7 +848,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.6.6",
+  currentVersion: "0.6.7",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -1145,7 +1178,7 @@ function renderApp() {
   applyViewMode();
   applyFavoriteFilter();
   applyTranslations();
-  elements.siteTitle.textContent = "HTMLvault";
+  elements.siteTitle.textContent = "HTMlore";
   renderFeedback();
   renderLibraryNav();
   renderCollectionNav();
@@ -1183,7 +1216,7 @@ async function checkVersionStatus() {
 
 async function fetchLatestGithubVersion() {
   const signal = AbortSignal.timeout ? AbortSignal.timeout(4000) : undefined;
-  const releaseResponse = await fetch("https://api.github.com/repos/JMoCoder/html_vault/releases/latest", {
+  const releaseResponse = await fetch("https://api.github.com/repos/JMoCoder/html_lore/releases/latest", {
     headers: { Accept: "application/vnd.github+json" },
     signal,
   });
@@ -1192,7 +1225,7 @@ async function fetchLatestGithubVersion() {
     const version = normalizeVersion(release.tag_name || release.name || "");
     if (version) return version;
   }
-  const tagsResponse = await fetch("https://api.github.com/repos/JMoCoder/html_vault/tags", {
+  const tagsResponse = await fetch("https://api.github.com/repos/JMoCoder/html_lore/tags", {
     headers: { Accept: "application/vnd.github+json" },
     signal,
   });
@@ -2101,7 +2134,7 @@ function renderAfterItemStateChange(item) {
 }
 
 function getInitialLanguage() {
-  const saved = localStorage.getItem("html-vault-language");
+  const saved = getStored("language");
   if (saved && i18n[saved]) return saved;
   return "en";
 }
@@ -2109,12 +2142,12 @@ function getInitialLanguage() {
 function setLanguage(language) {
   if (!i18n[language]) return;
   state.language = language;
-  localStorage.setItem("html-vault-language", language);
+  setStored("language", language);
   renderApp();
 }
 
 function getInitialThemeMode() {
-  const saved = localStorage.getItem("html-vault-theme");
+  const saved = getStored("theme");
   if (saved === "system" || saved === "dark" || saved === "light") return saved;
   return "system";
 }
@@ -2124,18 +2157,18 @@ function getInitialViewMode() {
 }
 
 function getInitialSortMode() {
-  const saved = localStorage.getItem("html-vault-sort-mode");
+  const saved = getStored("sort-mode");
   return ["newest", "oldest", "title-az", "title-za"].includes(saved) ? saved : "newest";
 }
 
 function getInitialAiPanelWidth() {
-  const saved = Number(localStorage.getItem("html-vault-ai-panel-width"));
+  const saved = Number(getStored("ai-panel-width"));
   if (Number.isFinite(saved) && saved >= 320 && saved <= 720) return saved;
   return 420;
 }
 
 function getInitialSidebarWidth() {
-  const saved = Number(localStorage.getItem("html-vault-sidebar-width"));
+  const saved = Number(getStored("sidebar-width"));
   if (Number.isFinite(saved) && saved >= 240 && saved <= 420) return saved;
   return 280;
 }
@@ -2151,12 +2184,12 @@ function clampSidebarWidth(width) {
 }
 
 function getInitialSidebarState() {
-  return localStorage.getItem("html-vault-sidebar-collapsed") === "true";
+  return getStored("sidebar-collapsed") === "true";
 }
 
 function getInitialNavSectionState() {
   try {
-    return JSON.parse(localStorage.getItem("html-vault-nav-section-collapsed") || "{}");
+    return JSON.parse(getStored("nav-section-collapsed") || "{}");
   } catch {
     return {};
   }
@@ -2164,7 +2197,7 @@ function getInitialNavSectionState() {
 
 function toggleNavSection(section) {
   state.navSectionCollapsed[section] = !state.navSectionCollapsed[section];
-  localStorage.setItem("html-vault-nav-section-collapsed", JSON.stringify(state.navSectionCollapsed));
+  setStored("nav-section-collapsed", JSON.stringify(state.navSectionCollapsed));
   applyNavSectionState();
 }
 
@@ -2184,7 +2217,7 @@ function applyNavSectionState() {
 
 function toggleSidebar() {
   state.sidebarCollapsed = !state.sidebarCollapsed;
-  localStorage.setItem("html-vault-sidebar-collapsed", String(state.sidebarCollapsed));
+  setStored("sidebar-collapsed", String(state.sidebarCollapsed));
   applySidebarState();
 }
 
@@ -2214,7 +2247,7 @@ function startSidebarResize(event) {
   };
   const onUp = () => {
     elements.body.classList.remove("sidebar-resizing");
-    localStorage.setItem("html-vault-sidebar-width", String(state.sidebarWidth));
+    setStored("sidebar-width", String(state.sidebarWidth));
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("pointerup", onUp);
   };
@@ -2223,13 +2256,13 @@ function startSidebarResize(event) {
 }
 
 function getInitialFavoriteFilter() {
-  return localStorage.getItem("html-vault-only-favorites") === "true";
+  return getStored("only-favorites") === "true";
 }
 
 function setViewMode(mode) {
   if (mode !== "cards" && mode !== "list") return;
   state.viewMode = mode;
-  localStorage.setItem("html-vault-view-mode", mode);
+  setStored("view-mode", mode);
   applyViewMode();
   renderGrid();
 }
@@ -2393,7 +2426,7 @@ function setSortMode(mode) {
   if (!["newest", "oldest", "title-az", "title-za"].includes(mode)) return;
   state.sortMode = mode;
   state.sortOpen = false;
-  localStorage.setItem("html-vault-sort-mode", mode);
+  setStored("sort-mode", mode);
   applySortState();
   renderGrid();
 }
@@ -2471,7 +2504,7 @@ function startAiPanelResize(event) {
   };
   const onUp = () => {
     elements.body.classList.remove("ai-panel-resizing");
-    localStorage.setItem("html-vault-ai-panel-width", String(state.aiPanelWidth));
+    setStored("ai-panel-width", String(state.aiPanelWidth));
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("pointerup", onUp);
   };
@@ -2481,7 +2514,7 @@ function startAiPanelResize(event) {
 
 function toggleFavoriteFilter() {
   state.onlyFavorites = !state.onlyFavorites;
-  localStorage.setItem("html-vault-only-favorites", String(state.onlyFavorites));
+  setStored("only-favorites", String(state.onlyFavorites));
   applyFavoriteFilter();
   renderGrid();
   renderAiContext();
@@ -2502,7 +2535,7 @@ function applyViewMode() {
 function setThemeMode(mode) {
   if (!["system", "light", "dark"].includes(mode)) return;
   state.themeMode = mode;
-  localStorage.setItem("html-vault-theme", mode);
+  setStored("theme", mode);
   applyTheme();
 }
 
@@ -2530,7 +2563,7 @@ function updateThemeMetaColor(resolvedTheme) {
 
 function loadAiConfig() {
   try {
-    return JSON.parse(localStorage.getItem("html-vault-ai-config") || "{}");
+    return JSON.parse(getStored("ai-config") || "{}");
   } catch {
     return {};
   }
@@ -2538,7 +2571,7 @@ function loadAiConfig() {
 
 function loadDataConfig() {
   try {
-    return JSON.parse(localStorage.getItem("html-vault-data-config") || "{}");
+    return JSON.parse(getStored("data-config") || "{}");
   } catch {
     return {};
   }
@@ -2549,7 +2582,7 @@ function loadProfile() {
     return {
       avatarType: "brand",
       avatarImage: "",
-      ...JSON.parse(localStorage.getItem("html-vault-profile") || "{}"),
+      ...JSON.parse(getStored("profile") || "{}"),
     };
   } catch {
     return { avatarType: "brand", avatarImage: "" };
@@ -2557,7 +2590,7 @@ function loadProfile() {
 }
 
 function saveProfile() {
-  localStorage.setItem("html-vault-profile", JSON.stringify(state.profile));
+  setStored("profile", JSON.stringify(state.profile));
 }
 
 function renderProfile() {
@@ -2579,7 +2612,7 @@ function renderAvatar(target, large) {
     target.innerHTML = `<img src="${escapeHtml(state.profile.avatarImage)}" alt="">`;
     return;
   }
-  target.innerHTML = `<img src="assets/html-vault-logo.svg" alt="">`;
+  target.innerHTML = `<img src="assets/html-lore-logo.svg" alt="">`;
 }
 
 function toggleProfileSummary() {
@@ -2596,19 +2629,19 @@ function setProfileSummary(open) {
 
 function loadItemState() {
   try {
-    return JSON.parse(localStorage.getItem("html-vault-item-state") || "{}");
+    return JSON.parse(getStored("item-state") || "{}");
   } catch {
     return {};
   }
 }
 
 function saveItemState() {
-  localStorage.setItem("html-vault-item-state", JSON.stringify(state.itemState));
+  setStored("item-state", JSON.stringify(state.itemState));
 }
 
 function loadNavConfig() {
   try {
-    return JSON.parse(localStorage.getItem("html-vault-nav-config") || '{"library":{},"collections":{},"tags":{}}');
+    return JSON.parse(getStored("nav-config") || '{"library":{},"collections":{},"tags":{}}');
   } catch {
     return { library: {}, collections: {}, tags: {} };
   }
@@ -2627,7 +2660,7 @@ async function loadRemoteNavConfig() {
 }
 
 function saveNavConfig() {
-  localStorage.setItem("html-vault-nav-config", JSON.stringify(state.navConfig));
+  setStored("nav-config", JSON.stringify(state.navConfig));
 }
 
 async function persistNavConfig() {
@@ -2763,7 +2796,7 @@ async function saveAiConfig(event) {
   };
 
   state.aiConfig = config;
-  localStorage.setItem("html-vault-ai-config", JSON.stringify(config));
+  setStored("ai-config", JSON.stringify(config));
 
   if (!apiKey) {
     elements.settingsFeedback.textContent = t("settingsSavedStatic");
@@ -2801,7 +2834,7 @@ function renderDataConfig() {
 }
 
 function saveDataConfig() {
-  localStorage.setItem("html-vault-data-config", JSON.stringify(state.dataConfig));
+  setStored("data-config", JSON.stringify(state.dataConfig));
 }
 
 function setAutoBackup(enabled) {
@@ -2829,7 +2862,7 @@ function testWebdavSettings() {
 }
 
 function createBackup() {
-  downloadJson(`html-vault-backup-${dateStamp()}.json`, buildBackupPayload());
+  downloadJson(`html-lore-backup-${dateStamp()}.json`, buildBackupPayload());
   state.dataConfig.lastBackupAt = new Date().toISOString();
   saveDataConfig();
   elements.backupFeedback.textContent = t("backupCreated");
@@ -2837,7 +2870,7 @@ function createBackup() {
 
 function buildBackupPayload() {
   return {
-    type: "html-vault-backup",
+    type: "html-lore-backup",
     version: 1,
     createdAt: new Date().toISOString(),
     manifestVersion: state.manifest?.version,
@@ -2870,7 +2903,8 @@ function restoreBackupFile(file) {
   reader.addEventListener("load", () => {
     try {
       const backup = JSON.parse(String(reader.result || "{}"));
-      if (backup.type !== "html-vault-backup" || !backup.preferences) {
+      const validTypes = new Set(["html-lore-backup", "html-vault-backup"]);
+      if (!validTypes.has(backup.type) || !backup.preferences) {
         throw new Error("Invalid backup file");
       }
       restorePreferences(backup.preferences);
@@ -2889,23 +2923,23 @@ function restoreBackupFile(file) {
 function restorePreferences(preferences) {
   if (preferences.language && i18n[preferences.language]) {
     state.language = preferences.language;
-    localStorage.setItem("html-vault-language", state.language);
+    setStored("language", state.language);
   }
   if (preferences.theme === "system" || preferences.theme === "dark" || preferences.theme === "light") {
     state.themeMode = preferences.theme;
-    localStorage.setItem("html-vault-theme", state.themeMode);
+    setStored("theme", state.themeMode);
   }
   state.viewMode = "cards";
-  localStorage.setItem("html-vault-view-mode", state.viewMode);
+  setStored("view-mode", state.viewMode);
   state.onlyFavorites = Boolean(preferences.onlyFavorites);
-  localStorage.setItem("html-vault-only-favorites", String(state.onlyFavorites));
+  setStored("only-favorites", String(state.onlyFavorites));
   state.aiConfig = preferences.aiConfig || {};
   state.dataConfig = preferences.dataConfig || {};
   state.navConfig = preferences.navConfig || { library: {}, collections: {}, tags: {} };
   state.itemState = preferences.itemState || {};
-  localStorage.setItem("html-vault-ai-config", JSON.stringify(state.aiConfig));
-  localStorage.setItem("html-vault-data-config", JSON.stringify(state.dataConfig));
-  localStorage.setItem("html-vault-nav-config", JSON.stringify(state.navConfig));
+  setStored("ai-config", JSON.stringify(state.aiConfig));
+  setStored("data-config", JSON.stringify(state.dataConfig));
+  setStored("nav-config", JSON.stringify(state.navConfig));
   saveItemState();
 }
 
@@ -2920,12 +2954,12 @@ function maybeAutoBackup(force = false) {
 }
 
 function exportManifestData() {
-  downloadJson(`html-vault-manifest-${dateStamp()}.json`, state.manifest || {});
+  downloadJson(`html-lore-manifest-${dateStamp()}.json`, state.manifest || {});
   elements.exportFeedback.textContent = t("exportCreated");
 }
 
 function exportPreferencesData() {
-  downloadJson(`html-vault-preferences-${dateStamp()}.json`, getPreferencePayload());
+  downloadJson(`html-lore-preferences-${dateStamp()}.json`, getPreferencePayload());
   elements.exportFeedback.textContent = t("exportCreated");
 }
 
@@ -3099,7 +3133,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = window.HTML_VAULT_STATIC_DEMO ? "sw.js?v=0.6.6-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.6.7-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });

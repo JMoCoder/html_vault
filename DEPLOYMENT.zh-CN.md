@@ -1,4 +1,4 @@
-# HTML Vault 部署安全基线
+# HTMlore 部署安全基线
 
 语言：[English](DEPLOYMENT.md) | [中文](DEPLOYMENT.zh-CN.md)
 
@@ -12,36 +12,43 @@
 - 自托管 Docker 主机：可以是本地电脑、NAS、局域网服务器或 VPS，用于运行长期笔记本服务。本地电脑部署不要求 24 小时在线，除非你需要持续远程访问。
 - `data/`：私有笔记本数据，不提交到 Git。
 
+## 更名兼容
+
+HTMlore 原名 HTML Vault。当前版本会优先读取 `HTML_LORE_*`，并 fallback
+到旧的 `HTML_VAULT_*` 环境变量。新 CLI 推荐使用 `html-lore`，旧的
+`html-vault` 命令会在 0.x 兼容期内继续可用。公网 Caddy 示例已使用新的
+`HTML_LORE_*` 变量名，刷新 `.env` 时应同步更新。
+
 ## 最低生产安全要求
 
 不要在没有认证边界的情况下，把后端 API 直接暴露到公网。
 
 项目层面必需控制：
 
-- 后端设置 `HTML_VAULT_API_TOKEN`。
-- 公网访问前必须替换默认本地/测试账号 `admin` / `test-password`，并设置 `HTML_VAULT_AUTH_USERNAME`、`HTML_VAULT_AUTH_PASSWORD` 和 `HTML_VAULT_SESSION_SECRET`。
-- HTTPS 部署时设置 `HTML_VAULT_SESSION_SECURE=true`。
-- 设置 `HTML_VAULT_CORS_ORIGINS` 为准确的前端公网来源。
+- 后端设置 `HTML_LORE_API_TOKEN`。
+- 公网访问前必须替换默认本地/测试账号 `admin` / `test-password`，并设置 `HTML_LORE_AUTH_USERNAME`、`HTML_LORE_AUTH_PASSWORD` 和 `HTML_LORE_SESSION_SECRET`。
+- HTTPS 部署时设置 `HTML_LORE_SESSION_SECURE=true`。
+- 设置 `HTML_LORE_CORS_ORIGINS` 为准确的前端公网来源。
 - 静态前端和 API 都放在 HTTPS 后面。
 - `data/content`、`data/meta` 和备份目录放在 Git 仓库之外。
 - API Key 和后续模型凭据只保存在服务端。
-- 用 `HTML_VAULT_MAX_UPLOAD_BYTES` 限制上传大小。
+- 用 `HTML_LORE_MAX_UPLOAD_BYTES` 限制上传大小。
 - 部署前、结构性升级前备份 `data/`。
 
 ## 后端环境变量
 
 ```bash
-HTML_VAULT_CONTENT=/srv/html-vault/data/content
-HTML_VAULT_META=/srv/html-vault/data/meta
-HTML_VAULT_PUBLIC=/srv/html-vault/public
-HTML_VAULT_TITLE="HTML Vault"
-HTML_VAULT_MAX_UPLOAD_BYTES=10485760
-HTML_VAULT_API_TOKEN="replace-with-a-long-random-token"
-HTML_VAULT_AUTH_USERNAME="admin"
-HTML_VAULT_AUTH_PASSWORD="replace-with-a-strong-login-password"
-HTML_VAULT_SESSION_SECRET="replace-with-a-long-random-session-secret"
-HTML_VAULT_SESSION_SECURE=true
-HTML_VAULT_CORS_ORIGINS="https://vault.example.com"
+HTML_LORE_CONTENT=/srv/html-lore/data/content
+HTML_LORE_META=/srv/html-lore/data/meta
+HTML_LORE_PUBLIC=/srv/html-lore/public
+HTML_LORE_TITLE="HTMlore"
+HTML_LORE_MAX_UPLOAD_BYTES=10485760
+HTML_LORE_API_TOKEN="replace-with-a-long-random-token"
+HTML_LORE_AUTH_USERNAME="admin"
+HTML_LORE_AUTH_PASSWORD="replace-with-a-strong-login-password"
+HTML_LORE_SESSION_SECRET="replace-with-a-long-random-session-secret"
+HTML_LORE_SESSION_SECURE=true
+HTML_LORE_CORS_ORIGINS="https://vault.example.com"
 ```
 
 默认 Docker compose 会在应用容器内使用 `/data/content`、`/data/meta` 和 `/public`。如果不修改 compose 文件，宿主机路径就是仓库目录下的 `./data/...` 与 `./public`。
@@ -51,7 +58,7 @@ HTML_VAULT_CORS_ORIGINS="https://vault.example.com"
 后端只监听 localhost 或私有网络地址：
 
 ```bash
-html-vault serve-api --host 127.0.0.1 --port 8787
+html-lore serve-api --host 127.0.0.1 --port 8787
 ```
 
 ## 前端 Token
@@ -60,12 +67,12 @@ html-vault serve-api --host 127.0.0.1 --port 8787
 
 ```html
 <script>
-  window.HTML_VAULT_AGENT_URL = "https://vault.example.com";
-  window.HTML_VAULT_AGENT_TOKEN = "replace-with-a-long-random-token";
+  window.HTML_LORE_AGENT_URL = "https://vault.example.com";
+  window.HTML_LORE_AGENT_TOKEN = "replace-with-a-long-random-token";
 </script>
 ```
 
-前端也会读取 `localStorage.html-vault-agent-token`，方便开发调试。生产环境优先使用内置浏览器登录，或使用反向代理登录/session 边界，不建议把长期 token 直接写进前端 HTML。为了兼容 iframe/raw HTML 访问，项目支持 query token，但它不应作为公网唯一安全边界。
+前端也会读取 `localStorage.html-lore-agent-token`，方便开发调试。生产环境优先使用内置浏览器登录，或使用反向代理登录/session 边界，不建议把长期 token 直接写进前端 HTML。为了兼容 iframe/raw HTML 访问，项目支持 query token，但它不应作为公网唯一安全边界。
 
 ## 反向代理边界
 
@@ -74,7 +81,7 @@ html-vault serve-api --host 127.0.0.1 --port 8787
 ```text
 Browser
   -> HTTPS 反向代理
-    -> HTML Vault 内置登录/session
+    -> HTMlore 内置登录/session
       -> static public/ frontend
       -> /api/*
 ```
@@ -82,7 +89,7 @@ Browser
 反向代理应当：
 
 - 终止 TLS；
-- 使用 HTML Vault 内置登录，或在访问应用前要求登录；
+- 使用 HTMlore 内置登录，或在访问应用前要求登录；
 - 只转发明确需要的路径；
 - 设置上传 body 大小限制；
 - 不记录 Authorization header 或 query token。
@@ -96,15 +103,15 @@ Browser -> Caddy :80 with Basic Auth -> public/ 静态文件
 Browser -> Caddy :80 with Basic Auth -> /api/* -> api:8787
 ```
 
-Caddy 会先要求用户登录，再只在反代到内部 API 服务时注入 `Authorization: Bearer {$HTML_VAULT_API_TOKEN}`。浏览器不需要保存，也不会看到长期后端 token。
+Caddy 会先要求用户登录，再只在反代到内部 API 服务时注入 `Authorization: Bearer {$HTML_LORE_API_TOKEN}`。浏览器不需要保存，也不会看到长期后端 token。
 
 ## 自托管 Docker 部署
 
 新主机上执行：
 
 ```bash
-git clone https://github.com/JMoCoder/html_vault.git /srv/html-vault
-cd /srv/html-vault
+git clone https://github.com/JMoCoder/html_lore.git /srv/html-lore
+cd /srv/html-lore
 git checkout main
 docker compose up -d --build
 ```
@@ -119,12 +126,12 @@ docker compose up -d --build
 cp .env.secure.example .env
 python3 - <<'PY'
 import secrets
-print("HTML_VAULT_API_TOKEN=" + secrets.token_urlsafe(32))
+print("HTML_LORE_API_TOKEN=" + secrets.token_urlsafe(32))
 PY
 docker run --rm caddy:2-alpine caddy hash-password --plaintext 'change-this-login-password'
 ```
 
-编辑 `.env`，填入生成的 token 和 Caddy 密码 hash，并将 `HTML_VAULT_CORS_ORIGINS` 设置为你的公网来源。Caddy 密码 hash 包含 `$`。写入 `.env` 时必须把每个 `$` 转义为 `$$`。例如 `$2a$14$...` 应粘贴为 `$$2a$$14$$...`。
+编辑 `.env`，填入生成的 token 和 Caddy 密码 hash，并将 `HTML_LORE_CORS_ORIGINS` 设置为你的公网来源。Caddy 密码 hash 包含 `$`。写入 `.env` 时必须把每个 `$` 转义为 `$$`。例如 `$2a$14$...` 应粘贴为 `$$2a$$14$$...`。
 
 然后运行：
 
@@ -134,16 +141,16 @@ docker compose -f compose.prod.yml up -d --build
 
 ## 生产更新
 
-HTML Vault 不会自动更新宿主机。`GET /api/version` 和前端“关于项目”只显示更新提示。
+HTMlore 不会自动更新宿主机。`GET /api/version` 和前端“关于项目”只显示更新提示。
 
 手动更新流程：
 
 ```bash
-cd /srv/html-vault
+cd /srv/html-lore
 git fetch origin
 git checkout main
 git pull --ff-only
-tar -czf "../html-vault-data-$(date +%Y%m%d-%H%M%S).tgz" data
+tar -czf "../html-lore-data-$(date +%Y%m%d-%H%M%S).tgz" data
 docker compose up -d --build
 docker compose logs -f
 ```
@@ -156,7 +163,7 @@ docker compose logs -f
 2. 本地跑完整测试。
 3. 将 `develop` 合并到 `main` 作为生产发布。
 4. 自托管 Docker 主机拉取 `main`。
-5. 备份 `/srv/html-vault/data`。
+5. 备份 `/srv/html-lore/data`。
 6. 通过 `docker compose up -d --build` 重建/重启容器。
 7. 验证登录、上传、搜索、阅读、归档、版本显示和备份。
 
@@ -167,9 +174,9 @@ docker compose logs -f
 推荐生产数据路径：
 
 ```text
-/srv/html-vault/data/content
-/srv/html-vault/data/meta
-/srv/html-vault/backups
+/srv/html-lore/data/content
+/srv/html-lore/data/meta
+/srv/html-lore/backups
 ```
 
 Git 只保存应用代码、测试和文档。

@@ -2,13 +2,13 @@
   "version": 2,
   "generated_at": "2026-06-03T02:30:00.000000+00:00",
   "site": {
-    "title": "HTML Vault Demo",
+    "title": "HTMlore Demo",
     "layout": "cards"
   },
   "items": [
     {
       "id": "demo-notes/readme.zh-CN.html",
-      "title": "HTML Vault README 完整说明",
+      "title": "HTMlore README 完整说明",
       "summary": "完整中文 README 转换为 HTML，覆盖项目愿景、功能范围、Docker 部署、数据模型、后端 API、安全模型和路线图。",
       "path": "content/demo-notes/readme.zh-CN.html",
       "source_type": "html",
@@ -34,8 +34,8 @@
     },
     {
       "id": "demo-notes/changelog.zh-CN.html",
-      "title": "HTML Vault 更新日志",
-      "summary": "完整中文 CHANGELOG 转换为 HTML，以发布轨迹风格展示 0.6.6 和早期版本变更。",
+      "title": "HTMlore 更新日志",
+      "summary": "完整中文 CHANGELOG 转换为 HTML，以发布轨迹风格展示 0.6.7 和早期版本变更。",
       "path": "content/demo-notes/changelog.zh-CN.html",
       "source_type": "html",
       "source_url": null,

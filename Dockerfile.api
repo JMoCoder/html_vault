@@ -8,12 +8,13 @@ WORKDIR /app
 
 COPY pyproject.toml README.md LICENSE ./
 COPY html_vault ./html_vault
+COPY html_lore ./html_lore
 COPY app_static ./app_static
-COPY deploy/api-entrypoint.sh /usr/local/bin/html-vault-api-entrypoint
+COPY deploy/api-entrypoint.sh /usr/local/bin/html-lore-api-entrypoint
 
 RUN pip install --no-cache-dir ".[agent]" \
-    && chmod +x /usr/local/bin/html-vault-api-entrypoint
+    && chmod +x /usr/local/bin/html-lore-api-entrypoint
 
 EXPOSE 8787
 
-ENTRYPOINT ["html-vault-api-entrypoint"]
+ENTRYPOINT ["html-lore-api-entrypoint"]

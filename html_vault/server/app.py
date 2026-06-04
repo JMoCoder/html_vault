@@ -10,7 +10,7 @@ try:
     from fastapi.responses import FileResponse, HTMLResponse
 except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static-only installs
     raise RuntimeError(
-        "The backend server requires the agent extra: pip install 'html-vault[agent]'",
+        "The backend server requires the agent extra: pip install 'html-lore[agent]'",
     ) from exc
 
 from html_vault import __version__
@@ -79,7 +79,7 @@ def create_app() -> FastAPI:
         from .users import UserStore
 
         UserStore(settings).ensure_bootstrap_admin()
-    app = FastAPI(title="HTML Vault Agent Server", version=__version__)
+    app = FastAPI(title="HTMlore API Server", version=__version__)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.cors_origins),
@@ -114,8 +114,9 @@ def create_app() -> FastAPI:
     def version(_: ApiAuth) -> dict[str, str]:
         return {
             "version": __version__,
-            "repository": "JMoCoder/html_vault",
-            "release_url": "https://github.com/JMoCoder/html_vault/releases",
+            "brand": "HTMlore",
+            "repository": "JMoCoder/html_lore",
+            "release_url": "https://github.com/JMoCoder/html_lore/releases",
         }
 
     @app.post("/api/rebuild")

@@ -6,19 +6,19 @@ services:
       context: .
       dockerfile: Dockerfile.api
     environment:
-      HTML_VAULT_CONTENT: /data/content
-      HTML_VAULT_META: /data/meta
-      HTML_VAULT_PUBLIC: /public
-      HTML_VAULT_TITLE: ${HTML_VAULT_TITLE:-HTML Vault}
-      HTML_VAULT_MAX_UPLOAD_BYTES: ${HTML_VAULT_MAX_UPLOAD_BYTES:-10485760}
-      HTML_VAULT_API_TOKEN: ${HTML_VAULT_API_TOKEN:?Set HTML_VAULT_API_TOKEN in .env}
-      HTML_VAULT_AUTH_USERNAME: ${HTML_VAULT_AUTH_USERNAME:-}
-      HTML_VAULT_AUTH_PASSWORD: ${HTML_VAULT_AUTH_PASSWORD:-}
-      HTML_VAULT_USERS_FILE: ${HTML_VAULT_USERS_FILE:-/data/users.json}
-      HTML_VAULT_USER_DATA_DIR: ${HTML_VAULT_USER_DATA_DIR:-/data/users}
-      HTML_VAULT_SESSION_SECRET: ${HTML_VAULT_SESSION_SECRET:-}
-      HTML_VAULT_SESSION_SECURE: ${HTML_VAULT_SESSION_SECURE:-true}
-      HTML_VAULT_CORS_ORIGINS: ${HTML_VAULT_CORS_ORIGINS:-http://localhost,http://127.0.0.1}
+      HTML_LORE_CONTENT: /data/content
+      HTML_LORE_META: /data/meta
+      HTML_LORE_PUBLIC: /public
+      HTML_LORE_TITLE: ${HTML_LORE_TITLE:-${HTML_VAULT_TITLE:-HTMlore}}
+      HTML_LORE_MAX_UPLOAD_BYTES: ${HTML_LORE_MAX_UPLOAD_BYTES:-${HTML_VAULT_MAX_UPLOAD_BYTES:-10485760}}
+      HTML_LORE_API_TOKEN: ${HTML_LORE_API_TOKEN:-${HTML_VAULT_API_TOKEN:?Set HTML_LORE_API_TOKEN or legacy HTML_VAULT_API_TOKEN in .env}}
+      HTML_LORE_AUTH_USERNAME: ${HTML_LORE_AUTH_USERNAME:-${HTML_VAULT_AUTH_USERNAME:-}}
+      HTML_LORE_AUTH_PASSWORD: ${HTML_LORE_AUTH_PASSWORD:-${HTML_VAULT_AUTH_PASSWORD:-}}
+      HTML_LORE_USERS_FILE: ${HTML_LORE_USERS_FILE:-${HTML_VAULT_USERS_FILE:-/data/users.json}}
+      HTML_LORE_USER_DATA_DIR: ${HTML_LORE_USER_DATA_DIR:-${HTML_VAULT_USER_DATA_DIR:-/data/users}}
+      HTML_LORE_SESSION_SECRET: ${HTML_LORE_SESSION_SECRET:-${HTML_VAULT_SESSION_SECRET:-}}
+      HTML_LORE_SESSION_SECURE: ${HTML_LORE_SESSION_SECURE:-${HTML_VAULT_SESSION_SECURE:-true}}
+      HTML_LORE_CORS_ORIGINS: ${HTML_LORE_CORS_ORIGINS:-${HTML_VAULT_CORS_ORIGINS:-http://localhost,http://127.0.0.1}}
     volumes:
       - ./data:/data
       - ./public:/public
@@ -33,9 +33,9 @@ services:
     env_file:
       - .env
     ports:
-      - "${HTML_VAULT_HTTP_PORT:-8080}:80"
+      - "${HTML_LORE_HTTP_PORT:-${HTML_VAULT_HTTP_PORT:-8080}}:80"
     volumes:
-      - ./public:/srv/html-vault/public:ro
+      - ./public:/srv/html-lore/public:ro
       - ./deploy/caddy-basic-auth.Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config

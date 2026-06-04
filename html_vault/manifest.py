@@ -12,7 +12,7 @@ from .metadata import MetadataStore
 def build_manifest(
     content_dir: Path,
     meta_dir: Path | None = None,
-    site_title: str = "HTML Vault",
+    site_title: str = "HTMlore",
 ) -> dict[str, Any]:
     metadata = MetadataStore.load(meta_dir)
     items = [

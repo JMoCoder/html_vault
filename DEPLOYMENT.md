@@ -1,4 +1,4 @@
-# HTML Vault Deployment Baseline
+# HTMlore Deployment Baseline
 
 Languages: [English](DEPLOYMENT.md) | [中文](DEPLOYMENT.zh-CN.md)
 
@@ -17,6 +17,14 @@ hardening.
   online 24/7 unless you want continuous remote access.
 - `data/`: private notebook data, not committed to Git.
 
+## Rename Compatibility
+
+HTMlore was formerly named HTML Vault. The current release reads
+`HTML_LORE_*` first and falls back to legacy `HTML_VAULT_*` environment
+variables. The `html-lore` CLI is now preferred, while `html-vault` remains
+available during the 0.x compatibility window. Public Caddy examples use the
+new `HTML_LORE_*` names and should be updated when you refresh `.env`.
+
 ## Minimal Production Security
 
 Do not expose the backend API directly to the public internet without an
@@ -24,32 +32,32 @@ authentication boundary.
 
 Required project-level controls:
 
-- Set `HTML_VAULT_API_TOKEN` for the backend API.
+- Set `HTML_LORE_API_TOKEN` for the backend API.
 - Replace the default local/test login `admin` / `test-password` before public
-  access by setting `HTML_VAULT_AUTH_USERNAME`,
-  `HTML_VAULT_AUTH_PASSWORD`, and `HTML_VAULT_SESSION_SECRET`.
-- Set `HTML_VAULT_SESSION_SECURE=true` when served over HTTPS.
-- Set `HTML_VAULT_CORS_ORIGINS` to the exact public frontend origin.
+  access by setting `HTML_LORE_AUTH_USERNAME`,
+  `HTML_LORE_AUTH_PASSWORD`, and `HTML_LORE_SESSION_SECRET`.
+- Set `HTML_LORE_SESSION_SECURE=true` when served over HTTPS.
+- Set `HTML_LORE_CORS_ORIGINS` to the exact public frontend origin.
 - Put the static frontend and API behind HTTPS.
 - Keep `data/content`, `data/meta`, and backups outside the Git repository.
 - Keep API keys and future model credentials on the server only.
-- Limit upload size with `HTML_VAULT_MAX_UPLOAD_BYTES`.
+- Limit upload size with `HTML_LORE_MAX_UPLOAD_BYTES`.
 - Back up `data/` before deploys and before schema-changing upgrades.
 
 ## Backend Environment
 
 ```bash
-HTML_VAULT_CONTENT=/srv/html-vault/data/content
-HTML_VAULT_META=/srv/html-vault/data/meta
-HTML_VAULT_PUBLIC=/srv/html-vault/public
-HTML_VAULT_TITLE="HTML Vault"
-HTML_VAULT_MAX_UPLOAD_BYTES=10485760
-HTML_VAULT_API_TOKEN="replace-with-a-long-random-token"
-HTML_VAULT_AUTH_USERNAME="admin"
-HTML_VAULT_AUTH_PASSWORD="replace-with-a-strong-login-password"
-HTML_VAULT_SESSION_SECRET="replace-with-a-long-random-session-secret"
-HTML_VAULT_SESSION_SECURE=true
-HTML_VAULT_CORS_ORIGINS="https://vault.example.com"
+HTML_LORE_CONTENT=/srv/html-lore/data/content
+HTML_LORE_META=/srv/html-lore/data/meta
+HTML_LORE_PUBLIC=/srv/html-lore/public
+HTML_LORE_TITLE="HTMlore"
+HTML_LORE_MAX_UPLOAD_BYTES=10485760
+HTML_LORE_API_TOKEN="replace-with-a-long-random-token"
+HTML_LORE_AUTH_USERNAME="admin"
+HTML_LORE_AUTH_PASSWORD="replace-with-a-strong-login-password"
+HTML_LORE_SESSION_SECRET="replace-with-a-long-random-session-secret"
+HTML_LORE_SESSION_SECURE=true
+HTML_LORE_CORS_ORIGINS="https://vault.example.com"
 ```
 
 The default Docker compose mounts those paths inside the app container as
@@ -64,7 +72,7 @@ immediately. Change those values in `.env` before any public deployment.
 Run the backend only on localhost or a private network address:
 
 ```bash
-html-vault serve-api --host 127.0.0.1 --port 8787
+html-lore serve-api --host 127.0.0.1 --port 8787
 ```
 
 ## Frontend Token
@@ -73,12 +81,12 @@ For local testing, the frontend can read:
 
 ```html
 <script>
-  window.HTML_VAULT_AGENT_URL = "https://vault.example.com";
-  window.HTML_VAULT_AGENT_TOKEN = "replace-with-a-long-random-token";
+  window.HTML_LORE_AGENT_URL = "https://vault.example.com";
+  window.HTML_LORE_AGENT_TOKEN = "replace-with-a-long-random-token";
 </script>
 ```
 
-The frontend also reads `localStorage.html-vault-agent-token` for development.
+The frontend also reads `localStorage.html-lore-agent-token` for development.
 For production, prefer the built-in browser login or a reverse-proxy
 login/session boundary over exposing a long-lived token in frontend HTML.
 Query-token support exists for iframe/raw HTML access compatibility and should
@@ -91,7 +99,7 @@ Recommended production layout:
 ```text
 Browser
   -> HTTPS reverse proxy
-    -> HTML Vault built-in login/session
+    -> HTMlore built-in login/session
       -> static public/ frontend
       -> /api/*
 ```
@@ -99,7 +107,7 @@ Browser
 The reverse proxy should:
 
 - terminate TLS;
-- either rely on HTML Vault built-in login or require login before serving the app;
+- either rely on HTMlore built-in login or require login before serving the app;
 - forward only intended paths;
 - set upload body limits;
 - avoid logging Authorization headers or query tokens.
@@ -117,7 +125,7 @@ Browser -> Caddy :80 with Basic Auth -> /api/* -> api:8787
 ```
 
 Caddy asks users to log in before serving the app, then injects
-`Authorization: Bearer {$HTML_VAULT_API_TOKEN}` only when proxying to the
+`Authorization: Bearer {$HTML_LORE_API_TOKEN}` only when proxying to the
 internal API service. The browser does not need to store or see the long-lived
 backend token.
 
@@ -126,8 +134,8 @@ backend token.
 On a fresh host:
 
 ```bash
-git clone https://github.com/JMoCoder/html_vault.git /srv/html-vault
-cd /srv/html-vault
+git clone https://github.com/JMoCoder/html_lore.git /srv/html-lore
+cd /srv/html-lore
 git checkout main
 docker compose up -d --build
 ```
@@ -147,13 +155,13 @@ Caddy Basic Auth example:
 cp .env.secure.example .env
 python3 - <<'PY'
 import secrets
-print("HTML_VAULT_API_TOKEN=" + secrets.token_urlsafe(32))
+print("HTML_LORE_API_TOKEN=" + secrets.token_urlsafe(32))
 PY
 docker run --rm caddy:2-alpine caddy hash-password --plaintext 'change-this-login-password'
 ```
 
 Edit `.env`, paste the generated token, paste the Caddy password hash, and set
-`HTML_VAULT_CORS_ORIGINS` to your public origin. Caddy password hashes contain
+`HTML_LORE_CORS_ORIGINS` to your public origin. Caddy password hashes contain
 `$`; in `.env`, escape every `$` as `$$`. For example, `$2a$14$...` must be
 pasted as `$$2a$$14$$...`.
 
@@ -165,17 +173,17 @@ docker compose up -d --build
 
 ## Production Updates
 
-HTML Vault does not auto-update the host. `GET /api/version` and the frontend
+HTMlore does not auto-update the host. `GET /api/version` and the frontend
 About page only show update hints.
 
 Manual update flow:
 
 ```bash
-cd /srv/html-vault
+cd /srv/html-lore
 git fetch origin
 git checkout main
 git pull --ff-only
-tar -czf "../html-vault-data-$(date +%Y%m%d-%H%M%S).tgz" data
+tar -czf "../html-lore-data-$(date +%Y%m%d-%H%M%S).tgz" data
 docker compose up -d --build
 docker compose logs -f
 ```
@@ -191,7 +199,7 @@ changed data structure.
 2. Run full tests locally.
 3. Merge `develop` into `main` for production release.
 4. Pull `main` on the self-hosted Docker host.
-5. Back up `/srv/html-vault/data`.
+5. Back up `/srv/html-lore/data`.
 6. Rebuild/recreate containers with `docker compose up -d --build`.
 7. Verify login, upload, search, read, archive, version display, and backup.
 
@@ -201,9 +209,9 @@ changed data structure.
 Recommended production data paths:
 
 ```text
-/srv/html-vault/data/content
-/srv/html-vault/data/meta
-/srv/html-vault/backups
+/srv/html-lore/data/content
+/srv/html-lore/data/meta
+/srv/html-lore/backups
 ```
 
 Git stores application code, tests, and docs only.

@@ -1,6 +1,6 @@
 {
-  "name": "HTML Vault",
-  "short_name": "HTML Vault",
+  "name": "HTMlore",
+  "short_name": "HTMlore",
   "description": "Static-first HTML knowledge workspace.",
   "start_url": ".",
   "scope": ".",
@@ -9,7 +9,7 @@
   "theme_color": "#0f766e",
   "icons": [
     {
-      "src": "assets/html-vault-logo.svg",
+      "src": "assets/html-lore-logo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

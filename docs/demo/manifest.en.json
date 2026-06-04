@@ -2,13 +2,13 @@
   "version": 2,
   "generated_at": "2026-06-03T02:30:00.000000+00:00",
   "site": {
-    "title": "HTML Vault Demo",
+    "title": "HTMlore Demo",
     "layout": "cards"
   },
   "items": [
     {
       "id": "demo-notes/readme.en.html",
-      "title": "HTML Vault Complete README",
+      "title": "HTMlore Complete README",
       "summary": "The complete English README rendered as HTML, covering project vision, implemented scope, Docker deployment, data model, backend API, security model, and roadmap.",
       "path": "content/demo-notes/readme.en.html",
       "source_type": "html",
@@ -34,8 +34,8 @@
     },
     {
       "id": "demo-notes/changelog.en.html",
-      "title": "HTML Vault Changelog",
-      "summary": "The complete English CHANGELOG rendered as HTML with a release-track layout for 0.6.6 and earlier development milestones.",
+      "title": "HTMlore Changelog",
+      "summary": "The complete English CHANGELOG rendered as HTML with a release-track layout for 0.6.7 and earlier development milestones.",
       "path": "content/demo-notes/changelog.en.html",
       "source_type": "html",
       "source_url": null,

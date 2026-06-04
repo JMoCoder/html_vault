@@ -15,7 +15,7 @@ def build_site(
     content_dir: Path,
     meta_dir: Path | None,
     output_dir: Path,
-    site_title: str = "HTML Vault",
+    site_title: str = "HTMlore",
 ) -> dict:
     content_dir.mkdir(parents=True, exist_ok=True)
     output_dir.mkdir(parents=True, exist_ok=True)

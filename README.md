@@ -1,10 +1,16 @@
-# HTML Vault
+# HTMlore
 
 Languages: [English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
 
 Deployment: [Self-hosted Docker and security baseline](DEPLOYMENT.md)
 
-HTML Vault is a self-hosted knowledge workspace for saving, browsing, reading,
+Formerly named HTML Vault. Existing `html-vault` commands,
+`HTML_VAULT_*` environment variables, `html_vault` Python imports, and
+`html-vault-*` browser preferences remain supported during the 0.x
+compatibility window, but new docs use `HTMlore`, `html-lore`, `html_lore`,
+and `HTML_LORE_*`.
+
+HTMlore is a self-hosted knowledge workspace for saving, browsing, reading,
 and eventually discussing HTML-based knowledge files with AI. It is designed
 for people who want their notes to remain portable files instead of being
 locked inside a database-first note app.
@@ -15,10 +21,10 @@ polished card workspace, install the app as a PWA, and later connect AI services
 for classification, retrieval, summarization, and multi-turn conversations over
 your own library.
 
-## Why HTML Vault
+## Why HTMlore
 
 Most knowledge tools either store content as opaque database rows or focus on
-Markdown-first authoring. HTML Vault takes a different path:
+Markdown-first authoring. HTMlore takes a different path:
 
 - **HTML files are the durable content layer.** Notes can be inspected, copied,
   archived, backed up, and served by ordinary web infrastructure.
@@ -83,8 +89,8 @@ The default deployment is intended for local machines, NAS, LAN servers, or a
 private VPS. It does not require a token or Caddy.
 
 ```bash
-git clone https://github.com/JMoCoder/html_vault.git
-cd html_vault
+git clone https://github.com/JMoCoder/html_lore.git
+cd html_lore
 docker compose up -d --build
 ```
 
@@ -124,8 +130,8 @@ are isolated under `data/users/<data_id>/`.
 Add another self-hosted user:
 
 ```bash
-docker compose run --rm html-vault \
-  html-vault user-add \
+docker compose run --rm html-lore \
+  html-lore user-add \
   --users-file /data/users.json \
   --username alice \
   --password "change-this-password"
@@ -136,8 +142,8 @@ are stored as PBKDF2 hashes, not plaintext.
 
 Do not expose the default compose stack directly to the public internet with
 the default credentials. For public deployment, change
-`HTML_VAULT_AUTH_USERNAME`, `HTML_VAULT_AUTH_PASSWORD`, and
-`HTML_VAULT_SESSION_SECRET`, then put the service behind HTTPS. The env
+`HTML_LORE_AUTH_USERNAME`, `HTML_LORE_AUTH_PASSWORD`, and
+`HTML_LORE_SESSION_SECRET`, then put the service behind HTTPS. The env
 username/password only bootstrap the first admin when `data/users.json` does
 not exist; after that, `users.json` is the source of truth. A Caddy Basic Auth
 example is provided in `compose.prod.yml`, `.env.secure.example`, and
@@ -145,7 +151,7 @@ example is provided in `compose.prod.yml`, `.env.secure.example`, and
 
 ## Update Existing Docker Deployment
 
-HTML Vault does not update the host automatically. The app only shows update
+HTMlore does not update the host automatically. The app only shows update
 hints from GitHub releases/tags.
 
 Before updating, back up `data/`:
@@ -172,13 +178,13 @@ docker compose logs -f
 
 ## Static Build
 
-HTML Vault can also build a static site from existing content and metadata:
+HTMlore can also build a static site from existing content and metadata:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
-html-vault build --content examples/content --meta examples/meta --out public
+html-lore build --content examples/content --meta examples/meta --out public
 python -m http.server 8080 --directory public
 ```
 
@@ -219,7 +225,7 @@ agent:
 ```
 
 Metadata overrides values extracted from the HTML document. Without metadata,
-HTML Vault infers title, summary, collection, source type, timestamps, and
+HTMlore infers title, summary, collection, source type, timestamps, and
 review status.
 
 ## Backend API
@@ -229,10 +235,10 @@ manually with the optional `agent` extra:
 
 ```bash
 pip install -e ".[agent]"
-HTML_VAULT_CONTENT=data/content \
-HTML_VAULT_META=data/meta \
-HTML_VAULT_PUBLIC=public \
-html-vault serve-api --host 127.0.0.1 --port 8787
+HTML_LORE_CONTENT=data/content \
+HTML_LORE_META=data/meta \
+HTML_LORE_PUBLIC=public \
+html-lore serve-api --host 127.0.0.1 --port 8787
 ```
 
 Implemented endpoints:
@@ -270,12 +276,12 @@ deployments must replace the default username, password, and session secret.
 Self-hosted users are stored in `data/users.json`; each additional user's
 notebook data is stored separately under `data/users/<data_id>/`.
 
-When you expose HTML Vault publicly:
+When you expose HTMlore publicly:
 
 - Put it behind HTTPS.
 - Enable built-in login or place an equivalent authentication boundary in front.
-- Set `HTML_VAULT_SESSION_SECURE=true` when served over HTTPS.
-- Set `HTML_VAULT_API_TOKEN` for script, automation, or reverse-proxy API access.
+- Set `HTML_LORE_SESSION_SECURE=true` when served over HTTPS.
+- Set `HTML_LORE_API_TOKEN` for script, automation, or reverse-proxy API access.
 - Do not embed long-lived API tokens in frontend JavaScript.
 - Back up `data/` before upgrades and before any schema-changing release.
 
@@ -312,7 +318,7 @@ Future product direction:
 
 ```text
 app_static/        Static workspace UI copied into build output
-html_vault/        Python builder, manifest logic, and backend API
+html_lore/        Python builder, manifest logic, and backend API
 examples/          Example content and metadata
 tests/             Pytest coverage for builder and backend APIs
 deploy/            Optional deployment examples
@@ -326,7 +332,7 @@ documents/         Local planning documents, ignored by Git
 pip install -e ".[dev,agent]"
 pytest
 python tests/run_smoke.py
-html-vault build --content examples/content --meta examples/meta --out public
+html-lore build --content examples/content --meta examples/meta --out public
 ```
 
 ## License

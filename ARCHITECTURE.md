@@ -1,6 +1,6 @@
 # Architecture
 
-HTML Vault 0.1 is split into a static build layer and a static browser layer.
+HTMlore 0.1 is split into a static build layer and a static browser layer.
 
 ## Build Layer
 
@@ -28,7 +28,7 @@ durable assets.
 selected items inside an iframe reader.
 
 The new-item card is already shaped for the optional Agent Server but does not
-require it. Without `window.HTML_VAULT_AGENT_URL`, the app remains fully static.
+require it. Without `window.HTML_LORE_AGENT_URL`, the app remains fully static.
 
 ## Next Agent Layer
 
