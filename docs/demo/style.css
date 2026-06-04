@@ -1272,7 +1272,8 @@ textarea {
 
 .new-feedback {
   min-height: 22px;
-  margin: 16px 0 0;
+  margin: 22px 0 0;
+  padding-top: 2px;
   color: var(--muted);
   font-size: 13px;
   line-height: 1.5;
@@ -1289,9 +1290,9 @@ textarea {
 }
 
 .item-card {
-  min-height: 258px;
+  min-height: 262px;
   display: grid;
-  grid-template-rows: 30px 48px 68px 30px 38px;
+  grid-template-rows: 30px 48px 72px 30px 38px;
   gap: 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1423,6 +1424,7 @@ textarea {
 .item-card p {
   color: var(--muted);
   line-height: 1.55;
+  padding-bottom: 2px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
