@@ -2,14 +2,15 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import Sequence
 
 from .builder import build_site
 from .server.config import ServerSettings
 from .server.users import UserStore, UserStoreError
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(prog="html-lore")
+def main(argv: Sequence[str] | None = None, *, prog: str = "html-lore") -> None:
+    parser = argparse.ArgumentParser(prog=prog)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     build_parser = subparsers.add_parser("build", help="Build the static HTMlore site.")
@@ -30,7 +31,7 @@ def main() -> None:
     user_parser.add_argument("--data-id", default="", help="Optional persistent data partition id.")
     user_parser.add_argument("--replace", action="store_true", help="Replace the user if it already exists.")
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     if args.command == "build":
         manifest = build_site(
             content_dir=Path(args.content),

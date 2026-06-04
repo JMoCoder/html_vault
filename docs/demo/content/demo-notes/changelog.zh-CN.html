@@ -22,7 +22,7 @@
 <p>语言：<a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
 <h2>[Unreleased]</h2>
 <h3>变更</h3>
-<ul><li>新增更名迁移指南，用于从旧项目名称升级到 HTMlore。</li><li>在 HTMlore 更名后，清理示例内容和静态资源中残留的旧项目名称引用。</li><li>更新官网、Demo README 笔记、应用无障碍标签和 logo 描述，统一使用 HTMlore 当前的资料库/知识表达。</li></ul>
+<ul><li>新增更名迁移指南，用于从旧项目名称升级到 HTMlore。</li><li>在 HTMlore 更名后，清理示例内容和静态资源中残留的旧项目名称引用。</li><li>更新官网、Demo README 笔记、应用无障碍标签和 logo 描述，统一使用 HTMlore 当前的资料库/知识表达。</li><li>将旧 <code>html-vault</code> 控制台命令接入兼容 wrapper，使其 help 输出保留旧命令名，同时继续使用 <code>html_lore</code> 实现。</li></ul>
 <h2>[0.6.8] - 2026-06-04</h2>
 <h3>变更</h3>
 <ul><li>将主要 Python 实现包迁移到 <code>html_lore</code>。</li><li>更新打包入口、测试、API 服务启动路径和 Docker 打包，默认使用新的 <code>html_lore</code> 命名空间。</li><li>保留旧 <code>html_vault</code> 包作为薄兼容 shim，用于现有 import 和旧的 <code>uvicorn html_vault.server.app:app</code> 启动路径。</li><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.8</code>。</li></ul>

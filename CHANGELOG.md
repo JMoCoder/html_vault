@@ -17,6 +17,9 @@ versioning after the initial public release.
   project name after the HTMlore rename.
 - Updated public homepage, demo README notes, app accessibility labels, and
   logo descriptions to use HTMlore's current library/lore wording.
+- Routed the legacy `html-vault` console script through the compatibility
+  wrapper so its help output keeps the legacy command name while using the
+  `html_lore` implementation.
 
 ## [0.6.8] - 2026-06-04
 
