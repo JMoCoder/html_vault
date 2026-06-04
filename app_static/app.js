@@ -13,6 +13,7 @@ const i18n = {
     subscriptionStatus: "Subscription",
     subscriptionSelfHosted: "Self-hosted",
     aiCreditsBalance: "AI credits",
+    agentStatus: "Agent status",
     uploadAvatar: "Upload avatar",
     avatarOptions: "Avatar options",
     importHtmlFile: "Import HTML file",
@@ -295,6 +296,7 @@ const i18n = {
     subscriptionStatus: "订阅状态",
     subscriptionSelfHosted: "自托管",
     aiCreditsBalance: "AI 点数",
+    agentStatus: "Agent 状态",
     uploadAvatar: "上传头像",
     avatarOptions: "头像选项",
     importHtmlFile: "导入HTML文件",
@@ -577,6 +579,7 @@ const i18n = {
     subscriptionStatus: "サブスクリプション",
     subscriptionSelfHosted: "セルフホスト",
     aiCreditsBalance: "AI クレジット",
+    agentStatus: "Agent 状態",
     uploadAvatar: "アバターをアップロード",
     avatarOptions: "アバター選択",
     importHtmlFile: "HTML ファイルをインポート",
@@ -971,6 +974,7 @@ const elements = {
   profileSummaryPopover: document.querySelector("#profile-summary-popover"),
   profileAvatarMini: document.querySelector("#profile-avatar-mini"),
   profileSummaryAvatar: document.querySelector("#profile-summary-avatar"),
+  profileSummaryAvatarTrigger: document.querySelector("#profile-summary-avatar-trigger"),
   profileSummaryName: document.querySelector("#profile-summary-name"),
   profileSummaryId: document.querySelector("#profile-summary-id"),
   profileSummaryAiCredits: document.querySelector("#profile-summary-ai-credits"),
@@ -1835,11 +1839,9 @@ async function importHtmlFile(file) {
 }
 
 function updateAgentStatus() {
-  if (state.agentUrl) {
-    elements.agentStatus.textContent = t("agentConnected");
-  } else {
-    elements.agentStatus.textContent = t("staticMode");
-  }
+  if (!elements.agentStatus) return;
+  elements.agentStatus.textContent = t(state.agentUrl ? "agentConnected" : "staticMode");
+  elements.agentStatus.classList.toggle("connected", Boolean(state.agentUrl));
 }
 
 function openReaderAiPanel() {
@@ -3494,6 +3496,7 @@ elements.themeModeButtons.forEach((button) => {
   button.addEventListener("click", () => setThemeMode(button.dataset.themeMode));
 });
 elements.avatarUploadTrigger.addEventListener("click", () => elements.avatarUpload.click());
+elements.profileSummaryAvatarTrigger.addEventListener("click", () => elements.avatarUpload.click());
 elements.avatarUpload.addEventListener("change", (event) => uploadAvatar(event.target.files?.[0]));
 elements.settingsOpen.addEventListener("click", toggleSettings);
 elements.settingsBack.addEventListener("click", closeSettings);

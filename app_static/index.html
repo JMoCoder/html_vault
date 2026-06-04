@@ -99,7 +99,9 @@
         </div>
         <div class="profile-summary-popover" id="profile-summary-popover" hidden>
           <div class="profile-card-header">
-            <span class="profile-avatar-large" id="profile-summary-avatar" aria-hidden="true"></span>
+            <button type="button" class="profile-avatar-upload" id="profile-summary-avatar-trigger" aria-label="Upload avatar" title="Upload avatar" data-i18n-attr="aria-label:uploadAvatar,title:uploadAvatar">
+              <span class="profile-avatar-large" id="profile-summary-avatar" aria-hidden="true"></span>
+            </button>
             <div>
               <strong id="profile-summary-name"></strong>
               <span id="profile-summary-id"></span>
@@ -110,6 +112,8 @@
             <strong data-i18n="subscriptionSelfHosted"></strong>
             <span data-i18n="aiCreditsBalance"></span>
             <strong id="profile-summary-ai-credits">0</strong>
+            <span data-i18n="agentStatus"></span>
+            <strong class="agent-state-text" id="agent-status"></strong>
           </div>
         </div>
         <a class="github-link" href="https://github.com/JMoCoder/html_lore" target="_blank" rel="noreferrer" aria-label="GitHub repository" title="GitHub repository">
@@ -208,7 +212,6 @@
           <div>
             <h3 data-i18n="createHtmlNote"></h3>
           </div>
-          <span class="status-pill" id="agent-status"></span>
         </div>
         <form id="new-item-form" class="new-form">
           <select id="input-type" data-i18n-attr="aria-label:inputType">

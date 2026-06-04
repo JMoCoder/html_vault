@@ -491,6 +491,16 @@ textarea {
   border-color: var(--accent);
 }
 
+.profile-summary-popover .profile-avatar-upload {
+  border-color: transparent;
+  background: transparent;
+}
+
+.profile-summary-popover .profile-avatar-upload:hover {
+  border-color: var(--accent);
+  background: var(--panel-soft);
+}
+
 .profile-avatar-mini {
   width: 24px;
   height: 24px;
@@ -546,6 +556,14 @@ textarea {
   font-size: 13px;
   font-weight: 760;
   text-align: right;
+}
+
+.profile-stats .agent-state-text {
+  color: var(--muted);
+}
+
+.profile-stats .agent-state-text.connected {
+  color: var(--accent-dark);
 }
 
 .profile-actions {
