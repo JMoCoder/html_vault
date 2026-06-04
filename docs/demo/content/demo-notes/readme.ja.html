@@ -34,18 +34,32 @@
 <ul><li>実際の AI モデル呼び出し。</li><li>AI 生成 HTML ノート。</li><li>AI による再分類、再タグ付けなどのバッチ処理。</li><li>クラウド同期またはホスト型サブスクリプションサービス。</li><li>完全なバックアップ/復元と WebDAV 実行。</li><li>コレクション/タグの一括リネーム、統合、削除。</li></ul>
 <h2>Docker クイックスタート</h2>
 <p>既定の Docker パスはローカル PC、NAS、LAN サーバー、プライベート VPS 向けです。token も Caddy も必須ではありません。</p>
+<p>任意のローカル既定値は <code>.env.example</code> に記載しています。compose の既定値と同じで、ローカルまたはプライベートネットワークでのテスト用途です。</p>
 <pre><code>git clone https://github.com/JMoCoder/html_lore.git
 cd html_lore
 docker compose up -d --build</code></pre>
 <p>開く:</p>
 <pre><code>http://localhost:8080</code></pre>
+<p>既定のローカル/テストログイン:</p>
+<pre><code>Username: admin
+Password: test-password</code></pre>
 <p>同じネットワーク上の別デバイスからは:</p>
 <pre><code>http://your-host-ip:8080</code></pre>
 <p>ランタイムデータは Git には保存されません:</p>
-<pre><code>data/content   インポートされた HTML ファイル
-data/meta      YAML サイドカーメタデータとランタイム設定
-public         生成された Web アプリ出力</code></pre>
-<p>既定の compose スタックをそのまま公開インターネットに出さないでください。公開デプロイでは、好みのリバースプロキシで HTTPS と認証を追加してください。Caddy Basic Auth 例として <code>compose.prod.yml</code>、<code>.env.secure.example</code>、<code>deploy/caddy-basic-auth.Caddyfile</code> を用意しています。</p>
+<pre><code>data/content             既定管理者のインポート/生成 HTML
+data/meta                既定管理者の YAML メタデータとランタイム設定
+data/users.json          セルフホストログインユーザー。パスワードはハッシュ保存
+data/users/&lt;data_id&gt;/    追加ユーザーの HTML、メタデータ、ジョブ、public 出力
+public                   既定管理者の生成済み Web アプリ出力</code></pre>
+<p>env から作成される最初の管理者は、既存デプロイとの互換性のためルートの <code>data/content</code>、<code>data/meta</code>、<code>public</code> を引き続き使用します。あとから追加したユーザーは <code>data/users/&lt;data_id&gt;/</code> に分離されます。</p>
+<p>セルフホストユーザーを追加します:</p>
+<pre><code>docker compose run --rm html-lore \
+  html-lore user-add \
+  --users-file /data/users.json \
+  --username alice \
+  --password "change-this-password"</code></pre>
+<p>ユーザー名は大文字小文字を区別せずに照合されます。パスワードは大文字小文字を区別し、平文ではなく PBKDF2 ハッシュとして保存されます。</p>
+<p>既定の認証情報のまま compose スタックを公開インターネットに出さないでください。公開デプロイでは <code>HTML_LORE_AUTH_USERNAME</code>、<code>HTML_LORE_AUTH_PASSWORD</code>、<code>HTML_LORE_SESSION_SECRET</code> を変更し、HTTPS の背後に置いてください。env のユーザー名/パスワードは <code>data/users.json</code> が存在しない場合に最初の管理者を作成するためだけに使われ、その後は <code>users.json</code> が正になります。Caddy Basic Auth 例と本番向け env テンプレートとして <code>compose.prod.yml</code>、<code>.env.secure.example</code>、<code>deploy/caddy-basic-auth.Caddyfile</code> を用意しています。</p>
 <h2>静的ビルド</h2>
 <p>既存のコンテンツとメタデータから静的サイトを生成することもできます:</p>
 <pre><code>python -m venv .venv

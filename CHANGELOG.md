@@ -20,6 +20,8 @@ versioning after the initial public release.
 - Routed the legacy `html-vault` console script through the compatibility
   wrapper so its help output keeps the legacy command name while using the
   `html_lore` implementation.
+- Expanded `.env.example` with the local login/session and self-hosted
+  multi-user data settings used by the default Docker deployment.
 
 ## [0.6.8] - 2026-06-04
 

@@ -70,6 +70,9 @@ change the compose file.
 The default `docker-compose.yml` enables built-in login with
 `admin` / `test-password` and a development session secret so local tests work
 immediately. Change those values in `.env` before any public deployment.
+Use `.env.example` as a local/private-network template. Use
+`.env.secure.example` as the starting point for public deployments and replace
+every placeholder secret before starting the service.
 
 Run the backend only on localhost or a private network address:
 

@@ -56,6 +56,7 @@ HTML_LORE_CORS_ORIGINS="https://lore.example.com"
 默认 Docker compose 会在应用容器内使用 `/data/content`、`/data/meta` 和 `/public`。如果不修改 compose 文件，宿主机路径就是仓库目录下的 `./data/...` 与 `./public`。
 
 默认 `docker-compose.yml` 已启用内置登录，账号为 `admin` / `test-password`，并使用开发 session secret，便于本地测试开箱即用。任何公网部署前都必须在 `.env` 中替换这些值。
+`.env.example` 只作为本地/私有网络模板；公网部署应以 `.env.secure.example` 为起点，并在启动服务前替换其中所有占位密钥。
 
 后端只监听 localhost 或私有网络地址：
 

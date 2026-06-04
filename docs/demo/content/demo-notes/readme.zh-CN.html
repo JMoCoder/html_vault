@@ -34,18 +34,32 @@
 <ul><li>真实 AI 模型调用。</li><li>AI 生成 HTML 笔记。</li><li>AI 重新分类、打标签等批处理任务。</li><li>云同步或托管订阅服务。</li><li>完整备份/恢复和 WebDAV 执行逻辑。</li><li>集合/标签批量重命名、合并、删除。</li></ul>
 <h2>Docker 快速开始</h2>
 <p>默认 Docker 路径适合本地电脑、NAS、局域网服务器或私有 VPS。它不需要 token，也不强制使用 Caddy。</p>
+<p><code>.env.example</code> 记录了可选的本地默认值，与 compose 默认值保持一致，仅用于本地或私有网络测试。</p>
 <pre><code>git clone https://github.com/JMoCoder/html_lore.git
 cd html_lore
 docker compose up -d --build</code></pre>
 <p>打开：</p>
 <pre><code>http://localhost:8080</code></pre>
+<p>默认本地/测试登录账号：</p>
+<pre><code>用户名：admin
+密码：test-password</code></pre>
 <p>或在同一局域网的其他设备上打开：</p>
 <pre><code>http://你的主机-ip:8080</code></pre>
 <p>运行时数据不会提交到 Git：</p>
-<pre><code>data/content   导入的 HTML 文件
-data/meta      YAML 旁车元数据和运行时配置
-public         生成后的 Web 应用输出</code></pre>
-<p>不要把默认 compose 栈直接暴露到公网。公网部署时，请用你熟悉的反向代理增加 HTTPS 和登录认证。项目提供 Caddy Basic Auth 示例：<code>compose.prod.yml</code>、<code>.env.secure.example</code> 和 <code>deploy/caddy-basic-auth.Caddyfile</code>。</p>
+<pre><code>data/content             默认管理员导入/生成的 HTML 文件
+data/meta                默认管理员 YAML 元数据和运行时配置
+data/users.json          自托管登录用户，密码为哈希值
+data/users/&lt;data_id&gt;/    新增用户的 HTML、元数据、任务记录和 public 输出
+public                   默认管理员生成后的 Web 应用输出</code></pre>
+<p>第一个由 env 引导的管理员会继续使用根目录 <code>data/content</code>、<code>data/meta</code> 和 <code>public</code>，用于兼容旧部署。后续新增用户会隔离到 <code>data/users/&lt;data_id&gt;/</code>。</p>
+<p>新增一个自托管用户：</p>
+<pre><code>docker compose run --rm html-lore \
+  html-lore user-add \
+  --users-file /data/users.json \
+  --username alice \
+  --password "change-this-password"</code></pre>
+<p>用户名登录时忽略大小写；密码仍区分大小写，并以 PBKDF2 哈希保存，不保存明文。</p>
+<p>不要使用默认账号把 compose 栈直接暴露到公网。公网部署时，必须修改 <code>HTML_LORE_AUTH_USERNAME</code>、<code>HTML_LORE_AUTH_PASSWORD</code> 和 <code>HTML_LORE_SESSION_SECRET</code>，并放在 HTTPS 后面。env 用户名/密码只会在 <code>data/users.json</code> 不存在时引导创建第一个管理员；之后以 <code>users.json</code> 为准。项目提供 Caddy Basic Auth 示例和生产取向 env 模板：<code>compose.prod.yml</code>、<code>.env.secure.example</code> 和 <code>deploy/caddy-basic-auth.Caddyfile</code>。</p>
 <h2>静态构建</h2>
 <p>HTMlore 也可以根据已有内容和元数据构建静态站点：</p>
 <pre><code>python -m venv .venv

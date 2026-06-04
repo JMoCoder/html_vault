@@ -12,6 +12,8 @@
   HTMlore 当前的资料库/知识表达。
 - 将旧 `html-vault` 控制台命令接入兼容 wrapper，使其 help 输出保留旧命令名，
   同时继续使用 `html_lore` 实现。
+- 扩展 `.env.example`，补齐默认 Docker 部署使用的本地登录/session 和
+  自托管多用户数据设置。
 
 ## [0.6.8] - 2026-06-04
 

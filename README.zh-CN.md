@@ -65,6 +65,8 @@ HTMlore 是一个自托管 HTML 知识库工作台，用于保存、浏览、阅
 
 默认 Docker 路径适合本地电脑、NAS、局域网服务器或私有 VPS。它不需要 token，也不强制使用 Caddy。
 
+`.env.example` 记录了可选的本地默认值，与 compose 默认值保持一致，仅用于本地或私有网络测试。
+
 ```bash
 git clone https://github.com/JMoCoder/html_lore.git
 cd html_lore
@@ -114,7 +116,7 @@ docker compose run --rm html-lore \
 
 用户名登录时忽略大小写；密码仍区分大小写，并以 PBKDF2 哈希保存，不保存明文。
 
-不要使用默认账号把 compose 栈直接暴露到公网。公网部署时，必须修改 `HTML_LORE_AUTH_USERNAME`、`HTML_LORE_AUTH_PASSWORD` 和 `HTML_LORE_SESSION_SECRET`，并放在 HTTPS 后面。env 用户名/密码只会在 `data/users.json` 不存在时引导创建第一个管理员；之后以 `users.json` 为准。项目提供 Caddy Basic Auth 示例：`compose.prod.yml`、`.env.secure.example` 和 `deploy/caddy-basic-auth.Caddyfile`。
+不要使用默认账号把 compose 栈直接暴露到公网。公网部署时，必须修改 `HTML_LORE_AUTH_USERNAME`、`HTML_LORE_AUTH_PASSWORD` 和 `HTML_LORE_SESSION_SECRET`，并放在 HTTPS 后面。env 用户名/密码只会在 `data/users.json` 不存在时引导创建第一个管理员；之后以 `users.json` 为准。项目提供 Caddy Basic Auth 示例和生产取向 env 模板：`compose.prod.yml`、`.env.secure.example` 和 `deploy/caddy-basic-auth.Caddyfile`。
 
 ## 更新现有 Docker 部署
 

@@ -34,18 +34,32 @@
 <ul><li>Real AI model calls.</li><li>AI-generated HTML notes.</li><li>AI-powered reclassification/tagging jobs.</li><li>Cloud sync or hosted subscription service.</li><li>Full backup/restore and WebDAV execution.</li><li>Batch collection/tag rename, merge, or delete operations.</li></ul>
 <h2>Quick Docker Start</h2>
 <p>The default deployment is intended for local machines, NAS, LAN servers, or a private VPS. It does not require a token or Caddy.</p>
+<p>Optional local defaults are documented in <code>.env.example</code>. They mirror the compose defaults and are intended for local or private-network testing only.</p>
 <pre><code>git clone https://github.com/JMoCoder/html_lore.git
 cd html_lore
 docker compose up -d --build</code></pre>
 <p>Open:</p>
 <pre><code>http://localhost:8080</code></pre>
+<p>Default local/test login:</p>
+<pre><code>Username: admin
+Password: test-password</code></pre>
 <p>or from another device on the same network:</p>
 <pre><code>http://your-host-ip:8080</code></pre>
 <p>Runtime data is stored outside Git:</p>
-<pre><code>data/content   Imported HTML files
-data/meta      YAML sidecar metadata and runtime config
-public         Generated web app output</code></pre>
-<p>Do not expose the default compose stack directly to the public internet. For public deployment, add HTTPS and authentication with your preferred reverse proxy. A Caddy Basic Auth example is provided in <code>compose.prod.yml</code>, <code>.env.secure.example</code>, and <code>deploy/caddy-basic-auth.Caddyfile</code>.</p>
+<pre><code>data/content             Default admin imported/generated HTML files
+data/meta                Default admin YAML metadata and runtime config
+data/users.json          Self-hosted login users with hashed passwords
+data/users/&lt;data_id&gt;/    Extra users' content, metadata, jobs, and public output
+public                   Default admin generated web app output</code></pre>
+<p>The first env-configured admin keeps using the root <code>data/content</code>, <code>data/meta</code>, and <code>public</code> paths for backwards compatibility. Users added later are isolated under <code>data/users/&lt;data_id&gt;/</code>.</p>
+<p>Add another self-hosted user:</p>
+<pre><code>docker compose run --rm html-lore \
+  html-lore user-add \
+  --users-file /data/users.json \
+  --username alice \
+  --password "change-this-password"</code></pre>
+<p>Usernames are matched case-insensitively. Passwords remain case-sensitive and are stored as PBKDF2 hashes, not plaintext.</p>
+<p>Do not expose the default compose stack directly to the public internet with the default credentials. For public deployment, change <code>HTML_LORE_AUTH_USERNAME</code>, <code>HTML_LORE_AUTH_PASSWORD</code>, and <code>HTML_LORE_SESSION_SECRET</code>, then put the service behind HTTPS. The env username/password only bootstrap the first admin when <code>data/users.json</code> does not exist; after that, <code>users.json</code> is the source of truth. A Caddy Basic Auth example and production-oriented env template are provided in <code>compose.prod.yml</code>, <code>.env.secure.example</code>, and <code>deploy/caddy-basic-auth.Caddyfile</code>.</p>
 <h2>Static Build</h2>
 <p>HTMlore can also build a static site from existing content and metadata:</p>
 <pre><code>python -m venv .venv

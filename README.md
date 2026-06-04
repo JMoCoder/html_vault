@@ -89,6 +89,9 @@ Not implemented yet:
 The default deployment is intended for local machines, NAS, LAN servers, or a
 private VPS. It does not require a token or Caddy.
 
+Optional local defaults are documented in `.env.example`. They mirror the
+compose defaults and are intended for local or private-network testing only.
+
 ```bash
 git clone https://github.com/JMoCoder/html_lore.git
 cd html_lore
@@ -147,8 +150,8 @@ the default credentials. For public deployment, change
 `HTML_LORE_SESSION_SECRET`, then put the service behind HTTPS. The env
 username/password only bootstrap the first admin when `data/users.json` does
 not exist; after that, `users.json` is the source of truth. A Caddy Basic Auth
-example is provided in `compose.prod.yml`, `.env.secure.example`, and
-`deploy/caddy-basic-auth.Caddyfile`.
+example and production-oriented env template are provided in `compose.prod.yml`,
+`.env.secure.example`, and `deploy/caddy-basic-auth.Caddyfile`.
 
 ## Update Existing Docker Deployment
 
