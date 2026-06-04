@@ -3,7 +3,7 @@
 
   const dict = {
     en: {
-      navIssue: "The Idea", navReader: "Reader + Vault", navFlywheel: "AI Flywheel",
+      navIssue: "The Idea", navReader: "Reader + Library", navFlywheel: "AI Flywheel",
       navPublish: "Publish", navDeploy: "Deploy", liveDemo: "Live demo",
 
       coverIssue: "Issue 0.6.8", coverEdition: "Self-hosted Edition", coverMit: "MIT / Open Source",
@@ -11,7 +11,7 @@
       coverLine1: "Scattered HTML files,", coverLine2: "finally a home.",
       coverLede: "HTMlore gathers the HTML files spread across your disk into one place — a reader and a knowledge base at the same time. AI keeps extending, iterating and settling what you learn, and a free static host turns any note into a shareable page that builds your personal brand.",
       openDemo: "Open the live demo", readStory: "Read the story ↓",
-      idx01: "Reader & Vault", idx01d: "One library for every HTML file",
+      idx01: "Reader & Library", idx01d: "One library for every HTML file",
       idx02: "The Learning Flywheel", idx02d: "AI extends, iterates, settles",
       idx03: "Publish & Brand", idx03d: "Free static hosting, instant share",
 
@@ -23,7 +23,7 @@
       ch01Aside3: "<strong>Read, don't dig.</strong> Open any note full-screen, view the original file, copy or share its link — the reading view is the workspace.",
 
       swLibrary: "Library", swAll: "All notes", swReading: "Reading", swGenerated: "AI generated", swImported: "Imported",
-      swTags: "Tags", swSearch: "Search your vault…", swAiBtn: "AI",
+      swTags: "Tags", swSearch: "Search your library…", swAiBtn: "AI",
       swCard1Meta: "AI / MCP", swCard1: "MCP Server Security Model", swCard1d: "Trust boundaries, permissions and tool-call risks.",
       swCard2Meta: "Reading / Design", swCard2: "Notes on Editorial Layout", swCard2d: "Grids, rhythm and hierarchy for dense reading.",
       swCard3Meta: "Deploy / Docker", swCard3: "Single-container Deployment", swCard3d: "One service, persistent data, simple backup.",
@@ -33,11 +33,11 @@
       ch02Eyebrow: "The learning flywheel",
       ch02Title: "Knowledge that compounds: AI extends it, iterates it, settles it.",
       ch02Lead: "A note isn't a dead file. Ask AI over your own library and the answer becomes a new HTML note. Revisit it, refine it, and the page deepens. Each turn feeds the next — extend, iterate, settle — until scattered reading becomes a personal body of knowledge that quietly compounds over time.",
-      ch02Aside1: "<strong>Grounded in your vault.</strong> The AI layer works over notes you choose as context — answers stay tied to what you've actually collected.",
+      ch02Aside1: "<strong>Grounded in your library.</strong> The AI layer works over notes you choose as context — answers stay tied to what you've actually collected.",
       ch02Aside2: "<strong>Output is a note, not a chat bubble.</strong> Generated HTML lands back in the library, ready to read, tag, and grow.",
       ch02Aside3: "<strong>Credentials stay server-side.</strong> Model keys live in the backend, never baked into the static frontend.",
       fwCapture: "Capture", fwExtend: "Extend", fwIterate: "Iterate", fwSettle: "Settle",
-      fwCaptureDesc: "Save an HTML note — an article, an idea, an AI answer — into your vault.",
+      fwCaptureDesc: "Save an HTML note — an article, an idea, an AI answer — into your library.",
       fwExtendDesc: "Ask AI across your library; the reply comes back as a new note.",
       fwIterateDesc: "Revisit and refine it; the page deepens with every pass.",
       fwSettleDesc: "It settles into your library — tagged, searchable, and reusable.",
@@ -66,7 +66,7 @@
       deployText: "Run the full notebook in a single Docker container on a laptop, NAS, LAN box or private VPS. Or build a static site for free public hosting. The files never leave your control.",
       openDemo2: "Open the live demo", viewSource: "View source", termOpen: "open",
 
-      footerTag: "Your HTML, your vault, your brand.",
+      footerTag: "Your HTML, your lore, your brand.",
       footerVersion: "Issue 0.6.8 · MIT licensed", footerRights: "Your HTML files remain yours."
     },
 
@@ -139,7 +139,7 @@
     },
 
     ja: {
-      navIssue: "コンセプト", navReader: "リーダー + 書庫", navFlywheel: "AI フライホイール",
+      navIssue: "コンセプト", navReader: "リーダー + ライブラリ", navFlywheel: "AI フライホイール",
       navPublish: "公開", navDeploy: "デプロイ", liveDemo: "ライブデモ",
 
       coverIssue: "第 0.6.8 号", coverEdition: "セルフホスト版", coverMit: "MIT / オープンソース",
@@ -147,7 +147,7 @@
       coverLine1: "散らばった HTML に、", coverLine2: "ついに居場所を。",
       coverLede: "HTMlore は、ディスク各所に散らばった HTML ファイルを一か所に集めます —— リーダーであり、同時に知識ベースです。AI が学びを絶えず広げ、磨き、定着させ、無料の静的ホスティングが任意のノートを共有可能なページへと変え、あなたのパーソナルブランドを築きます。",
       openDemo: "ライブデモを開く", readStory: "続きを読む ↓",
-      idx01: "リーダー & 書庫", idx01d: "すべての HTML を一つの書庫に",
+      idx01: "リーダー & ライブラリ", idx01d: "すべての HTML を一つのライブラリに",
       idx02: "学びのフライホイール", idx02d: "AI が広げ・磨き・定着",
       idx03: "公開 & ブランド", idx03d: "無料の静的ホスト、即共有",
 
@@ -155,28 +155,28 @@
       ch01Title: "保存したすべての HTML を、ちゃんと読める一か所に。",
       ch01Lead: "HTML ファイルはあちこちに溜まります —— 書き出した記事、保存した AI の回答、古いレポート、シングルページアプリ。HTMlore はそれらを一つのライブラリに取り込み、すっきりしたカード型ワークスペースで読み、コレクション・タグ・お気に入り・検索で整理します。同じ画面で、リーダーであり知識ベースです。",
       ch01Aside1: "<strong>ファイルは可搬のまま。</strong> ノートはディスク上で本物の HTML のまま —— 閲覧・コピー・バックアップでき、普通の Web ツールで開けます。データベースに閉じ込めません。",
-      ch01Aside2: "<strong>摩擦なく整理。</strong> コレクション、AND/OR 対応の複数タグ、お気に入り、アーカイブ、並べ替え、全文検索が、増え続ける書庫を見通しよく保ちます。",
+      ch01Aside2: "<strong>摩擦なく整理。</strong> コレクション、AND/OR 対応の複数タグ、お気に入り、アーカイブ、並べ替え、全文検索が、増え続けるライブラリを見通しよく保ちます。",
       ch01Aside3: "<strong>掘らずに読む。</strong> 任意のノートを全画面で開き、元ファイルを表示し、リンクをコピー・共有 —— 読書ビューがそのままワークスペースです。",
 
       swLibrary: "ライブラリ", swAll: "すべて", swReading: "閲覧中", swGenerated: "AI 生成", swImported: "取り込み済",
-      swTags: "タグ", swSearch: "書庫を検索…", swAiBtn: "AI",
+      swTags: "タグ", swSearch: "ライブラリを検索…", swAiBtn: "AI",
       swCard1Meta: "AI / MCP", swCard1: "MCP サーバのセキュリティモデル", swCard1d: "信頼境界・権限・ツール呼び出しのリスク。",
       swCard2Meta: "閲覧 / デザイン", swCard2: "エディトリアル組版ノート", swCard2d: "密な読書のためのグリッド・リズム・階層。",
       swCard3Meta: "デプロイ / Docker", swCard3: "シングルコンテナ運用", swCard3d: "一つのサービス、永続データ、簡単なバックアップ。",
       swCard4Meta: "LLM / ノート", swCard4: "再利用するプロンプトの型", swCard4d: "生きたページ。対話のたびに広がる。",
-      spreadCap: "カード型ワークスペース —— リーダーと書庫が一画面に。",
+      spreadCap: "カード型ワークスペース —— リーダーとライブラリが一画面に。",
 
       ch02Eyebrow: "学びのフライホイール",
       ch02Title: "複利で増える知識 —— AI が広げ、磨き、定着させる。",
       ch02Lead: "ノートは死んだファイルではありません。自分のライブラリ上で AI に尋ねれば、答えは新しい HTML ノートになります。読み返し、磨けば、ページは深まります。一巡が次の一巡を養い —— 広げ、磨き、定着 —— 散らばった読書が、時とともに静かに複利で増えていく、あなただけの知識体系になります。",
-      ch02Aside1: "<strong>あなたの書庫に根ざす。</strong> AI 層は文脈として選んだノート上で動作 —— 答えは実際に集めた内容に結びついたまま。",
+      ch02Aside1: "<strong>あなたのライブラリに根ざす。</strong> AI 層は文脈として選んだノート上で動作 —— 答えは実際に集めた内容に結びついたまま。",
       ch02Aside2: "<strong>出力はノート、チャットの吹き出しではない。</strong> 生成された HTML はライブラリに戻り、読み・タグ付け・成長へ。",
       ch02Aside3: "<strong>資格情報はサーバ側に。</strong> モデルの鍵はバックエンドに置き、静的フロントには決して埋め込みません。",
       fwCapture: "収集", fwExtend: "拡張", fwIterate: "反復", fwSettle: "定着",
-      fwCaptureDesc: "HTML ノート —— 記事・アイデア・AI の回答 —— を書庫に収める。",
+      fwCaptureDesc: "HTML ノート —— 記事・アイデア・AI の回答 —— をライブラリに収める。",
       fwExtendDesc: "ライブラリ上で AI に尋ね、回答が新しいノートとして返る。",
       fwIterateDesc: "読み返して磨くたびに、ページは深まっていく。",
-      fwSettleDesc: "書庫に定着 —— タグ付け・検索・再利用が可能に。",
+      fwSettleDesc: "ライブラリに定着 —— タグ付け・検索・再利用が可能に。",
       fwLoop: "↻ 繰り返すほど、散らばった読書が知識へと複利で増える",
 
       ch03Eyebrow: "公開 & パーソナルブランド",
@@ -202,7 +202,7 @@
       deployText: "ノート PC・NAS・LAN マシン・プライベート VPS 上で、単一の Docker コンテナとしてノートブックを実行。あるいは無料公開向けに静的サイトを生成。ファイルはあなたの管理下から離れません。",
       openDemo2: "ライブデモを開く", viewSource: "ソースを見る", termOpen: "開く",
 
-      footerTag: "あなたの HTML、あなたの書庫、あなたのブランド。",
+      footerTag: "あなたの HTML、あなたの知識、あなたのブランド。",
       footerVersion: "第 0.6.8 号 · MIT ライセンス", footerRights: "あなたの HTML ファイルはあなたのものです。"
     }
   };

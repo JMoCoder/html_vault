@@ -16,7 +16,7 @@ and eventually discussing HTML-based knowledge files with AI. It is designed
 for people who want their notes to remain portable files instead of being
 locked inside a database-first note app.
 
-The long-term direction is a web-first personal knowledge vault: import or
+The long-term direction is a web-first personal knowledge library: import or
 generate HTML notes, organize them with collections and tags, read them in a
 polished card workspace, install the app as a PWA, and later connect AI services
 for classification, retrieval, summarization, and multi-turn conversations over

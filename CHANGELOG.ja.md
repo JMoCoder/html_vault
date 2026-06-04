@@ -7,6 +7,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 ### Changed
 
 - HTMlore への名称変更後に残っていたサンプル内容と静的アセット内の旧プロジェクト名参照を整理しました。
+- 公開ホームページ、Demo README ノート、アプリのアクセシビリティラベル、logo 説明を、HTMlore の現在のライブラリ/知識表現に更新しました。
 
 ## [0.6.8] - 2026-06-04
 
