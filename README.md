@@ -48,6 +48,7 @@ documented security boundary for public deployment.
 Implemented today:
 
 - Single-container Docker deployment with `docker compose up -d --build`.
+- Docker image health check against `GET /api/health`.
 - Built-in login screen with HttpOnly session cookies and backend-configured
   self-hosted user credentials.
 - File-backed multi-user login for self-hosted deployments, with

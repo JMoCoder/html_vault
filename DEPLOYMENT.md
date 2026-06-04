@@ -145,6 +145,12 @@ git checkout main
 docker compose up -d --build
 ```
 
+Check the container health after startup:
+
+```bash
+docker compose ps
+```
+
 Open `http://localhost:8080` or `http://your-host-ip:8080`.
 
 The first start creates `data/content`, `data/meta`, and `public` bind-mounted

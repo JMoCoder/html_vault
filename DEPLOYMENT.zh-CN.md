@@ -119,6 +119,12 @@ git checkout main
 docker compose up -d --build
 ```
 
+启动后检查容器健康状态：
+
+```bash
+docker compose ps
+```
+
 打开 `http://localhost:8080` 或 `http://你的主机-ip:8080`。
 
 首次启动会自动创建 `data/content`、`data/meta` 和 `public` 绑定目录。上传的 HTML 保存到 `data/content`，元数据保存到 `data/meta`，重建后的静态资产保存到 `public`。

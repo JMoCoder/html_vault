@@ -30,6 +30,7 @@ HTMlore 是一个自托管 HTML 知识库工作台，用于保存、浏览、阅
 当前已实现：
 
 - 单容器 Docker 部署：`docker compose up -d --build`。
+- Docker 镜像内置 `GET /api/health` 健康检查。
 - 内置登录页，使用 HttpOnly session Cookie，测试用户由后端配置。
 - 从 `app_static/` 生成的静态优先前端。
 - 用于真实笔记本运行的后端 API。

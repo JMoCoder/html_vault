@@ -22,6 +22,7 @@ versioning after the initial public release.
   `html_lore` implementation.
 - Expanded `.env.example` with the local login/session and self-hosted
   multi-user data settings used by the default Docker deployment.
+- Added a Docker image health check for the backend API.
 
 ## [0.6.8] - 2026-06-04
 
