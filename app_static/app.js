@@ -112,6 +112,33 @@ const i18n = {
     exportPreferences: "Export preferences",
     dataExportNote: "Exports are downloaded as JSON files. They do not include API keys.",
     exportCreated: "Export file created.",
+    shareManagement: "Share links",
+    shareManagementIntro: "Review active public note links and revoke access when a note should no longer be shared.",
+    shareDialog: "Share note",
+    shareSecurityNote: "Shared notes are public read-only pages. HTMlore blocks sharing when a note contains executable HTML, dangerous links, or likely secrets. External links are disabled in the shared page.",
+    shareDuration: "Duration",
+    shareDuration1h: "1 hour",
+    shareDuration1d: "1 day",
+    shareDuration7d: "7 days",
+    shareDuration30d: "30 days",
+    shareDurationForever: "Forever",
+    shareLink: "Share link",
+    createShare: "Create share",
+    updateShare: "Update share",
+    copyShareLink: "Copy share link",
+    revokeShare: "Revoke share",
+    shareNeedsAgent: "Sharing requires the backend server.",
+    shareCreated: "Share link created.",
+    shareUpdated: "Share settings updated.",
+    shareRevoked: "Share revoked.",
+    shareCopied: "Share link copied.",
+    shareLinkOneTime: "For safety, existing share tokens are only shown when created. Revoke and create a new share if you need a fresh copyable link.",
+    shareBlocked: "This note cannot be shared because it failed the safety checks.",
+    shareFailed: "Share operation failed.",
+    noShares: "No shared links.",
+    shareActive: "Active",
+    shareExpired: "Expired",
+    shareAccessCount: "{count} visits",
     userProfile: "User profile",
     userProfileIntro: "Profile details for future sync and cloud account features.",
     userProfilePlaceholder: "This area will manage display name, avatar, workspace identity, and plan information after account support is added.",
@@ -225,8 +252,6 @@ const i18n = {
     noSummary: "No summary yet.",
     read: "Read",
     original: "Original",
-    copyLink: "Copy Link",
-    copied: "Copied",
     shareAction: "Share",
     editMetadata: "Edit metadata",
     metadataEditor: "Edit note metadata",
@@ -369,6 +394,33 @@ const i18n = {
     exportPreferences: "导出偏好",
     dataExportNote: "导出文件为 JSON，不包含 API Key。",
     exportCreated: "导出文件已创建。",
+    shareManagement: "分享链接管理",
+    shareManagementIntro: "查看当前公开分享链接，并在不再需要公开访问时取消分享。",
+    shareDialog: "分享笔记",
+    shareSecurityNote: "分享笔记是公开只读页面。若笔记包含可执行 HTML、危险链接或疑似密钥，HTMlore 会禁止分享；分享页中的外部链接会被禁用。",
+    shareDuration: "有效期",
+    shareDuration1h: "1小时",
+    shareDuration1d: "1天",
+    shareDuration7d: "7天",
+    shareDuration30d: "30天",
+    shareDurationForever: "永久",
+    shareLink: "分享链接",
+    createShare: "创建分享",
+    updateShare: "更新分享",
+    copyShareLink: "复制分享链接",
+    revokeShare: "取消分享",
+    shareNeedsAgent: "分享功能需要连接后端服务。",
+    shareCreated: "分享链接已创建。",
+    shareUpdated: "分享设置已更新。",
+    shareRevoked: "分享已取消。",
+    shareCopied: "分享链接已复制。",
+    shareLinkOneTime: "出于安全考虑，已存在的分享密钥只在创建时显示。若需要新的可复制链接，请取消分享后重新创建。",
+    shareBlocked: "该笔记未通过安全检查，不能分享。",
+    shareFailed: "分享操作失败。",
+    noShares: "暂无分享链接。",
+    shareActive: "分享中",
+    shareExpired: "已失效",
+    shareAccessCount: "{count} 次访问",
     userProfile: "用户资料",
     userProfileIntro: "预留未来同步与云账号能力所需的个人资料设置。",
     userProfilePlaceholder: "账号能力完成后，这里将管理显示名称、头像、工作区身份与套餐信息。",
@@ -482,8 +534,6 @@ const i18n = {
     noSummary: "暂无摘要。",
     read: "阅读",
     original: "原文",
-    copyLink: "复制链接",
-    copied: "已复制",
     shareAction: "分享",
     editMetadata: "编辑元信息",
     metadataEditor: "编辑笔记元信息",
@@ -626,6 +676,33 @@ const i18n = {
     exportPreferences: "設定をエクスポート",
     dataExportNote: "エクスポートは JSON ファイルとしてダウンロードされます。API Key は含みません。",
     exportCreated: "エクスポートファイルを作成しました。",
+    shareManagement: "共有リンク管理",
+    shareManagementIntro: "公開共有リンクを確認し、不要になったノートの共有を取り消します。",
+    shareDialog: "ノートを共有",
+    shareSecurityNote: "共有ノートは公開の読み取り専用ページです。実行可能 HTML、危険なリンク、疑わしい secret が含まれる場合、HTMlore は共有を禁止します。共有ページ内の外部リンクは無効化されます。",
+    shareDuration: "有効期限",
+    shareDuration1h: "1時間",
+    shareDuration1d: "1日",
+    shareDuration7d: "7日",
+    shareDuration30d: "30日",
+    shareDurationForever: "無期限",
+    shareLink: "共有リンク",
+    createShare: "共有を作成",
+    updateShare: "共有を更新",
+    copyShareLink: "共有リンクをコピー",
+    revokeShare: "共有を取り消す",
+    shareNeedsAgent: "共有にはバックエンドサーバー接続が必要です。",
+    shareCreated: "共有リンクを作成しました。",
+    shareUpdated: "共有設定を更新しました。",
+    shareRevoked: "共有を取り消しました。",
+    shareCopied: "共有リンクをコピーしました。",
+    shareLinkOneTime: "安全のため、既存の共有トークンは作成時のみ表示されます。コピー可能な新しいリンクが必要な場合は共有を取り消して再作成してください。",
+    shareBlocked: "このノートは安全チェックに通らないため共有できません。",
+    shareFailed: "共有操作に失敗しました。",
+    noShares: "共有リンクはありません。",
+    shareActive: "共有中",
+    shareExpired: "期限切れ",
+    shareAccessCount: "{count} 回アクセス",
     userProfile: "ユーザープロフィール",
     userProfileIntro: "将来の同期とクラウドアカウント向けのプロフィール設定です。",
     userProfilePlaceholder: "アカウント対応後、表示名、アバター、ワークスペース ID、プラン情報をここで管理します。",
@@ -739,8 +816,6 @@ const i18n = {
     noSummary: "概要はまだありません。",
     read: "読む",
     original: "原文",
-    copyLink: "リンクをコピー",
-    copied: "コピー済み",
     shareAction: "共有",
     editMetadata: "メタデータを編集",
     metadataEditor: "ノートメタデータを編集",
@@ -880,6 +955,8 @@ const state = {
   editingItemId: "",
   editingTags: new Set(),
   profileSummaryOpen: false,
+  shares: [],
+  sharingItemId: "",
 };
 
 const elements = {
@@ -989,9 +1066,20 @@ const elements = {
   readerArchive: document.querySelector("#reader-archive"),
   readerAiPanelOpen: document.querySelector("#reader-ai-panel-open"),
   readerOriginal: document.querySelector("#reader-original"),
-  readerCopy: document.querySelector("#reader-copy"),
   readerShare: document.querySelector("#reader-share"),
   readerFrame: document.querySelector("#reader-frame"),
+  shareManagementList: document.querySelector("#share-management-list"),
+  shareManagementFeedback: document.querySelector("#share-management-feedback"),
+  shareDialog: document.querySelector("#share-dialog"),
+  shareForm: document.querySelector("#share-form"),
+  shareDuration: document.querySelector("#share-duration"),
+  shareLink: document.querySelector("#share-link"),
+  shareFeedback: document.querySelector("#share-feedback"),
+  shareCreate: document.querySelector("#share-create"),
+  shareCopy: document.querySelector("#share-copy"),
+  shareRevoke: document.querySelector("#share-revoke"),
+  shareCancel: document.querySelector("#share-cancel"),
+  shareCancelIcon: document.querySelector("#share-cancel-icon"),
   metadataEditor: document.querySelector("#metadata-editor"),
   metadataForm: document.querySelector("#metadata-form"),
   metadataTitle: document.querySelector("#metadata-title"),
@@ -1025,6 +1113,7 @@ async function boot() {
     }
     hideLoginScreen();
     await loadRemoteNavConfig();
+    await loadShares();
     state.manifest = await loadManifest();
     state.items = Array.isArray(state.manifest.items) ? state.manifest.items : [];
     renderApp();
@@ -1193,6 +1282,7 @@ function renderApp() {
   renderAiConfig();
   renderDataConfig();
   renderManagementLists();
+  renderShareManagement();
   renderVersionStatus();
 }
 
@@ -1752,35 +1842,6 @@ function updateAgentStatus() {
   }
 }
 
-function copyReaderLink() {
-  const url = window.location.href;
-  navigator.clipboard?.writeText(url);
-  elements.readerCopy.innerHTML = copiedIcon();
-  setIconButtonLabel(elements.readerCopy, "copied");
-  window.setTimeout(() => {
-    elements.readerCopy.innerHTML = copyIcon();
-    setIconButtonLabel(elements.readerCopy, "copyLink");
-  }, 1400);
-}
-
-async function shareReaderLink() {
-  const item = getItemById(state.currentReaderItemId);
-  const shareData = {
-    title: item ? getItemTitle(item) : document.title,
-    text: item ? getItemSummary(item) : "",
-    url: window.location.href,
-  };
-  if (navigator.share) {
-    try {
-      await navigator.share(shareData);
-      return;
-    } catch (error) {
-      if (error?.name === "AbortError") return;
-    }
-  }
-  copyReaderLink();
-}
-
 function openReaderAiPanel() {
   const item = getItemById(state.currentReaderItemId);
   if (item && isArchived(item)) {
@@ -1795,6 +1856,190 @@ function openReaderAiPanel() {
   renderGrid();
   renderAiContext();
   openAiPanel();
+}
+
+async function loadShares() {
+  if (!state.agentUrl) {
+    state.shares = [];
+    return;
+  }
+  try {
+    const response = await apiFetch("/api/shares", { cache: "no-store" });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    const data = await response.json();
+    state.shares = Array.isArray(data.shares) ? data.shares : [];
+  } catch (error) {
+    state.shares = [];
+    console.warn("Share list unavailable.", error);
+  }
+}
+
+function getActiveShareForItem(itemId) {
+  return state.shares.find((share) => share.item_id === itemId && share.active && !share.revoked);
+}
+
+function getShareUrl(share) {
+  return share?.url_path ? new URL(share.url_path, window.location.origin).href : "";
+}
+
+function openShareDialog(itemId) {
+  const item = getItemById(itemId);
+  if (!item) return;
+  state.sharingItemId = itemId;
+  const activeShare = getActiveShareForItem(itemId);
+  elements.shareDuration.value = activeShare?.duration || "1d";
+  elements.shareLink.value = activeShare ? getShareUrl(activeShare) : "";
+  elements.shareCreate.textContent = t(activeShare ? "updateShare" : "createShare");
+  elements.shareCopy.hidden = !elements.shareLink.value;
+  elements.shareRevoke.hidden = !activeShare;
+  elements.shareFeedback.textContent = state.agentUrl ? (activeShare && !elements.shareLink.value ? t("shareLinkOneTime") : "") : t("shareNeedsAgent");
+  elements.shareDialog.hidden = false;
+  elements.shareDuration.focus();
+}
+
+function closeShareDialog() {
+  state.sharingItemId = "";
+  elements.shareDialog.hidden = true;
+  elements.shareFeedback.textContent = "";
+  elements.shareLink.value = "";
+}
+
+async function submitShareDialog(event) {
+  event.preventDefault();
+  if (!state.agentUrl) {
+    elements.shareFeedback.textContent = t("shareNeedsAgent");
+    return;
+  }
+  const itemId = state.sharingItemId;
+  const activeShare = getActiveShareForItem(itemId);
+  try {
+    let share;
+    if (activeShare) {
+      const response = await apiFetch(`/api/shares/${encodeURIComponent(activeShare.id)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ duration: elements.shareDuration.value }),
+      });
+      if (!response.ok) throw await buildShareError(response);
+      share = { ...(await response.json()), url_path: activeShare.url_path };
+      replaceShare(share);
+      elements.shareFeedback.textContent = t("shareUpdated");
+    } else {
+      const response = await apiFetch("/api/shares", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ item_id: itemId, duration: elements.shareDuration.value }),
+      });
+      if (!response.ok) throw await buildShareError(response);
+      const data = await response.json();
+      share = { ...data.share, url_path: data.url_path };
+      replaceShare(share);
+      elements.shareLink.value = new URL(data.url_path, window.location.origin).href;
+      elements.shareFeedback.textContent = t("shareCreated");
+    }
+    renderReaderShareState();
+    renderShareManagement();
+    elements.shareCreate.textContent = t("updateShare");
+    elements.shareCopy.hidden = !elements.shareLink.value;
+    elements.shareRevoke.hidden = false;
+  } catch (error) {
+    elements.shareFeedback.textContent = error?.code === "safety" ? t("shareBlocked") : t("shareFailed");
+    console.error(error);
+  }
+}
+
+async function buildShareError(response) {
+  try {
+    const data = await response.json();
+    if (data?.detail?.safety) return { code: "safety", detail: data.detail };
+    return { code: "error", detail: data.detail || response.status };
+  } catch {
+    return { code: "error", detail: response.status };
+  }
+}
+
+function replaceShare(share) {
+  const index = state.shares.findIndex((item) => item.id === share.id);
+  if (index >= 0) state.shares[index] = share;
+  else state.shares.unshift(share);
+}
+
+async function copyCurrentShareLink() {
+  const value = elements.shareLink.value.trim();
+  if (!value) return;
+  await navigator.clipboard?.writeText(value);
+  elements.shareFeedback.textContent = t("shareCopied");
+}
+
+async function revokeCurrentShare() {
+  const share = getActiveShareForItem(state.sharingItemId);
+  if (!share || !state.agentUrl) return;
+  try {
+    const response = await apiFetch(`/api/shares/${encodeURIComponent(share.id)}`, { method: "DELETE" });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    replaceShare(await response.json());
+    elements.shareFeedback.textContent = t("shareRevoked");
+    renderReaderShareState();
+    renderShareManagement();
+    openShareDialog(state.sharingItemId);
+  } catch (error) {
+    elements.shareFeedback.textContent = t("shareFailed");
+    console.error(error);
+  }
+}
+
+function renderReaderShareState() {
+  const item = getItemById(state.currentReaderItemId);
+  const archived = item ? isArchived(item) : false;
+  const active = !archived && Boolean(getActiveShareForItem(state.currentReaderItemId));
+  elements.readerShare.hidden = archived;
+  elements.readerShare.classList.toggle("active", active);
+  setIconButtonLabel(elements.readerShare, "shareAction");
+}
+
+function renderShareManagement() {
+  if (!elements.shareManagementList) return;
+  const activeShares = state.shares.filter((share) => !share.revoked);
+  if (activeShares.length === 0) {
+    elements.shareManagementList.innerHTML = `<div class="empty-state">${escapeHtml(t("noShares"))}</div>`;
+    return;
+  }
+  elements.shareManagementList.replaceChildren(...activeShares.map(renderShareManagementRow));
+}
+
+function renderShareManagementRow(share) {
+  const item = getItemById(share.item_id);
+  const row = document.createElement("div");
+  row.className = "management-row share-row";
+  row.innerHTML = `
+    <div class="management-name">
+      <strong>${escapeHtml(item ? getItemTitle(item) : share.item_id)}</strong>
+      <span>${escapeHtml(share.active ? t("shareActive") : t("shareExpired"))} · ${escapeHtml(formatShareExpiry(share))} · ${escapeHtml(t("shareAccessCount", { count: share.access_count || 0 }))}</span>
+    </div>
+    <div class="management-actions">
+      <button type="button" data-share-open>${escapeHtml(t("shareAction"))}</button>
+      <button type="button" data-share-revoke>${escapeHtml(t("revokeShare"))}</button>
+    </div>
+  `;
+  row.querySelector("[data-share-open]").addEventListener("click", () => openShareDialog(share.item_id));
+  row.querySelector("[data-share-revoke]").addEventListener("click", async () => {
+    try {
+      const response = await apiFetch(`/api/shares/${encodeURIComponent(share.id)}`, { method: "DELETE" });
+      if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+      replaceShare(await response.json());
+      elements.shareManagementFeedback.textContent = t("shareRevoked");
+      renderShareManagement();
+      renderReaderShareState();
+    } catch (error) {
+      elements.shareManagementFeedback.textContent = t("shareFailed");
+      console.error(error);
+    }
+  });
+  return row;
+}
+
+function formatShareExpiry(share) {
+  return share.expires_at ? formatDate(share.expires_at) : t("shareDurationForever");
 }
 
 function toggleManualAiContext(id) {
@@ -1832,8 +2077,7 @@ function renderReaderActions(item) {
   elements.readerAiPanelOpen.innerHTML = archived ? trashIcon() : aiSparkIcon();
   setIconButtonLabel(elements.readerAiPanelOpen, archived ? "permanentDeleteAction" : "openGlobalAi");
   elements.readerAiPanelOpen.classList.toggle("danger", archived);
-  elements.readerCopy.innerHTML = copyIcon();
-  setIconButtonLabel(elements.readerCopy, "copyLink");
+  renderReaderShareState();
 }
 
 function getItemById(id) {
@@ -3070,23 +3314,6 @@ function editIcon() {
   `;
 }
 
-function copyIcon() {
-  return `
-    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-      <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-    </svg>
-  `;
-}
-
-function copiedIcon() {
-  return `
-    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M20 6 9 17l-5-5"></path>
-    </svg>
-  `;
-}
-
 function moonIcon() {
   return `
     <svg class="button-icon moon-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -3255,6 +3482,9 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !elements.metadataEditor.hidden) {
     closeMetadataEditor();
   }
+  if (event.key === "Escape" && !elements.shareDialog.hidden) {
+    closeShareDialog();
+  }
   if (event.key === "Escape" && state.profileSummaryOpen) {
     setProfileSummary(false);
   }
@@ -3294,13 +3524,22 @@ elements.readerFavorite.addEventListener("click", () => {
 elements.readerArchive.addEventListener("click", () => {
   if (state.currentReaderItemId) toggleArchive(state.currentReaderItemId);
 });
-elements.readerShare.addEventListener("click", shareReaderLink);
+elements.readerShare.addEventListener("click", () => {
+  if (state.currentReaderItemId) openShareDialog(state.currentReaderItemId);
+});
 elements.readerAiPanelOpen.addEventListener("click", () => {
   if (state.currentReaderItemId) openReaderAiPanel();
   else openAiPanel();
 });
-elements.readerCopy.addEventListener("click", copyReaderLink);
 elements.readerFrame.addEventListener("load", bindReaderFrameScroll);
+elements.shareForm.addEventListener("submit", submitShareDialog);
+elements.shareCopy.addEventListener("click", copyCurrentShareLink);
+elements.shareRevoke.addEventListener("click", revokeCurrentShare);
+elements.shareCancel.addEventListener("click", closeShareDialog);
+elements.shareCancelIcon.addEventListener("click", closeShareDialog);
+elements.shareDialog.addEventListener("click", (event) => {
+  if (event.target === elements.shareDialog) closeShareDialog();
+});
 elements.metadataForm.addEventListener("submit", saveMetadataEditor);
 elements.metadataCancel.addEventListener("click", closeMetadataEditor);
 elements.metadataCancelIcon.addEventListener("click", closeMetadataEditor);

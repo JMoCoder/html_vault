@@ -254,12 +254,6 @@
               <path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path>
             </svg>
           </a>
-          <button type="button" class="icon-action" id="reader-copy" aria-label="Copy Link" title="Copy Link" data-i18n-attr="aria-label:copyLink,title:copyLink">
-            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-            </svg>
-          </button>
           <button type="button" class="reader-ai-button" id="reader-ai-panel-open" aria-label="Open AI assistant" title="Open AI assistant" data-i18n-attr="aria-label:openGlobalAi,title:openGlobalAi">
             <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 3l1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7L12 3Z"></path>
@@ -295,6 +289,7 @@
           <button type="button" class="settings-tab" data-settings-tab="backup" data-i18n="localBackupRestore"></button>
           <button type="button" class="settings-tab" data-settings-tab="webdav" data-i18n="webdavSettings"></button>
           <button type="button" class="settings-tab" data-settings-tab="export" data-i18n="dataExport"></button>
+          <button type="button" class="settings-tab" data-settings-tab="shares" data-i18n="shareManagement"></button>
           <div class="settings-divider" aria-hidden="true"></div>
           <button type="button" class="settings-tab" data-settings-tab="ai" data-i18n="aiProviders"></button>
           <button type="button" class="settings-tab" data-settings-tab="ai-assistant" data-i18n="aiKnowledgeAssistant"></button>
@@ -507,6 +502,17 @@
             </div>
           </section>
 
+          <section class="settings-section" data-settings-section="shares">
+            <div class="section-heading">
+              <h3 data-i18n="shareManagement"></h3>
+              <p data-i18n="shareManagementIntro"></p>
+            </div>
+            <div class="settings-form">
+              <div class="share-list" id="share-management-list"></div>
+              <p class="settings-feedback" id="share-management-feedback"></p>
+            </div>
+          </section>
+
           <section class="settings-section" data-settings-section="profile">
             <div class="section-heading">
               <h3 data-i18n="userProfile"></h3>
@@ -641,6 +647,37 @@
         <div class="metadata-actions">
           <button type="submit" data-i18n="save"></button>
           <button type="button" class="secondary-button" id="metadata-cancel" data-i18n="cancel"></button>
+        </div>
+      </form>
+    </section>
+
+    <section class="metadata-editor" id="share-dialog" aria-label="Share note" data-i18n-attr="aria-label:shareDialog" hidden>
+      <form class="metadata-dialog" id="share-form">
+        <div class="metadata-dialog-header">
+          <h2 data-i18n="shareDialog"></h2>
+          <button class="icon-button" type="button" id="share-cancel-icon" aria-label="Cancel" title="Cancel" data-i18n-attr="aria-label:cancel,title:cancel">×</button>
+        </div>
+        <p class="security-note" data-i18n="shareSecurityNote"></p>
+        <label>
+          <span data-i18n="shareDuration"></span>
+          <select id="share-duration">
+            <option value="1h" data-i18n="shareDuration1h"></option>
+            <option value="1d" data-i18n="shareDuration1d"></option>
+            <option value="7d" data-i18n="shareDuration7d"></option>
+            <option value="30d" data-i18n="shareDuration30d"></option>
+            <option value="forever" data-i18n="shareDurationForever"></option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="shareLink"></span>
+          <input id="share-link" type="text" readonly>
+        </label>
+        <p class="settings-feedback" id="share-feedback"></p>
+        <div class="metadata-actions">
+          <button type="submit" id="share-create" data-i18n="createShare"></button>
+          <button type="button" class="secondary-button" id="share-copy" data-i18n="copyShareLink"></button>
+          <button type="button" class="secondary-button danger-secondary" id="share-revoke" data-i18n="revokeShare"></button>
+          <button type="button" class="secondary-button" id="share-cancel" data-i18n="cancel"></button>
         </div>
       </form>
     </section>

@@ -20,6 +20,7 @@ from .config import ServerSettings, load_settings
 from .items import ItemContentError, ItemDeleteError, ItemMetadataError, ItemService, ItemStateError, normalize_query
 from .jobs import JobError, JobService
 from .navigation import NavigationConfigError, NavigationConfigService
+from .shares import ShareError, ShareSafetyError, ShareService, settings_for_share_token
 from .uploads import UploadError, UploadService
 
 
@@ -50,6 +51,13 @@ def get_navigation_service(settings: Annotated[ServerSettings, Depends(get_reque
 
 def get_job_service(settings: Annotated[ServerSettings, Depends(get_request_settings)]) -> JobService:
     return JobService(settings)
+
+
+def get_share_service(
+    settings: Annotated[ServerSettings, Depends(get_request_settings)],
+    root_settings: Annotated[ServerSettings, Depends(get_settings)],
+) -> ShareService:
+    return ShareService(settings, root_settings)
 
 
 def verify_api_token(
@@ -260,6 +268,65 @@ def create_app() -> FastAPI:
         except JobError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 
+    @app.get("/api/shares")
+    def shares(_: ApiAuth, service: Annotated[ShareService, Depends(get_share_service)]) -> dict:
+        items = service.list_shares()
+        return {"shares": items, "count": len(items)}
+
+    @app.post("/api/shares")
+    def create_share(values: dict, _: ApiAuth, service: Annotated[ShareService, Depends(get_share_service)]) -> dict:
+        try:
+            result = service.create_share(
+                item_id=str(values.get("item_id") or ""),
+                duration=str(values.get("duration") or "1d"),
+            )
+        except ShareSafetyError as exc:
+            raise HTTPException(status_code=400, detail={"message": str(exc), "safety": exc.scan}) from exc
+        except ShareError as exc:
+            message = str(exc)
+            status = 404 if message == "Item not found." else 400
+            raise HTTPException(status_code=status, detail=message) from exc
+        return {
+            "share": result.share,
+            "token": result.token,
+            "url_path": result.url_path,
+        }
+
+    @app.patch("/api/shares/{share_id}")
+    def update_share(share_id: str, values: dict, _: ApiAuth, service: Annotated[ShareService, Depends(get_share_service)]) -> dict:
+        try:
+            return service.update_share(share_id, values)
+        except ShareError as exc:
+            message = str(exc)
+            status = 404 if message == "Share not found." else 400
+            raise HTTPException(status_code=status, detail=message) from exc
+
+    @app.delete("/api/shares/{share_id}")
+    def revoke_share(share_id: str, _: ApiAuth, service: Annotated[ShareService, Depends(get_share_service)]) -> dict:
+        try:
+            return service.revoke_share(share_id)
+        except ShareError as exc:
+            message = str(exc)
+            status = 404 if message == "Share not found." else 400
+            raise HTTPException(status_code=status, detail=message) from exc
+
+    @app.get("/api/public/shares/{token}")
+    def public_share(token: str) -> dict:
+        public_settings = settings_for_share_token(settings, token)
+        try:
+            return ShareService(public_settings, settings).public_read_by_token(token)
+        except ShareError as exc:
+            raise HTTPException(status_code=404, detail="Share not found.") from exc
+
+    @app.get("/share/{token}", response_class=HTMLResponse)
+    def public_share_page(token: str) -> HTMLResponse:
+        public_settings = settings_for_share_token(settings, token)
+        try:
+            data = ShareService(public_settings, settings).public_read_by_token(token)
+        except ShareError as exc:
+            raise HTTPException(status_code=404, detail="Share not found.") from exc
+        return HTMLResponse(render_share_page(data))
+
     @app.post("/api/uploads/html")
     async def upload_html(
         _: ApiAuth,
@@ -332,3 +399,57 @@ def static_requires_auth(path: Path) -> bool:
     if path.name == "manifest.json":
         return True
     return False
+
+
+def render_share_page(data: dict) -> str:
+    item = data.get("item") or {}
+    title = escape_html(item.get("title") or "Shared note")
+    summary = escape_html(item.get("summary") or "")
+    body = data.get("html") or ""
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{title} - HTMlore Share</title>
+  <style>
+    :root {{ color-scheme: light dark; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }}
+    body {{ margin: 0; background: #f8fafc; color: #172033; }}
+    main {{ max-width: 900px; margin: 0 auto; padding: 32px 20px 56px; }}
+    header {{ border-bottom: 1px solid #d9e2ec; margin-bottom: 28px; padding-bottom: 18px; }}
+    .brand {{ color: #0f766e; font-size: 0.8rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }}
+    h1 {{ margin: 8px 0; font-size: clamp(1.8rem, 4vw, 3rem); line-height: 1.1; }}
+    .summary {{ color: #607086; font-size: 1rem; line-height: 1.6; }}
+    article {{ background: #fff; border: 1px solid #d9e2ec; border-radius: 8px; padding: 28px; overflow-wrap: anywhere; }}
+    a {{ color: inherit; text-decoration: none; pointer-events: none; }}
+    img, video {{ max-width: 100%; height: auto; }}
+    @media (prefers-color-scheme: dark) {{
+      body {{ background: #101820; color: #e6edf3; }}
+      header, article {{ border-color: #334155; }}
+      article {{ background: #141f2b; }}
+      .summary {{ color: #a9b6c6; }}
+    }}
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="brand">HTMlore shared note</div>
+      <h1>{title}</h1>
+      <p class="summary">{summary}</p>
+    </header>
+    <article>{body}</article>
+  </main>
+</body>
+</html>"""
+
+
+def escape_html(value: object) -> str:
+    return (
+        str(value or "")
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+    )

@@ -1716,6 +1716,31 @@ a.icon-action {
   color: var(--text);
 }
 
+.metadata-actions .danger-secondary {
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--line));
+  color: var(--danger);
+}
+
+.metadata-actions [hidden] {
+  display: none;
+}
+
+.share-list {
+  display: grid;
+  gap: 10px;
+}
+
+.share-row .management-actions button:last-child {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--line));
+  color: var(--danger);
+}
+
+#reader-share.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+  color: var(--accent-dark);
+}
+
 .metadata-tag-picker {
   min-height: 40px;
   max-height: 154px;

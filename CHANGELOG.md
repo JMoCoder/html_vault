@@ -9,6 +9,16 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+### Added
+
+- Added backend-backed public note sharing with expiring token links, share
+  management APIs, public sanitized share pages, and revoke support.
+- Added share safety checks that block executable HTML, form/embed content,
+  dangerous URL schemes, local/private references, and likely secrets before a
+  public share can be created.
+- Added workspace share UI on reader pages, share-link management in Settings,
+  and removed the internal copy-link reader action.
+
 ## [0.7.1] - 2026-06-04
 
 ### Fixed
