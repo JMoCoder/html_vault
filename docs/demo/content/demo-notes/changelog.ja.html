@@ -15,14 +15,14 @@
 <p class="eyebrow">リリース履歴</p>
 <h1>HTMlore 変更履歴</h1>
 </article>
-<aside class="stat"><span class="badge">0.6.9</span></aside>
+<aside class="stat"><span class="badge">0.7.0</span></aside>
 </section>
 <section class="timeline doc">
 <h1>Changelog</h1>
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
-<h2>[0.6.9] - 2026-06-04</h2>
+<h2>[0.7.0] - 2026-06-04</h2>
 <h3>Changed</h3>
-<ul><li>旧プロジェクト名から HTMlore へアップグレードするデプロイ向けに移行ガイドを追加しました。</li><li>HTMlore への名称変更後に残っていたサンプル内容と静的アセット内の旧プロジェクト名参照を整理しました。</li><li>公開ホームページ、Demo README ノート、アプリのアクセシビリティラベル、logo 説明を、HTMlore の現在のライブラリ/知識表現に更新しました。</li><li>従来の <code>html-vault</code> console script を互換 wrapper 経由にし、help 出力では旧コマンド名を保ちながら <code>html_lore</code> 実装を使うようにしました。</li><li>既定 Docker デプロイで使うローカルログイン/session とセルフホスト用マルチユーザーデータ設定を <code>.env.example</code> に追加しました。</li><li>バックエンド API Docker イメージにヘルスチェックを追加しました。</li><li>pytest、Playwright Demo チェック、Docker Compose 検証を実行する GitHub Actions CI を追加しました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.9</code> に更新しました。</li></ul>
+<ul><li>HTMlore への名称変更、リポジトリ移行、主要実装の <code>html_lore</code> 名前空間、<code>html-lore</code> CLI、<code>HTML_LORE_*</code> 設定名を <code>0.7.0</code> 安定版として昇格しました。</li><li>旧プロジェクト名から HTMlore へアップグレードするデプロイ向けに移行ガイドを追加しました。</li><li>HTMlore への名称変更後に残っていたサンプル内容と静的アセット内の旧プロジェクト名参照を整理しました。</li><li>公開ホームページ、Demo README ノート、アプリのアクセシビリティラベル、logo 説明を、HTMlore の現在のライブラリ/知識表現に更新しました。</li><li>公開ホームページとワークスペースの wordmark を調整し、両方で <code>HTM</code> + アクセント付き <code>lore</code> の同じスタイルを使うようにしました。</li><li>従来の <code>html-vault</code> console script を互換 wrapper 経由にし、help 出力では旧コマンド名を保ちながら <code>html_lore</code> 実装を使うようにしました。</li><li>既定 Docker デプロイで使うローカルログイン/session とセルフホスト用マルチユーザーデータ設定を <code>.env.example</code> に追加しました。</li><li>バックエンド API Docker イメージにヘルスチェックを追加しました。</li><li>pytest、Playwright Demo チェック、Docker Compose 検証を実行する GitHub Actions CI を追加しました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.7.0</code> に更新しました。</li></ul>
 <h2>[0.6.8] - 2026-06-04</h2>
 <h3>Changed</h3>
 <ul><li>主要な Python 実装パッケージを <code>html_lore</code> に移動しました。</li><li>パッケージ entry point、テスト、API サーバー起動パス、Docker パッケージングを、新しい <code>html_lore</code> 名前空間を既定で使うよう更新しました。</li><li>既存 import と旧 <code>uvicorn html_vault.server.app:app</code> 起動パス向けに、従来の <code>html_vault</code> パッケージを薄い互換 shim として残しました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.8</code> に更新しました。</li></ul>

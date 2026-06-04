@@ -35,7 +35,7 @@
     {
       "id": "demo-notes/changelog.en.html",
       "title": "HTMlore Changelog",
-      "summary": "The complete English CHANGELOG rendered as HTML with a release-track layout for 0.6.9 and earlier development milestones.",
+      "summary": "The complete English CHANGELOG rendered as HTML with a release-track layout for 0.7.0 and earlier development milestones.",
       "path": "content/demo-notes/changelog.en.html",
       "source_type": "html",
       "source_url": null,

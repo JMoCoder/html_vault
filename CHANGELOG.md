@@ -9,16 +9,21 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
-## [0.6.9] - 2026-06-04
+## [0.7.0] - 2026-06-04
 
 ### Changed
 
+- Promoted the HTMlore rename, repository migration, primary `html_lore`
+  package namespace, `html-lore` CLI, and `HTML_LORE_*` configuration names to
+  the `0.7.0` stable release.
 - Added a migration guide for deployments upgrading from the former project
   name to HTMlore.
 - Cleaned up remaining sample and static asset references from the former
   project name after the HTMlore rename.
 - Updated public homepage, demo README notes, app accessibility labels, and
   logo descriptions to use HTMlore's current library/lore wording.
+- Refined the public homepage and workspace wordmark so both use the same
+  `HTM` + accented `lore` styling.
 - Routed the legacy `html-vault` console script through the compatibility
   wrapper so its help output keeps the legacy command name while using the
   `html_lore` implementation.
@@ -27,7 +32,7 @@ versioning after the initial public release.
 - Added a Docker image health check for the backend API.
 - Added GitHub Actions CI for pytest, Playwright demo checks, and Docker
   Compose validation.
-- Updated package, app, PWA, demo, and homepage cache versions to `0.6.9`.
+- Updated package, app, PWA, demo, and homepage cache versions to `0.7.0`.
 
 ## [0.6.8] - 2026-06-04
 

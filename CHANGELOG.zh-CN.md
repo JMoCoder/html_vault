@@ -4,14 +4,17 @@
 
 ## [Unreleased]
 
-## [0.6.9] - 2026-06-04
+## [0.7.0] - 2026-06-04
 
 ### 变更
 
+- 将 HTMlore 更名、仓库迁移、主实现 `html_lore` 命名空间、`html-lore`
+  CLI 和 `HTML_LORE_*` 配置名提升为 `0.7.0` 稳定发布。
 - 新增更名迁移指南，用于从旧项目名称升级到 HTMlore。
 - 在 HTMlore 更名后，清理示例内容和静态资源中残留的旧项目名称引用。
 - 更新官网、Demo README 笔记、应用无障碍标签和 logo 描述，统一使用
   HTMlore 当前的资料库/知识表达。
+- 优化官网与工作台 wordmark，使两边统一使用 `HTM` + 着色 `lore` 的样式。
 - 将旧 `html-vault` 控制台命令接入兼容 wrapper，使其 help 输出保留旧命令名，
   同时继续使用 `html_lore` 实现。
 - 扩展 `.env.example`，补齐默认 Docker 部署使用的本地登录/session 和
@@ -19,7 +22,7 @@
 - 为后端 API Docker 镜像新增健康检查。
 - 新增 GitHub Actions CI，覆盖 pytest、Playwright Demo 检查和 Docker
   Compose 配置验证。
-- 包版本、应用版本、PWA、Demo 与官网缓存版本更新为 `0.6.9`。
+- 包版本、应用版本、PWA、Demo 与官网缓存版本更新为 `0.7.0`。
 
 ## [0.6.8] - 2026-06-04
 

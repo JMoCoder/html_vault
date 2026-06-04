@@ -4,18 +4,23 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ## [Unreleased]
 
-## [0.6.9] - 2026-06-04
+## [0.7.0] - 2026-06-04
 
 ### Changed
 
+- HTMlore への名称変更、リポジトリ移行、主要実装の `html_lore`
+  名前空間、`html-lore` CLI、`HTML_LORE_*` 設定名を `0.7.0`
+  安定版として昇格しました。
 - 旧プロジェクト名から HTMlore へアップグレードするデプロイ向けに移行ガイドを追加しました。
 - HTMlore への名称変更後に残っていたサンプル内容と静的アセット内の旧プロジェクト名参照を整理しました。
 - 公開ホームページ、Demo README ノート、アプリのアクセシビリティラベル、logo 説明を、HTMlore の現在のライブラリ/知識表現に更新しました。
+- 公開ホームページとワークスペースの wordmark を調整し、両方で `HTM` +
+  アクセント付き `lore` の同じスタイルを使うようにしました。
 - 従来の `html-vault` console script を互換 wrapper 経由にし、help 出力では旧コマンド名を保ちながら `html_lore` 実装を使うようにしました。
 - 既定 Docker デプロイで使うローカルログイン/session とセルフホスト用マルチユーザーデータ設定を `.env.example` に追加しました。
 - バックエンド API Docker イメージにヘルスチェックを追加しました。
 - pytest、Playwright Demo チェック、Docker Compose 検証を実行する GitHub Actions CI を追加しました。
-- パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを `0.6.9` に更新しました。
+- パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを `0.7.0` に更新しました。
 
 ## [0.6.8] - 2026-06-04
 
