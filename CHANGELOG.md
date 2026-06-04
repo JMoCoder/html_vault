@@ -9,6 +9,22 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.7.6] - 2026-06-04
+
+### Security
+
+- Minimized the public share JSON response so share readers no longer receive
+  internal item IDs, collection/tag metadata, share management IDs, access
+  counters, or copyable management URL fields.
+- Prevented revoked or expired shares from being reactivated or extended through
+  the share update API.
+- Hardened shared HTML sanitization so resource `src` attributes cannot point
+  back to private `/api/` or `/content/` paths, nor to external tracking
+  resources; only vetted inline SVG data images remain allowed.
+- Added share security tests for private API isolation, public response
+  minimization, inactive-share update rejection, and resource-source stripping.
+- Updated package, app, PWA, and demo cache versions to `0.7.6`.
+
 ## [0.7.5] - 2026-06-04
 
 ### Fixed

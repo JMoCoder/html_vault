@@ -122,6 +122,14 @@ class ShareService:
         record = find_share(data, share_id)
         if not record:
             raise ShareError("Share not found.")
+        is_revoking = values.get("revoked") is True
+        if "revoked" in values:
+            if not isinstance(values["revoked"], bool):
+                raise ShareError("revoked must be a boolean.")
+            if values["revoked"] is False:
+                raise ShareError("Revoked shares cannot be reactivated.")
+        if not is_share_active(record) and not is_revoking:
+            raise ShareError("Inactive shares cannot be updated.")
         if "duration" in values:
             duration = str(values.get("duration") or "")
             if duration not in SHARE_DURATIONS:
@@ -129,8 +137,6 @@ class ShareService:
             record["duration"] = duration
             record["expires_at"] = expires_at_for(duration, utc_now())
         if "revoked" in values:
-            if not isinstance(values["revoked"], bool):
-                raise ShareError("revoked must be a boolean.")
             record["revoked"] = values["revoked"]
         record["updated_at"] = utc_now()
         self._write_store(data)
@@ -165,13 +171,10 @@ class ShareService:
         record["last_accessed_at"] = utc_now()
         self._update_record(record)
         return {
-            "share": public_share(record),
+            "share": public_share_read(record),
             "item": {
-                "id": item.get("id"),
                 "title": item.get("title") or "Untitled",
                 "summary": item.get("summary") or "",
-                "collection": item.get("collection") or "",
-                "tags": item.get("tags") or [],
                 "updated": item.get("updated") or "",
             },
             "html": rendered["body_html"],
@@ -246,6 +249,13 @@ def public_share(record: dict[str, Any]) -> dict[str, Any]:
         "access_count": int(record.get("access_count") or 0),
         "last_accessed_at": record.get("last_accessed_at") or "",
         "safety": record.get("safety") or {"shareable": True, "reasons": []},
+    }
+
+
+def public_share_read(record: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "active": is_share_active(record),
+        "expires_at": record.get("expires_at") or "",
     }
 
 
@@ -460,6 +470,10 @@ def is_safe_css_data_image(value: str) -> bool:
     return not re.search(r"<\s*script\b|on[a-z]+\s*=|javascript\s*:|data\s*:\s*text/html", lowered_decoded)
 
 
+def is_safe_image_src(value: str) -> bool:
+    return is_safe_css_data_image(value)
+
+
 def safe_toggle_target(value: str) -> str:
     match = SAFE_TOGGLE_HANDLER.fullmatch(value.strip())
     return match.group(1) if match else ""
@@ -541,6 +555,10 @@ class ShareSanitizer(HTMLParser):
             if name == "a" and attr == "href":
                 if is_safe_fragment_href(value):
                     clean_attrs.append(f'href="{html.escape(value.strip(), quote=True)}"')
+                continue
+            if attr == "src":
+                if name == "img" and is_safe_image_src(value):
+                    clean_attrs.append(f'src="{html.escape(value, quote=True)}"')
                 continue
             if attr in {"href", "src", "action", "formaction"}:
                 if unsafe_url_reason(value):

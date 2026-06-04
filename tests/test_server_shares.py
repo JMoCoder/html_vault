@@ -1,4 +1,5 @@
 import html
+import json
 import shutil
 import urllib.error
 import urllib.request
@@ -57,6 +58,11 @@ def test_share_link_allows_public_sanitized_note_without_login(tmp_path: Path) -
 
         assert "Docker Network Quick Notes" in public_json
         assert "Docker Network Quick Notes" in public_page
+        assert "imported/docker-network.html" not in public_json
+        assert "\"id\"" not in public_json
+        assert "\"collection\"" not in public_json
+        assert "\"tags\"" not in public_json
+        assert "\"url_path\"" not in public_json
         assert "HTMlore shared note" in public_page
         assert public_page.count("<html") == 1
         assert public_page.count("<head") == 1
@@ -66,6 +72,44 @@ def test_share_link_allows_public_sanitized_note_without_login(tmp_path: Path) -
 
         shares = server.request("GET", "/api/shares")
         assert shares["shares"][0]["url_path"] == created["url_path"]
+    finally:
+        server.close()
+
+
+def test_public_share_token_does_not_grant_private_api_access(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Share Test",
+        auth_username="admin",
+        auth_password="correct-password",
+        session_secret="test-session-secret",
+    )
+    try:
+        server.json("POST", "/api/auth/login", {"username": "admin", "password": "correct-password"})
+        created = server.json("POST", "/api/shares", {"item_id": "imported/docker-network.html", "duration": "1d"})
+        server.cookie_jar.clear()
+
+        public_json = urllib.request.urlopen(
+            f"http://127.0.0.1:{server.port}/api/public/shares/{created['token']}",
+            timeout=5,
+        ).read().decode("utf-8")
+        assert "Docker Network Quick Notes" in public_json
+
+        for private_path in [
+            "/api/manifest",
+            "/api/shares",
+            "/api/items/imported/docker-network.html/raw",
+            f"/api/items/imported/docker-network.html/raw?access_token={created['token']}",
+        ]:
+            try:
+                urllib.request.urlopen(f"http://127.0.0.1:{server.port}{private_path}", timeout=5)
+            except urllib.error.HTTPError as exc:
+                assert exc.code == 401
+            else:
+                raise AssertionError(f"Expected private API path to require login: {private_path}")
     finally:
         server.close()
 
@@ -80,6 +124,41 @@ def test_share_list_keeps_copyable_url_after_update(tmp_path: Path) -> None:
 
         assert updated["url_path"] == created["url_path"]
         assert shares["shares"][0]["url_path"] == created["url_path"]
+    finally:
+        server.close()
+
+
+def test_revoked_share_cannot_be_reactivated_or_updated(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
+    try:
+        created = server.json("POST", "/api/shares", {"item_id": "imported/docker-network.html", "duration": "1d"})
+        server.request("DELETE", f"/api/shares/{created['share']['id']}")
+
+        status, error = server.json_error("PATCH", f"/api/shares/{created['share']['id']}", {"revoked": False})
+        assert status == 400
+        assert "reactivated" in error["detail"]
+
+        status, error = server.json_error("PATCH", f"/api/shares/{created['share']['id']}", {"duration": "7d"})
+        assert status == 400
+        assert "Inactive" in error["detail"]
+    finally:
+        server.close()
+
+
+def test_expired_share_cannot_be_updated(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
+    try:
+        created = server.json("POST", "/api/shares", {"item_id": "imported/docker-network.html", "duration": "1h"})
+        store = meta_dir / "config" / "shares.json"
+        data = json.loads(store.read_text(encoding="utf-8"))
+        data["shares"][0]["expires_at"] = "2000-01-01T00:00:00+00:00"
+        store.write_text(json.dumps(data), encoding="utf-8")
+
+        status, error = server.json_error("PATCH", f"/api/shares/{created['share']['id']}", {"duration": "7d"})
+        assert status == 400
+        assert "Inactive" in error["detail"]
     finally:
         server.close()
 
@@ -228,6 +307,38 @@ def test_shared_page_disables_external_links(tmp_path: Path) -> None:
         assert "Linked" in public_page
         assert "external" in public_page
         assert "https://example.com" not in public_page
+    finally:
+        server.close()
+
+
+def test_shared_page_drops_internal_and_external_resource_sources(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    linked = content_dir / "imported" / "resource-linked.html"
+    linked.parent.mkdir(parents=True, exist_ok=True)
+    linked.write_text(
+        """<html><body>
+<h1>Resources</h1>
+<img src="/api/manifest" alt="api">
+<img src="content/imported/docker-network.html" alt="content">
+<img src="https://example.com/pixel.png" alt="external">
+<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='4' cy='4' r='4'/%3E%3C/svg%3E" alt="safe">
+</body></html>""",
+        encoding="utf-8",
+    )
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
+    try:
+        created = server.json("POST", "/api/shares", {"item_id": "imported/resource-linked.html", "duration": "1d"})
+        public_page = urllib.request.urlopen(
+            f"http://127.0.0.1:{server.port}{created['url_path']}",
+            timeout=5,
+        ).read().decode("utf-8")
+        srcdoc = html.unescape(public_page)
+
+        assert "Resources" in srcdoc
+        assert "/api/manifest" not in srcdoc
+        assert "content/imported/docker-network.html" not in srcdoc
+        assert "https://example.com/pixel.png" not in srcdoc
+        assert "data:image/svg+xml" in srcdoc
     finally:
         server.close()
 
