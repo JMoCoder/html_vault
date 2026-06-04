@@ -2,6 +2,12 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [Unreleased]
+
+### 变更
+
+- 在 HTMlore 更名后，清理示例内容和静态资源中残留的旧项目名称引用。
+
 ## [0.6.8] - 2026-06-04
 
 ### 变更

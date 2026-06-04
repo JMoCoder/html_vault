@@ -7,6 +7,13 @@ All notable changes to HTMlore will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [Unreleased]
+
+### Changed
+
+- Cleaned up remaining sample and static asset references from the former
+  project name after the HTMlore rename.
+
 ## [0.6.8] - 2026-06-04
 
 ### Changed
