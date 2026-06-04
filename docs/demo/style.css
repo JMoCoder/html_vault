@@ -345,6 +345,19 @@ textarea {
   line-height: 1.1;
 }
 
+.workspace-brand-name {
+  font-family: "Fraunces", "Noto Serif SC", "Noto Serif JP", Georgia, "Times New Roman", serif;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.workspace-brand-name em {
+  color: var(--accent);
+  font-style: italic;
+  font-weight: 600;
+}
+
 .brand p,
 .eyebrow {
   color: var(--muted);

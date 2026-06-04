@@ -8,7 +8,10 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/html-lore-logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/html-lore-logo.svg">
-  <link rel="stylesheet" href="style.css?v=0.6.9">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Noto+Serif+SC:wght@600;900&family=Noto+Serif+JP:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=0.6.9-wordmark2">
 </head>
 <body>
   <section class="login-screen" id="login-screen" hidden>
@@ -43,7 +46,7 @@
         <button class="brand" type="button" id="brand-home" aria-label="Home" title="Home" data-i18n-attr="aria-label:home,title:home">
           <img class="brand-mark" src="assets/html-lore-logo.svg" alt="" aria-hidden="true">
           <div class="brand-copy">
-            <h1 id="site-title">HTMlore</h1>
+            <h1 id="site-title" class="workspace-brand-name">HTM<em>lore</em></h1>
           </div>
         </button>
         <button class="sidebar-collapse-toggle" type="button" id="sidebar-collapse" aria-label="Collapse sidebar" title="Collapse sidebar" data-i18n-attr="aria-label:collapseSidebar,title:collapseSidebar">
@@ -652,6 +655,6 @@
   </a>
 
   <script src="config.js"></script>
-  <script src="app.js?v=0.6.9" type="module"></script>
+  <script src="app.js?v=0.6.9-wordmark2" type="module"></script>
 </body>
 </html>

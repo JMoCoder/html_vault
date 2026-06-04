@@ -1178,7 +1178,7 @@ function renderApp() {
   applyViewMode();
   applyFavoriteFilter();
   applyTranslations();
-  elements.siteTitle.textContent = "HTMlore";
+  renderWorkspaceBrand();
   renderFeedback();
   renderLibraryNav();
   renderCollectionNav();
@@ -1192,6 +1192,14 @@ function renderApp() {
   renderDataConfig();
   renderManagementLists();
   renderVersionStatus();
+}
+
+function renderWorkspaceBrand() {
+  if (!elements.siteTitle) return;
+  elements.siteTitle.replaceChildren("HTM");
+  const accent = document.createElement("em");
+  accent.textContent = "lore";
+  elements.siteTitle.append(accent);
 }
 
 async function checkVersionStatus() {
@@ -3133,7 +3141,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.6.9-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.6.9-wordmark2-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });
