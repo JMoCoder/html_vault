@@ -9,6 +9,8 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-06-04
+
 ### Added
 
 - Added backend-backed public note sharing with expiring token links, share
@@ -21,6 +23,9 @@ versioning after the initial public release.
   font/resource links from the public share page.
 - Added workspace share UI on reader pages, share-link management in Settings,
   and removed the internal copy-link reader action.
+- Moved the workspace Agent connection status into the sidebar profile popover
+  and made the large profile avatar uploadable from that popover.
+- Updated package, app, PWA, and demo cache versions to `0.7.2`.
 
 ## [0.7.1] - 2026-06-04
 
