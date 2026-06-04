@@ -4,9 +4,9 @@ import shutil
 
 import pytest
 
-from html_vault import __version__
-from html_vault.server.config import ServerSettings
-from html_vault.server.items import ItemContentError, ItemMetadataError, ItemService, normalize_query
+from html_lore import __version__
+from html_lore.server.config import ServerSettings
+from html_lore.server.items import ItemContentError, ItemMetadataError, ItemService, normalize_query
 from tests.api_server import run_api_server
 
 

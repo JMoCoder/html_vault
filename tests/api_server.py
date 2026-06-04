@@ -42,26 +42,26 @@ class ApiServer:
         env = os.environ.copy()
         env.update(
             {
-                "HTML_VAULT_CONTENT": str(content_dir),
-                "HTML_VAULT_META": str(meta_dir),
-                "HTML_VAULT_PUBLIC": str(public_dir),
-                "HTML_VAULT_TITLE": site_title,
-                "HTML_VAULT_API_TOKEN": api_token,
-                "HTML_VAULT_AUTH_USERNAME": auth_username,
-                "HTML_VAULT_AUTH_PASSWORD": auth_password,
-                "HTML_VAULT_SESSION_SECRET": session_secret,
+                "HTML_LORE_CONTENT": str(content_dir),
+                "HTML_LORE_META": str(meta_dir),
+                "HTML_LORE_PUBLIC": str(public_dir),
+                "HTML_LORE_TITLE": site_title,
+                "HTML_LORE_API_TOKEN": api_token,
+                "HTML_LORE_AUTH_USERNAME": auth_username,
+                "HTML_LORE_AUTH_PASSWORD": auth_password,
+                "HTML_LORE_SESSION_SECRET": session_secret,
             },
         )
         if users_file:
-            env["HTML_VAULT_USERS_FILE"] = str(users_file)
+            env["HTML_LORE_USERS_FILE"] = str(users_file)
         if user_data_dir:
-            env["HTML_VAULT_USER_DATA_DIR"] = str(user_data_dir)
+            env["HTML_LORE_USER_DATA_DIR"] = str(user_data_dir)
         self.process = subprocess.Popen(
             [
                 sys.executable,
                 "-m",
                 "uvicorn",
-                "html_vault.server.app:app",
+                "html_lore.server.app:app",
                 "--host",
                 "127.0.0.1",
                 "--port",
@@ -142,7 +142,7 @@ class ApiServer:
             return response.read().decode("utf-8")
 
     def multipart(self, path: str, *, fields: dict[str, str], file_field: str, filename: str, content: bytes, content_type: str) -> Any:
-        boundary = "----html-vault-test-boundary"
+        boundary = "----html-lore-test-boundary"
         chunks: list[bytes] = []
         for name, value in fields.items():
             chunks.extend(

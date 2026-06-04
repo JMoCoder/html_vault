@@ -4,12 +4,12 @@ import urllib.request
 import json
 from pathlib import Path
 
-from html_vault.builder import build_site
+from html_lore.builder import build_site
 
 from tests.api_server import run_api_server
-from html_vault.server.config import ServerSettings
-from html_vault.server.config import load_settings
-from html_vault.server.users import UserStore
+from html_lore.server.config import ServerSettings
+from html_lore.server.config import load_settings
+from html_lore.server.users import UserStore
 
 
 ROOT = Path(__file__).resolve().parents[1]

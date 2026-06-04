@@ -4,10 +4,10 @@ HTMlore 0.1 is split into a static build layer and a static browser layer.
 
 ## Build Layer
 
-`html_vault.builder.build_site` copies the static app, copies HTML content, and
+`html_lore.builder.build_site` copies the static app, copies HTML content, and
 writes `manifest.json`.
 
-`html_vault.manifest.build_manifest` scans `content/**/*.html`, extracts basic
+`html_lore.manifest.build_manifest` scans `content/**/*.html`, extracts basic
 HTML metadata, applies sidecar YAML overrides from `meta/items/**/*.yml`, and
 emits Manifest v2:
 

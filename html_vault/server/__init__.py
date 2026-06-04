@@ -1,1 +1,1 @@
-"""Optional HTMlore backend server."""
+"""Legacy server namespace for HTMlore."""

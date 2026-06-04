@@ -1,7 +1,11 @@
-"""Legacy backend entry point for HTMlore."""
+from __future__ import annotations
 
 import uvicorn
 
 
-if __name__ == "__main__":
+def main() -> None:
     uvicorn.run("html_lore.server.app:app", host="127.0.0.1", port=8787, reload=False)
+
+
+if __name__ == "__main__":
+    main()

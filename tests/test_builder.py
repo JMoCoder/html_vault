@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from html_vault.builder import build_site
+from html_lore.builder import build_site
 
 
 def test_build_site_writes_manifest_and_static_files(tmp_path: Path) -> None:

@@ -7,6 +7,22 @@ All notable changes to HTMlore will be documented in this file.
 The format is based on Keep a Changelog, and this project uses semantic
 versioning after the initial public release.
 
+## [0.6.8] - 2026-06-04
+
+### Changed
+
+- Moved the primary Python implementation package to `html_lore`.
+- Updated package entry points, tests, API server launch paths, and Docker
+  packaging to use the new `html_lore` namespace by default.
+- Kept the legacy `html_vault` package as a thin compatibility shim for
+  existing imports and old `uvicorn html_vault.server.app:app` launch paths.
+- Updated package, app, PWA, demo, and homepage cache versions to `0.6.8`.
+
+### Compatibility
+
+- Existing `html_vault` imports and the legacy `html-vault` CLI remain
+  supported during the 0.x compatibility window.
+
 ## [0.6.7] - 2026-06-04
 
 ### Added

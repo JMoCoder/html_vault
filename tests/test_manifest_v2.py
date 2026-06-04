@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from html_vault.manifest import build_manifest
+from html_lore.manifest import build_manifest
 
 
 def test_manifest_v2_merges_sidecar_metadata() -> None:

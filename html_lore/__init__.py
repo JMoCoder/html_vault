@@ -1,9 +1,9 @@
 """Public HTMlore package namespace.
 
-The implementation still lives in ``html_vault`` during the 0.x compatibility
-window so existing imports, Docker entrypoints, and scripts keep working.
+The implementation lives in the ``html_lore`` package. Legacy ``html_vault``
+imports are provided as thin compatibility shims during the 0.x window.
 """
 
-from html_vault import __version__
+__version__ = "0.6.8"
 
 __all__ = ["__version__"]

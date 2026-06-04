@@ -2,6 +2,19 @@
 
 语言：[English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.6.8] - 2026-06-04
+
+### 变更
+
+- 将主要 Python 实现包迁移到 `html_lore`。
+- 更新打包入口、测试、API 服务启动路径和 Docker 打包，默认使用新的 `html_lore` 命名空间。
+- 保留旧 `html_vault` 包作为薄兼容 shim，用于现有 import 和旧的 `uvicorn html_vault.server.app:app` 启动路径。
+- 包版本、应用版本、PWA、Demo 与官网缓存版本更新为 `0.6.8`。
+
+### 兼容
+
+- 0.x 兼容期内继续支持现有 `html_vault` import 和旧 `html-vault` CLI。
+
 ## [0.6.7] - 2026-06-04
 
 ### 新增

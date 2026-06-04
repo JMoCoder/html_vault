@@ -4,8 +4,8 @@ from tempfile import TemporaryDirectory
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from html_vault.builder import build_site
-from html_vault.manifest import build_manifest
+from html_lore.builder import build_site
+from html_lore.manifest import build_manifest
 
 
 def main() -> None:

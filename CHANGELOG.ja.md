@@ -2,6 +2,19 @@
 
 Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](CHANGELOG.ja.md)
 
+## [0.6.8] - 2026-06-04
+
+### Changed
+
+- 主要な Python 実装パッケージを `html_lore` に移動しました。
+- パッケージ entry point、テスト、API サーバー起動パス、Docker パッケージングを、新しい `html_lore` 名前空間を既定で使うよう更新しました。
+- 既存 import と旧 `uvicorn html_vault.server.app:app` 起動パス向けに、従来の `html_vault` パッケージを薄い互換 shim として残しました。
+- パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを `0.6.8` に更新しました。
+
+### Compatibility
+
+- 0.x 互換期間中は、既存の `html_vault` import と旧 `html-vault` CLI を引き続きサポートします。
+
 ## [0.6.7] - 2026-06-04
 
 ### Added

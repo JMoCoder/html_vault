@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from html_vault.server.config import ServerSettings
-from html_vault.server.jobs import JobError, JobService
+from html_lore.server.config import ServerSettings
+from html_lore.server.jobs import JobError, JobService
 from tests.api_server import run_api_server
 
 

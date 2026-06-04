@@ -15,16 +15,18 @@
 <p class="eyebrow">Release history</p>
 <h1>HTMlore Changelog</h1>
 </article>
-<aside class="stat"><span class="badge">0.6.7</span></aside>
+<aside class="stat"><span class="badge">0.6.8</span></aside>
 </section>
 <section class="timeline doc">
 <h1>Changelog</h1>
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
 <p>All notable changes to HTMlore will be documented in this file.</p>
 <p>The format is based on Keep a Changelog, and this project uses semantic versioning after the initial public release.</p>
-<h2>[0.6.7] - 2026-06-03</h2>
+<h2>[0.6.8] - 2026-06-04</h2>
 <h3>Changed</h3>
-<ul><li>Refined the sidebar profile area: the footer avatar now opens a compact user status popover with avatar, username, ID, subscription status, and AI credit balance instead of navigating away.</li><li>Moved profile management controls into Settings &gt; User profile, made the avatar itself the upload target, and aligned sign out on the same profile row.</li><li>Smoothed collapsed sidebar behavior across the main workspace, reader, and settings overlays.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.7</code>.</li></ul>
+<ul><li>Moved the primary Python implementation package to <code>html_lore</code>.</li><li>Updated package entry points, tests, API server launch paths, and Docker packaging to use the new <code>html_lore</code> namespace by default.</li><li>Kept the legacy <code>html_vault</code> package as a thin compatibility shim for existing imports and old <code>uvicorn html_vault.server.app:app</code> launch paths.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.8</code>.</li></ul>
+<h3>Compatibility</h3>
+<ul><li>Existing <code>html_vault</code> imports and the legacy <code>html-vault</code> CLI remain supported during the 0.x compatibility window.</li></ul>
 <h2>[0.6.5] - 2026-06-03</h2>
 <h3>Added</h3>
 <ul><li>Added file-backed self-hosted multi-user login support through <code>data/users.json</code>.</li><li>Added per-user persistent notebook partitions under <code>data/users/&lt;data_id&gt;/</code> for each user's imported/generated HTML, metadata, runtime config, jobs, and generated public output.</li><li>Added <code>html-lore user-add</code> for creating or replacing self-hosted users without storing plaintext passwords.</li><li>Added backend integration coverage for env bootstrap, case-insensitive multi-user login, and cross-user upload isolation.</li></ul>

@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from html_vault.server.config import ServerSettings
-from html_vault.server.uploads import UploadError, UploadService
+from html_lore.server.config import ServerSettings
+from html_lore.server.uploads import UploadError, UploadService
 from tests.api_server import run_api_server
 
 

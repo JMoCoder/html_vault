@@ -15,14 +15,16 @@
 <p class="eyebrow">リリース履歴</p>
 <h1>HTMlore 変更履歴</h1>
 </article>
-<aside class="stat"><span class="badge">0.6.7</span></aside>
+<aside class="stat"><span class="badge">0.6.8</span></aside>
 </section>
 <section class="timeline doc">
 <h1>Changelog</h1>
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
-<h2>[0.6.7] - 2026-06-03</h2>
+<h2>[0.6.8] - 2026-06-04</h2>
 <h3>Changed</h3>
-<ul><li>サイドバー下部のユーザー領域を調整し、アバタークリックでアバター、ユーザー名、ID、サブスクリプション状態、AI クレジット残高を表示するコンパクトな状態ポップオーバーを開くようにしました。</li><li>プロフィール管理は Settings &gt; User profile に集約し、アバター自体をアップロード入口にして、サインアウトボタンを同じプロフィール行の右側に配置しました。</li><li>メインワークスペース、リーダー、設定ページでサイドバーの折りたたみ/展開トランジションを滑らかにしました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.7</code> に更新しました。</li></ul>
+<ul><li>主要な Python 実装パッケージを <code>html_lore</code> に移動しました。</li><li>パッケージ entry point、テスト、API サーバー起動パス、Docker パッケージングを、新しい <code>html_lore</code> 名前空間を既定で使うよう更新しました。</li><li>既存 import と旧 <code>uvicorn html_vault.server.app:app</code> 起動パス向けに、従来の <code>html_vault</code> パッケージを薄い互換 shim として残しました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.8</code> に更新しました。</li></ul>
+<h3>Compatibility</h3>
+<ul><li>0.x 互換期間中は、既存の <code>html_vault</code> import と旧 <code>html-vault</code> CLI を引き続きサポートします。</li></ul>
 <h2>[0.6.5] - 2026-06-03</h2>
 <h3>Added</h3>
 <ul><li><code>data/users.json</code> によるセルフホスト向けマルチユーザーログインを追加しました。</li><li>ユーザーごとの永続化ノートブック領域 <code>data/users/&lt;data_id&gt;/</code> を追加し、各ユーザーのインポート/生成 HTML、メタデータ、実行時設定、ジョブ記録、生成済み public 出力を分離して保存します。</li><li>平文パスワードを保存せずにセルフホストユーザーを作成または置換できる <code>html-lore user-add</code> コマンドを追加しました。</li><li>env による初期管理者作成、大文字小文字を区別しないマルチユーザーログイン、ユーザー間アップロード分離を検証するバックエンド統合テストを追加しました。</li></ul>
