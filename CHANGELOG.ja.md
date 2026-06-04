@@ -12,6 +12,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 - 従来の `html-vault` console script を互換 wrapper 経由にし、help 出力では旧コマンド名を保ちながら `html_lore` 実装を使うようにしました。
 - 既定 Docker デプロイで使うローカルログイン/session とセルフホスト用マルチユーザーデータ設定を `.env.example` に追加しました。
 - バックエンド API Docker イメージにヘルスチェックを追加しました。
+- pytest、Playwright Demo チェック、Docker Compose 検証を実行する GitHub Actions CI を追加しました。
 
 ## [0.6.8] - 2026-06-04
 

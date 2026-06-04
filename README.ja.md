@@ -286,8 +286,12 @@ documents/         ローカル計画ドキュメント、Git では無視
 pip install -e ".[dev,agent]"
 pytest
 python tests/run_smoke.py
+npm ci
+npm run test:e2e
 html-lore build --content examples/content --meta examples/meta --out public
 ```
+
+`npm run test:e2e` はローカルにインストール済みの Chrome channel を使います。CI では `npm run test:e2e:ci` と Playwright 管理の Chromium を使います。GitHub Actions は `develop`、`main`、Pull Request で pytest、Playwright Demo チェック、`docker compose config` を実行します。
 
 ## License
 

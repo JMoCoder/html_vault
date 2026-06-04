@@ -337,8 +337,15 @@ documents/         Local planning documents, ignored by Git
 pip install -e ".[dev,agent]"
 pytest
 python tests/run_smoke.py
+npm ci
+npm run test:e2e
 html-lore build --content examples/content --meta examples/meta --out public
 ```
+
+`npm run test:e2e` uses the locally installed Chrome channel. CI uses
+`npm run test:e2e:ci` with Playwright-managed Chromium. GitHub Actions runs
+pytest, Playwright demo checks, and `docker compose config` on `develop`,
+`main`, and pull requests.
 
 ## License
 

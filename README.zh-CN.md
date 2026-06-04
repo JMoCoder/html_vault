@@ -286,8 +286,15 @@ documents/         本地规划文档，Git 忽略
 pip install -e ".[dev,agent]"
 pytest
 python tests/run_smoke.py
+npm ci
+npm run test:e2e
 html-lore build --content examples/content --meta examples/meta --out public
 ```
+
+`npm run test:e2e` 使用本机已安装的 Chrome channel。CI 使用
+`npm run test:e2e:ci` 和 Playwright 管理的 Chromium。GitHub Actions 会在
+`develop`、`main` 和 Pull Request 上运行 pytest、Playwright Demo 检查和
+`docker compose config`。
 
 ## 许可证
 

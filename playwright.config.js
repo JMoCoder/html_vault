@@ -1,5 +1,7 @@
 const { defineConfig, devices } = require("@playwright/test");
 
+const browserChannel = process.env.PLAYWRIGHT_BROWSER_CHANNEL;
+
 module.exports = defineConfig({
   testDir: "./tests/e2e",
   timeout: 30_000,
@@ -24,10 +26,10 @@ module.exports = defineConfig({
   },
   projects: [
     {
-      name: "chrome",
+      name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        channel: "chrome",
+        ...(browserChannel ? { channel: browserChannel } : {}),
       },
     },
   ],

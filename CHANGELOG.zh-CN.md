@@ -15,6 +15,8 @@
 - 扩展 `.env.example`，补齐默认 Docker 部署使用的本地登录/session 和
   自托管多用户数据设置。
 - 为后端 API Docker 镜像新增健康检查。
+- 新增 GitHub Actions CI，覆盖 pytest、Playwright Demo 检查和 Docker
+  Compose 配置验证。
 
 ## [0.6.8] - 2026-06-04
 
