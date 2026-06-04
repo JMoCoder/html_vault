@@ -2,7 +2,8 @@
 
 语言：[English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
 
-部署：[自托管 Docker 与安全基线](DEPLOYMENT.zh-CN.md)
+部署：[自托管 Docker 与安全基线](DEPLOYMENT.zh-CN.md) |
+[更名迁移指南](MIGRATION.md)
 
 项目原名 HTML Vault。0.x 兼容期内，已有 `html-vault` 命令、
 `HTML_VAULT_*` 环境变量、`html_vault` Python import 和

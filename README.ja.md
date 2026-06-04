@@ -2,7 +2,8 @@
 
 Languages: [English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
 
-Deployment: [Self-hosted Docker and security baseline](DEPLOYMENT.md)
+Deployment: [Self-hosted Docker and security baseline](DEPLOYMENT.md) |
+[Migration guide](MIGRATION.md)
 
 旧名称は HTML Vault です。0.x 互換期間中は、既存の `html-vault`
 コマンド、`HTML_VAULT_*` 環境変数、`html_vault` Python import、

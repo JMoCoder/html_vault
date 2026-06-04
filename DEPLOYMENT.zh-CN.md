@@ -19,6 +19,8 @@ HTMlore 原名 HTML Vault。当前版本会优先读取 `HTML_LORE_*`，并 fall
 `html-vault` 命令会在 0.x 兼容期内继续可用。公网 Caddy 示例已使用新的
 `HTML_LORE_*` 变量名，刷新 `.env` 时应同步更新。
 
+逐步升级说明见 [MIGRATION.md](MIGRATION.md)。
+
 ## 最低生产安全要求
 
 不要在没有认证边界的情况下，把后端 API 直接暴露到公网。
@@ -48,7 +50,7 @@ HTML_LORE_AUTH_USERNAME="admin"
 HTML_LORE_AUTH_PASSWORD="replace-with-a-strong-login-password"
 HTML_LORE_SESSION_SECRET="replace-with-a-long-random-session-secret"
 HTML_LORE_SESSION_SECURE=true
-HTML_LORE_CORS_ORIGINS="https://vault.example.com"
+HTML_LORE_CORS_ORIGINS="https://lore.example.com"
 ```
 
 默认 Docker compose 会在应用容器内使用 `/data/content`、`/data/meta` 和 `/public`。如果不修改 compose 文件，宿主机路径就是仓库目录下的 `./data/...` 与 `./public`。
@@ -67,7 +69,7 @@ html-lore serve-api --host 127.0.0.1 --port 8787
 
 ```html
 <script>
-  window.HTML_LORE_AGENT_URL = "https://vault.example.com";
+  window.HTML_LORE_AGENT_URL = "https://lore.example.com";
   window.HTML_LORE_AGENT_TOKEN = "replace-with-a-long-random-token";
 </script>
 ```

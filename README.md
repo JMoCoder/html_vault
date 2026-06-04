@@ -2,7 +2,8 @@
 
 Languages: [English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md)
 
-Deployment: [Self-hosted Docker and security baseline](DEPLOYMENT.md)
+Deployment: [Self-hosted Docker and security baseline](DEPLOYMENT.md) |
+[Migration guide](MIGRATION.md)
 
 Formerly named HTML Vault. Existing `html-vault` commands,
 `HTML_VAULT_*` environment variables, `html_vault` Python imports, and

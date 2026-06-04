@@ -25,6 +25,8 @@ variables. The `html-lore` CLI is now preferred, while `html-vault` remains
 available during the 0.x compatibility window. Public Caddy examples use the
 new `HTML_LORE_*` names and should be updated when you refresh `.env`.
 
+For step-by-step upgrade details, see [MIGRATION.md](MIGRATION.md).
+
 ## Minimal Production Security
 
 Do not expose the backend API directly to the public internet without an
@@ -57,7 +59,7 @@ HTML_LORE_AUTH_USERNAME="admin"
 HTML_LORE_AUTH_PASSWORD="replace-with-a-strong-login-password"
 HTML_LORE_SESSION_SECRET="replace-with-a-long-random-session-secret"
 HTML_LORE_SESSION_SECURE=true
-HTML_LORE_CORS_ORIGINS="https://vault.example.com"
+HTML_LORE_CORS_ORIGINS="https://lore.example.com"
 ```
 
 The default Docker compose mounts those paths inside the app container as
@@ -81,7 +83,7 @@ For local testing, the frontend can read:
 
 ```html
 <script>
-  window.HTML_LORE_AGENT_URL = "https://vault.example.com";
+  window.HTML_LORE_AGENT_URL = "https://lore.example.com";
   window.HTML_LORE_AGENT_TOKEN = "replace-with-a-long-random-token";
 </script>
 ```
