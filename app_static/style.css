@@ -1741,6 +1741,10 @@ a.icon-action {
   color: var(--danger);
 }
 
+#share-revoke {
+  margin-right: auto;
+}
+
 .metadata-actions [hidden] {
   display: none;
 }
@@ -1750,7 +1754,7 @@ a.icon-action {
   gap: 10px;
 }
 
-.share-row .management-actions button:last-child {
+.share-row .management-actions button:first-child {
   border-color: color-mix(in srgb, var(--danger) 45%, var(--line));
   color: var(--danger);
 }

@@ -133,7 +133,7 @@ const i18n = {
     shareUpdated: "Share settings updated.",
     shareRevoked: "Share revoked.",
     shareCopied: "Share link copied.",
-    shareLinkOneTime: "For safety, existing share tokens are only shown when created. Revoke and create a new share if you need a fresh copyable link.",
+    shareLinkOneTime: "This older share was created before persistent share links were available. Revoke and create a new share if you need a copyable link.",
     shareBlocked: "This note cannot be shared because it failed the safety checks.",
     shareFailed: "Share operation failed.",
     noShares: "No shared links.",
@@ -416,7 +416,7 @@ const i18n = {
     shareUpdated: "分享设置已更新。",
     shareRevoked: "分享已取消。",
     shareCopied: "分享链接已复制。",
-    shareLinkOneTime: "出于安全考虑，已存在的分享密钥只在创建时显示。若需要新的可复制链接，请取消分享后重新创建。",
+    shareLinkOneTime: "这条旧分享创建于可持续显示分享链接之前。若需要可复制链接，请取消分享后重新创建。",
     shareBlocked: "该笔记未通过安全检查，不能分享。",
     shareFailed: "分享操作失败。",
     noShares: "暂无分享链接。",
@@ -699,7 +699,7 @@ const i18n = {
     shareUpdated: "共有設定を更新しました。",
     shareRevoked: "共有を取り消しました。",
     shareCopied: "共有リンクをコピーしました。",
-    shareLinkOneTime: "安全のため、既存の共有トークンは作成時のみ表示されます。コピー可能な新しいリンクが必要な場合は共有を取り消して再作成してください。",
+    shareLinkOneTime: "この古い共有は永続表示リンクに対応する前に作成されています。コピー可能なリンクが必要な場合は共有を取り消して再作成してください。",
     shareBlocked: "このノートは安全チェックに通らないため共有できません。",
     shareFailed: "共有操作に失敗しました。",
     noShares: "共有リンクはありません。",
@@ -928,7 +928,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.7.3",
+  currentVersion: "0.7.4",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -1923,8 +1923,10 @@ async function submitShareDialog(event) {
         body: JSON.stringify({ duration: elements.shareDuration.value }),
       });
       if (!response.ok) throw await buildShareError(response);
-      share = { ...(await response.json()), url_path: activeShare.url_path };
+      const updated = await response.json();
+      share = { ...updated, url_path: updated.url_path || activeShare.url_path };
       replaceShare(share);
+      elements.shareLink.value = getShareUrl(share);
       elements.shareFeedback.textContent = t("shareUpdated");
     } else {
       const response = await apiFetch("/api/shares", {
@@ -2019,8 +2021,8 @@ function renderShareManagementRow(share) {
       <span>${escapeHtml(share.active ? t("shareActive") : t("shareExpired"))} · ${escapeHtml(formatShareExpiry(share))} · ${escapeHtml(t("shareAccessCount", { count: share.access_count || 0 }))}</span>
     </div>
     <div class="management-actions">
-      <button type="button" data-share-open>${escapeHtml(t("shareAction"))}</button>
       <button type="button" data-share-revoke>${escapeHtml(t("revokeShare"))}</button>
+      <button type="button" data-share-open>${escapeHtml(t("shareAction"))}</button>
     </div>
   `;
   row.querySelector("[data-share-open]").addEventListener("click", () => openShareDialog(share.item_id));
@@ -3372,7 +3374,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.7.3-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.7.4-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });

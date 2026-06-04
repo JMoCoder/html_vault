@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Noto+Serif+SC:wght@600;900&family=Noto+Serif+JP:wght@600;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.7.3">
+  <link rel="stylesheet" href="style.css?v=0.7.4">
 </head>
 <body>
   <section class="login-screen" id="login-screen" hidden>
@@ -677,9 +677,9 @@
         </label>
         <p class="settings-feedback" id="share-feedback"></p>
         <div class="metadata-actions">
+          <button type="button" class="secondary-button danger-secondary" id="share-revoke" data-i18n="revokeShare"></button>
           <button type="submit" id="share-create" data-i18n="createShare"></button>
           <button type="button" class="secondary-button" id="share-copy" data-i18n="copyShareLink"></button>
-          <button type="button" class="secondary-button danger-secondary" id="share-revoke" data-i18n="revokeShare"></button>
           <button type="button" class="secondary-button" id="share-cancel" data-i18n="cancel"></button>
         </div>
       </form>
@@ -687,6 +687,6 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="app.js?v=0.7.3" type="module"></script>
+  <script src="app.js?v=0.7.4" type="module"></script>
 </body>
 </html>

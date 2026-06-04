@@ -1,3 +1,4 @@
+import html
 import shutil
 import urllib.error
 import urllib.request
@@ -41,6 +42,7 @@ def test_share_link_allows_public_sanitized_note_without_login(tmp_path: Path) -
         created = server.json("POST", "/api/shares", {"item_id": "imported/docker-network.html", "duration": "1d"})
 
         assert created["share"]["active"] is True
+        assert created["share"]["url_path"] == created["url_path"]
         assert created["url_path"].startswith("/share/")
         assert created["token"]
 
@@ -59,6 +61,62 @@ def test_share_link_allows_public_sanitized_note_without_login(tmp_path: Path) -
         assert public_page.count("<html") == 1
         assert public_page.count("<head") == 1
         assert public_page.count("<body") == 1
+        assert "<iframe" in public_page
+        assert "srcdoc=" in public_page
+
+        shares = server.request("GET", "/api/shares")
+        assert shares["shares"][0]["url_path"] == created["url_path"]
+    finally:
+        server.close()
+
+
+def test_share_list_keeps_copyable_url_after_update(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
+    try:
+        created = server.json("POST", "/api/shares", {"item_id": "imported/docker-network.html", "duration": "1d"})
+        updated = server.json("PATCH", f"/api/shares/{created['share']['id']}", {"duration": "7d"})
+        shares = server.request("GET", "/api/shares")
+
+        assert updated["url_path"] == created["url_path"]
+        assert shares["shares"][0]["url_path"] == created["url_path"]
+    finally:
+        server.close()
+
+
+def test_shared_page_isolates_source_global_styles(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    styled = content_dir / "imported" / "global-style.html"
+    styled.parent.mkdir(parents=True, exist_ok=True)
+    styled.write_text(
+        """<html>
+<head>
+  <title>Global Style</title>
+  <style>
+    body { display: grid; place-items: center; min-height: 100vh; }
+    svg { width: 900px; height: 900px; }
+  </style>
+</head>
+<body>
+  <h1>Real shared content</h1>
+  <svg viewBox="0 0 100 100"><path d="M50 5 L95 95 H5 Z"></path></svg>
+</body>
+</html>""",
+        encoding="utf-8",
+    )
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
+    try:
+        created = server.json("POST", "/api/shares", {"item_id": "imported/global-style.html", "duration": "1d"})
+        public_page = urllib.request.urlopen(
+            f"http://127.0.0.1:{server.port}{created['url_path']}",
+            timeout=5,
+        ).read().decode("utf-8")
+
+        assert "Real shared content" in public_page
+        assert ".share-shell" in public_page
+        assert "srcdoc=" in public_page
+        assert "body { display: grid; place-items: center; min-height: 100vh; }" in public_page
+        assert public_page.find("body { display: grid") > public_page.find("srcdoc=")
     finally:
         server.close()
 
@@ -125,12 +183,13 @@ def test_share_allows_safe_toggle_interaction_without_source_script(tmp_path: Pa
             f"http://127.0.0.1:{server.port}{created['url_path']}",
             timeout=5,
         ).read().decode("utf-8")
+        srcdoc = html.unescape(public_page)
 
         assert created["share"]["active"] is True
-        assert 'data-share-toggle="g1"' in public_page
-        assert "onclick=" not in public_page
-        assert "fonts.googleapis.com" not in public_page
-        assert "function toggleGroup" not in public_page
+        assert 'data-share-toggle="g1"' in srcdoc
+        assert "onclick=" not in srcdoc
+        assert "fonts.googleapis.com" not in srcdoc
+        assert "function toggleGroup" not in srcdoc
     finally:
         server.close()
 
@@ -204,13 +263,14 @@ def test_shared_page_preserves_safe_styles_and_fragment_links(tmp_path: Path) ->
             f"http://127.0.0.1:{server.port}{created['url_path']}",
             timeout=5,
         ).read().decode("utf-8")
+        srcdoc = html.unescape(public_page)
 
-        assert "<style>" in public_page
-        assert "border-radius: 8px" in public_page
-        assert "scroll-behavior: smooth" in public_page
-        assert "data:image/svg+xml" in public_page
-        assert 'href="#overview"' in public_page
-        assert "https://example.com" not in public_page
+        assert "<style>" in srcdoc
+        assert "border-radius: 8px" in srcdoc
+        assert "scroll-behavior: smooth" in srcdoc
+        assert "data:image/svg+xml" in srcdoc
+        assert 'href="#overview"' in srcdoc
+        assert "https://example.com" not in srcdoc
         assert public_page.count("<html") == 1
         assert public_page.count("<head") == 1
         assert public_page.count("<body") == 1

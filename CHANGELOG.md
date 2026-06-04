@@ -9,6 +9,22 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.7.4] - 2026-06-04
+
+### Fixed
+
+- Fixed public share pages so shared note HTML is rendered inside an isolated
+  iframe, preventing source-page global styles from breaking the HTMlore share
+  shell or showing oversized icon artwork.
+- Persisted share `url_path` values so active shared notes can reopen the share
+  dialog and copy the existing public link instead of only seeing it at creation
+  time.
+- Moved revoke-share controls to the left side of the share dialog and share
+  management rows.
+- Updated the PWA service worker so `/share/`, `/api/`, and `/content/` routes
+  are not intercepted by the workspace app-shell cache.
+- Updated package, app, PWA, and demo cache versions to `0.7.4`.
+
 ## [0.7.3] - 2026-06-04
 
 ### Added

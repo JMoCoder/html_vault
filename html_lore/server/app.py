@@ -405,8 +405,7 @@ def render_share_page(data: dict) -> str:
     item = data.get("item") or {}
     title = escape_html(item.get("title") or "Shared note")
     summary = escape_html(item.get("summary") or "")
-    body = data.get("html") or ""
-    styles = data.get("styles") or ""
+    srcdoc = escape_html(render_share_srcdoc(data))
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -422,17 +421,14 @@ def render_share_page(data: dict) -> str:
     .share-brand {{ color: #0f766e; font-size: 0.8rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }}
     .share-title {{ margin: 8px 0; font-size: clamp(1.45rem, 3vw, 2.25rem); line-height: 1.15; }}
     .share-summary {{ color: #607086; font-size: 0.95rem; line-height: 1.55; }}
-    .share-content {{ overflow-wrap: anywhere; }}
-    .share-content a:not([href]) {{ color: inherit; text-decoration: none; pointer-events: none; }}
-    .share-content a[href^="#"] {{ pointer-events: auto; }}
-    .share-content img, .share-content video {{ max-width: 100%; height: auto; }}
+    .share-frame {{ display: block; width: min(1100px, 100%); min-height: 70vh; margin: 0 auto; border: 0; border-radius: 12px; background: white; }}
     @media (prefers-color-scheme: dark) {{
       body {{ background: #101820; color: #e6edf3; }}
       .share-banner {{ border-color: #334155; }}
       .share-summary {{ color: #a9b6c6; }}
+      .share-frame {{ background: #111827; }}
     }}
   </style>
-  {styles}
 </head>
 <body>
   <div class="share-shell">
@@ -441,15 +437,60 @@ def render_share_page(data: dict) -> str:
       <h1 class="share-title">{title}</h1>
       <p class="share-summary">{summary}</p>
     </div>
-    <div class="share-content">{body}</div>
+    <iframe class="share-frame" title="{title}" sandbox="allow-scripts" srcdoc="{srcdoc}"></iframe>
   </div>
   <script>
+    const frame = document.querySelector(".share-frame");
+    window.addEventListener("message", (event) => {{
+      if (!frame || event.source !== frame.contentWindow || !event.data || event.data.type !== "html-lore-share-height") return;
+      const height = Number(event.data.height);
+      if (Number.isFinite(height) && height > 0) {{
+        frame.style.height = `${{Math.min(Math.max(height, 420), 16000)}}px`;
+      }}
+    }});
+  </script>
+</body>
+</html>"""
+
+
+def render_share_srcdoc(data: dict) -> str:
+    body = data.get("html") or ""
+    styles = data.get("styles") or ""
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {{ color-scheme: light dark; }}
+    html {{ min-height: 100%; }}
+    body {{ margin: 0; overflow-wrap: anywhere; }}
+    a:not([href]) {{ color: inherit; text-decoration: none; pointer-events: none; }}
+    a[href^="#"] {{ pointer-events: auto; }}
+    img, video, svg, canvas {{ max-width: 100%; height: auto; }}
+  </style>
+  {styles}
+</head>
+<body>
+  {body}
+  <script>
+    function reportHeight() {{
+      const doc = document.documentElement;
+      const height = Math.max(doc.scrollHeight, document.body ? document.body.scrollHeight : 0);
+      parent.postMessage({{ type: "html-lore-share-height", height }}, "*");
+    }}
     document.addEventListener("click", (event) => {{
       const trigger = event.target.closest("[data-share-toggle]");
       if (!trigger) return;
       const target = document.getElementById(trigger.getAttribute("data-share-toggle"));
-      if (target) target.classList.toggle("open");
+      if (target) {{
+        target.classList.toggle("open");
+        reportHeight();
+      }}
     }});
+    window.addEventListener("load", reportHeight);
+    if ("ResizeObserver" in window) new ResizeObserver(reportHeight).observe(document.documentElement);
+    reportHeight();
   </script>
 </body>
 </html>"""

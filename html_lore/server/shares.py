@@ -90,6 +90,7 @@ class ShareService:
 
         token = secrets.token_urlsafe(32)
         token_hash = hash_token(token)
+        url_path = f"/share/{token}"
         now = utc_now()
         data = self._read_store()
         existing = active_share_for_item(data, item_id)
@@ -100,6 +101,7 @@ class ShareService:
         record = {
             "id": f"share_{secrets.token_urlsafe(10)}",
             "token_hash": token_hash,
+            "url_path": url_path,
             "item_id": item_id,
             "duration": duration,
             "created_at": now,
@@ -113,7 +115,7 @@ class ShareService:
         data.setdefault("shares", []).append(record)
         self._write_store(data)
         self._index_token(token_hash)
-        return ShareCreateResult(share=public_share(record), token=token, url_path=f"/share/{token}")
+        return ShareCreateResult(share=public_share(record), token=token, url_path=url_path)
 
     def update_share(self, share_id: str, values: dict[str, Any]) -> dict[str, Any]:
         data = self._read_store()
@@ -238,6 +240,7 @@ def public_share(record: dict[str, Any]) -> dict[str, Any]:
         "created_at": record.get("created_at"),
         "updated_at": record.get("updated_at"),
         "expires_at": record.get("expires_at"),
+        "url_path": record.get("url_path") or "",
         "revoked": bool(record.get("revoked")),
         "active": is_share_active(record),
         "access_count": int(record.get("access_count") or 0),

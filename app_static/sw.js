@@ -1,4 +1,4 @@
-const CACHE_NAME = "html-lore-v0.7.3";
+const CACHE_NAME = "html-lore-v0.7.4";
 const APP_SHELL = [
   "./",
   "index.html",
@@ -27,9 +27,12 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+  const url = new URL(event.request.url);
+  if (url.origin === self.location.origin && isBackendOrContentPath(url.pathname)) return;
   if (event.request.mode === "navigate") {
     event.respondWith(
       fetch(event.request).then((response) => {
+        if (!response.ok || !isHtmlResponse(response)) return response;
         const copy = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put("index.html", copy));
         return response;
@@ -54,3 +57,11 @@ self.addEventListener("fetch", (event) => {
     }),
   );
 });
+
+function isBackendOrContentPath(pathname) {
+  return pathname.startsWith("/api/") || pathname.startsWith("/share/") || pathname.startsWith("/content/");
+}
+
+function isHtmlResponse(response) {
+  return (response.headers.get("content-type") || "").includes("text/html");
+}
