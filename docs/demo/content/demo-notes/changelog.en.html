@@ -22,6 +22,9 @@
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
 <p>All notable changes to HTMlore will be documented in this file.</p>
 <p>The format is based on Keep a Changelog, and this project uses semantic versioning after the initial public release.</p>
+<h2>[Unreleased]</h2>
+<h3>Changed</h3>
+<ul><li>Added a migration guide for deployments upgrading from the former project name to HTMlore.</li><li>Cleaned up remaining sample and static asset references from the former project name after the HTMlore rename.</li><li>Updated public homepage, demo README notes, app accessibility labels, and logo descriptions to use HTMlore's current library/lore wording.</li></ul>
 <h2>[0.6.8] - 2026-06-04</h2>
 <h3>Changed</h3>
 <ul><li>Moved the primary Python implementation package to <code>html_lore</code>.</li><li>Updated package entry points, tests, API server launch paths, and Docker packaging to use the new <code>html_lore</code> namespace by default.</li><li>Kept the legacy <code>html_vault</code> package as a thin compatibility shim for existing imports and old <code>uvicorn html_vault.server.app:app</code> launch paths.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.8</code>.</li></ul>

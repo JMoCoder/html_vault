@@ -11,6 +11,8 @@ versioning after the initial public release.
 
 ### Changed
 
+- Added a migration guide for deployments upgrading from the former project
+  name to HTMlore.
 - Cleaned up remaining sample and static asset references from the former
   project name after the HTMlore rename.
 - Updated public homepage, demo README notes, app accessibility labels, and

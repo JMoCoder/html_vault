@@ -20,6 +20,9 @@
 <section class="timeline doc">
 <h1>Changelog</h1>
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
+<h2>[Unreleased]</h2>
+<h3>Changed</h3>
+<ul><li>旧プロジェクト名から HTMlore へアップグレードするデプロイ向けに移行ガイドを追加しました。</li><li>HTMlore への名称変更後に残っていたサンプル内容と静的アセット内の旧プロジェクト名参照を整理しました。</li><li>公開ホームページ、Demo README ノート、アプリのアクセシビリティラベル、logo 説明を、HTMlore の現在のライブラリ/知識表現に更新しました。</li></ul>
 <h2>[0.6.8] - 2026-06-04</h2>
 <h3>Changed</h3>
 <ul><li>主要な Python 実装パッケージを <code>html_lore</code> に移動しました。</li><li>パッケージ entry point、テスト、API サーバー起動パス、Docker パッケージングを、新しい <code>html_lore</code> 名前空間を既定で使うよう更新しました。</li><li>既存 import と旧 <code>uvicorn html_vault.server.app:app</code> 起動パス向けに、従来の <code>html_vault</code> パッケージを薄い互換 shim として残しました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.8</code> に更新しました。</li></ul>

@@ -1,7 +1,7 @@
 const i18n = {
   en: {
     appLanguage: "en",
-    sidebarAria: "Vault navigation",
+    sidebarAria: "Library navigation",
     readerAria: "Reader",
     readerFrameTitle: "HTML knowledge item",
     closeReader: "Close reader",
