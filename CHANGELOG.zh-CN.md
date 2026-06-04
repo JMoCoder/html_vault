@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.6.9] - 2026-06-04
+
 ### 变更
 
 - 新增更名迁移指南，用于从旧项目名称升级到 HTMlore。
@@ -17,6 +19,7 @@
 - 为后端 API Docker 镜像新增健康检查。
 - 新增 GitHub Actions CI，覆盖 pytest、Playwright Demo 检查和 Docker
   Compose 配置验证。
+- 包版本、应用版本、PWA、Demo 与官网缓存版本更新为 `0.6.9`。
 
 ## [0.6.8] - 2026-06-04
 

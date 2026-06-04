@@ -6,7 +6,7 @@
       navIssue: "The Idea", navReader: "Reader + Library", navFlywheel: "AI Flywheel",
       navPublish: "Publish", navDeploy: "Deploy", liveDemo: "Live demo",
 
-      coverIssue: "Issue 0.6.8", coverEdition: "Self-hosted Edition", coverMit: "MIT / Open Source",
+      coverIssue: "Issue 0.6.9", coverEdition: "Self-hosted Edition", coverMit: "MIT / Open Source",
       coverKicker: "A knowledge tool that keeps your files yours",
       coverLine1: "Scattered HTML files,", coverLine2: "finally a home.",
       coverLede: "HTMlore gathers the HTML files spread across your disk into one place — a reader and a knowledge base at the same time. AI keeps extending, iterating and settling what you learn, and a free static host turns any note into a shareable page that builds your personal brand.",
@@ -67,14 +67,14 @@
       openDemo2: "Open the live demo", viewSource: "View source", termOpen: "open",
 
       footerTag: "Your HTML, your lore, your brand.",
-      footerVersion: "Issue 0.6.8 · MIT licensed", footerRights: "Your HTML files remain yours."
+      footerVersion: "Issue 0.6.9 · MIT licensed", footerRights: "Your HTML files remain yours."
     },
 
     zh: {
       navIssue: "理念", navReader: "阅读器 + 知识库", navFlywheel: "AI 飞轮",
       navPublish: "发布", navDeploy: "部署", liveDemo: "在线演示",
 
-      coverIssue: "刊号 0.6.8", coverEdition: "自托管版", coverMit: "MIT / 开源",
+      coverIssue: "刊号 0.6.9", coverEdition: "自托管版", coverMit: "MIT / 开源",
       coverKicker: "一个让文件始终属于你的知识工具",
       coverLine1: "散落各处的 HTML，", coverLine2: "终于有了归处。",
       coverLede: "HTMlore 把散落在硬盘各处的 HTML 文件聚拢到一起 —— 它既是阅读器，也是知识库。AI 不断延展、迭代、沉淀你所学的内容；免费的静态托管又让任意一篇笔记变成可分享的页面，逐步建立起你的个人品牌。",
@@ -135,14 +135,14 @@
       openDemo2: "打开在线演示", viewSource: "查看源码", termOpen: "打开",
 
       footerTag: "你的 HTML，你的知识库，你的品牌。",
-      footerVersion: "刊号 0.6.8 · MIT 许可", footerRights: "你的 HTML 文件始终属于你。"
+      footerVersion: "刊号 0.6.9 · MIT 许可", footerRights: "你的 HTML 文件始终属于你。"
     },
 
     ja: {
       navIssue: "コンセプト", navReader: "リーダー + ライブラリ", navFlywheel: "AI フライホイール",
       navPublish: "公開", navDeploy: "デプロイ", liveDemo: "ライブデモ",
 
-      coverIssue: "第 0.6.8 号", coverEdition: "セルフホスト版", coverMit: "MIT / オープンソース",
+      coverIssue: "第 0.6.9 号", coverEdition: "セルフホスト版", coverMit: "MIT / オープンソース",
       coverKicker: "ファイルをあなたのものに保ち続ける知識ツール",
       coverLine1: "散らばった HTML に、", coverLine2: "ついに居場所を。",
       coverLede: "HTMlore は、ディスク各所に散らばった HTML ファイルを一か所に集めます —— リーダーであり、同時に知識ベースです。AI が学びを絶えず広げ、磨き、定着させ、無料の静的ホスティングが任意のノートを共有可能なページへと変え、あなたのパーソナルブランドを築きます。",
@@ -203,7 +203,7 @@
       openDemo2: "ライブデモを開く", viewSource: "ソースを見る", termOpen: "開く",
 
       footerTag: "あなたの HTML、あなたの知識、あなたのブランド。",
-      footerVersion: "第 0.6.8 号 · MIT ライセンス", footerRights: "あなたの HTML ファイルはあなたのものです。"
+      footerVersion: "第 0.6.9 号 · MIT ライセンス", footerRights: "あなたの HTML ファイルはあなたのものです。"
     }
   };
 

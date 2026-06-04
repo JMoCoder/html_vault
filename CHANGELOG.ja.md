@@ -4,6 +4,8 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ## [Unreleased]
 
+## [0.6.9] - 2026-06-04
+
 ### Changed
 
 - 旧プロジェクト名から HTMlore へアップグレードするデプロイ向けに移行ガイドを追加しました。
@@ -13,6 +15,7 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 - 既定 Docker デプロイで使うローカルログイン/session とセルフホスト用マルチユーザーデータ設定を `.env.example` に追加しました。
 - バックエンド API Docker イメージにヘルスチェックを追加しました。
 - pytest、Playwright Demo チェック、Docker Compose 検証を実行する GitHub Actions CI を追加しました。
+- パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを `0.6.9` に更新しました。
 
 ## [0.6.8] - 2026-06-04
 

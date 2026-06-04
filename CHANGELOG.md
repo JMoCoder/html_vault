@@ -9,6 +9,8 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.6.9] - 2026-06-04
+
 ### Changed
 
 - Added a migration guide for deployments upgrading from the former project
@@ -25,6 +27,7 @@ versioning after the initial public release.
 - Added a Docker image health check for the backend API.
 - Added GitHub Actions CI for pytest, Playwright demo checks, and Docker
   Compose validation.
+- Updated package, app, PWA, demo, and homepage cache versions to `0.6.9`.
 
 ## [0.6.8] - 2026-06-04
 
