@@ -9,6 +9,20 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-06-05
+
+### Fixed
+
+- Refined the tag filter count placement so the selected result count appears
+  inline beside the "Tag filters" title in accent text, while the redundant
+  lower "Tags" label is removed.
+- Card dates now prefer the stable item creation date, so archive/unarchive
+  and other state updates no longer change the date shown on cards.
+
+### Changed
+
+- Updated package, app, PWA, and demo cache versions to `0.8.2`.
+
 ## [0.8.1] - 2026-06-05
 
 ### Added
