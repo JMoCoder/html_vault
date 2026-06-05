@@ -1677,7 +1677,7 @@ function renderCard(item) {
     <p>${escapeHtml(summary || t("noSummary"))}</p>
     <div class="card-tags">${tags.slice(0, 4).map((tag) => `<span>#${escapeHtml(tag)}</span>`).join("")}</div>
     <div class="card-footer">
-      <span class="card-date">${escapeHtml(formatDate(item.updated))}</span>
+      <span class="card-date">${escapeHtml(formatDate(getItemDisplayDate(item)))}</span>
       <div class="card-links">
         <button type="button" data-read>${escapeHtml(t("read"))}</button>
         <a href="${escapeHtml(getReaderRawUrl(item))}" target="_blank" rel="noreferrer">${escapeHtml(t("original"))}</a>
@@ -2324,6 +2324,10 @@ function getItemSummary(item) {
 function getItemCollection(item) {
   const collection = getItemMetadata(item).collection;
   return typeof collection === "string" && collection.trim() ? collection.trim() : item.collection || "Inbox";
+}
+
+function getItemDisplayDate(item) {
+  return item.created || item.updated || "";
 }
 
 function getItemTags(item) {
