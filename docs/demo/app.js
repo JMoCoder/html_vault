@@ -124,6 +124,8 @@ const i18n = {
     shareDuration30d: "30 days",
     shareDurationForever: "Forever",
     shareLink: "Share link",
+    shareValidUntil: "Valid until: {date}",
+    shareNoExpiry: "Never expires",
     createShare: "Create share",
     updateShare: "Update share",
     copyShareLink: "Copy share link",
@@ -407,6 +409,8 @@ const i18n = {
     shareDuration30d: "30天",
     shareDurationForever: "永久",
     shareLink: "分享链接",
+    shareValidUntil: "分享有效期至：{date}",
+    shareNoExpiry: "永久有效",
     createShare: "创建分享",
     updateShare: "更新分享",
     copyShareLink: "复制分享链接",
@@ -690,6 +694,8 @@ const i18n = {
     shareDuration30d: "30日",
     shareDurationForever: "無期限",
     shareLink: "共有リンク",
+    shareValidUntil: "共有有効期限：{date}",
+    shareNoExpiry: "無期限",
     createShare: "共有を作成",
     updateShare: "共有を更新",
     copyShareLink: "共有リンクをコピー",
@@ -1070,6 +1076,7 @@ const elements = {
   shareForm: document.querySelector("#share-form"),
   shareDuration: document.querySelector("#share-duration"),
   shareLink: document.querySelector("#share-link"),
+  shareExpiry: document.querySelector("#share-expiry"),
   shareFeedback: document.querySelector("#share-feedback"),
   shareCreate: document.querySelector("#share-create"),
   shareCopy: document.querySelector("#share-copy"),
@@ -2057,6 +2064,7 @@ function openShareDialog(itemId) {
   elements.shareCreate.textContent = t(activeShare ? "updateShare" : "createShare");
   elements.shareCopy.hidden = !elements.shareLink.value;
   elements.shareRevoke.hidden = !activeShare;
+  renderShareExpiry(activeShare);
   elements.shareFeedback.textContent = state.agentUrl ? (activeShare && !elements.shareLink.value ? t("shareLinkOneTime") : "") : t("shareNeedsAgent");
   elements.shareDialog.hidden = false;
   elements.shareDuration.focus();
@@ -2067,6 +2075,7 @@ function closeShareDialog() {
   elements.shareDialog.hidden = true;
   elements.shareFeedback.textContent = "";
   elements.shareLink.value = "";
+  renderShareExpiry(null);
 }
 
 async function submitShareDialog(event) {
@@ -2107,6 +2116,7 @@ async function submitShareDialog(event) {
     renderReaderShareState();
     renderGrid();
     renderShareManagement();
+    renderShareExpiry(share);
     elements.shareCreate.textContent = t("updateShare");
     elements.shareCopy.hidden = !elements.shareLink.value;
     elements.shareRevoke.hidden = false;
@@ -2179,12 +2189,17 @@ function renderShareManagement() {
 
 function renderShareManagementRow(share) {
   const item = getItemById(share.item_id);
+  const status = getShareStatus(share);
   const row = document.createElement("div");
   row.className = "management-row share-row";
   row.innerHTML = `
     <div class="management-name">
       <strong>${escapeHtml(item ? getItemTitle(item) : share.item_id)}</strong>
-      <span>${escapeHtml(share.active ? t("shareActive") : t("shareExpired"))} · ${escapeHtml(formatShareExpiry(share))} · ${escapeHtml(t("shareAccessCount", { count: share.access_count || 0 }))}</span>
+      <span class="share-row-meta">
+        ${shareStatusMarkup(status)}
+        <span>${escapeHtml(formatShareExpiry(share))}</span>
+        <span>${escapeHtml(t("shareAccessCount", { count: share.access_count || 0 }))}</span>
+      </span>
     </div>
     <div class="management-actions">
       <button type="button" data-share-revoke>${escapeHtml(t("revokeShare"))}</button>
@@ -2210,7 +2225,34 @@ function renderShareManagementRow(share) {
 }
 
 function formatShareExpiry(share) {
-  return share.expires_at ? formatDate(share.expires_at) : t("shareDurationForever");
+  return share?.expires_at ? formatDateTime(share.expires_at) : t("shareNoExpiry");
+}
+
+function getShareStatus(share) {
+  return {
+    active: Boolean(share?.active && !share?.revoked),
+    label: t(share?.active && !share?.revoked ? "shareActive" : "shareExpired"),
+  };
+}
+
+function shareStatusMarkup(status) {
+  return `<span class="share-status ${status.active ? "is-active" : "is-expired"}"><span class="share-status-dot" aria-hidden="true"></span>${escapeHtml(status.label)}</span>`;
+}
+
+function renderShareExpiry(share) {
+  if (!elements.shareExpiry) return;
+  if (!share) {
+    elements.shareExpiry.hidden = true;
+    elements.shareExpiry.replaceChildren();
+    return;
+  }
+  const status = getShareStatus(share);
+  const label = share.expires_at ? t("shareValidUntil", { date: formatDateTime(share.expires_at) }) : t("shareNoExpiry");
+  elements.shareExpiry.hidden = false;
+  elements.shareExpiry.innerHTML = `
+    <span>${escapeHtml(label)}</span>
+    ${shareStatusMarkup(status)}
+  `;
 }
 
 function toggleManualAiContext(id) {
@@ -3590,6 +3632,20 @@ function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return String(value).slice(0, 10);
   return date.toISOString().slice(0, 10);
+}
+
+function formatDateTime(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  const formatter = new Intl.DateTimeFormat(state.language || "en", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return formatter.format(date);
 }
 
 function escapeHtml(value) {

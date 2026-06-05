@@ -13,6 +13,7 @@
   --accent-dark: #115e59;
   --status-bg: #ecfdf5;
   --status-text: #115e59;
+  --success: #16a34a;
   --warm: #a16207;
   --danger: #b91c1c;
   --shadow: 0 16px 48px rgba(30, 35, 40, 0.12);
@@ -32,6 +33,7 @@
   --accent-dark: #99f6e4;
   --status-bg: #123c37;
   --status-text: #99f6e4;
+  --success: #4ade80;
   --warm: #f5c36b;
   --danger: #f87171;
   --shadow: 0 18px 54px rgba(0, 0, 0, 0.35);
@@ -1775,6 +1777,51 @@ a.icon-action {
 
 #share-revoke {
   margin-right: auto;
+}
+
+.share-expiry-row,
+.share-row-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.share-expiry-row {
+  min-height: 24px;
+  margin-top: -4px;
+}
+
+.share-expiry-row[hidden] {
+  display: none;
+}
+
+.share-row-meta {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.share-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.share-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 14%, transparent);
+}
+
+.share-status.is-active .share-status-dot {
+  background: var(--success);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 16%, transparent);
 }
 
 .metadata-actions [hidden] {

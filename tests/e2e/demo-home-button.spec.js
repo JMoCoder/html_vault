@@ -78,6 +78,70 @@ test("card share action opens the same share dialog", async ({ page }) => {
   await expect(page.locator("#share-dialog")).toBeHidden();
 });
 
+test("share dialog and management show expiry and static status", async ({ page }) => {
+  let shares = [];
+  const share = {
+    id: "share-test",
+    item_id: "demo-notes/readme.zh-CN.html",
+    token: "token-test",
+    url_path: "/share/token-test",
+    duration: "7d",
+    expires_at: "2026-06-12T09:30:00Z",
+    revoked: false,
+    active: true,
+    access_count: 2,
+  };
+  await page.route("**/demo/config.js", async (route) => {
+    await route.fulfill({
+      contentType: "application/javascript",
+      body: 'window.HTML_LORE_AGENT_URL = "http://127.0.0.1:8090";',
+    });
+  });
+  await page.route("**/api/auth/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ enabled: false, authenticated: true, user: null, data_id: null }),
+    });
+  });
+  await page.route("**/api/shares", async (route) => {
+    if (route.request().method() === "POST") {
+      shares = [share];
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ share, token: share.token, url_path: share.url_path }),
+      });
+      return;
+    }
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ shares, count: shares.length }),
+    });
+  });
+
+  await page.goto("/demo/?lang=en");
+  await page
+    .locator(".item-card", { hasText: "HTMlore README 完整说明" })
+    .locator("[data-item-action='share']")
+    .click();
+  await page.locator("#share-duration").selectOption("7d");
+  await page.locator("#share-create").click();
+
+  await expect(page.locator("#share-link")).toHaveValue(/\/share\/token-test$/);
+  await expect(page.locator("#share-expiry")).toContainText("Valid until:");
+  await expect(page.locator("#share-expiry")).toContainText("2026");
+  await expect(page.locator("#share-expiry .share-status")).toContainText("Active");
+  await expect(page.locator("#share-expiry .share-status")).toHaveClass(/is-active/);
+
+  await page.locator("#share-cancel").click();
+  await expect(page.locator("#share-dialog")).toBeHidden();
+  await page.locator("#settings-open").click();
+  await page.locator("[data-settings-tab='shares']").click();
+  const row = page.locator("#share-management-list .share-row").first();
+  await expect(row.locator(".share-status")).toContainText("Active");
+  await expect(row).toContainText("2026");
+  await expect(row).toContainText("2 visits");
+});
+
 test("card original links use raw API in same-origin app mode", async ({ page }) => {
   await page.route("**/demo/config.js", async (route) => {
     await route.fulfill({
