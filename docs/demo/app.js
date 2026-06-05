@@ -5,6 +5,8 @@ const i18n = {
     readerAria: "Reader",
     readerFrameTitle: "HTML knowledge item",
     closeReader: "Close reader",
+    fitReaderWidth: "Fit width",
+    originalReaderWidth: "Original width",
     home: "Home",
     collapseSidebar: "Collapse sidebar",
     expandSidebar: "Expand sidebar",
@@ -288,6 +290,8 @@ const i18n = {
     readerAria: "阅读器",
     readerFrameTitle: "HTML 知识条目",
     closeReader: "关闭阅读器",
+    fitReaderWidth: "适配宽度",
+    originalReaderWidth: "原文宽屏",
     home: "回到主页",
     collapseSidebar: "收起侧栏",
     expandSidebar: "展开侧栏",
@@ -571,6 +575,8 @@ const i18n = {
     readerAria: "リーダー",
     readerFrameTitle: "HTML ナレッジ項目",
     closeReader: "リーダーを閉じる",
+    fitReaderWidth: "幅に合わせる",
+    originalReaderWidth: "原文ワイド",
     home: "ホームへ戻る",
     collapseSidebar: "サイドバーを折りたたむ",
     expandSidebar: "サイドバーを展開",
@@ -928,7 +934,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.7.6",
+  currentVersion: "0.7.7",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -950,6 +956,7 @@ const state = {
   multiFilterOpen: false,
   sortOpen: false,
   sortMode: getInitialSortMode(),
+  readerWidthMode: getInitialReaderWidthMode(),
   tagMatchMode: "any",
   selectedTags: new Set(),
   manualAiContextIds: new Set(),
@@ -1071,6 +1078,7 @@ const elements = {
   readerAiPanelOpen: document.querySelector("#reader-ai-panel-open"),
   readerOriginal: document.querySelector("#reader-original"),
   readerShare: document.querySelector("#reader-share"),
+  readerWidthToggle: document.querySelector("#reader-width-toggle"),
   readerFrame: document.querySelector("#reader-frame"),
   shareManagementList: document.querySelector("#share-management-list"),
   shareManagementFeedback: document.querySelector("#share-management-feedback"),
@@ -1591,6 +1599,7 @@ function openReader(item) {
   state.currentReaderItemId = item.id;
   elements.reader.hidden = false;
   elements.reader.classList.remove("compact-reader-header");
+  applyReaderWidthMode();
   renderReaderMetadata(item);
   elements.readerFrame.src = getReaderContentUrl(item);
   renderReaderActions(item);
@@ -1635,6 +1644,24 @@ function bindReaderFrameScroll() {
   } catch {
     elements.reader.classList.remove("compact-reader-header");
   }
+}
+
+function getInitialReaderWidthMode() {
+  return getStored("reader-width-mode") === "wide" ? "wide" : "fit";
+}
+
+function toggleReaderWidthMode() {
+  state.readerWidthMode = state.readerWidthMode === "wide" ? "fit" : "wide";
+  setStored("reader-width-mode", state.readerWidthMode);
+  applyReaderWidthMode();
+}
+
+function applyReaderWidthMode() {
+  const wide = state.readerWidthMode === "wide";
+  elements.reader.classList.toggle("reader-wide", wide);
+  elements.readerWidthToggle.classList.toggle("active", wide);
+  elements.readerWidthToggle.innerHTML = readerWidthIcon(wide);
+  setIconButtonLabel(elements.readerWidthToggle, wide ? "fitReaderWidth" : "originalReaderWidth");
 }
 
 function closeReader() {
@@ -2078,6 +2105,7 @@ function renderReaderActions(item) {
   elements.readerArchive.innerHTML = archiveIcon();
   elements.readerArchive.setAttribute("aria-label", archiveLabel);
   elements.readerArchive.setAttribute("title", archiveLabel);
+  applyReaderWidthMode();
   elements.readerAiPanelOpen.innerHTML = archived ? trashIcon() : aiSparkIcon();
   setIconButtonLabel(elements.readerAiPanelOpen, archived ? "permanentDeleteAction" : "openGlobalAi");
   elements.readerAiPanelOpen.classList.toggle("danger", archived);
@@ -3318,6 +3346,15 @@ function editIcon() {
   `;
 }
 
+function readerWidthIcon(wide = false) {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+      ${wide ? '<path d="M8 12h8"></path><path d="m13 9 3 3-3 3"></path><path d="m11 9-3 3 3 3"></path>' : '<path d="M8 12h8"></path><path d="m8 12 3-3"></path><path d="m8 12 3 3"></path><path d="m16 12-3-3"></path><path d="m16 12-3 3"></path>'}
+    </svg>
+  `;
+}
+
 function moonIcon() {
   return `
     <svg class="button-icon moon-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -3374,7 +3411,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.7.6-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.7.7-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });
@@ -3407,6 +3444,7 @@ function applyTranslations() {
   applyFavoriteFilter();
   applyMultiFilterState();
   applySortState();
+  applyReaderWidthMode();
   updateThemeMetaColor(getResolvedTheme());
   renderVersionStatus();
 }
@@ -3532,6 +3570,7 @@ elements.readerArchive.addEventListener("click", () => {
 elements.readerShare.addEventListener("click", () => {
   if (state.currentReaderItemId) openShareDialog(state.currentReaderItemId);
 });
+elements.readerWidthToggle.addEventListener("click", toggleReaderWidthMode);
 elements.readerAiPanelOpen.addEventListener("click", () => {
   if (state.currentReaderItemId) openReaderAiPanel();
   else openAiPanel();

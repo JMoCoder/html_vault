@@ -9,6 +9,25 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.7.7] - 2026-06-05
+
+### Added
+
+- Added a reader-level Fit width / Original width toggle for HTML notes.
+- Original width mode renders note iframes at a wide viewport with horizontal
+  reader scrolling, keeping embedded note sidebars available when the HTMlore
+  reader or mobile viewport is narrow.
+
+### Fixed
+
+- Improved mobile reader layout so the left sidebar no longer consumes reading
+  width on narrow screens.
+- Kept reader action buttons above the iframe content on mobile instead of
+  letting note content visually cover them.
+- Added Playwright coverage for the mobile reader viewport and original-width
+  mode.
+- Updated package, app, PWA, and demo cache versions to `0.7.7`.
+
 ## [0.7.6] - 2026-06-04
 
 ### Security
