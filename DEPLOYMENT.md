@@ -19,11 +19,11 @@ hardening.
 
 ## Rename Compatibility
 
-HTMlore was formerly named HTML Vault. The current release reads
-`HTML_LORE_*` first and falls back to legacy `HTML_VAULT_*` environment
-variables. The `html-lore` CLI is now preferred, while `html-vault` remains
-available during the 0.x compatibility window. Public Caddy examples use the
-new `HTML_LORE_*` names and should be updated when you refresh `.env`.
+HTMlore was formerly named HTML Vault. Current releases use the new
+`HTML_LORE_*` environment variables and the `html-lore` CLI only. Rename old
+`HTML_VAULT_*` variables and old `html-vault` commands before deploying the
+current code. Public Caddy examples use the new `HTML_LORE_*` names and should
+be updated when you refresh `.env`.
 
 For step-by-step upgrade details, see [MIGRATION.md](MIGRATION.md).
 

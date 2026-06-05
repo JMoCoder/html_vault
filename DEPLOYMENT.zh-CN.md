@@ -14,10 +14,10 @@
 
 ## 更名兼容
 
-HTMlore 原名 HTML Vault。当前版本会优先读取 `HTML_LORE_*`，并 fallback
-到旧的 `HTML_VAULT_*` 环境变量。新 CLI 推荐使用 `html-lore`，旧的
-`html-vault` 命令会在 0.x 兼容期内继续可用。公网 Caddy 示例已使用新的
-`HTML_LORE_*` 变量名，刷新 `.env` 时应同步更新。
+HTMlore 原名 HTML Vault。当前版本仅使用新的 `HTML_LORE_*` 环境变量和
+`html-lore` CLI。部署当前代码前，请先迁移旧的 `HTML_VAULT_*` 变量和
+`html-vault` 命令。公网 Caddy 示例已使用新的 `HTML_LORE_*` 变量名，刷新
+`.env` 时应同步更新。
 
 逐步升级说明见 [MIGRATION.md](MIGRATION.md)。
 

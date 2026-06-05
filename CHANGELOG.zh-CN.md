@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### 移除
+
+- 移除旧 `html_vault` Python 兼容包、旧 `html-vault` CLI 入口，以及
+  `HTML_VAULT_*` 运行时环境变量 fallback。当前运行配置仅使用
+  `html_lore`、`html-lore` 和 `HTML_LORE_*`。
+
 ## [0.7.9] - 2026-06-05
 
 ### 新增

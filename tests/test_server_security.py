@@ -87,12 +87,9 @@ def test_api_server_serves_static_frontend(tmp_path: Path) -> None:
         server.close()
 
 
-def test_new_env_names_take_priority_over_legacy(monkeypatch, tmp_path: Path) -> None:
-    legacy_content = tmp_path / "legacy-content"
+def test_html_lore_env_names_configure_server(monkeypatch, tmp_path: Path) -> None:
     lore_content = tmp_path / "lore-content"
-    monkeypatch.setenv("HTML_VAULT_CONTENT", str(legacy_content))
     monkeypatch.setenv("HTML_LORE_CONTENT", str(lore_content))
-    monkeypatch.setenv("HTML_VAULT_TITLE", "Legacy Title")
     monkeypatch.setenv("HTML_LORE_TITLE", "HTMlore Title")
     monkeypatch.setenv("HTML_LORE_SESSION_SECRET", "secret")
 
@@ -103,7 +100,7 @@ def test_new_env_names_take_priority_over_legacy(monkeypatch, tmp_path: Path) ->
     assert settings.session_secret == "secret"
 
 
-def test_legacy_env_names_still_work(monkeypatch, tmp_path: Path) -> None:
+def test_legacy_env_names_are_ignored_after_rename_cleanup(monkeypatch, tmp_path: Path) -> None:
     content = tmp_path / "legacy-content"
     monkeypatch.setenv("HTML_VAULT_CONTENT", str(content))
     monkeypatch.setenv("HTML_VAULT_TITLE", "Legacy Title")
@@ -111,9 +108,9 @@ def test_legacy_env_names_still_work(monkeypatch, tmp_path: Path) -> None:
 
     settings = load_settings()
 
-    assert settings.content_dir == content
-    assert settings.site_title == "Legacy Title"
-    assert settings.session_secret == "legacy-secret"
+    assert settings.content_dir == Path("content")
+    assert settings.site_title == "HTMlore"
+    assert settings.session_secret == ""
 
 
 def test_login_session_protects_api_and_content(tmp_path: Path) -> None:

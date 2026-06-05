@@ -51,9 +51,6 @@ class JobStore:
     def __init__(self, settings: ServerSettings) -> None:
         self.settings = settings
         self.path = settings.meta_dir / "config" / "jobs.json" if settings.meta_dir else settings.public_dir / ".html-lore-jobs.json"
-        legacy_path = settings.public_dir / ".html-vault-jobs.json"
-        if settings.meta_dir is None and not self.path.exists() and legacy_path.exists():
-            self.path = legacy_path
 
     def save(self, record: JobRecord) -> dict[str, Any]:
         jobs = self._read()

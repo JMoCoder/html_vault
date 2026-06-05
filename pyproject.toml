@@ -29,7 +29,6 @@ agent = [
 
 [project.scripts]
 html-lore = "html_lore.cli:main"
-html-vault = "html_vault.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["html_vault*", "html_lore*"]
+include = ["html_lore*"]

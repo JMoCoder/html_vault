@@ -5,11 +5,10 @@ Languages: [English](README.md) | [中文](README.zh-CN.md) | [日本語](README
 Deployment: [Self-hosted Docker and security baseline](DEPLOYMENT.md) |
 [Migration guide](MIGRATION.md)
 
-Formerly named HTML Vault. Existing `html-vault` commands,
-`HTML_VAULT_*` environment variables, `html_vault` Python imports, and
-`html-vault-*` browser preferences remain supported during the 0.x
-compatibility window, but new docs use `HTMlore`, `html-lore`, `html_lore`,
-and `HTML_LORE_*`.
+Formerly named HTML Vault. Current releases use `HTMlore`, `html-lore`,
+`html_lore`, and `HTML_LORE_*`. If you are upgrading from the former name,
+rename old CLI commands, environment variables, and Python imports before
+deploying the current code.
 
 HTMlore is a self-hosted knowledge workspace for saving, browsing, reading,
 and eventually discussing HTML-based knowledge files with AI. It is designed
@@ -38,12 +37,12 @@ Markdown-first authoring. HTMlore takes a different path:
   the UI architecture for AI-assisted workflows, while credentials and model
   calls are kept out of the static frontend.
 
-## 0.6.x Current Scope
+## 0.x Current Scope
 
-The current `0.6.x` line is the first authenticated self-hosted notebook line.
-It focuses on real local or private-network use: Docker deployment, built-in
-login, HTML import, persistent metadata, filtering, reading, archiving, and a
-documented security boundary for public deployment.
+The current `0.x` line focuses on real local, private-network, and self-hosted
+use: Docker deployment, built-in login, HTML import, persistent metadata,
+filtering, reading, archiving, public sharing, and a documented security
+boundary for public deployment.
 
 Implemented today:
 

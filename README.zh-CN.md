@@ -5,10 +5,9 @@
 部署：[自托管 Docker 与安全基线](DEPLOYMENT.zh-CN.md) |
 [更名迁移指南](MIGRATION.md)
 
-项目原名 HTML Vault。0.x 兼容期内，已有 `html-vault` 命令、
-`HTML_VAULT_*` 环境变量、`html_vault` Python import 和
-`html-vault-*` 浏览器偏好仍继续支持；新文档统一使用 `HTMlore`、
-`html-lore`、`html_lore` 和 `HTML_LORE_*`。
+项目原名 HTML Vault。当前版本统一使用 `HTMlore`、`html-lore`、
+`html_lore` 和 `HTML_LORE_*`。如果你从旧名称升级，请在部署当前代码前
+先迁移旧 CLI 命令、环境变量和 Python import。
 
 HTMlore 是一个自托管 HTML 知识库工作台，用于保存、浏览、阅读和未来通过 AI 讨论 HTML 形式的知识文件。它面向希望内容仍然保留为可携带文件、而不是被锁进数据库优先笔记软件的用户。
 

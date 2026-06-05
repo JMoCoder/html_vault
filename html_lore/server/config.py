@@ -82,13 +82,9 @@ def load_settings() -> ServerSettings:
 
 
 def get_env(name: str, default: str | None = None) -> str | None:
-    """Read the new HTMlore env name, then fall back to the legacy name."""
-    new_value = os.getenv(f"HTML_LORE_{name}")
-    if new_value is not None:
-        return new_value
-    old_value = os.getenv(f"HTML_VAULT_{name}")
-    if old_value is not None:
-        return old_value
+    value = os.getenv(f"HTML_LORE_{name}")
+    if value is not None:
+        return value
     return default
 
 

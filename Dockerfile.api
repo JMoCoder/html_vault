@@ -7,7 +7,6 @@ ENV PYTHONPATH=/app
 WORKDIR /app
 
 COPY pyproject.toml README.md LICENSE ./
-COPY html_vault ./html_vault
 COPY html_lore ./html_lore
 COPY app_static ./app_static
 COPY deploy/api-entrypoint.sh /usr/local/bin/html-lore-api-entrypoint

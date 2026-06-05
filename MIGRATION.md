@@ -3,6 +3,10 @@
 This guide covers migration from the former `HTML Vault` / `html_vault`
 project naming to `HTMlore` / `html_lore`.
 
+Current releases no longer keep the old runtime compatibility shims. Complete
+the CLI, Python import, and environment-variable rename before deploying the
+current code.
+
 ## Who Needs This
 
 Use this guide if your deployment or local clone was created before `0.6.7`,
@@ -20,19 +24,14 @@ If you start from a fresh clone of `JMoCoder/html_lore`, use the README instead.
 - Browser preference prefix: `html-vault-*` -> `html-lore-*`
 - Backup type: `html-vault-backup` -> `html-lore-backup`
 
-## Compatibility Window
+## Compatibility Cleanup
 
-The current `0.x` line keeps compatibility for:
+Older `0.7.x` releases temporarily accepted old CLI commands, Python imports,
+and `HTML_VAULT_*` environment variables. Current code keeps the renamed
+HTMlore runtime path only. New work must use the new names.
 
-- `html-vault` CLI commands
-- `html_vault` Python imports
-- `HTML_VAULT_*` environment variables
-- `html-vault-*` browser preferences
-- `html-vault-backup` imports
-- `uvicorn html_vault.server.app:app`
-
-New deployments should use the new names. Existing deployments do not need an
-immediate forced migration.
+Browser preference and backup migration remains intentionally conservative so
+old local preferences can still be recovered by the web app.
 
 ## Update An Existing Git Clone
 
@@ -78,8 +77,8 @@ not renamed or moved.
 
 ## Environment Variables
 
-New variables use `HTML_LORE_*`. Legacy `HTML_VAULT_*` variables still work as
-fallbacks.
+New variables use `HTML_LORE_*`. Legacy `HTML_VAULT_*` variables should be
+renamed before deploying current releases.
 
 Recommended mapping:
 
@@ -103,7 +102,8 @@ Recommended mapping:
 | `HTML_VAULT_AGENT_URL` | `HTML_LORE_AGENT_URL` |
 | `HTML_VAULT_AGENT_TOKEN` | `HTML_LORE_AGENT_TOKEN` |
 
-If both old and new variables are set, the new `HTML_LORE_*` value wins.
+If old and new variables are both present, current releases read only the new
+`HTML_LORE_*` value.
 
 ## CLI Migration
 
@@ -115,12 +115,6 @@ html-lore serve-api --host 127.0.0.1 --port 8787
 html-lore user-add --username admin --password 'change-me' --replace
 ```
 
-Legacy commands still work:
-
-```bash
-html-vault build --content examples/content --meta examples/meta --out public
-```
-
 ## Python Import Migration
 
 Preferred:
@@ -130,18 +124,10 @@ from html_lore.builder import build_site
 from html_lore.server.app import create_app
 ```
 
-Legacy imports still work:
-
-```python
-from html_vault.builder import build_site
-from html_vault.server.app import create_app
-```
-
 ## Browser Preferences
 
 The frontend automatically copies old `html-vault-*` localStorage values to
-new `html-lore-*` keys on startup. Old keys are not deleted, so users can roll
-back during the compatibility window.
+new `html-lore-*` keys on startup. Old keys are not deleted.
 
 ## Backups
 
@@ -182,4 +168,3 @@ docker compose up -d --build
 
 Because data paths were not renamed, `./data` remains usable. Always keep the
 backup made before the upgrade until you confirm the deployment is healthy.
-

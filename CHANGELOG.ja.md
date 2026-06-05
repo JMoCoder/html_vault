@@ -4,6 +4,12 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ## [Unreleased]
 
+### Removed
+
+- 従来の `html_vault` Python 互換パッケージ、旧 `html-vault` CLI entry point、
+  `HTML_VAULT_*` runtime environment fallback を削除しました。現在の runtime
+  設定は `html_lore`、`html-lore`、`HTML_LORE_*` のみを使用します。
+
 ## [0.7.9] - 2026-06-05
 
 ### Added

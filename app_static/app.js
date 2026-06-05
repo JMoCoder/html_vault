@@ -864,7 +864,7 @@ const STORAGE_PREFIX = "html-lore-";
 const LEGACY_STORAGE_PREFIX = "html-vault-";
 
 function getRuntimeConfig(name) {
-  return window[`HTML_LORE_${name}`] ?? window[`HTML_VAULT_${name}`];
+  return window[`HTML_LORE_${name}`];
 }
 
 function hasRuntimeConfig(name) {

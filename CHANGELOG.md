@@ -9,6 +9,13 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+### Removed
+
+- Removed legacy `html_vault` Python compatibility package, the old
+  `html-vault` CLI entry point, and `HTML_VAULT_*` runtime environment
+  fallback paths. Current runtime configuration now uses `html_lore`,
+  `html-lore`, and `HTML_LORE_*` only.
+
 ## [0.7.9] - 2026-06-05
 
 ### Added
