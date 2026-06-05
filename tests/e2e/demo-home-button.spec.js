@@ -199,24 +199,24 @@ test("tag filter counts follow OR and AND selection semantics", async ({ page })
 
   await page.goto("/demo/?lang=en");
   await page.locator("#multi-filter-toggle").click();
-  await expect(page.locator("#multi-filter-result-count")).toHaveText("3");
+  await expect(page.locator("#multi-filter-result-count")).toHaveText("(Selected: 3)");
   await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#A" }).locator(".multi-filter-count")).toHaveText("2");
   await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#B" }).locator(".multi-filter-count")).toHaveText("1");
   await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#C" }).locator(".multi-filter-count")).toHaveText("1");
 
   await page.locator("#multi-tag-options .multi-filter-option", { hasText: "#A" }).click();
-  await expect(page.locator("#multi-filter-result-count")).toHaveText("2");
+  await expect(page.locator("#multi-filter-result-count")).toHaveText("(Selected: 2)");
   await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#B" }).locator(".multi-filter-count")).toHaveText("1");
   await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#C" }).locator(".multi-filter-count")).toHaveText("1");
 
   await page.locator("[data-tag-match-mode='all']").click();
-  await expect(page.locator("#multi-filter-result-count")).toHaveText("2");
+  await expect(page.locator("#multi-filter-result-count")).toHaveText("(Selected: 2)");
   await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#A" }).locator(".multi-filter-count")).toHaveText("2");
   await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#B" }).locator(".multi-filter-count")).toHaveText("1");
   await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#C" }).locator(".multi-filter-count")).toHaveText("0");
 
   await page.locator("#multi-tag-options .multi-filter-option", { hasText: "#B" }).click();
-  await expect(page.locator("#multi-filter-result-count")).toHaveText("1");
+  await expect(page.locator("#multi-filter-result-count")).toHaveText("(Selected: 1)");
   await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#A" }).locator(".multi-filter-count")).toHaveText("1");
   await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#B" }).locator(".multi-filter-count")).toHaveText("1");
   await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#C" }).locator(".multi-filter-count")).toHaveText("0");

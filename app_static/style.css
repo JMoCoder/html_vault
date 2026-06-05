@@ -946,6 +946,9 @@ textarea {
 }
 
 .multi-filter-header h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
   font-size: 15px;
 }
 
@@ -979,24 +982,14 @@ textarea {
 .multi-filter-section {
   display: grid;
   gap: 8px;
-  margin-top: 12px;
-}
-
-.multi-filter-section h4 {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  color: var(--muted);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0;
+  margin-top: 10px;
 }
 
 .multi-filter-title-count {
-  color: var(--text);
+  color: var(--accent);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .multi-filter-options {

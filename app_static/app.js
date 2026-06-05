@@ -212,6 +212,7 @@ const i18n = {
     advancedFilters: "Tag filters",
     collectionFilters: "Collections",
     tagFilters: "Tags",
+    tagFilterSelectedCount: "(Selected: {count})",
     tagMatchMode: "Tag match mode",
     tagMatchAny: "OR",
     tagMatchAll: "AND",
@@ -497,6 +498,7 @@ const i18n = {
     advancedFilters: "标签筛选",
     collectionFilters: "集合",
     tagFilters: "标签",
+    tagFilterSelectedCount: "（已选择：{count}）",
     tagMatchMode: "标签匹配模式",
     tagMatchAny: "或",
     tagMatchAll: "且",
@@ -782,6 +784,7 @@ const i18n = {
     advancedFilters: "タグフィルター",
     collectionFilters: "コレクション",
     tagFilters: "タグ",
+    tagFilterSelectedCount: "（選択済み：{count}）",
     tagMatchMode: "タグ一致モード",
     tagMatchAny: "OR",
     tagMatchAll: "AND",
@@ -2924,7 +2927,7 @@ function renderMultiFilterOptions() {
   const baseItems = baseItemsForTagFilters();
   const resultItems = applySelectedTagFilters(baseItems);
   if (elements.multiFilterResultCount) {
-    elements.multiFilterResultCount.textContent = String(resultItems.length);
+    elements.multiFilterResultCount.textContent = t("tagFilterSelectedCount", { count: resultItems.length });
   }
   elements.multiTagOptions.replaceChildren(...getTagOptions()
     .filter((tag) => isManagedItemVisible("tags", tag.name))
