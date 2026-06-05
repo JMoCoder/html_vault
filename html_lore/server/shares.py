@@ -5,6 +5,7 @@ import html
 import json
 import re
 import secrets
+import shutil
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
@@ -15,6 +16,8 @@ from urllib.parse import urlsplit
 from .config import ServerSettings
 from .items import ItemContentError, ItemService, ensure_within
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+APP_INDEX = PROJECT_ROOT / "app_static" / "index.html"
 
 SHARE_DURATIONS = {
     "1h": timedelta(hours=1),
@@ -97,6 +100,7 @@ class ShareService:
         if existing:
             existing["revoked"] = True
             existing["updated_at"] = now
+            self._delete_static_share_shell(str(existing.get("url_path") or ""))
 
         record = {
             "id": f"share_{secrets.token_urlsafe(10)}",
@@ -115,6 +119,7 @@ class ShareService:
         data.setdefault("shares", []).append(record)
         self._write_store(data)
         self._index_token(token_hash)
+        self._write_static_share_shell(token)
         return ShareCreateResult(share=public_share(record), token=token, url_path=url_path)
 
     def update_share(self, share_id: str, values: dict[str, Any]) -> dict[str, Any]:
@@ -138,6 +143,8 @@ class ShareService:
             record["expires_at"] = expires_at_for(duration, utc_now())
         if "revoked" in values:
             record["revoked"] = values["revoked"]
+            if values["revoked"] is True:
+                self._delete_static_share_shell(str(record.get("url_path") or ""))
         record["updated_at"] = utc_now()
         self._write_store(data)
         return public_share(record)
@@ -224,6 +231,29 @@ class ShareService:
         data.setdefault("tokens", {})[token_hash] = data_id_for_settings(self.root_settings, self.settings)
         root.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    def _write_static_share_shell(self, token: str) -> None:
+        index = self.settings.public_dir / "index.html"
+        if not index.exists():
+            index = APP_INDEX
+        if not index.exists():
+            return
+        target = (self.settings.public_dir / "share" / token / "index.html").resolve()
+        ensure_within(target, self.settings.public_dir)
+        shell = index.read_text(encoding="utf-8")
+        if "<base " not in shell:
+            shell = shell.replace("<head>", '<head>\n  <base href="/">', 1)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(shell, encoding="utf-8")
+
+    def _delete_static_share_shell(self, url_path: str) -> None:
+        token = token_from_url_path(url_path)
+        if not token:
+            return
+        share_dir = (self.settings.public_dir / "share" / token).resolve()
+        ensure_within(share_dir, self.settings.public_dir)
+        if share_dir.exists():
+            shutil.rmtree(share_dir)
+
 
 class ShareError(ValueError):
     pass
@@ -291,6 +321,13 @@ def data_id_for_settings(root: ServerSettings, settings: ServerSettings) -> str:
         except ValueError:
             return "default"
     return "default"
+
+
+def token_from_url_path(url_path: str) -> str:
+    parts = [part for part in url_path.split("/") if part]
+    if len(parts) == 2 and parts[0] == "share":
+        return parts[1]
+    return ""
 
 
 def settings_for_share_token(root: ServerSettings, token: str) -> ServerSettings:

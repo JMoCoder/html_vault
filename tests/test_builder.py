@@ -16,6 +16,7 @@ def test_build_site_writes_manifest_and_static_files(tmp_path: Path) -> None:
 
     assert manifest["version"] == 2
     assert (output / "index.html").exists()
+    assert (output / "share" / "index.html").exists()
     assert (output / "app.js").exists()
     assert (output / "content" / "imported" / "docker-network.html").exists()
 

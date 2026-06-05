@@ -9,14 +9,29 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.7.8] - 2026-06-05
+
+### Fixed
+
+- Removed the reader Fit width / Original width button introduced in `0.7.7`;
+  mobile reader behavior will be redesigned without adding unconfirmed controls.
+- Changed the mobile sidebar from a hidden or narrow left rail into a top
+  vertical-collapse bar, keeping navigation usable without squeezing the
+  workspace.
+- Added a static share fallback that renders `/share/{token}` from
+  `/api/public/shares/{token}` when deployment routing accidentally returns the
+  workspace shell.
+- Added per-token static share shells under `public/share/<token>/index.html`
+  and removes them when shares are revoked or replaced.
+- Added Playwright coverage for mobile sidebar collapse and static share
+  fallback rendering.
+- Updated package, app, PWA, and demo cache versions to `0.7.8`.
+
 ## [0.7.7] - 2026-06-05
 
 ### Added
 
-- Added a reader-level Fit width / Original width toggle for HTML notes.
-- Original width mode renders note iframes at a wide viewport with horizontal
-  reader scrolling, keeping embedded note sidebars available when the HTMlore
-  reader or mobile viewport is narrow.
+- Added an initial reader-level width-mode experiment for HTML notes.
 
 ### Fixed
 
@@ -24,8 +39,7 @@ versioning after the initial public release.
   width on narrow screens.
 - Kept reader action buttons above the iframe content on mobile instead of
   letting note content visually cover them.
-- Added Playwright coverage for the mobile reader viewport and original-width
-  mode.
+- Added Playwright coverage for the mobile reader viewport.
 - Updated package, app, PWA, and demo cache versions to `0.7.7`.
 
 ## [0.7.6] - 2026-06-04

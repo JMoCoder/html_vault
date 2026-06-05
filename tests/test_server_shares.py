@@ -72,6 +72,9 @@ def test_share_link_allows_public_sanitized_note_without_login(tmp_path: Path) -
 
         shares = server.request("GET", "/api/shares")
         assert shares["shares"][0]["url_path"] == created["url_path"]
+        static_shell = public_dir / "share" / created["token"] / "index.html"
+        assert static_shell.exists()
+        assert '<base href="/">' in static_shell.read_text(encoding="utf-8")
     finally:
         server.close()
 
@@ -460,9 +463,14 @@ def test_replacing_share_revokes_previous_token(tmp_path: Path) -> None:
     server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
     try:
         first = server.json("POST", "/api/shares", {"item_id": "imported/docker-network.html", "duration": "1h"})
+        first_shell = public_dir / "share" / first["token"] / "index.html"
+        assert first_shell.exists()
         second = server.json("POST", "/api/shares", {"item_id": "imported/docker-network.html", "duration": "1d"})
+        second_shell = public_dir / "share" / second["token"] / "index.html"
 
         assert first["token"] != second["token"]
+        assert not first_shell.exists()
+        assert second_shell.exists()
         try:
             urllib.request.urlopen(f"http://127.0.0.1:{server.port}/api/public/shares/{first['token']}", timeout=5)
         except urllib.error.HTTPError as exc:
@@ -506,9 +514,12 @@ def test_revoked_share_stops_public_access(tmp_path: Path) -> None:
     server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
     try:
         created = server.json("POST", "/api/shares", {"item_id": "imported/docker-network.html", "duration": "1h"})
+        static_shell = public_dir / "share" / created["token"] / "index.html"
+        assert static_shell.exists()
         revoked = server.request("DELETE", f"/api/shares/{created['share']['id']}")
 
         assert revoked["active"] is False
+        assert not static_shell.exists()
         try:
             urllib.request.urlopen(f"http://127.0.0.1:{server.port}/api/public/shares/{created['token']}", timeout=5)
         except urllib.error.HTTPError as exc:

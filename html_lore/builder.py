@@ -40,6 +40,9 @@ def copy_static_app(output_dir: Path) -> None:
             shutil.copytree(source, target)
         else:
             shutil.copy2(source, target)
+    share_dir = output_dir / "share"
+    share_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(output_dir / "index.html", share_dir / "index.html")
 
 
 def copy_content(content_dir: Path, target_dir: Path) -> None:
