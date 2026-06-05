@@ -10,6 +10,8 @@ test("mobile sidebar collapses vertically without squeezing the workspace", asyn
   const workspace = page.locator(".workspace");
   await expect(sidebar).toBeVisible();
   await expect(page.locator("body")).not.toHaveClass(/sidebar-collapsed/);
+  await expect(page.locator(".project-link span")).toBeHidden();
+  await expect(page.locator(".github-link span")).toBeHidden();
 
   await expect
     .poll(async () => {
@@ -24,6 +26,8 @@ test("mobile sidebar collapses vertically without squeezing the workspace", asyn
   await expect(page.locator("body")).toHaveClass(/sidebar-collapsed/);
   await expect(page.locator(".sidebar-main")).toBeHidden();
   await expect(sidebar).toBeVisible();
+  await expect(page.locator(".project-link span")).toBeHidden();
+  await expect(page.locator(".github-link span")).toBeHidden();
 
   await expect
     .poll(async () => {
@@ -31,6 +35,21 @@ test("mobile sidebar collapses vertically without squeezing the workspace", asyn
       const workspaceBox = await workspace.boundingBox();
       if (!sidebarBox || !workspaceBox) return false;
       return sidebarBox.width >= 380 && sidebarBox.height < 82 && workspaceBox.x < 4;
+    })
+    .toBe(true);
+});
+
+test("reader places original before share in the action row", async ({ page }) => {
+  await page.goto("/demo/?lang=en", { waitUntil: "domcontentloaded" });
+  await page.locator(".item-card").first().getByRole("button", { name: "Read" }).click();
+
+  await expect(page.locator("#reader")).toBeVisible();
+  await expect
+    .poll(async () => {
+      const original = await page.locator("#reader-original").boundingBox();
+      const share = await page.locator("#reader-share").boundingBox();
+      if (!original || !share) return false;
+      return original.x < share.x;
     })
     .toBe(true);
 });

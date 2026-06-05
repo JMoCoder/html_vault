@@ -1470,6 +1470,18 @@ textarea {
   justify-content: flex-end;
 }
 
+#reader-original {
+  order: 4;
+}
+
+#reader-share {
+  order: 5;
+}
+
+#reader-ai-panel-open {
+  order: 6;
+}
+
 .card-footer a {
   border-color: var(--line);
   background: var(--panel-soft);
@@ -2333,6 +2345,18 @@ a.icon-action {
     width: 42px;
     min-width: 42px;
     padding: 0;
+  }
+
+  .project-link,
+  .github-link {
+    width: 42px;
+    min-width: 42px;
+    padding: 0;
+  }
+
+  .project-link span,
+  .github-link span {
+    display: none;
   }
 
   .new-card-header {
