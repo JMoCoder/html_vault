@@ -1533,10 +1533,10 @@ textarea {
   grid-template-columns: 42px minmax(0, 1fr) auto;
   gap: 16px;
   align-items: start;
-  padding: 18px;
+  padding: 18px 18px 22px;
   border-bottom: 1px solid var(--line);
   background: var(--panel);
-  max-height: 188px;
+  max-height: 204px;
   overflow: hidden;
   position: relative;
   z-index: 2;
