@@ -1157,10 +1157,19 @@ async function renderStaticShareFallback() {
     frame.title = title;
     frame.srcdoc = renderShareSrcdoc(data);
     window.addEventListener("message", (event) => {
-      if (!frame || event.source !== frame.contentWindow || !event.data || event.data.type !== "html-lore-share-height") return;
-      const height = Number(event.data.height);
-      if (Number.isFinite(height) && height > 0) {
-        frame.style.height = `${Math.min(Math.max(height, 420), 16000)}px`;
+      if (!frame || event.source !== frame.contentWindow || !event.data) return;
+      if (event.data.type === "html-lore-share-height") {
+        const height = Number(event.data.height);
+        if (Number.isFinite(height) && height > 0) {
+          frame.style.height = `${Math.min(Math.max(height, 420), 16000)}px`;
+        }
+      }
+      if (event.data.type === "html-lore-share-anchor") {
+        const top = Number(event.data.top);
+        if (Number.isFinite(top)) {
+          const frameTop = frame.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({ top: Math.max(frameTop + top - 12, 0), behavior: "smooth" });
+        }
       }
     });
   } catch (error) {
@@ -1197,7 +1206,23 @@ function renderShareSrcdoc(data) {
       const height = Math.max(doc.scrollHeight, document.body ? document.body.scrollHeight : 0);
       parent.postMessage({ type: "html-lore-share-height", height }, "*");
     }
+    function scrollToFragment(hash) {
+      if (!hash || hash === "#") return;
+      const id = decodeURIComponent(hash.slice(1));
+      const target = document.getElementById(id);
+      if (!target) return;
+      const top = target.getBoundingClientRect().top;
+      parent.postMessage({ type: "html-lore-share-anchor", top }, "*");
+      target.scrollIntoView({ block: "start", behavior: "smooth" });
+      reportHeight();
+    }
     document.addEventListener("click", (event) => {
+      const anchor = event.target.closest('a[href^="#"]');
+      if (anchor) {
+        event.preventDefault();
+        scrollToFragment(anchor.getAttribute("href"));
+        return;
+      }
       const trigger = event.target.closest("[data-share-toggle]");
       if (!trigger) return;
       const target = document.getElementById(trigger.getAttribute("data-share-toggle"));

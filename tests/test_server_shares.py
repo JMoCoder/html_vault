@@ -410,6 +410,8 @@ def test_shared_page_preserves_safe_styles_and_fragment_links(tmp_path: Path) ->
         assert "scroll-behavior: smooth" in srcdoc
         assert "data:image/svg+xml" in srcdoc
         assert 'href="#overview"' in srcdoc
+        assert "scrollToFragment" in srcdoc
+        assert "event.preventDefault()" in srcdoc
         assert "https://example.com" not in srcdoc
         assert public_page.count("<html") == 1
         assert public_page.count("<head") == 1

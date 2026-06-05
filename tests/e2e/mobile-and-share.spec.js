@@ -144,6 +144,61 @@ test("static share fallback renders public shared content instead of the workspa
   await expect(page.frameLocator(".share-fallback-frame").locator("h1")).toHaveText("Rendered shared HTML");
 });
 
+test("static share fallback keeps fragment navigation inside the shared document", async ({ page }) => {
+  await page.route("**/share/anchor-token", async (route) => {
+    const html = fs.readFileSync(path.join(__dirname, "../../app_static/index.html"), "utf8");
+    await route.fulfill({ contentType: "text/html", body: html });
+  });
+  await page.route("**/config.js", async (route) => {
+    await route.fulfill({ contentType: "application/javascript", body: "" });
+  });
+  await page.route("**/app.js**", async (route) => {
+    await route.fulfill({
+      contentType: "application/javascript",
+      body: fs.readFileSync(path.join(__dirname, "../../app_static/app.js"), "utf8"),
+    });
+  });
+  await page.route("**/style.css**", async (route) => {
+    await route.fulfill({
+      contentType: "text/css",
+      body: fs.readFileSync(path.join(__dirname, "../../app_static/style.css"), "utf8"),
+    });
+  });
+  await page.route("**/assets/html-lore-logo.svg", async (route) => {
+    await route.fulfill({
+      contentType: "image/svg+xml",
+      body: fs.readFileSync(path.join(__dirname, "../../app_static/assets/html-lore-logo.svg"), "utf8"),
+    });
+  });
+  await page.route("**/api/public/shares/anchor-token", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        share: { active: true, expires_at: "" },
+        item: { title: "Anchor Note", summary: "Public summary" },
+        html: '<nav><a href="#sec-target">Jump</a></nav><div style="height:1200px"></div><section id="sec-target"><h2>Target</h2></section>',
+        styles: "",
+      }),
+    });
+  });
+
+  await page.goto("/share/anchor-token");
+
+  const frame = page.frameLocator(".share-fallback-frame");
+  await expect
+    .poll(async () => {
+      return page.evaluate(() => window.scrollY);
+    })
+    .toBeLessThan(40);
+  await frame.getByRole("link", { name: "Jump" }).click();
+  await expect(page).toHaveURL(/\/share\/anchor-token$/);
+  await expect
+    .poll(async () => {
+      return page.evaluate(() => window.scrollY);
+    })
+    .toBeGreaterThan(700);
+});
+
 test("archiving the only note for a tag hides that zero-count tag until restored", async ({ page }) => {
   await page.goto("/demo/");
   await page.evaluate(() => localStorage.clear());
