@@ -9,12 +9,20 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-06-05
+
 ### Removed
 
 - Removed legacy `html_vault` Python compatibility package, the old
   `html-vault` CLI entry point, and `HTML_VAULT_*` runtime environment
   fallback paths. Current runtime configuration now uses `html_lore`,
   `html-lore`, and `HTML_LORE_*` only.
+
+### Changed
+
+- Updated Docker, deployment examples, migration notes, and package discovery
+  to use the renamed HTMlore runtime path only.
+- Updated package, app, PWA, and demo cache versions to `0.8.0`.
 
 ## [0.7.9] - 2026-06-05
 

@@ -4,11 +4,19 @@
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-06-05
+
 ### 移除
 
 - 移除旧 `html_vault` Python 兼容包、旧 `html-vault` CLI 入口，以及
   `HTML_VAULT_*` 运行时环境变量 fallback。当前运行配置仅使用
   `html_lore`、`html-lore` 和 `HTML_LORE_*`。
+
+### 变更
+
+- Docker、部署示例、迁移说明和 Python 包发现逻辑统一使用更名后的 HTMlore
+  运行链路。
+- 包版本、应用版本、PWA 与 Demo 缓存版本更新为 `0.8.0`。
 
 ## [0.7.9] - 2026-06-05
 

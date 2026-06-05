@@ -4,11 +4,19 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-06-05
+
 ### Removed
 
 - 従来の `html_vault` Python 互換パッケージ、旧 `html-vault` CLI entry point、
   `HTML_VAULT_*` runtime environment fallback を削除しました。現在の runtime
   設定は `html_lore`、`html-lore`、`HTML_LORE_*` のみを使用します。
+
+### Changed
+
+- Docker、デプロイ例、移行ノート、Python package discovery を、名称変更後の
+  HTMlore runtime path のみを使うよう更新しました。
+- パッケージ、アプリ、PWA、Demo のキャッシュバージョンを `0.8.0` に更新しました。
 
 ## [0.7.9] - 2026-06-05
 
