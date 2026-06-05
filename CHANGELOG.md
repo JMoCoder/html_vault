@@ -9,6 +9,28 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-06-05
+
+### Added
+
+- Added dynamic result counts to the tag filter popover. The title now shows
+  the current filtered item count, OR mode keeps per-tag counts independent,
+  and AND mode shows co-occurring tag counts within the current intersection.
+- Added share expiry/status metadata to the share dialog and share management
+  list.
+
+### Fixed
+
+- Kept fragment links inside public shared HTML pages scoped to the shared
+  document instead of navigating back to the workspace shell.
+- Increased reader header spacing so three-line summaries do not crowd the tag
+  row against the header boundary.
+
+### Changed
+
+- Reduced the OR/AND tag match buttons in the filter popover.
+- Updated package, app, PWA, and demo cache versions to `0.8.1`.
+
 ## [0.8.0] - 2026-06-05
 
 ### Removed

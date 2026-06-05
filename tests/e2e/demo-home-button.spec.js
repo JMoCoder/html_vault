@@ -142,6 +142,86 @@ test("share dialog and management show expiry and static status", async ({ page 
   await expect(row).toContainText("2 visits");
 });
 
+test("tag filter counts follow OR and AND selection semantics", async ({ page }) => {
+  const items = [
+    {
+      id: "notes/a.html",
+      title: "Alpha",
+      summary: "A only",
+      collection: "Test",
+      tags: ["A"],
+      source: "imported",
+      updated: "2026-06-04T00:00:00Z",
+      path: "content/a.html",
+    },
+    {
+      id: "notes/ab.html",
+      title: "Alpha Beta",
+      summary: "A and B",
+      collection: "Test",
+      tags: ["A", "B"],
+      source: "imported",
+      updated: "2026-06-03T00:00:00Z",
+      path: "content/ab.html",
+    },
+    {
+      id: "notes/c.html",
+      title: "Gamma",
+      summary: "C only",
+      collection: "Test",
+      tags: ["C"],
+      source: "imported",
+      updated: "2026-06-02T00:00:00Z",
+      path: "content/c.html",
+    },
+  ];
+  await page.route("**/demo/config.js", async (route) => {
+    await route.fulfill({
+      contentType: "application/javascript",
+      body: 'window.HTML_LORE_AGENT_URL = "http://127.0.0.1:8090";',
+    });
+  });
+  await page.route("**/api/auth/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ enabled: false, authenticated: true, user: null, data_id: null }),
+    });
+  });
+  await page.route("**/api/manifest", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ version: 2, title: "Filter Test", items }),
+    });
+  });
+  await page.route("**/api/shares", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ shares: [], count: 0 }) });
+  });
+
+  await page.goto("/demo/?lang=en");
+  await page.locator("#multi-filter-toggle").click();
+  await expect(page.locator("#multi-filter-result-count")).toHaveText("3");
+  await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#A" }).locator(".multi-filter-count")).toHaveText("2");
+  await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#B" }).locator(".multi-filter-count")).toHaveText("1");
+  await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#C" }).locator(".multi-filter-count")).toHaveText("1");
+
+  await page.locator("#multi-tag-options .multi-filter-option", { hasText: "#A" }).click();
+  await expect(page.locator("#multi-filter-result-count")).toHaveText("2");
+  await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#B" }).locator(".multi-filter-count")).toHaveText("1");
+  await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#C" }).locator(".multi-filter-count")).toHaveText("1");
+
+  await page.locator("[data-tag-match-mode='all']").click();
+  await expect(page.locator("#multi-filter-result-count")).toHaveText("2");
+  await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#A" }).locator(".multi-filter-count")).toHaveText("2");
+  await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#B" }).locator(".multi-filter-count")).toHaveText("1");
+  await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#C" }).locator(".multi-filter-count")).toHaveText("0");
+
+  await page.locator("#multi-tag-options .multi-filter-option", { hasText: "#B" }).click();
+  await expect(page.locator("#multi-filter-result-count")).toHaveText("1");
+  await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#A" }).locator(".multi-filter-count")).toHaveText("1");
+  await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#B" }).locator(".multi-filter-count")).toHaveText("1");
+  await expect(page.locator("#multi-tag-options .multi-filter-option", { hasText: "#C" }).locator(".multi-filter-count")).toHaveText("0");
+});
+
 test("card original links use raw API in same-origin app mode", async ({ page }) => {
   await page.route("**/demo/config.js", async (route) => {
     await route.fulfill({

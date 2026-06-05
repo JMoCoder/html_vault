@@ -934,7 +934,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.8.0",
+  currentVersion: "0.8.1",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -1033,6 +1033,7 @@ const elements = {
   tagNav: document.querySelector("#tag-nav"),
   multiFilterToggle: document.querySelector("#multi-filter-toggle"),
   multiFilterPopover: document.querySelector("#multi-filter-popover"),
+  multiFilterResultCount: document.querySelector("#multi-filter-result-count"),
   multiTagOptions: document.querySelector("#multi-tag-options"),
   tagMatchButtons: document.querySelectorAll("[data-tag-match-mode]"),
   sortToggle: document.querySelector("#sort-toggle"),
@@ -1552,6 +1553,10 @@ function normalizeVisibleTagFilters() {
 }
 
 function filteredItems() {
+  return sortItems(applySelectedTagFilters(baseItemsForTagFilters()));
+}
+
+function baseItemsForTagFilters() {
   const query = state.query.trim().toLowerCase();
   let items = [...state.items];
 
@@ -1562,16 +1567,6 @@ function filteredItems() {
     items = items.filter((item) => getItemCollection(item) === state.filter.value);
   } else if (state.filter.type === "tag") {
     items = items.filter((item) => getItemTags(item).includes(state.filter.value));
-  }
-
-  if (state.selectedTags.size > 0) {
-    items = items.filter((item) => {
-      const tags = getItemTags(item);
-      if (state.tagMatchMode === "all") {
-        return [...state.selectedTags].every((tag) => tags.includes(tag));
-      }
-      return tags.some((tag) => state.selectedTags.has(tag));
-    });
   }
 
   const filterValue = state.filter.type === "library" ? state.filter.value : "";
@@ -1585,7 +1580,18 @@ function filteredItems() {
     items = items.filter((item) => searchableText(item).includes(query));
   }
 
-  return sortItems(items);
+  return items;
+}
+
+function applySelectedTagFilters(items, selectedTags = state.selectedTags, mode = state.tagMatchMode) {
+  if (selectedTags.size === 0) return [...items];
+  return items.filter((item) => {
+    const tags = getItemTags(item);
+    if (mode === "all") {
+      return [...selectedTags].every((tag) => tags.includes(tag));
+    }
+    return tags.some((tag) => selectedTags.has(tag));
+  });
 }
 
 function isVisibleInArchiveScope(item, value) {
@@ -1622,6 +1628,7 @@ function sortItems(items) {
 }
 
 function renderGrid() {
+  renderMultiFilterOptions();
   const items = filteredItems();
   elements.contentGrid.classList.remove("list-view");
 
@@ -2908,17 +2915,36 @@ function setTagMatchMode(mode) {
   if (mode !== "any" && mode !== "all") return;
   state.tagMatchMode = mode;
   applyMultiFilterState();
+  renderMultiFilterOptions();
   renderGrid();
   renderAiContext();
 }
 
 function renderMultiFilterOptions() {
+  const baseItems = baseItemsForTagFilters();
+  const resultItems = applySelectedTagFilters(baseItems);
+  if (elements.multiFilterResultCount) {
+    elements.multiFilterResultCount.textContent = String(resultItems.length);
+  }
   elements.multiTagOptions.replaceChildren(...getTagOptions()
     .filter((tag) => isManagedItemVisible("tags", tag.name))
-    .map((tag) => ({ ...tag, count: countTagItems(tag.name) }))
-    .filter((tag) => tag.count > 0)
+    .map((tag) => ({
+      ...tag,
+      baseCount: countTagItemsInScope(tag.name, baseItems),
+      count: countMultiFilterTagItems(tag.name, baseItems, resultItems),
+    }))
+    .filter((tag) => tag.baseCount > 0)
     .map((tag) => multiFilterOption(tag.name, tag.count)));
   applyMultiFilterState();
+}
+
+function countMultiFilterTagItems(name, baseItems, resultItems) {
+  const scope = state.tagMatchMode === "all" && state.selectedTags.size > 0 ? resultItems : baseItems;
+  return countTagItemsInScope(name, scope);
+}
+
+function countTagItemsInScope(name, items) {
+  return items.filter((item) => getItemTags(item).includes(name)).length;
 }
 
 function multiFilterOption(name, count) {
@@ -3580,7 +3606,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.8.0-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.8.1-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });

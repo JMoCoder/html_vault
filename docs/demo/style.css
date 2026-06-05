@@ -964,6 +964,12 @@ textarea {
   cursor: pointer;
 }
 
+.multi-filter-header-actions button {
+  min-height: 26px;
+  padding: 0 9px;
+  font-size: 12px;
+}
+
 .multi-filter-header-actions button.active {
   border-color: var(--accent);
   background: var(--status-bg);
@@ -977,10 +983,20 @@ textarea {
 }
 
 .multi-filter-section h4 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   color: var(--muted);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0;
+}
+
+.multi-filter-title-count {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .multi-filter-options {
