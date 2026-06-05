@@ -1627,6 +1627,7 @@ function renderCard(item) {
         ${isArchived(item) ? "" : itemActionButton("edit", item)}
         ${itemActionButton("favorite", item)}
         ${itemActionButton("archive", item)}
+        ${isArchived(item) ? "" : itemActionButton("share", item)}
         ${itemActionButton(isArchived(item) ? "delete" : "ai-context", item)}
       </div>
     </div>
@@ -1654,6 +1655,10 @@ function renderCard(item) {
     event.stopPropagation();
     toggleArchive(item.id);
   });
+  card.querySelector("[data-item-action='share']")?.addEventListener("click", (event) => {
+    event.stopPropagation();
+    openShareDialog(item.id);
+  });
   card.querySelector("[data-item-action='ai-context']")?.addEventListener("click", (event) => {
     event.stopPropagation();
     toggleManualAiContext(item.id);
@@ -1674,18 +1679,20 @@ function getSourceLabel(item) {
 function itemActionButton(action, item) {
   const active = action === "favorite" ? isFavorite(item)
     : action === "archive" ? isArchived(item)
-      : action === "ai-context" ? state.manualAiContextIds.has(item.id)
-        : false;
+      : action === "share" ? Boolean(getActiveShareForItem(item.id))
+        : action === "ai-context" ? state.manualAiContextIds.has(item.id)
+          : false;
   const label = {
     edit: t("editMetadata"),
     favorite: t(active ? "unfavoriteAction" : "favoriteAction"),
     archive: t(active ? "unarchiveAction" : "archiveAction"),
+    share: t("shareAction"),
     "ai-context": t(active ? "removeFromAiContext" : "addToAiContext"),
     delete: t("permanentDeleteAction"),
   }[action];
   return `
     <button class="item-icon-button${active ? " active" : ""}" type="button" data-item-action="${action}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}">
-      ${action === "edit" ? editIcon() : action === "favorite" ? starIcon(active) : action === "archive" ? archiveIcon() : action === "delete" ? trashIcon() : contextToggleIcon(active)}
+      ${action === "edit" ? editIcon() : action === "favorite" ? starIcon(active) : action === "archive" ? archiveIcon() : action === "share" ? shareIcon() : action === "delete" ? trashIcon() : contextToggleIcon(active)}
     </button>
   `;
 }
@@ -2073,6 +2080,7 @@ async function submitShareDialog(event) {
       elements.shareFeedback.textContent = t("shareCreated");
     }
     renderReaderShareState();
+    renderGrid();
     renderShareManagement();
     elements.shareCreate.textContent = t("updateShare");
     elements.shareCopy.hidden = !elements.shareLink.value;
@@ -2115,6 +2123,7 @@ async function revokeCurrentShare() {
     replaceShare(await response.json());
     elements.shareFeedback.textContent = t("shareRevoked");
     renderReaderShareState();
+    renderGrid();
     renderShareManagement();
     openShareDialog(state.sharingItemId);
   } catch (error) {
@@ -2129,6 +2138,7 @@ function renderReaderShareState() {
   const active = !archived && Boolean(getActiveShareForItem(state.currentReaderItemId));
   elements.readerShare.hidden = archived;
   elements.readerShare.classList.toggle("active", active);
+  elements.readerShare.innerHTML = shareIcon();
   setIconButtonLabel(elements.readerShare, "shareAction");
 }
 
@@ -2165,6 +2175,7 @@ function renderShareManagementRow(share) {
       elements.shareManagementFeedback.textContent = t("shareRevoked");
       renderShareManagement();
       renderReaderShareState();
+      renderGrid();
     } catch (error) {
       elements.shareManagementFeedback.textContent = t("shareFailed");
       console.error(error);
@@ -3432,6 +3443,16 @@ function editIcon() {
     <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M12 20h9"></path>
       <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"></path>
+    </svg>
+  `;
+}
+
+function shareIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"></path>
+      <path d="m16 6-4-4-4 4"></path>
+      <path d="M12 2v14"></path>
     </svg>
   `;
 }

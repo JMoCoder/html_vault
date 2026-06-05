@@ -64,6 +64,20 @@ test("sidebar footer uses settings, homepage, and GitHub actions", async ({ page
     .toBe(true);
 });
 
+test("card share action opens the same share dialog", async ({ page }) => {
+  await page.goto("/demo/?lang=en");
+
+  const firstCard = page.locator(".item-card").first();
+  await expect(firstCard.getByTitle("Share")).toBeVisible();
+  await firstCard.getByTitle("Share").click();
+
+  await expect(page.locator("#share-dialog")).toBeVisible();
+  await expect(page.locator("#share-duration")).toBeVisible();
+  await expect(page.locator("#share-feedback")).toContainText("backend server");
+  await page.locator("#share-cancel").click();
+  await expect(page.locator("#share-dialog")).toBeHidden();
+});
+
 test("card original links use raw API in same-origin app mode", async ({ page }) => {
   await page.route("**/demo/config.js", async (route) => {
     await route.fulfill({

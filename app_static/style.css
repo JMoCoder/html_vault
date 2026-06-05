@@ -1383,6 +1383,7 @@ textarea {
 .item-actions {
   display: inline-flex;
   align-items: center;
+  flex: 0 0 auto;
   gap: 6px;
 }
 
@@ -1477,6 +1478,7 @@ textarea {
 
 .source-type {
   grid-area: source;
+  min-width: 0;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1778,6 +1780,12 @@ a.icon-action {
 }
 
 #reader-share.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+  color: var(--accent-dark);
+}
+
+.item-icon-button[data-item-action="share"].active {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) 14%, var(--panel));
   color: var(--accent-dark);
