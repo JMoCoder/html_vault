@@ -55,6 +55,10 @@ def test_share_link_allows_public_sanitized_note_without_login(tmp_path: Path) -
             f"http://127.0.0.1:{server.port}{created['url_path']}",
             timeout=5,
         ).read().decode("utf-8")
+        public_page_trailing_slash = urllib.request.urlopen(
+            f"http://127.0.0.1:{server.port}{created['url_path']}/",
+            timeout=5,
+        ).read().decode("utf-8")
 
         assert "Docker Network Quick Notes" in public_json
         assert "Docker Network Quick Notes" in public_page
@@ -64,6 +68,8 @@ def test_share_link_allows_public_sanitized_note_without_login(tmp_path: Path) -
         assert "\"tags\"" not in public_json
         assert "\"url_path\"" not in public_json
         assert "HTMlore shared note" in public_page
+        assert "HTMlore shared note" in public_page_trailing_slash
+        assert "GitHub repository" not in public_page_trailing_slash
         assert public_page.count("<html") == 1
         assert public_page.count("<head") == 1
         assert public_page.count("<body") == 1
@@ -127,6 +133,26 @@ def test_share_list_keeps_copyable_url_after_update(tmp_path: Path) -> None:
 
         assert updated["url_path"] == created["url_path"]
         assert shares["shares"][0]["url_path"] == created["url_path"]
+    finally:
+        server.close()
+
+
+def test_public_share_read_repairs_existing_static_shell(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = copy_fixture_tree(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, site_title="Share Test")
+    try:
+        created = server.json("POST", "/api/shares", {"item_id": "imported/docker-network.html", "duration": "1d"})
+        static_shell = public_dir / "share" / created["token"] / "index.html"
+        static_shell.write_text("<!doctype html><html><head></head><body>broken shell</body></html>", encoding="utf-8")
+
+        urllib.request.urlopen(
+            f"http://127.0.0.1:{server.port}/api/public/shares/{created['token']}",
+            timeout=5,
+        ).read()
+
+        repaired = static_shell.read_text(encoding="utf-8")
+        assert '<base href="/">' in repaired
+        assert "broken shell" not in repaired
     finally:
         server.close()
 

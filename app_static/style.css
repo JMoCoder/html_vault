@@ -462,8 +462,8 @@ textarea {
   align-items: center;
 }
 
-.profile-status,
 .settings-toggle,
+.project-link,
 .github-link {
   min-width: 42px;
   height: 36px;
@@ -477,13 +477,6 @@ textarea {
   text-decoration: none;
 }
 
-.profile-status {
-  width: 42px;
-  padding: 0;
-  background: var(--panel-soft);
-}
-
-.profile-avatar-mini,
 .profile-avatar-large {
   display: grid;
   place-items: center;
@@ -492,36 +485,6 @@ textarea {
   background: var(--accent);
   color: var(--accent-contrast);
   font-weight: 850;
-}
-
-.profile-status:hover {
-  border-color: var(--accent);
-  color: var(--accent-dark);
-}
-
-.profile-status.active {
-  border-color: var(--accent);
-  color: var(--accent-dark);
-  background: color-mix(in srgb, var(--accent) 10%, var(--panel));
-}
-
-.profile-summary-popover {
-  position: absolute;
-  left: 0;
-  bottom: calc(100% + 10px);
-  z-index: 45;
-  width: min(300px, calc(var(--sidebar-width) - 24px));
-  display: grid;
-  gap: 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 14px;
-  background: var(--panel);
-  box-shadow: var(--shadow);
-}
-
-.profile-summary-popover[hidden] {
-  display: none;
 }
 
 .profile-avatar-upload {
@@ -541,28 +504,12 @@ textarea {
   border-color: var(--accent);
 }
 
-.profile-summary-popover .profile-avatar-upload {
-  border-color: transparent;
-  background: transparent;
-}
-
-.profile-summary-popover .profile-avatar-upload:hover {
-  border-color: var(--accent);
-  background: var(--panel-soft);
-}
-
-.profile-avatar-mini {
-  width: 24px;
-  height: 24px;
-}
-
 .profile-avatar-large {
   width: 54px;
   height: 54px;
   border-radius: 10px;
 }
 
-.profile-avatar-mini img,
 .profile-avatar-large img {
   width: 100%;
   height: 100%;
@@ -632,6 +579,7 @@ textarea {
   cursor: pointer;
 }
 
+.project-link,
 .github-link {
   grid-auto-flow: column;
   gap: 7px;
@@ -639,6 +587,13 @@ textarea {
   color: var(--muted);
   font-size: 12px;
   font-weight: 700;
+  text-decoration: none;
+}
+
+.project-link img {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
 }
 
 .github-mark {
@@ -647,6 +602,7 @@ textarea {
   fill: currentColor;
 }
 
+.project-link:hover,
 .github-link:hover {
   border-color: var(--accent);
   color: var(--accent-dark);
@@ -701,6 +657,7 @@ textarea {
   pointer-events: none;
 }
 
+.sidebar-collapsed .project-link,
 .sidebar-collapsed .github-link {
   width: 42px;
   min-width: 42px;
@@ -709,6 +666,7 @@ textarea {
   color: var(--muted);
 }
 
+.sidebar-collapsed .project-link span,
 .sidebar-collapsed .github-link span {
   display: none;
 }
@@ -722,11 +680,6 @@ textarea {
 
 .sidebar-collapsed .sidebar-tool-group {
   flex-direction: column;
-}
-
-.sidebar-collapsed .profile-summary-popover {
-  left: 0;
-  width: 260px;
 }
 
 .nav-section {
@@ -2349,22 +2302,29 @@ a.icon-action {
     display: none;
   }
 
+  .reader-open .sidebar-main,
+  .reader-open .sidebar-tools {
+    display: none;
+  }
+
+  .reader-open .sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .reader-open .sidebar-header {
+    grid-template-columns: minmax(0, 1fr) 32px;
+  }
+
   .sidebar-collapsed .sidebar-tools,
   .sidebar-collapsed .sidebar-tool-group {
     flex-direction: row;
   }
 
+  .sidebar-collapsed .project-link,
   .sidebar-collapsed .github-link {
     width: 42px;
     min-width: 42px;
     padding: 0;
-  }
-
-  .sidebar-collapsed .profile-summary-popover,
-  .profile-summary-popover {
-    right: 0;
-    left: auto;
-    width: min(300px, calc(100vw - 24px));
   }
 
   .new-card-header {
@@ -2382,7 +2342,10 @@ a.icon-action {
   }
 
   .reader {
-    inset: 0;
+    inset: var(--mobile-reader-top, 0) 0 0;
+    grid-template-rows: auto auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .sidebar-collapsed .reader {
@@ -2444,9 +2407,10 @@ a.icon-action {
     grid-template-columns: 38px minmax(0, 1fr);
     gap: 10px;
     align-items: center;
-    padding: 10px;
+    padding: 12px 14px 10px;
     max-height: none;
     overflow: visible;
+    position: relative;
   }
 
   .reader-actions {
@@ -2464,7 +2428,33 @@ a.icon-action {
 
   .reader.compact-reader-header .reader-header {
     max-height: none;
-    padding: 8px 10px;
+    padding: 12px 14px 10px;
+  }
+
+  .reader.compact-reader-header .reader-heading .eyebrow,
+  .reader.compact-reader-header .reader-heading p,
+  .reader.compact-reader-header .reader-tags {
+    display: -webkit-box;
+  }
+
+  .reader.compact-reader-header .reader-heading h2 {
+    font-size: 24px;
+    line-height: 1.25;
+    -webkit-line-clamp: 2;
+  }
+
+  .reader-heading p {
+    -webkit-line-clamp: 4;
+  }
+
+  .reader-frame-shell {
+    overflow: visible;
+  }
+
+  .reader iframe {
+    height: auto;
+    min-height: calc(100vh - var(--mobile-reader-top, 0px));
+    overflow: hidden;
   }
 
   .content-grid.list-view .item-card {

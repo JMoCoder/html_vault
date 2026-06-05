@@ -928,7 +928,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.7.8",
+  currentVersion: "0.7.9",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -957,7 +957,6 @@ const state = {
   currentReaderItemId: "",
   editingItemId: "",
   editingTags: new Set(),
-  profileSummaryOpen: false,
   shares: [],
   sharingItemId: "",
 };
@@ -970,20 +969,13 @@ const elements = {
   loginPassword: document.querySelector("#login-password"),
   loginFeedback: document.querySelector("#login-feedback"),
   logoutButton: document.querySelector("#logout-button"),
-  profileStatus: document.querySelector("#profile-status"),
-  profileSummaryPopover: document.querySelector("#profile-summary-popover"),
-  profileAvatarMini: document.querySelector("#profile-avatar-mini"),
-  profileSummaryAvatar: document.querySelector("#profile-summary-avatar"),
-  profileSummaryAvatarTrigger: document.querySelector("#profile-summary-avatar-trigger"),
-  profileSummaryName: document.querySelector("#profile-summary-name"),
-  profileSummaryId: document.querySelector("#profile-summary-id"),
-  profileSummaryAiCredits: document.querySelector("#profile-summary-ai-credits"),
   settingsProfileAvatar: document.querySelector("#settings-profile-avatar"),
   settingsProfileName: document.querySelector("#settings-profile-name"),
   settingsProfileId: document.querySelector("#settings-profile-id"),
   avatarUploadTrigger: document.querySelector("#avatar-upload-trigger"),
   avatarUpload: document.querySelector("#avatar-upload"),
   brandHome: document.querySelector("#brand-home"),
+  sidebar: document.querySelector(".sidebar"),
   sidebarCollapse: document.querySelector("#sidebar-collapse"),
   sidebarResize: document.querySelector("#sidebar-resize"),
   navSectionToggles: document.querySelectorAll("[data-nav-section-toggle]"),
@@ -1361,6 +1353,7 @@ function renderApp() {
   applySidebarWidth();
   applyNavSectionState();
   applyAiPanelState();
+  updateMobileReaderTop();
   applyTheme();
   renderProfile();
   applyViewMode();
@@ -1381,6 +1374,12 @@ function renderApp() {
   renderManagementLists();
   renderShareManagement();
   renderVersionStatus();
+}
+
+function updateMobileReaderTop() {
+  const isMobile = window.matchMedia("(max-width: 900px)").matches;
+  const height = isMobile && elements.sidebar ? Math.ceil(elements.sidebar.getBoundingClientRect().height) : 0;
+  document.documentElement.style.setProperty("--mobile-reader-top", `${height}px`);
 }
 
 function renderWorkspaceBrand() {
@@ -1476,10 +1475,12 @@ function renderCollectionNav() {
 function renderTagNav() {
   const tags = getTagOptions()
     .filter((tag) => isManagedItemVisible("tags", tag.name))
+    .map((tag) => ({ ...tag, count: countTagItems(tag.name) }))
+    .filter((tag) => tag.count > 0)
     .map((tag) => {
     const active = state.filter.type === "tag" && state.filter.value === tag.name;
     const multiActive = state.selectedTags.has(tag.name);
-    return navButton(`#${tag.name}`, countTagItems(tag.name), active || multiActive, () => {
+    return navButton(`#${tag.name}`, tag.count, active || multiActive, () => {
       selectTag(tag.name);
     }, "tag-filter");
   });
@@ -1507,6 +1508,15 @@ function countCollectionItems(name) {
 
 function countTagItems(name) {
   return state.items.filter((item) => !isArchived(item) && getItemTags(item).includes(name)).length;
+}
+
+function normalizeVisibleTagFilters() {
+  if (state.filter.type === "tag" && countTagItems(state.filter.value) === 0) {
+    state.filter = { type: "library", value: "all" };
+  }
+  state.selectedTags.forEach((tag) => {
+    if (countTagItems(tag) === 0) state.selectedTags.delete(tag);
+  });
 }
 
 function filteredItems() {
@@ -1684,6 +1694,8 @@ function openReader(item) {
   state.currentReaderItemId = item.id;
   elements.reader.hidden = false;
   elements.reader.classList.remove("compact-reader-header");
+  elements.body.classList.add("reader-open");
+  requestAnimationFrame(updateMobileReaderTop);
   renderReaderMetadata(item);
   elements.readerFrame.src = getReaderContentUrl(item);
   renderReaderActions(item);
@@ -1719,11 +1731,29 @@ function bindReaderFrameScroll() {
     const readerWindow = elements.readerFrame.contentWindow;
     const readerDocument = elements.readerFrame.contentDocument;
     if (!readerWindow || !readerDocument) return;
+    const updateMobileFrameHeight = () => {
+      if (!window.matchMedia("(max-width: 900px)").matches) {
+        elements.readerFrame.style.height = "";
+        return;
+      }
+      const doc = readerDocument.documentElement;
+      const body = readerDocument.body;
+      const height = Math.max(doc?.scrollHeight || 0, body?.scrollHeight || 0, window.innerHeight);
+      elements.readerFrame.style.height = `${Math.ceil(height)}px`;
+    };
     const update = () => {
+      updateMobileFrameHeight();
+      if (window.matchMedia("(max-width: 900px)").matches) {
+        elements.reader.classList.remove("compact-reader-header");
+        return;
+      }
       const scrollTop = readerWindow.scrollY || readerDocument.documentElement.scrollTop || readerDocument.body.scrollTop || 0;
       elements.reader.classList.toggle("compact-reader-header", scrollTop > 24);
     };
     readerWindow.addEventListener("scroll", update, { passive: true });
+    readerWindow.addEventListener("resize", update);
+    setTimeout(update, 250);
+    setTimeout(update, 900);
     update();
   } catch {
     elements.reader.classList.remove("compact-reader-header");
@@ -1734,6 +1764,8 @@ function closeReader() {
   state.currentReaderItemId = "";
   elements.reader.hidden = true;
   elements.reader.classList.remove("compact-reader-header");
+  elements.body.classList.remove("reader-open");
+  elements.readerFrame.style.height = "";
   elements.readerFrame.removeAttribute("src");
   if (window.location.hash) {
     history.pushState("", document.title, window.location.pathname + window.location.search);
@@ -1745,6 +1777,8 @@ function returnToWorkspace() {
   state.currentReaderItemId = "";
   elements.reader.hidden = true;
   elements.reader.classList.remove("compact-reader-header");
+  elements.body.classList.remove("reader-open");
+  elements.readerFrame.style.height = "";
   elements.readerFrame.removeAttribute("src");
   elements.settingsPage.hidden = true;
   if (window.location.hash) {
@@ -1764,6 +1798,10 @@ function goHome() {
 
 function openPagesHome() {
   window.location.href = getPagesHomeUrl();
+}
+
+function openWorkspaceHome() {
+  selectLibraryFilter("all");
 }
 
 function selectLibraryFilter(value) {
@@ -2470,6 +2508,7 @@ async function saveMetadataEditor(event) {
 }
 
 function renderAfterItemStateChange(item) {
+  normalizeVisibleTagFilters();
   renderLibraryNav();
   renderCollectionNav();
   renderTagNav();
@@ -2577,6 +2616,7 @@ function applySidebarState() {
   const label = t(state.sidebarCollapsed ? "expandSidebar" : "collapseSidebar");
   elements.sidebarCollapse.setAttribute("aria-label", label);
   elements.sidebarCollapse.setAttribute("title", label);
+  requestAnimationFrame(updateMobileReaderTop);
 }
 
 function applySidebarWidth() {
@@ -2797,7 +2837,9 @@ function setTagMatchMode(mode) {
 function renderMultiFilterOptions() {
   elements.multiTagOptions.replaceChildren(...getTagOptions()
     .filter((tag) => isManagedItemVisible("tags", tag.name))
-    .map((tag) => multiFilterOption(tag.name, countTagItems(tag.name))));
+    .map((tag) => ({ ...tag, count: countTagItems(tag.name) }))
+    .filter((tag) => tag.count > 0)
+    .map((tag) => multiFilterOption(tag.name, tag.count)));
   applyMultiFilterState();
 }
 
@@ -2947,12 +2989,7 @@ function saveProfile() {
 function renderProfile() {
   const username = state.currentUser.username || "Guest";
   const dataId = state.currentUser.dataId || "static";
-  renderAvatar(elements.profileAvatarMini, false);
-  renderAvatar(elements.profileSummaryAvatar, true);
   renderAvatar(elements.settingsProfileAvatar, true);
-  if (elements.profileSummaryName) elements.profileSummaryName.textContent = username;
-  if (elements.profileSummaryId) elements.profileSummaryId.textContent = `ID: ${dataId}`;
-  if (elements.profileSummaryAiCredits) elements.profileSummaryAiCredits.textContent = "0";
   if (elements.settingsProfileName) elements.settingsProfileName.textContent = username;
   if (elements.settingsProfileId) elements.settingsProfileId.textContent = `ID: ${dataId}`;
 }
@@ -2964,18 +3001,6 @@ function renderAvatar(target, large) {
     return;
   }
   target.innerHTML = `<img src="assets/html-lore-logo.svg" alt="">`;
-}
-
-function toggleProfileSummary() {
-  setProfileSummary(!state.profileSummaryOpen);
-}
-
-function setProfileSummary(open) {
-  state.profileSummaryOpen = open;
-  elements.profileSummaryPopover.hidden = !open;
-  elements.profileStatus.classList.toggle("active", open);
-  elements.profileStatus.setAttribute("aria-expanded", String(open));
-  if (open) renderProfile();
 }
 
 function loadItemState() {
@@ -3467,7 +3492,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.7.8-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.7.9-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });
@@ -3534,14 +3559,9 @@ elements.searchInput.addEventListener("input", (event) => {
   renderGrid();
   renderAiContext();
 });
-elements.brandHome.addEventListener("click", openPagesHome);
+elements.brandHome.addEventListener("click", openWorkspaceHome);
 elements.sidebarCollapse.addEventListener("click", toggleSidebar);
 elements.sidebarResize.addEventListener("pointerdown", startSidebarResize);
-elements.profileStatus.addEventListener("click", (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-  toggleProfileSummary();
-});
 elements.navSectionToggles.forEach((button) => {
   button.addEventListener("click", () => toggleNavSection(button.dataset.navSectionToggle));
 });
@@ -3570,11 +3590,6 @@ document.addEventListener("click", (event) => {
   if (elements.sortPopover.contains(event.target) || elements.sortToggle.contains(event.target)) return;
   closeSortPopover();
 });
-document.addEventListener("click", (event) => {
-  if (!state.profileSummaryOpen) return;
-  if (elements.profileSummaryPopover.contains(event.target) || elements.profileStatus.contains(event.target)) return;
-  setProfileSummary(false);
-});
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !elements.metadataEditor.hidden) {
     closeMetadataEditor();
@@ -3582,16 +3597,12 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !elements.shareDialog.hidden) {
     closeShareDialog();
   }
-  if (event.key === "Escape" && state.profileSummaryOpen) {
-    setProfileSummary(false);
-  }
 });
 elements.languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
 elements.themeModeButtons.forEach((button) => {
   button.addEventListener("click", () => setThemeMode(button.dataset.themeMode));
 });
 elements.avatarUploadTrigger.addEventListener("click", () => elements.avatarUpload.click());
-elements.profileSummaryAvatarTrigger.addEventListener("click", () => elements.avatarUpload.click());
 elements.avatarUpload.addEventListener("change", (event) => uploadAvatar(event.target.files?.[0]));
 elements.settingsOpen.addEventListener("click", toggleSettings);
 elements.settingsBack.addEventListener("click", closeSettings);

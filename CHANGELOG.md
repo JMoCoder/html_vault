@@ -9,6 +9,32 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.7.9] - 2026-06-05
+
+### Added
+
+- Added an HTMlore homepage shortcut to the sidebar footer beside the GitHub
+  shortcut.
+- Added static share shell repair so existing active share entries can regain
+  a safe `/share/{token}` entry page after route or cache issues.
+
+### Changed
+
+- The workspace brand logo now returns to the workspace home instead of opening
+  the public project homepage.
+- Moved the Agent Server connection status into Settings > User profile.
+- Removed the sidebar footer user status button; account details stay inside
+  settings.
+- On mobile reader pages, the reader metadata and action header now scrolls away
+  with the note content while the global top bar remains available.
+
+### Fixed
+
+- Hidden zero-count tags after archiving notes, while restoring them when notes
+  are unarchived.
+- Fixed `/share/{token}/` routing to match `/share/{token}`.
+- Updated package, app, PWA, and demo cache versions to `0.7.9`.
+
 ## [0.7.8] - 2026-06-05
 
 ### Fixed

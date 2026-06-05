@@ -319,6 +319,7 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=404, detail="Share not found.") from exc
 
     @app.get("/share/{token}", response_class=HTMLResponse)
+    @app.get("/share/{token}/", response_class=HTMLResponse)
     def public_share_page(token: str) -> HTMLResponse:
         public_settings = settings_for_share_token(settings, token)
         try:

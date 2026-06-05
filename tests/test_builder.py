@@ -19,6 +19,8 @@ def test_build_site_writes_manifest_and_static_files(tmp_path: Path) -> None:
     assert (output / "share" / "index.html").exists()
     assert (output / "app.js").exists()
     assert (output / "content" / "imported" / "docker-network.html").exists()
+    assert '<base href="/">' in (output / "index.html").read_text(encoding="utf-8")
+    assert '<base href="/">' in (output / "share" / "index.html").read_text(encoding="utf-8")
 
     saved = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
     assert saved["version"] == 2

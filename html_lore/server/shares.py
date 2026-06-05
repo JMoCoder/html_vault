@@ -72,7 +72,9 @@ class ShareService:
         self.item_service = ItemService(settings)
 
     def list_shares(self) -> list[dict[str, Any]]:
-        return [public_share(record) for record in self._read_store().get("shares", []) if not record.get("deleted")]
+        data = self._read_store()
+        self._ensure_static_share_shells(data)
+        return [public_share(record) for record in data.get("shares", []) if not record.get("deleted")]
 
     def create_share(self, item_id: str, duration: str) -> ShareCreateResult:
         if duration not in SHARE_DURATIONS:
@@ -160,6 +162,7 @@ class ShareService:
         record = self._find_by_token_hash(token_hash)
         if not record or not is_share_active(record):
             raise ShareError("Share not found.")
+        self._write_static_share_shell(token)
         item = self.item_service.get_item(str(record.get("item_id") or ""))
         if not item:
             raise ShareError("Share not found.")
@@ -244,6 +247,14 @@ class ShareService:
             shell = shell.replace("<head>", '<head>\n  <base href="/">', 1)
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(shell, encoding="utf-8")
+
+    def _ensure_static_share_shells(self, data: dict[str, Any]) -> None:
+        for record in data.get("shares", []):
+            if record.get("deleted") or not is_share_active(record):
+                continue
+            token = token_from_url_path(str(record.get("url_path") or ""))
+            if token:
+                self._write_static_share_shell(token)
 
     def _delete_static_share_shell(self, url_path: str) -> None:
         token = token_from_url_path(url_path)

@@ -1,8 +1,8 @@
 const { expect, test } = require("@playwright/test");
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/demo/");
-  await page.evaluate(() => localStorage.clear());
+  await page.addInitScript(() => localStorage.clear());
+  await page.goto("/demo/", { waitUntil: "domcontentloaded" });
 });
 
 test("demo defaults to English without a saved language", async ({ page }) => {
@@ -34,12 +34,34 @@ test("demo Home button stays outside the AI panel", async ({ page }) => {
     .toBe(true);
 });
 
-test("demo workspace logo opens the Pages homepage", async ({ page }) => {
+test("workspace logo returns to the workspace home", async ({ page }) => {
   await page.goto("/demo/?lang=zh-CN");
 
+  await page.locator("#library-nav .nav-item", { hasText: "Imported" }).click();
+  await expect(page.getByRole("button", { name: /Imported/ })).toHaveClass(/active/);
   await page.locator("#brand-home").click();
-  await expect(page).toHaveURL(/\/$/);
-  await expect(page.locator(".cover h1")).toBeVisible();
+  await expect(page).toHaveURL(/\/demo\/\?lang=zh-CN$/);
+  await expect(page.getByRole("button", { name: /All Items/ })).toHaveClass(/active/);
+  await expect(page.locator(".cover h1")).toHaveCount(0);
+});
+
+test("sidebar footer uses settings, homepage, and GitHub actions", async ({ page }) => {
+  await expect(page.locator("#profile-status")).toHaveCount(0);
+  await expect(page.locator("#settings-open")).toBeVisible();
+  await expect(page.locator(".project-link")).toBeVisible();
+  await expect(page.locator(".github-link")).toBeVisible();
+  await expect(page.locator(".project-link")).toHaveAttribute("href", /html_lore\/$/);
+  await expect(page.locator(".github-link")).toHaveAttribute("href", /github\.com\/JMoCoder\/html_lore/);
+
+  await expect
+    .poll(async () => {
+      const settings = await page.locator("#settings-open").boundingBox();
+      const project = await page.locator(".project-link").boundingBox();
+      const github = await page.locator(".github-link").boundingBox();
+      if (!settings || !project || !github) return false;
+      return settings.x < project.x && project.x < github.x;
+    })
+    .toBe(true);
 });
 
 test("card original links use raw API in same-origin app mode", async ({ page }) => {
