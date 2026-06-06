@@ -4,6 +4,7 @@ from pathlib import Path
 
 from html_lore.server.config import ServerSettings
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState
+from html_lore.server.ai.knowledge_qa_graph import KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
 from html_lore.server.ai.retrieval import extract_safe_text
@@ -359,6 +360,15 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         assert response["message"]["role"] == "assistant"
         assert response["sources"][0]["item_id"] == "mcp.html"
         assert "Fake AI response" in response["message"]["content"]
+        assert response["graph"] == "KnowledgeQAAndNoteGraph.beta"
+        assert [entry["node"] for entry in response["node_trace"]] == [
+            "InputGuardrailNode",
+            "RetrieverNode",
+            "EvidenceGateNode",
+            "AnswerAgentNode",
+            "OutputGuardrailNode",
+            "ConversationPersistNode",
+        ]
 
         messages = server.request("GET", f"/api/ai/conversations/{conversation['id']}/messages")
         assert messages["count"] == 2
@@ -396,8 +406,48 @@ def test_ai_message_returns_no_evidence_answer_without_model_call(tmp_path: Path
         response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "unrelated quantum banana"})
         assert response["sources"] == []
         assert "没有足够资料" in response["message"]["content"]
+        assert response["usage"] == {}
     finally:
         server.close()
+
+
+def test_knowledge_qa_graph_skips_model_when_evidence_is_missing(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="QA Graph Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    from html_lore.server.items import ItemService
+    from html_lore.server.ai.conversations import ConversationStore
+
+    item_service = ItemService(settings)
+    conversation_store = ConversationStore(settings, item_service)
+    conversation = conversation_store.create({"context": {"item_id": "mcp.html"}})
+
+    class FailingClient:
+        def chat(self, *, messages, temperature=0.2, max_tokens=1024):
+            raise AssertionError("Model should not be called without evidence.")
+
+    state = KnowledgeQAGraph(
+        item_service=item_service,
+        model_client=FailingClient(),
+        conversation_store=conversation_store,
+    ).run(
+        KnowledgeQAState(
+            conversation_id=conversation["id"],
+            conversation=conversation,
+            content="unrelated quantum banana",
+        ),
+    )
+
+    assert state.skipped_model_call is True
+    assert state.answer == NO_EVIDENCE_ANSWER
+    assert state.sources == []
+    assert state.stored_conversation["message_count"] == 2
 
 
 def test_ai_message_guardrail_rejects_secret_exfiltration_request(tmp_path: Path) -> None:
