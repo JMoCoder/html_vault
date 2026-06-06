@@ -46,6 +46,7 @@ const i18n = {
     aiWelcome: "This AI panel will answer questions against the current workspace context. Connect Agent Server later to enable real responses.",
     aiUserPlaceholder: "User question",
     aiAssistantPlaceholder: "AI response placeholder. No request was sent.",
+    aiReplying: "Replying...",
     aiPanelComingSoon: "Conversation and note generation are in development.",
     aiChatPlaceholder: "Ask about the current notes or request a new HTML note...",
     aiProviderUnavailable: "AI provider is not configured on the server.",
@@ -336,6 +337,7 @@ const i18n = {
     aiWelcome: "这里将针对当前工作区上下文进行 AI 问答。连接 Agent Server 后再启用真实回复。",
     aiUserPlaceholder: "用户问题",
     aiAssistantPlaceholder: "AI 回复占位。当前未发送任何请求。",
+    aiReplying: "回复中...",
     aiPanelComingSoon: "对话与生成 HTML 笔记功能开发中。",
     aiChatPlaceholder: "围绕当前笔记提问，或要求生成新的 HTML 笔记...",
     aiProviderUnavailable: "服务端尚未配置 AI 服务商。",
@@ -626,6 +628,7 @@ const i18n = {
     aiWelcome: "この AI パネルは現在のワークスペース文脈に対して質問応答する予定です。実際の応答は後で Agent Server 接続後に有効化します。",
     aiUserPlaceholder: "ユーザーの質問",
     aiAssistantPlaceholder: "AI 応答のプレースホルダーです。リクエストは送信されていません。",
+    aiReplying: "返信中...",
     aiPanelComingSoon: "会話と HTML ノート生成は開発中です。",
     aiChatPlaceholder: "現在のノートについて質問、または新しい HTML ノート生成を依頼...",
     aiProviderUnavailable: "サーバー側の AI プロバイダーが未設定です。",
@@ -2868,18 +2871,33 @@ function renderInitialAiMessage() {
   appendAiMessage("assistant", t("aiWelcome"));
 }
 
-function appendAiMessage(role, text, sources = []) {
+function appendAiMessage(role, text, sources = [], options = {}) {
   const message = document.createElement("article");
+  message.className = `ai-message ${role}${options.pending ? " pending" : ""}`;
+  message.innerHTML = aiMessageMarkup(role, text, sources);
+  elements.aiChatLog.append(message);
+  scrollAiChatToBottom();
+  return message;
+}
+
+function updateAiMessage(message, role, text, sources = []) {
   message.className = `ai-message ${role}`;
+  message.innerHTML = aiMessageMarkup(role, text, sources);
+  scrollAiChatToBottom();
+}
+
+function aiMessageMarkup(role, text, sources = []) {
   const sourceMarkup = role === "assistant" && sources.length > 0
     ? `<div class="ai-message-sources"><span>${escapeHtml(t("aiSources"))}</span>${sources.slice(0, 4).map((source) => `<em>${escapeHtml(source.title || source.item_id || "")}</em>`).join("")}</div>`
     : "";
-  message.innerHTML = `
+  return `
     <strong>${escapeHtml(role === "user" ? t("aiUserPlaceholder") : t("globalAiAssistant"))}</strong>
     <p>${escapeHtml(text)}</p>
     ${sourceMarkup}
   `;
-  elements.aiChatLog.append(message);
+}
+
+function scrollAiChatToBottom() {
   elements.aiChatLog.scrollTop = elements.aiChatLog.scrollHeight;
 }
 
@@ -2889,6 +2907,7 @@ async function submitAiMessage(event) {
   if (!text) return;
   appendAiMessage("user", text);
   elements.aiChatInput.value = "";
+  const pendingMessage = appendAiMessage("assistant", t("aiReplying"), [], { pending: true });
   try {
     const conversationId = await ensureAiConversation();
     const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversationId)}/messages`, {
@@ -2898,9 +2917,9 @@ async function submitAiMessage(event) {
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
-    appendAiMessage("assistant", data.message?.content || t("aiAssistantPlaceholder"), data.sources || []);
+    updateAiMessage(pendingMessage, "assistant", data.message?.content || t("aiAssistantPlaceholder"), data.sources || []);
   } catch (error) {
-    appendAiMessage("assistant", error?.message || t("aiMessageFailed"));
+    updateAiMessage(pendingMessage, "assistant", error?.message || t("aiMessageFailed"));
     console.error(error);
   }
 }

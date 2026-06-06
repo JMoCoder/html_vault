@@ -1206,6 +1206,11 @@ textarea {
   color: var(--text);
 }
 
+.ai-message.pending p {
+  color: var(--muted);
+  font-style: italic;
+}
+
 .ai-message-sources {
   display: flex;
   flex-wrap: wrap;
@@ -2110,6 +2115,11 @@ a.icon-action {
 .theme-mode-group button {
   height: 32px;
   min-width: 88px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   border: 1px solid transparent;
   border-radius: 6px;
   padding: 0 12px;
@@ -2125,10 +2135,24 @@ a.icon-action {
 }
 
 .theme-mode-group button.active {
-  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
-  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+  border-color: transparent;
+  background: transparent;
   color: var(--accent-dark);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+  font-weight: 760;
+  box-shadow: none;
+}
+
+.theme-mode-group button.active::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.theme-mode-group button.active:hover {
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
+  background: var(--panel);
 }
 
 .settings-note {

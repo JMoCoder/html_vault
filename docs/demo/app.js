@@ -45,6 +45,7 @@ const i18n = {
     aiWelcome: "This AI panel will answer questions against the current workspace context. Connect Agent Server later to enable real responses.",
     aiUserPlaceholder: "User question",
     aiAssistantPlaceholder: "AI response placeholder. No request was sent.",
+    aiReplying: "Replying...",
     aiPanelComingSoon: "Conversation and note generation are in development.",
     aiChatPlaceholder: "Ask about the current notes or request a new HTML note...",
     generateHtmlNote: "Generate note",
@@ -331,6 +332,7 @@ const i18n = {
     aiWelcome: "这里将针对当前工作区上下文进行 AI 问答。连接 Agent Server 后再启用真实回复。",
     aiUserPlaceholder: "用户问题",
     aiAssistantPlaceholder: "AI 回复占位。当前未发送任何请求。",
+    aiReplying: "回复中...",
     aiPanelComingSoon: "对话与生成 HTML 笔记功能开发中。",
     aiChatPlaceholder: "围绕当前笔记提问，或要求生成新的 HTML 笔记...",
     generateHtmlNote: "生成笔记",
@@ -617,6 +619,7 @@ const i18n = {
     aiWelcome: "この AI パネルは現在のワークスペース文脈に対して質問応答する予定です。実際の応答は後で Agent Server 接続後に有効化します。",
     aiUserPlaceholder: "ユーザーの質問",
     aiAssistantPlaceholder: "AI 応答のプレースホルダーです。リクエストは送信されていません。",
+    aiReplying: "返信中...",
     aiPanelComingSoon: "会話と HTML ノート生成は開発中です。",
     aiChatPlaceholder: "現在のノートについて質問、または新しい HTML ノート生成を依頼...",
     generateHtmlNote: "ノートを生成",
@@ -2837,14 +2840,29 @@ function renderInitialAiMessage() {
   appendAiMessage("assistant", t("aiWelcome"));
 }
 
-function appendAiMessage(role, text) {
+function appendAiMessage(role, text, sources = [], options = {}) {
   const message = document.createElement("article");
+  message.className = `ai-message ${role}${options.pending ? " pending" : ""}`;
+  message.innerHTML = aiMessageMarkup(role, text);
+  elements.aiChatLog.append(message);
+  scrollAiChatToBottom();
+  return message;
+}
+
+function updateAiMessage(message, role, text) {
   message.className = `ai-message ${role}`;
-  message.innerHTML = `
+  message.innerHTML = aiMessageMarkup(role, text);
+  scrollAiChatToBottom();
+}
+
+function aiMessageMarkup(role, text) {
+  return `
     <strong>${escapeHtml(role === "user" ? t("aiUserPlaceholder") : t("globalAiAssistant"))}</strong>
     <p>${escapeHtml(text)}</p>
   `;
-  elements.aiChatLog.append(message);
+}
+
+function scrollAiChatToBottom() {
   elements.aiChatLog.scrollTop = elements.aiChatLog.scrollHeight;
 }
 
@@ -2854,7 +2872,10 @@ function submitAiMessage(event) {
   if (!text) return;
   appendAiMessage("user", text);
   elements.aiChatInput.value = "";
-  appendAiMessage("assistant", `${t("aiAssistantPlaceholder")} ${getAiContextLabel()}`);
+  const pendingMessage = appendAiMessage("assistant", t("aiReplying"), [], { pending: true });
+  window.setTimeout(() => {
+    updateAiMessage(pendingMessage, "assistant", `${t("aiAssistantPlaceholder")} ${getAiContextLabel()}`);
+  }, 450);
 }
 
 function handleAiChatInputKeydown(event) {
