@@ -3261,9 +3261,9 @@ function renderManagementRow(type, name, count, label = name) {
 
 function renderAiConfig() {
   const config = state.aiConfig || {};
-  elements.aiProvider.value = config.provider || "openai";
-  elements.currentModel.value = config.currentModel || "";
-  elements.apiBaseUrl.value = config.apiBaseUrl || "";
+  elements.aiProvider.value = config.provider || "openai-compatible";
+  elements.currentModel.value = config.currentModel || config.model || "";
+  elements.apiBaseUrl.value = config.apiBaseUrl || config.base_url || "";
   elements.newModel.value = config.newModel || "";
   elements.modelTemperature.value = config.temperature || "0.7";
   elements.modelMaxTokens.value = config.maxTokens || "4096";
@@ -3285,31 +3285,14 @@ async function saveAiConfig(event) {
   state.aiConfig = config;
   setStored("ai-config", JSON.stringify(config));
 
-  if (!apiKey) {
-    elements.settingsFeedback.textContent = t("settingsSavedStatic");
-    return;
-  }
-
-  if (!state.agentUrl) {
+  if (apiKey) {
     elements.settingsFeedback.textContent = t("settingsNeedsAgent");
     elements.apiKey.value = "";
     return;
   }
 
-  try {
-    const response = await apiFetch("/api/settings/ai-provider", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...config, api_key: apiKey }),
-    });
-    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
-    elements.settingsFeedback.textContent = t("settingsSavedAgent");
-  } catch (error) {
-    elements.settingsFeedback.textContent = t("settingsAgentFailed");
-    console.error(error);
-  } finally {
-    elements.apiKey.value = "";
-  }
+  elements.settingsFeedback.textContent = t("settingsSavedStatic");
+  elements.apiKey.value = "";
 }
 
 function renderDataConfig() {
@@ -3467,11 +3450,7 @@ function dateStamp() {
 }
 
 function testProviderConfig() {
-  if (!state.agentUrl) {
-    elements.settingsFeedback.textContent = t("settingsNeedsAgent");
-    return;
-  }
-  elements.settingsFeedback.textContent = t("settingsAgentFailed");
+  elements.settingsFeedback.textContent = t("settingsNeedsAgent");
 }
 
 function openLuckyItem() {

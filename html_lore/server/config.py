@@ -22,6 +22,12 @@ class ServerSettings:
     session_max_age_seconds: int = 7 * 24 * 60 * 60
     session_secure: bool = False
     cors_origins: tuple[str, ...] = ("http://127.0.0.1:8080", "http://localhost:8080")
+    ai_provider: str = ""
+    ai_base_url: str = ""
+    ai_api_key: str = ""
+    ai_model: str = ""
+    ai_embedding_model: str = ""
+    ai_enabled: bool = False
 
     @property
     def auth_enabled(self) -> bool:
@@ -62,6 +68,12 @@ def load_settings() -> ServerSettings:
     session_max_age_seconds = int(get_env("SESSION_MAX_AGE_SECONDS", str(7 * 24 * 60 * 60)))
     session_secure = parse_bool(get_env("SESSION_SECURE", "false"))
     cors_origins = parse_csv(get_env("CORS_ORIGINS", "http://127.0.0.1:8080,http://localhost:8080"))
+    ai_provider = get_env("AI_PROVIDER", "").strip()
+    ai_base_url = get_env("AI_BASE_URL", "").strip()
+    ai_api_key = get_env("AI_API_KEY", "")
+    ai_model = get_env("AI_MODEL", "").strip()
+    ai_embedding_model = get_env("AI_EMBEDDING_MODEL", "").strip()
+    ai_enabled = parse_bool(get_env("AI_ENABLED", "false"))
     return ServerSettings(
         content_dir=content_dir,
         meta_dir=meta_dir,
@@ -78,6 +90,12 @@ def load_settings() -> ServerSettings:
         session_max_age_seconds=session_max_age_seconds,
         session_secure=session_secure,
         cors_origins=cors_origins,
+        ai_provider=ai_provider,
+        ai_base_url=ai_base_url,
+        ai_api_key=ai_api_key,
+        ai_model=ai_model,
+        ai_embedding_model=ai_embedding_model,
+        ai_enabled=ai_enabled,
     )
 
 

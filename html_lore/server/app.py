@@ -15,6 +15,19 @@ except ModuleNotFoundError as exc:  # pragma: no cover - import guard for static
 
 from html_lore import __version__
 
+from .ai.api import (
+    AIContextError,
+    AIConversationService,
+    AIProviderConfigError,
+    AIProviderConfigStore,
+    AIService,
+    AIRunError,
+    AIRunStore,
+    ConversationError,
+    ConversationStore,
+    GuardrailError,
+    HtmlGenerationError,
+)
 from .auth import current_user, login, logout, read_session, require_session, session_status
 from .config import ServerSettings, load_settings
 from .items import ItemContentError, ItemDeleteError, ItemMetadataError, ItemService, ItemStateError, normalize_query
@@ -58,6 +71,23 @@ def get_share_service(
     root_settings: Annotated[ServerSettings, Depends(get_settings)],
 ) -> ShareService:
     return ShareService(settings, root_settings)
+
+
+def get_ai_service(settings: Annotated[ServerSettings, Depends(get_request_settings)]) -> AIService:
+    return AIService(AIProviderConfigStore(settings))
+
+
+def get_ai_conversation_service(
+    settings: Annotated[ServerSettings, Depends(get_request_settings)],
+    item_service: Annotated[ItemService, Depends(get_item_service)],
+) -> AIConversationService:
+    return AIConversationService(
+        settings,
+        ConversationStore(settings, item_service),
+        item_service,
+        AIProviderConfigStore(settings),
+        AIRunStore(settings),
+    )
 
 
 def verify_api_token(
@@ -126,6 +156,101 @@ def create_app() -> FastAPI:
             "repository": "JMoCoder/html_lore",
             "release_url": "https://github.com/JMoCoder/html_lore/releases",
         }
+
+    @app.get("/api/ai/providers")
+    def ai_provider(_: ApiAuth, service: Annotated[AIService, Depends(get_ai_service)]) -> dict:
+        try:
+            return service.provider()
+        except AIProviderConfigError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.put("/api/ai/providers")
+    def update_ai_provider(values: dict, _: ApiAuth, service: Annotated[AIService, Depends(get_ai_service)]) -> dict:
+        try:
+            return service.update_provider(values)
+        except AIProviderConfigError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/api/ai/status")
+    def ai_status(_: ApiAuth, service: Annotated[AIService, Depends(get_ai_service)]) -> dict:
+        try:
+            return service.status()
+        except AIProviderConfigError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/api/ai/test-provider")
+    def ai_test_provider(_: ApiAuth, service: Annotated[AIService, Depends(get_ai_service)]) -> dict:
+        try:
+            return service.test_provider()
+        except AIProviderConfigError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/api/ai/context/resolve")
+    def ai_resolve_context(values: dict, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.resolve_context(values)
+        except AIContextError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/api/ai/conversations")
+    def create_ai_conversation(values: dict, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.create(values)
+        except (AIContextError, ConversationError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/api/ai/conversations")
+    def ai_conversations(_: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.list()
+        except ConversationError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/api/ai/conversations/{conversation_id}")
+    def ai_conversation(conversation_id: str, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.get(conversation_id)
+        except ConversationError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.delete("/api/ai/conversations/{conversation_id}")
+    def delete_ai_conversation(conversation_id: str, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.delete(conversation_id)
+        except ConversationError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get("/api/ai/conversations/{conversation_id}/messages")
+    def ai_conversation_messages(conversation_id: str, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.messages(conversation_id)
+        except ConversationError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.post("/api/ai/conversations/{conversation_id}/messages")
+    def create_ai_conversation_message(conversation_id: str, values: dict, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.add_message(conversation_id, values)
+        except GuardrailError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except ConversationError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/api/ai/conversations/{conversation_id}/generate-note")
+    def generate_ai_note(conversation_id: str, values: dict, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.generate_note(conversation_id, values)
+        except ConversationError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except (HtmlGenerationError, AIRunError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/api/ai/runs/{run_id}")
+    def ai_run(run_id: str, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.run(run_id)
+        except AIRunError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.post("/api/rebuild")
     def rebuild(_: ApiAuth, service: Annotated[JobService, Depends(get_job_service)]) -> dict:

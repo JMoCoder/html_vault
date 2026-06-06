@@ -1,0 +1,225 @@
+from __future__ import annotations
+
+import json
+import urllib.error
+import urllib.request
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+from html_lore.server.config import ServerSettings
+
+
+SUPPORTED_PROVIDERS = {"fake", "openai-compatible"}
+
+
+class AIProviderConfigError(ValueError):
+    pass
+
+
+class ProviderCallError(RuntimeError):
+    pass
+
+
+@dataclass(frozen=True)
+class AIProviderConfig:
+    provider: str = ""
+    base_url: str = ""
+    model: str = "gpt-5.5"
+    embedding_model: str = ""
+    enabled: bool = False
+    secret_ref: str = "env:HTML_LORE_AI_API_KEY"
+    api_key: str = ""
+
+    @property
+    def configured(self) -> bool:
+        if not self.enabled or not self.provider:
+            return False
+        if self.provider == "fake":
+            return True
+        return bool(self.base_url and self.model and self.api_key)
+
+    def public_dict(self) -> dict[str, Any]:
+        return {
+            "provider": self.provider,
+            "base_url": self.base_url,
+            "model": self.model,
+            "embedding_model": self.embedding_model,
+            "enabled": self.enabled,
+            "configured": self.configured,
+            "secret_ref": self.secret_ref,
+            "has_api_key": bool(self.api_key),
+        }
+
+
+class AIProviderConfigStore:
+    def __init__(self, settings: ServerSettings) -> None:
+        self.settings = settings
+        self.path = provider_config_path(settings)
+
+    def get(self) -> AIProviderConfig:
+        stored = read_provider_config(self.path)
+        provider = str(stored.get("provider") or "").strip()
+        base_url = str(stored.get("base_url") or "").strip()
+        model = str(stored.get("model") or "").strip()
+        embedding_model = str(stored.get("embedding_model") or "").strip()
+        enabled = bool(stored.get("enabled", False))
+
+        if self.settings.ai_provider:
+            provider = self.settings.ai_provider
+        if self.settings.ai_base_url:
+            base_url = self.settings.ai_base_url
+        if self.settings.ai_model:
+            model = self.settings.ai_model
+        if self.settings.ai_embedding_model:
+            embedding_model = self.settings.ai_embedding_model
+        if self.settings.ai_enabled:
+            enabled = True
+
+        return AIProviderConfig(
+            provider=provider,
+            base_url=base_url,
+            model=model or "gpt-5.5",
+            embedding_model=embedding_model,
+            enabled=enabled,
+            api_key=self.settings.ai_api_key,
+        )
+
+    def update(self, values: dict[str, Any]) -> AIProviderConfig:
+        if self.path is None:
+            raise AIProviderConfigError("Metadata directory is not configured.")
+        current = self.get()
+        provider = normalize_provider(values.get("provider", current.provider))
+        base_url = normalize_text(values.get("base_url", current.base_url))
+        model = normalize_text(values.get("model", current.model)) or "gpt-5.5"
+        embedding_model = normalize_text(values.get("embedding_model", current.embedding_model))
+        enabled = bool(values.get("enabled", current.enabled))
+        if "api_key" in values:
+            raise AIProviderConfigError("API key must be configured on the server, not through this endpoint.")
+        config = {
+            "provider": provider,
+            "base_url": base_url,
+            "model": model,
+            "embedding_model": embedding_model,
+            "enabled": enabled,
+            "secret_ref": "env:HTML_LORE_AI_API_KEY",
+        }
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.path.write_text(json.dumps(config, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        return self.get()
+
+
+class ProviderAdapter:
+    def chat(self, *, messages: list[dict[str, str]], temperature: float = 0.2, max_tokens: int = 1024) -> dict[str, Any]:
+        raise NotImplementedError
+
+
+class FakeProviderAdapter(ProviderAdapter):
+    def __init__(self, config: AIProviderConfig) -> None:
+        self.config = config
+
+    def chat(self, *, messages: list[dict[str, str]], temperature: float = 0.2, max_tokens: int = 1024) -> dict[str, Any]:
+        last_user = next((message.get("content", "") for message in reversed(messages) if message.get("role") == "user"), "")
+        return {
+            "model": self.config.model,
+            "content": f"Fake AI response for: {last_user[:120]}",
+            "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+            "raw_provider": "fake",
+        }
+
+
+class OpenAICompatibleHttpAdapter(ProviderAdapter):
+    def __init__(self, config: AIProviderConfig) -> None:
+        self.config = config
+
+    def chat(self, *, messages: list[dict[str, str]], temperature: float = 0.2, max_tokens: int = 1024) -> dict[str, Any]:
+        if not self.config.api_key:
+            raise ProviderCallError("AI API key is not configured.")
+        if not self.config.base_url:
+            raise ProviderCallError("AI base URL is not configured.")
+        payload = {
+            "model": self.config.model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        }
+        body = json.dumps(payload).encode("utf-8")
+        request = urllib.request.Request(
+            chat_completions_url(self.config.base_url),
+            data=body,
+            method="POST",
+            headers={
+                "Authorization": f"Bearer {self.config.api_key}",
+                "Content-Type": "application/json",
+                "Content-Length": str(len(body)),
+            },
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=45) as response:
+                data = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            raise ProviderCallError(f"AI provider returned HTTP {exc.code}.") from exc
+        except urllib.error.URLError as exc:
+            raise ProviderCallError("AI provider is unreachable.") from exc
+        except json.JSONDecodeError as exc:
+            raise ProviderCallError("AI provider returned invalid JSON.") from exc
+        return normalize_chat_completion(data, self.config.model)
+
+
+def provider_config_path(settings: ServerSettings) -> Path | None:
+    if settings.meta_dir is None:
+        return None
+    return settings.meta_dir / "config" / "ai_provider.json"
+
+
+def read_provider_config(path: Path | None) -> dict[str, Any]:
+    if path is None or not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise AIProviderConfigError("AI provider config is not valid JSON.") from exc
+    if not isinstance(data, dict):
+        raise AIProviderConfigError("AI provider config must be a JSON object.")
+    return data
+
+
+def normalize_provider(value: Any) -> str:
+    provider = normalize_text(value)
+    if provider not in SUPPORTED_PROVIDERS:
+        raise AIProviderConfigError("Unsupported AI provider.")
+    return provider
+
+
+def normalize_text(value: Any) -> str:
+    return str(value or "").strip()
+
+
+def build_adapter(config: AIProviderConfig) -> ProviderAdapter:
+    if config.provider == "fake":
+        return FakeProviderAdapter(config)
+    if config.provider == "openai-compatible":
+        return OpenAICompatibleHttpAdapter(config)
+    raise AIProviderConfigError("Unsupported AI provider.")
+
+
+def chat_completions_url(base_url: str) -> str:
+    base = base_url.rstrip("/")
+    if base.endswith("/v1"):
+        return f"{base}/chat/completions"
+    return f"{base}/v1/chat/completions"
+
+
+def normalize_chat_completion(data: dict[str, Any], fallback_model: str) -> dict[str, Any]:
+    choices = data.get("choices") if isinstance(data, dict) else None
+    choice = choices[0] if isinstance(choices, list) and choices else {}
+    message = choice.get("message") if isinstance(choice, dict) else {}
+    content = str(message.get("content") or "") if isinstance(message, dict) else ""
+    usage = data.get("usage") if isinstance(data.get("usage"), dict) else {}
+    return {
+        "model": str(data.get("model") or fallback_model),
+        "content": content,
+        "usage": usage,
+        "raw_provider": "openai-compatible",
+    }
+

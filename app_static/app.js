@@ -14,6 +14,7 @@ const i18n = {
     subscriptionSelfHosted: "Self-hosted",
     aiCreditsBalance: "AI credits",
     agentStatus: "Agent status",
+    aiReady: "AI ready",
     uploadAvatar: "Upload avatar",
     avatarOptions: "Avatar options",
     importHtmlFile: "Import HTML file",
@@ -47,6 +48,9 @@ const i18n = {
     aiAssistantPlaceholder: "AI response placeholder. No request was sent.",
     aiPanelComingSoon: "Conversation and note generation are in development.",
     aiChatPlaceholder: "Ask about the current notes or request a new HTML note...",
+    aiProviderUnavailable: "AI provider is not configured on the server.",
+    aiMessageFailed: "AI request failed.",
+    aiSources: "Sources",
     generateHtmlNote: "Generate note",
     send: "Send",
     settings: "Settings",
@@ -300,6 +304,7 @@ const i18n = {
     subscriptionSelfHosted: "自托管",
     aiCreditsBalance: "AI 点数",
     agentStatus: "Agent 状态",
+    aiReady: "AI 已就绪",
     uploadAvatar: "上传头像",
     avatarOptions: "头像选项",
     importHtmlFile: "导入HTML文件",
@@ -333,6 +338,9 @@ const i18n = {
     aiAssistantPlaceholder: "AI 回复占位。当前未发送任何请求。",
     aiPanelComingSoon: "对话与生成 HTML 笔记功能开发中。",
     aiChatPlaceholder: "围绕当前笔记提问，或要求生成新的 HTML 笔记...",
+    aiProviderUnavailable: "服务端尚未配置 AI 服务商。",
+    aiMessageFailed: "AI 请求失败。",
+    aiSources: "来源",
     generateHtmlNote: "生成笔记",
     send: "发送",
     settings: "设置",
@@ -586,6 +594,7 @@ const i18n = {
     subscriptionSelfHosted: "セルフホスト",
     aiCreditsBalance: "AI クレジット",
     agentStatus: "Agent 状態",
+    aiReady: "AI 準備完了",
     uploadAvatar: "アバターをアップロード",
     avatarOptions: "アバター選択",
     importHtmlFile: "HTML ファイルをインポート",
@@ -619,6 +628,9 @@ const i18n = {
     aiAssistantPlaceholder: "AI 応答のプレースホルダーです。リクエストは送信されていません。",
     aiPanelComingSoon: "会話と HTML ノート生成は開発中です。",
     aiChatPlaceholder: "現在のノートについて質問、または新しい HTML ノート生成を依頼...",
+    aiProviderUnavailable: "サーバー側の AI プロバイダーが未設定です。",
+    aiMessageFailed: "AI リクエストに失敗しました。",
+    aiSources: "出典",
     generateHtmlNote: "ノートを生成",
     send: "送信",
     settings: "設定",
@@ -947,6 +959,9 @@ const state = {
   feedbackParams: {},
   activeSettingsTab: "basic",
   aiConfig: loadAiConfig(),
+  aiStatus: null,
+  aiConversationId: "",
+  aiConversationContextKey: "",
   dataConfig: loadDataConfig(),
   itemState: loadItemState(),
   navConfig: loadNavConfig(),
@@ -1128,6 +1143,7 @@ async function boot() {
     state.manifest = await loadManifest();
     state.items = Array.isArray(state.manifest.items) ? state.manifest.items : [];
     renderApp();
+    refreshAiStatus();
     checkVersionStatus();
     openFromHash();
   } catch (error) {
@@ -2020,8 +2036,23 @@ async function importHtmlFile(file) {
 
 function updateAgentStatus() {
   if (!elements.agentStatus) return;
-  elements.agentStatus.textContent = t(state.agentUrl ? "agentConnected" : "staticMode");
-  elements.agentStatus.classList.toggle("connected", Boolean(state.agentUrl));
+  const connected = Boolean(state.agentUrl);
+  const aiReady = Boolean(state.aiStatus?.available);
+  elements.agentStatus.textContent = aiReady ? t("aiReady") : t(connected ? "agentConnected" : "staticMode");
+  elements.agentStatus.classList.toggle("connected", connected || aiReady);
+}
+
+async function refreshAiStatus() {
+  try {
+    const response = await apiFetch("/api/ai/status", { cache: "no-store" });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    state.aiStatus = await response.json();
+    syncAiConfigFromServer(state.aiStatus.provider);
+  } catch (error) {
+    state.aiStatus = null;
+  }
+  renderAiConfig();
+  updateAgentStatus();
 }
 
 function openReaderAiPanel() {
@@ -2832,24 +2863,93 @@ function renderInitialAiMessage() {
   appendAiMessage("assistant", t("aiWelcome"));
 }
 
-function appendAiMessage(role, text) {
+function appendAiMessage(role, text, sources = []) {
   const message = document.createElement("article");
   message.className = `ai-message ${role}`;
+  const sourceMarkup = role === "assistant" && sources.length > 0
+    ? `<div class="ai-message-sources"><span>${escapeHtml(t("aiSources"))}</span>${sources.slice(0, 4).map((source) => `<em>${escapeHtml(source.title || source.item_id || "")}</em>`).join("")}</div>`
+    : "";
   message.innerHTML = `
     <strong>${escapeHtml(role === "user" ? t("aiUserPlaceholder") : t("globalAiAssistant"))}</strong>
     <p>${escapeHtml(text)}</p>
+    ${sourceMarkup}
   `;
   elements.aiChatLog.append(message);
   elements.aiChatLog.scrollTop = elements.aiChatLog.scrollHeight;
 }
 
-function submitAiMessage(event) {
+async function submitAiMessage(event) {
   event.preventDefault();
   const text = elements.aiChatInput.value.trim();
   if (!text) return;
   appendAiMessage("user", text);
   elements.aiChatInput.value = "";
-  appendAiMessage("assistant", `${t("aiAssistantPlaceholder")} ${getAiContextLabel()}`);
+  try {
+    const conversationId = await ensureAiConversation();
+    const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversationId)}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: text }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    appendAiMessage("assistant", data.message?.content || t("aiAssistantPlaceholder"), data.sources || []);
+  } catch (error) {
+    appendAiMessage("assistant", error?.message || t("aiMessageFailed"));
+    console.error(error);
+  }
+}
+
+async function ensureAiConversation() {
+  const payload = buildAiContextPayload();
+  const contextKey = JSON.stringify(payload.context);
+  if (state.aiConversationId && state.aiConversationContextKey === contextKey) {
+    return state.aiConversationId;
+  }
+  const response = await apiFetch("/api/ai/conversations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+  state.aiConversationId = data.conversation?.id || "";
+  state.aiConversationContextKey = contextKey;
+  if (!state.aiConversationId) throw new Error(t("aiMessageFailed"));
+  return state.aiConversationId;
+}
+
+function buildAiContextPayload() {
+  const manualItemIds = [...state.manualAiContextIds];
+  const context = {
+    include_archived: false,
+    favorite: state.onlyFavorites ? true : null,
+    tags: [...state.selectedTags],
+    tag_match: state.tagMatchMode,
+    q: state.query.trim(),
+    sort: state.sortMode,
+  };
+  if (manualItemIds.length > 0) {
+    context.manual_item_ids = manualItemIds;
+  } else if (!elements.reader.hidden && state.currentReaderItemId) {
+    context.item_id = state.currentReaderItemId;
+  } else if (state.filter.type === "library") {
+    context.scope = state.filter.value === "all" ? "global" : "library";
+    context.library = state.filter.value;
+  } else if (state.filter.type === "collection") {
+    context.scope = "collection";
+    context.collection = state.filter.value;
+  } else if (state.filter.type === "tag") {
+    context.scope = "tag";
+    context.tags = [...new Set([state.filter.value, ...context.tags])];
+  } else {
+    context.scope = "global";
+    context.library = "all";
+  }
+  return {
+    source_mode: "local_only",
+    context,
+  };
 }
 
 function markAiGeneratePlaceholder() {
@@ -3261,13 +3361,24 @@ function renderManagementRow(type, name, count, label = name) {
 
 function renderAiConfig() {
   const config = state.aiConfig || {};
-  elements.aiProvider.value = config.provider || "openai";
-  elements.currentModel.value = config.currentModel || "";
-  elements.apiBaseUrl.value = config.apiBaseUrl || "";
+  elements.aiProvider.value = config.provider || "openai-compatible";
+  elements.currentModel.value = config.currentModel || config.model || "";
+  elements.apiBaseUrl.value = config.apiBaseUrl || config.base_url || "";
   elements.newModel.value = config.newModel || "";
   elements.modelTemperature.value = config.temperature || "0.7";
   elements.modelMaxTokens.value = config.maxTokens || "4096";
   elements.apiKey.value = "";
+}
+
+function syncAiConfigFromServer(provider) {
+  if (!provider) return;
+  state.aiConfig = {
+    ...state.aiConfig,
+    provider: provider.provider || state.aiConfig?.provider || "openai-compatible",
+    currentModel: provider.model || state.aiConfig?.currentModel || "gpt-5.5",
+    apiBaseUrl: provider.base_url || state.aiConfig?.apiBaseUrl || "",
+  };
+  setStored("ai-config", JSON.stringify(state.aiConfig));
 }
 
 async function saveAiConfig(event) {
@@ -3285,24 +3396,27 @@ async function saveAiConfig(event) {
   state.aiConfig = config;
   setStored("ai-config", JSON.stringify(config));
 
-  if (!apiKey) {
-    elements.settingsFeedback.textContent = t("settingsSavedStatic");
-    return;
-  }
-
-  if (!state.agentUrl) {
+  if (apiKey) {
     elements.settingsFeedback.textContent = t("settingsNeedsAgent");
     elements.apiKey.value = "";
     return;
   }
 
   try {
-    const response = await apiFetch("/api/settings/ai-provider", {
-      method: "POST",
+    const response = await apiFetch("/api/ai/providers", {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...config, api_key: apiKey }),
+      body: JSON.stringify({
+        provider: config.provider,
+        base_url: config.apiBaseUrl,
+        model: config.currentModel || "gpt-5.5",
+        enabled: true,
+      }),
     });
     if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    const data = await response.json();
+    syncAiConfigFromServer(data.provider);
+    await refreshAiStatus();
     elements.settingsFeedback.textContent = t("settingsSavedAgent");
   } catch (error) {
     elements.settingsFeedback.textContent = t("settingsAgentFailed");
@@ -3466,12 +3580,17 @@ function dateStamp() {
   return new Date().toISOString().replace(/[:.]/g, "-");
 }
 
-function testProviderConfig() {
-  if (!state.agentUrl) {
-    elements.settingsFeedback.textContent = t("settingsNeedsAgent");
-    return;
+async function testProviderConfig() {
+  try {
+    const response = await apiFetch("/api/ai/test-provider", { method: "POST" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) throw new Error(data.message || data.detail || `Agent returned ${response.status}`);
+    elements.settingsFeedback.textContent = t("settingsSavedAgent");
+    await refreshAiStatus();
+  } catch (error) {
+    elements.settingsFeedback.textContent = t("settingsAgentFailed");
+    console.error(error);
   }
-  elements.settingsFeedback.textContent = t("settingsAgentFailed");
 }
 
 function openLuckyItem() {

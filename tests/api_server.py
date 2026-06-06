@@ -34,6 +34,11 @@ class ApiServer:
         users_file: Path | None = None,
         user_data_dir: Path | None = None,
         session_secret: str = "",
+        ai_provider: str = "",
+        ai_base_url: str = "",
+        ai_api_key: str = "",
+        ai_model: str = "",
+        ai_enabled: bool = False,
     ) -> None:
         self.port = free_port()
         self.api_token = api_token
@@ -50,6 +55,11 @@ class ApiServer:
                 "HTML_LORE_AUTH_USERNAME": auth_username,
                 "HTML_LORE_AUTH_PASSWORD": auth_password,
                 "HTML_LORE_SESSION_SECRET": session_secret,
+                "HTML_LORE_AI_PROVIDER": ai_provider,
+                "HTML_LORE_AI_BASE_URL": ai_base_url,
+                "HTML_LORE_AI_API_KEY": ai_api_key,
+                "HTML_LORE_AI_MODEL": ai_model,
+                "HTML_LORE_AI_ENABLED": "true" if ai_enabled else "",
             },
         )
         if users_file:
@@ -187,6 +197,11 @@ def run_api_server(
     users_file: Path | None = None,
     user_data_dir: Path | None = None,
     session_secret: str = "",
+    ai_provider: str = "",
+    ai_base_url: str = "",
+    ai_api_key: str = "",
+    ai_model: str = "",
+    ai_enabled: bool = False,
 ) -> ApiServer:
     return ApiServer(
         content_dir=content_dir,
@@ -199,4 +214,9 @@ def run_api_server(
         users_file=users_file,
         user_data_dir=user_data_dir,
         session_secret=session_secret,
+        ai_provider=ai_provider,
+        ai_base_url=ai_base_url,
+        ai_api_key=ai_api_key,
+        ai_model=ai_model,
+        ai_enabled=ai_enabled,
     )
