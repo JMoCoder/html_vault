@@ -2900,6 +2900,12 @@ async function submitAiMessage(event) {
   }
 }
 
+function handleAiChatInputKeydown(event) {
+  if (event.key !== "Enter" || event.shiftKey || !state.aiPanelOpen) return;
+  event.preventDefault();
+  elements.aiChatForm.requestSubmit();
+}
+
 async function ensureAiConversation() {
   const payload = buildAiContextPayload();
   const contextKey = JSON.stringify(payload.context);
@@ -3823,6 +3829,7 @@ elements.aiPanelOpen.addEventListener("click", toggleAiPanel);
 elements.aiPanelClose.addEventListener("click", closeAiPanel);
 elements.aiPanelResize.addEventListener("pointerdown", startAiPanelResize);
 elements.aiChatForm.addEventListener("submit", submitAiMessage);
+elements.aiChatInput.addEventListener("keydown", handleAiChatInputKeydown);
 elements.aiGenerateNote.addEventListener("click", markAiGeneratePlaceholder);
 elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.multiFilterToggle.addEventListener("click", toggleMultiFilterPopover);

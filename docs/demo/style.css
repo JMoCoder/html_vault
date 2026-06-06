@@ -454,6 +454,7 @@ textarea {
   justify-content: space-between;
   gap: 10px;
   align-items: center;
+  min-width: 0;
   position: relative;
   transition: justify-content 220ms ease;
 }
@@ -462,6 +463,8 @@ textarea {
   display: flex;
   gap: 8px;
   align-items: center;
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .settings-toggle,
@@ -590,6 +593,32 @@ textarea {
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.project-link {
+  flex: 1 1 auto;
+  max-width: 112px;
+  justify-content: center;
+}
+
+.github-link {
+  flex: 0 0 42px;
+  width: 42px;
+  padding: 0;
+}
+
+.project-link span,
+.github-link span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.github-link span {
+  display: none;
 }
 
 .project-link img {

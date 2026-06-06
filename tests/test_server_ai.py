@@ -346,6 +346,26 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         server.close()
 
 
+def test_ai_message_uses_current_note_for_generic_summary_question(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP", "Security"])
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "这篇文档讲了什么？"})
+        assert response["sources"][0]["item_id"] == "mcp.html"
+        assert "Fake AI response" in response["message"]["content"]
+    finally:
+        server.close()
+
+
 def test_ai_message_returns_no_evidence_answer_without_model_call(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = make_dirs(tmp_path)
     make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])

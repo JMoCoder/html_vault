@@ -71,6 +71,8 @@ def retrieve_evidence(item_service: ItemService, context_snapshot: dict[str, Any
         return []
     manifest_items = {str(item.get("id") or ""): item for item in item_service.manifest().get("items", [])}
     evidences: list[Evidence] = []
+    fallback_candidates: list[Evidence] = []
+    allow_generic_fallback = context_snapshot.get("scope") in {"reader", "manual"} and is_generic_context_question(query)
     for item_id in item_ids:
         item = manifest_items.get(item_id)
         if not item or bool(item.get("archived")):
@@ -82,6 +84,15 @@ def retrieve_evidence(item_service: ItemService, context_snapshot: dict[str, Any
         text = evidence_text(item, html)
         score = score_text(query, text)
         if score <= 0:
+            if allow_generic_fallback:
+                fallback_candidates.append(
+                    Evidence(
+                        item_id=item_id,
+                        title=str(item.get("title") or item_id),
+                        snippet=snippet_for_query(text, query),
+                        score=1,
+                    ),
+                )
             continue
         evidences.append(
             Evidence(
@@ -91,6 +102,8 @@ def retrieve_evidence(item_service: ItemService, context_snapshot: dict[str, Any
                 score=score,
             ),
         )
+    if not evidences and fallback_candidates:
+        return [evidence.as_dict() for evidence in fallback_candidates[:max_results]]
     return [evidence.as_dict() for evidence in sorted(evidences, key=lambda item: (-item.score, item.title))[:max_results]]
 
 
@@ -130,8 +143,55 @@ def snippet_for_query(text: str, query: str) -> str:
 
 def query_tokens(query: str) -> list[str]:
     ascii_tokens = re.findall(r"[a-z0-9][a-z0-9._-]{1,}", query.lower())
-    cjk_tokens = re.findall(r"[\u4e00-\u9fff]{2,}", query)
-    return [*ascii_tokens, *cjk_tokens]
+    cjk_tokens: list[str] = []
+    for segment in re.findall(r"[\u4e00-\u9fff]{2,}", query):
+        stripped = strip_cjk_stopwords(segment)
+        if len(stripped) >= 2:
+            cjk_tokens.append(stripped)
+        cjk_tokens.extend(re.findall(r"[\u4e00-\u9fff]{2}", stripped))
+    return dedupe_tokens([*ascii_tokens, *cjk_tokens])
+
+
+def is_generic_context_question(query: str) -> bool:
+    normalized = normalize_space(query).lower()
+    if not normalized:
+        return False
+    generic_patterns = [
+        r"\bsummary\b",
+        r"\bsummarize\b",
+        r"\boverview\b",
+        r"\bwhat (is|does).{0,32}(note|document|article|file).{0,24}(about|cover)",
+        r"\bwhat.{0,24}(this|the).{0,16}(note|document|article|file).{0,24}(about|cover)",
+        r"总结",
+        r"概括",
+        r"摘要",
+        r"这[篇个份]?(.{0,8})(文章|文档|笔记|文件)?.{0,8}(讲|说|介绍|关于)",
+        r"(文章|文档|笔记|文件).{0,8}(讲|说|介绍|关于).{0,8}(什么|啥)",
+        r"要約",
+        r"概要",
+        r"まとめ",
+        r"この(.{0,8})(文章|文書|ノート|ファイル).{0,12}(何|内容)",
+    ]
+    return any(re.search(pattern, normalized) for pattern in generic_patterns)
+
+
+def strip_cjk_stopwords(value: str) -> str:
+    stripped = value
+    for word in ("这个", "这篇", "这份", "文章", "文档", "笔记", "文件", "什么", "一下", "一下子", "请问", "可以", "帮我", "关于", "的是", "了吗"):
+        stripped = stripped.replace(word, "")
+    return stripped
+
+
+def dedupe_tokens(tokens: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for token in tokens:
+        normalized = token.strip().lower()
+        if len(normalized) < 2 or normalized in seen:
+            continue
+        result.append(normalized)
+        seen.add(normalized)
+    return result
 
 
 def is_hidden(attrs: dict[str, str]) -> bool:

@@ -2852,6 +2852,12 @@ function submitAiMessage(event) {
   appendAiMessage("assistant", `${t("aiAssistantPlaceholder")} ${getAiContextLabel()}`);
 }
 
+function handleAiChatInputKeydown(event) {
+  if (event.key !== "Enter" || event.shiftKey || !state.aiPanelOpen) return;
+  event.preventDefault();
+  elements.aiChatForm.requestSubmit();
+}
+
 function markAiGeneratePlaceholder() {
   appendAiMessage("assistant", `${t("generateHtmlNote")}: ${t("aiPanelComingSoon")}`);
 }
@@ -3683,6 +3689,7 @@ elements.aiPanelOpen.addEventListener("click", toggleAiPanel);
 elements.aiPanelClose.addEventListener("click", closeAiPanel);
 elements.aiPanelResize.addEventListener("pointerdown", startAiPanelResize);
 elements.aiChatForm.addEventListener("submit", submitAiMessage);
+elements.aiChatInput.addEventListener("keydown", handleAiChatInputKeydown);
 elements.aiGenerateNote.addEventListener("click", markAiGeneratePlaceholder);
 elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.multiFilterToggle.addEventListener("click", toggleMultiFilterPopover);

@@ -59,9 +59,42 @@ test("sidebar footer uses settings, homepage, and GitHub actions", async ({ page
       const project = await page.locator(".project-link").boundingBox();
       const github = await page.locator(".github-link").boundingBox();
       if (!settings || !project || !github) return false;
-      return settings.x < project.x && project.x < github.x;
+      return settings.x < github.x && github.x < project.x;
     })
     .toBe(true);
+});
+
+test("sidebar footer stays inside a narrow resized sidebar", async ({ page }) => {
+  await page.evaluate(() => {
+    document.body.style.setProperty("--sidebar-width", "240px");
+  });
+
+  const sidebar = page.locator(".sidebar");
+  await expect
+    .poll(async () => {
+      const sidebarBox = await sidebar.boundingBox();
+      const footerBox = await page.locator(".sidebar-tools").boundingBox();
+      const projectBox = await page.locator(".project-link").boundingBox();
+      const githubBox = await page.locator(".github-link").boundingBox();
+      if (!sidebarBox || !footerBox || !projectBox || !githubBox) return false;
+      return footerBox.x >= sidebarBox.x
+        && footerBox.x + footerBox.width <= sidebarBox.x + sidebarBox.width
+        && projectBox.x + projectBox.width <= sidebarBox.x + sidebarBox.width
+        && githubBox.width <= 44;
+    })
+    .toBe(true);
+});
+
+test("AI panel sends with Enter and keeps Shift Enter for new lines", async ({ page }) => {
+  await page.locator("#ai-panel-open").click();
+  await page.locator("#ai-chat-input").fill("First line");
+  await page.keyboard.press("Shift+Enter");
+  await page.keyboard.type("Second line");
+  await expect(page.locator("#ai-chat-input")).toHaveValue("First line\nSecond line");
+
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".ai-message.user")).toContainText("First line");
+  await expect(page.locator("#ai-chat-input")).toHaveValue("");
 });
 
 test("card share action opens the same share dialog", async ({ page }) => {
