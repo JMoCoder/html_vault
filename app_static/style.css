@@ -2461,26 +2461,49 @@ a.icon-action {
 
   .settings-body {
     grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
   }
 
   .settings-nav {
     display: flex;
     gap: 8px;
-    overflow: auto;
+    align-items: center;
+    min-width: 0;
+    padding: 12px 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
     border-right: 0;
     border-bottom: 1px solid var(--line);
   }
 
+  .settings-nav::-webkit-scrollbar {
+    display: none;
+  }
+
   .settings-tab {
     width: auto;
+    min-width: max-content;
+    min-height: 40px;
+    max-height: 40px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     white-space: nowrap;
+    text-align: center;
   }
 
   .settings-divider {
     width: 1px;
-    height: auto;
-    margin: 0;
+    height: 24px;
+    margin: 0 2px;
     flex: 0 0 1px;
+  }
+
+  .settings-content {
+    min-height: 0;
+    padding: 20px 16px 28px;
   }
 
   .form-grid {

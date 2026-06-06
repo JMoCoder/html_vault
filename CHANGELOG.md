@@ -9,6 +9,24 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.8.3] - 2026-06-06
+
+### Fixed
+
+- Changed the mobile Settings page navigation into a compact horizontal
+  scrolling tab bar so long setting section names no longer render as oversized
+  blocks or overflow the phone viewport.
+- Kept the desktop Settings page on the existing left-navigation layout.
+
+### Added
+
+- Added Playwright coverage for the mobile Settings tab scroller and the
+  desktop Settings navigation layout.
+
+### Changed
+
+- Updated package, app, PWA, and demo cache versions to `0.8.3`.
+
 ## [0.8.2] - 2026-06-05
 
 ### Fixed
