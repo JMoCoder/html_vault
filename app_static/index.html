@@ -673,6 +673,48 @@
         </div>
       </form>
     </section>
+
+    <section class="metadata-editor" id="generate-note-dialog" aria-label="Generate note" data-i18n-attr="aria-label:generateNoteDialog" hidden>
+      <form class="metadata-dialog" id="generate-note-form">
+        <div class="metadata-dialog-header">
+          <h2 data-i18n="generateNoteDialog"></h2>
+          <button class="icon-button" type="button" id="generate-note-cancel-icon" aria-label="Cancel" title="Cancel" data-i18n-attr="aria-label:cancel,title:cancel">×</button>
+        </div>
+        <p class="security-note" data-i18n="generateNoteIntro"></p>
+        <div class="form-grid">
+          <label>
+            <span data-i18n="generateTheme"></span>
+            <select id="generate-theme">
+              <option value="default" data-i18n="generateDefault"></option>
+              <option value="dark" data-i18n="generateDark"></option>
+              <option value="light" data-i18n="generateLight"></option>
+            </select>
+          </label>
+          <label>
+            <span data-i18n="generateTargetUse"></span>
+            <select id="generate-target-use">
+              <option value="default" data-i18n="generateDefault"></option>
+              <option value="personal" data-i18n="generatePersonal"></option>
+              <option value="share" data-i18n="generateShare"></option>
+            </select>
+          </label>
+        </div>
+        <label>
+          <span data-i18n="generateStylePreference"></span>
+          <select id="generate-style-preference">
+            <option value="default" data-i18n="generateDefault"></option>
+            <option value="report" data-i18n="generateReport"></option>
+            <option value="website" data-i18n="generateWebsite"></option>
+            <option value="ppt" data-i18n="generatePpt"></option>
+          </select>
+        </label>
+        <p class="settings-feedback" id="generate-note-feedback"></p>
+        <div class="metadata-actions">
+          <button type="submit" id="generate-note-submit" data-i18n="generateNoteSubmit"></button>
+          <button type="button" class="secondary-button" id="generate-note-cancel" data-i18n="cancel"></button>
+        </div>
+      </form>
+    </section>
   </div>
 
   <script src="config.js"></script>

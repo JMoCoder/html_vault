@@ -54,6 +54,24 @@ const i18n = {
     aiMessageFailed: "AI request failed.",
     aiSources: "Sources",
     generateHtmlNote: "Generate note",
+    generateNoteDialog: "Generate note",
+    generateNoteIntro: "Create an HTML note from the current AI conversation and selected workspace context.",
+    generateTheme: "Theme",
+    generateTargetUse: "Target use",
+    generateStylePreference: "Style preference",
+    generateDefault: "Default",
+    generateDark: "Dark",
+    generateLight: "Light",
+    generatePersonal: "Personal",
+    generateShare: "Share",
+    generateReport: "Report",
+    generateWebsite: "Website",
+    generatePpt: "PPT",
+    generateNoteSubmit: "Generate note",
+    generateNoteRunning: "Generating note...",
+    generateNoteCreated: "Generated note: {title}",
+    generateNoteNeedsAgent: "AI note generation requires the backend server.",
+    generateNoteFailed: "Note generation failed.",
     send: "Send",
     settings: "Settings",
     settingsTitle: "Settings",
@@ -346,6 +364,24 @@ const i18n = {
     aiMessageFailed: "AI 请求失败。",
     aiSources: "来源",
     generateHtmlNote: "生成笔记",
+    generateNoteDialog: "生成笔记",
+    generateNoteIntro: "根据当前 AI 对话和已选择的工作区上下文生成 HTML 笔记。",
+    generateTheme: "主题",
+    generateTargetUse: "目标用途",
+    generateStylePreference: "样式偏好",
+    generateDefault: "默认",
+    generateDark: "暗色",
+    generateLight: "亮色",
+    generatePersonal: "自用",
+    generateShare: "分享",
+    generateReport: "报告",
+    generateWebsite: "网站",
+    generatePpt: "PPT",
+    generateNoteSubmit: "生成笔记",
+    generateNoteRunning: "正在生成笔记...",
+    generateNoteCreated: "已生成笔记：{title}",
+    generateNoteNeedsAgent: "生成 AI 笔记需要连接后端服务。",
+    generateNoteFailed: "笔记生成失败。",
     send: "发送",
     settings: "设置",
     settingsTitle: "设置",
@@ -638,6 +674,24 @@ const i18n = {
     aiMessageFailed: "AI リクエストに失敗しました。",
     aiSources: "出典",
     generateHtmlNote: "ノートを生成",
+    generateNoteDialog: "ノートを生成",
+    generateNoteIntro: "現在の AI 会話と選択中のワークスペース文脈から HTML ノートを生成します。",
+    generateTheme: "テーマ",
+    generateTargetUse: "用途",
+    generateStylePreference: "スタイル",
+    generateDefault: "デフォルト",
+    generateDark: "ダーク",
+    generateLight: "ライト",
+    generatePersonal: "自分用",
+    generateShare: "共有",
+    generateReport: "レポート",
+    generateWebsite: "Web サイト",
+    generatePpt: "PPT",
+    generateNoteSubmit: "ノートを生成",
+    generateNoteRunning: "ノートを生成中...",
+    generateNoteCreated: "生成済みノート: {title}",
+    generateNoteNeedsAgent: "AI ノート生成にはバックエンドサーバーが必要です。",
+    generateNoteFailed: "ノート生成に失敗しました。",
     send: "送信",
     settings: "設定",
     settingsTitle: "設定",
@@ -1111,6 +1165,15 @@ const elements = {
   shareRevoke: document.querySelector("#share-revoke"),
   shareCancel: document.querySelector("#share-cancel"),
   shareCancelIcon: document.querySelector("#share-cancel-icon"),
+  generateNoteDialog: document.querySelector("#generate-note-dialog"),
+  generateNoteForm: document.querySelector("#generate-note-form"),
+  generateTheme: document.querySelector("#generate-theme"),
+  generateTargetUse: document.querySelector("#generate-target-use"),
+  generateStylePreference: document.querySelector("#generate-style-preference"),
+  generateNoteFeedback: document.querySelector("#generate-note-feedback"),
+  generateNoteSubmit: document.querySelector("#generate-note-submit"),
+  generateNoteCancel: document.querySelector("#generate-note-cancel"),
+  generateNoteCancelIcon: document.querySelector("#generate-note-cancel-icon"),
   metadataEditor: document.querySelector("#metadata-editor"),
   metadataForm: document.querySelector("#metadata-form"),
   metadataTitle: document.querySelector("#metadata-title"),
@@ -1382,6 +1445,19 @@ async function loadManifest() {
   const response = await fetch("manifest.json", { cache: "no-store" });
   if (!response.ok) throw new Error(`Unable to load manifest: ${response.status}`);
   return response.json();
+}
+
+async function refreshManifestAndWorkspace() {
+  state.manifest = await loadManifest();
+  state.items = Array.isArray(state.manifest.items) ? state.manifest.items : [];
+  normalizeVisibleTagFilters();
+  renderLibraryNav();
+  renderCollectionNav();
+  renderTagNav();
+  renderMultiFilterOptions();
+  renderManagementLists();
+  renderGrid();
+  renderAiContext();
 }
 
 function buildApiUrl(path) {
@@ -2993,8 +3069,54 @@ function setAiContentExpansion(enabled) {
   state.aiConversationContextKey = "";
 }
 
-function markAiGeneratePlaceholder() {
-  appendAiMessage("assistant", `${t("generateHtmlNote")}: ${t("aiPanelComingSoon")}`);
+function openGenerateNoteDialog() {
+  elements.generateTheme.value = "default";
+  elements.generateTargetUse.value = "default";
+  elements.generateStylePreference.value = "default";
+  elements.generateNoteFeedback.textContent = state.agentUrl ? "" : t("generateNoteNeedsAgent");
+  elements.generateNoteDialog.hidden = false;
+  elements.generateTheme.focus();
+}
+
+function closeGenerateNoteDialog() {
+  elements.generateNoteDialog.hidden = true;
+  elements.generateNoteFeedback.textContent = "";
+  elements.generateNoteSubmit.disabled = false;
+}
+
+async function submitGenerateNoteDialog(event) {
+  event.preventDefault();
+  if (!state.agentUrl) {
+    elements.generateNoteFeedback.textContent = t("generateNoteNeedsAgent");
+    return;
+  }
+  elements.generateNoteSubmit.disabled = true;
+  elements.generateNoteFeedback.textContent = t("generateNoteRunning");
+  try {
+    const conversationId = await ensureAiConversation();
+    const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversationId)}/generate-note`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        theme: elements.generateTheme.value,
+        target_use: elements.generateTargetUse.value,
+        style_preference: elements.generateStylePreference.value,
+        reference_style: "default",
+        reference_note_id: "",
+      }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    await refreshManifestAndWorkspace();
+    const title = data.item?.title || data.item?.id || t("item");
+    elements.generateNoteFeedback.textContent = t("generateNoteCreated", { title });
+    appendAiMessage("assistant", t("generateNoteCreated", { title }), data.item ? [{ title, item_id: data.item.id }] : []);
+  } catch (error) {
+    elements.generateNoteFeedback.textContent = error?.message || t("generateNoteFailed");
+    console.error(error);
+  } finally {
+    elements.generateNoteSubmit.disabled = false;
+  }
 }
 
 function toggleMultiFilterPopover() {
@@ -3894,7 +4016,7 @@ elements.aiPanelResize.addEventListener("pointerdown", startAiPanelResize);
 elements.aiChatForm.addEventListener("submit", submitAiMessage);
 elements.aiChatInput.addEventListener("keydown", handleAiChatInputKeydown);
 elements.aiContentExpansion.addEventListener("change", (event) => setAiContentExpansion(event.target.checked));
-elements.aiGenerateNote.addEventListener("click", markAiGeneratePlaceholder);
+elements.aiGenerateNote.addEventListener("click", openGenerateNoteDialog);
 elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.multiFilterToggle.addEventListener("click", toggleMultiFilterPopover);
 elements.tagMatchButtons.forEach((button) => {
@@ -3973,6 +4095,12 @@ elements.shareCancel.addEventListener("click", closeShareDialog);
 elements.shareCancelIcon.addEventListener("click", closeShareDialog);
 elements.shareDialog.addEventListener("click", (event) => {
   if (event.target === elements.shareDialog) closeShareDialog();
+});
+elements.generateNoteForm.addEventListener("submit", submitGenerateNoteDialog);
+elements.generateNoteCancel.addEventListener("click", closeGenerateNoteDialog);
+elements.generateNoteCancelIcon.addEventListener("click", closeGenerateNoteDialog);
+elements.generateNoteDialog.addEventListener("click", (event) => {
+  if (event.target === elements.generateNoteDialog) closeGenerateNoteDialog();
 });
 elements.metadataForm.addEventListener("submit", saveMetadataEditor);
 elements.metadataCancel.addEventListener("click", closeMetadataEditor);
