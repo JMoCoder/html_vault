@@ -2088,7 +2088,7 @@ a.icon-action {
 .theme-mode-group button {
   height: 32px;
   min-width: 88px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 6px;
   padding: 0 12px;
   background: transparent;
@@ -2096,10 +2096,17 @@ a.icon-action {
   cursor: pointer;
 }
 
-.theme-mode-group button:hover,
-.theme-mode-group button.active {
+.theme-mode-group button:hover {
+  border-color: var(--line);
   background: var(--panel);
+  color: var(--text);
+}
+
+.theme-mode-group button.active {
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
   color: var(--accent-dark);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .settings-note {

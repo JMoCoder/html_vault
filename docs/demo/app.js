@@ -945,6 +945,7 @@ const state = {
   themeMode: getInitialThemeMode(),
   feedbackKey: "connectAgent",
   feedbackParams: {},
+  feedbackTimer: 0,
   activeSettingsTab: "basic",
   aiConfig: loadAiConfig(),
   dataConfig: loadDataConfig(),
@@ -1823,6 +1824,7 @@ function closeReader() {
 }
 
 function returnToWorkspace() {
+  clearFeedback();
   state.currentReaderItemId = "";
   elements.reader.hidden = true;
   elements.reader.classList.remove("compact-reader-header");
@@ -1883,6 +1885,7 @@ function syncSingleSelectionToMultiFilter(type, value) {
 }
 
 function openSettings(tab = "basic", updateHash = true) {
+  clearFeedback();
   setSettingsTab(tab, false);
   elements.settingsPage.hidden = false;
   if (updateHash) {
@@ -2416,6 +2419,7 @@ async function updateItemState(item, values) {
         if (!Object.keys(override).length) delete state.itemState[item.id];
         saveItemState();
       }
+      clearFeedback();
       renderAfterItemStateChange(updated);
       return;
     } catch (error) {
@@ -2429,6 +2433,7 @@ async function updateItemState(item, values) {
   if ("favorite" in values) override.favorite = values.favorite;
   if ("archived" in values) override.archived = values.archived;
   saveItemState();
+  clearFeedback();
   renderAfterItemStateChange(item);
 }
 
@@ -3636,9 +3641,37 @@ function applyTranslations() {
 }
 
 function setFeedback(key, params = {}) {
+  window.clearTimeout(state.feedbackTimer);
   state.feedbackKey = key;
   state.feedbackParams = params;
   renderFeedback();
+  if (isTransientFeedback(key)) {
+    state.feedbackTimer = window.setTimeout(clearFeedback, 4200);
+  }
+}
+
+function clearFeedback() {
+  window.clearTimeout(state.feedbackTimer);
+  state.feedbackTimer = 0;
+  state.feedbackKey = "connectAgent";
+  state.feedbackParams = {};
+  renderFeedback();
+}
+
+function isTransientFeedback(key) {
+  return new Set([
+    "emptyInput",
+    "agentNotConfigured",
+    "agentUnavailable",
+    "importHtmlDone",
+    "importHtmlFailed",
+    "stateSaveFailed",
+    "deleteNeedsAgent",
+    "deleteFailed",
+    "metadataSaved",
+    "metadataSaveFailed",
+    "navigationSaveFailed",
+  ]).has(key);
 }
 
 function renderFeedback() {
