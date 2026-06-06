@@ -4,7 +4,7 @@ from pathlib import Path
 
 from html_lore.server.config import ServerSettings
 from html_lore.server.ai.model_client import ModelClient
-from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url
+from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
 from html_lore.server.ai.retrieval import extract_safe_text
 from html_lore.server.users import UserStore
 
@@ -154,6 +154,7 @@ def test_openai_compatible_adapter_uses_bearer_header_without_logging_key(monkey
     def fake_urlopen(request, timeout):
         seen["url"] = request.full_url
         seen["authorization"] = request.get_header("Authorization")
+        seen["user_agent"] = request.get_header("User-agent") or request.get_header("User-Agent") or ""
         seen["body"] = request.data.decode("utf-8")
         return FakeResponse()
 
@@ -172,8 +173,27 @@ def test_openai_compatible_adapter_uses_bearer_header_without_logging_key(monkey
 
     assert seen["url"] == "https://api.example.test/v1/chat/completions"
     assert seen["authorization"] == "Bearer test-secret-key"
+    assert seen["body"].count('"stream": true') == 1
+    assert "HTMlore" in seen["user_agent"]
     assert "test-secret-key" not in seen["body"]
     assert response["content"] == "connection ok"
+
+
+def test_openai_compatible_adapter_parses_sse_chat_completion() -> None:
+    parsed = parse_provider_response(
+        """
+        data: {"model":"gpt-5.5","choices":[{"delta":{"role":"assistant"},"finish_reason":null}]}
+
+        data: {"model":"gpt-5.5","choices":[{"delta":{"content":"connection"},"finish_reason":null}]}
+
+        data: {"model":"gpt-5.5","choices":[{"delta":{"content":" ok"},"finish_reason":null}],"usage":{"total_tokens":4}}
+
+        data: [DONE]
+        """,
+    )
+    assert parsed["model"] == "gpt-5.5"
+    assert parsed["choices"][0]["message"]["content"] == "connection ok"
+    assert parsed["usage"]["total_tokens"] == 4
 
 
 def test_model_client_exposes_planned_interface() -> None:

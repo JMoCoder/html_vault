@@ -142,6 +142,7 @@ class OpenAICompatibleHttpAdapter(ProviderAdapter):
             "messages": messages,
             "temperature": temperature,
             "max_tokens": max_tokens,
+            "stream": True,
         }
         body = json.dumps(payload).encode("utf-8")
         request = urllib.request.Request(
@@ -152,18 +153,25 @@ class OpenAICompatibleHttpAdapter(ProviderAdapter):
                 "Authorization": f"Bearer {self.config.api_key}",
                 "Content-Type": "application/json",
                 "Content-Length": str(len(body)),
+                "User-Agent": "HTMlore/0.8.4 curl-compatible",
+                "Accept": "application/json, text/event-stream",
             },
         )
         try:
             with urllib.request.urlopen(request, timeout=45) as response:
-                data = json.loads(response.read().decode("utf-8"))
+                raw_response = response.read().decode("utf-8")
+                data = parse_provider_response(raw_response)
         except urllib.error.HTTPError as exc:
-            raise ProviderCallError(f"AI provider returned HTTP {exc.code}.") from exc
+            detail = provider_error_detail(exc)
+            raise ProviderCallError(f"AI provider returned HTTP {exc.code}{detail}.") from exc
         except urllib.error.URLError as exc:
             raise ProviderCallError("AI provider is unreachable.") from exc
         except json.JSONDecodeError as exc:
             raise ProviderCallError("AI provider returned invalid JSON.") from exc
-        return normalize_chat_completion(data, self.config.model)
+        response = normalize_chat_completion(data, self.config.model)
+        if not response["content"].strip():
+            raise ProviderCallError("AI provider returned an empty response.")
+        return response
 
 
 def provider_config_path(settings: ServerSettings) -> Path | None:
@@ -210,6 +218,49 @@ def chat_completions_url(base_url: str) -> str:
     return f"{base}/v1/chat/completions"
 
 
+def parse_provider_response(raw_response: str) -> dict[str, Any]:
+    text = raw_response.strip()
+    if not text:
+        raise ProviderCallError("AI provider returned an empty response.")
+    if not text.startswith("data:"):
+        return json.loads(text)
+    return parse_sse_chat_completion(text)
+
+
+def parse_sse_chat_completion(text: str) -> dict[str, Any]:
+    model = ""
+    usage: dict[str, Any] = {}
+    content_parts: list[str] = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("data:"):
+            continue
+        payload = stripped.removeprefix("data:").strip()
+        if not payload or payload == "[DONE]":
+            continue
+        chunk = json.loads(payload)
+        if isinstance(chunk.get("model"), str) and chunk["model"]:
+            model = chunk["model"]
+        if isinstance(chunk.get("usage"), dict):
+            usage = chunk["usage"]
+        choices = chunk.get("choices")
+        if not isinstance(choices, list):
+            continue
+        for choice in choices:
+            if not isinstance(choice, dict):
+                continue
+            delta = choice.get("delta") if isinstance(choice.get("delta"), dict) else {}
+            message = choice.get("message") if isinstance(choice.get("message"), dict) else {}
+            content = delta.get("content") if "content" in delta else message.get("content")
+            if content:
+                content_parts.append(str(content))
+    return {
+        "model": model,
+        "choices": [{"message": {"content": "".join(content_parts)}}],
+        "usage": usage,
+    }
+
+
 def normalize_chat_completion(data: dict[str, Any], fallback_model: str) -> dict[str, Any]:
     choices = data.get("choices") if isinstance(data, dict) else None
     choice = choices[0] if isinstance(choices, list) and choices else {}
@@ -223,3 +274,20 @@ def normalize_chat_completion(data: dict[str, Any], fallback_model: str) -> dict
         "raw_provider": "openai-compatible",
     }
 
+
+def provider_error_detail(exc: urllib.error.HTTPError) -> str:
+    try:
+        raw = exc.read().decode("utf-8", errors="replace")
+    except Exception:
+        return ""
+    if not raw:
+        return ""
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return f": {raw[:180]}"
+    for key in ("message", "detail", "error_name", "title"):
+        value = data.get(key)
+        if isinstance(value, str) and value:
+            return f": {value[:180]}"
+    return ""
