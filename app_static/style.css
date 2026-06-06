@@ -1240,6 +1240,25 @@ textarea {
   padding: 0 18px 14px;
 }
 
+.ai-source-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 0 18px 12px;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ai-source-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
 .ai-panel-actions button,
 .ai-chat-form button {
   min-height: 36px;

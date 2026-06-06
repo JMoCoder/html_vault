@@ -47,6 +47,7 @@ const i18n = {
     aiUserPlaceholder: "User question",
     aiAssistantPlaceholder: "AI response placeholder. No request was sent.",
     aiReplying: "Replying...",
+    aiContentExpansion: "Expand with external sources",
     aiPanelComingSoon: "Conversation and note generation are in development.",
     aiChatPlaceholder: "Ask about the current notes or request a new HTML note...",
     aiProviderUnavailable: "AI provider is not configured on the server.",
@@ -338,6 +339,7 @@ const i18n = {
     aiUserPlaceholder: "用户问题",
     aiAssistantPlaceholder: "AI 回复占位。当前未发送任何请求。",
     aiReplying: "回复中...",
+    aiContentExpansion: "内容拓展",
     aiPanelComingSoon: "对话与生成 HTML 笔记功能开发中。",
     aiChatPlaceholder: "围绕当前笔记提问，或要求生成新的 HTML 笔记...",
     aiProviderUnavailable: "服务端尚未配置 AI 服务商。",
@@ -629,6 +631,7 @@ const i18n = {
     aiUserPlaceholder: "ユーザーの質問",
     aiAssistantPlaceholder: "AI 応答のプレースホルダーです。リクエストは送信されていません。",
     aiReplying: "返信中...",
+    aiContentExpansion: "外部情報で拡張",
     aiPanelComingSoon: "会話と HTML ノート生成は開発中です。",
     aiChatPlaceholder: "現在のノートについて質問、または新しい HTML ノート生成を依頼...",
     aiProviderUnavailable: "サーバー側の AI プロバイダーが未設定です。",
@@ -966,6 +969,7 @@ const state = {
   aiStatus: null,
   aiConversationId: "",
   aiConversationContextKey: "",
+  aiContentExpansion: false,
   dataConfig: loadDataConfig(),
   itemState: loadItemState(),
   navConfig: loadNavConfig(),
@@ -1070,6 +1074,7 @@ const elements = {
   aiChatLog: document.querySelector("#ai-chat-log"),
   aiChatForm: document.querySelector("#ai-chat-form"),
   aiChatInput: document.querySelector("#ai-chat-input"),
+  aiContentExpansion: document.querySelector("#ai-content-expansion"),
   aiGenerateNote: document.querySelector("#ai-generate-note"),
   luckyButton: document.querySelector("#lucky-button"),
   searchInput: document.querySelector("#search-input"),
@@ -2932,7 +2937,7 @@ function handleAiChatInputKeydown(event) {
 
 async function ensureAiConversation() {
   const payload = buildAiContextPayload();
-  const contextKey = JSON.stringify(payload.context);
+  const contextKey = JSON.stringify({ source_mode: payload.source_mode, context: payload.context });
   if (state.aiConversationId && state.aiConversationContextKey === contextKey) {
     return state.aiConversationId;
   }
@@ -2977,9 +2982,15 @@ function buildAiContextPayload() {
     context.library = "all";
   }
   return {
-    source_mode: "local_only",
+    source_mode: state.aiContentExpansion ? "local_plus_external" : "local_only",
     context,
   };
+}
+
+function setAiContentExpansion(enabled) {
+  state.aiContentExpansion = Boolean(enabled);
+  state.aiConversationId = "";
+  state.aiConversationContextKey = "";
 }
 
 function markAiGeneratePlaceholder() {
@@ -3882,6 +3893,7 @@ elements.aiPanelClose.addEventListener("click", closeAiPanel);
 elements.aiPanelResize.addEventListener("pointerdown", startAiPanelResize);
 elements.aiChatForm.addEventListener("submit", submitAiMessage);
 elements.aiChatInput.addEventListener("keydown", handleAiChatInputKeydown);
+elements.aiContentExpansion.addEventListener("change", (event) => setAiContentExpansion(event.target.checked));
 elements.aiGenerateNote.addEventListener("click", markAiGeneratePlaceholder);
 elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.multiFilterToggle.addEventListener("click", toggleMultiFilterPopover);
