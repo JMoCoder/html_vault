@@ -3,6 +3,7 @@ import urllib.error
 from pathlib import Path
 
 from html_lore.server.config import ServerSettings
+from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
 from html_lore.server.ai.retrieval import extract_safe_text
@@ -443,19 +444,86 @@ def test_ai_generate_note_from_conversation_persists_generated_item_and_run(tmp_
         assert item["source_type"] == "topic"
         assert item["agent"]["generated"] is True
         assert item["agent"]["run_id"] == run["id"]
+        assert item["agent"]["graph"] == "HtmlGenerationGraph.beta"
         assert run["status"] == "completed"
         assert run["item_id"] == item["id"]
+        assert run["graph"] == "HtmlGenerationGraph.beta"
+        assert [entry["node"] for entry in run["node_trace"]] == [
+            "GenerationIntentNode",
+            "PMAgentNode",
+            "UXAgentNode",
+            "CoderAgentNode",
+            "QANode",
+            "ReviewerNode",
+        ]
+        assert run["generation_intent"]["uses_style_prompt"] is False
         assert (content_dir / item["id"]).exists()
         assert "<script" not in (content_dir / item["id"]).read_text(encoding="utf-8").lower()
 
         fetched_run = server.request("GET", f"/api/ai/runs/{run['id']}")["run"]
         assert fetched_run["id"] == run["id"]
         assert fetched_run["item_id"] == item["id"]
+        assert fetched_run["node_trace"] == run["node_trace"]
 
         manifest = server.request("GET", "/api/manifest")
         assert any(entry["id"] == item["id"] for entry in manifest["items"])
     finally:
         server.close()
+
+
+def test_html_generation_graph_records_node_trace_and_default_intent() -> None:
+    state = HtmlGenerationGraph().run(
+        HtmlGenerationState(
+            run_id="run-1",
+            conversation_id="conversation-1",
+            spec={
+                "theme": "default",
+                "target_use": "default",
+                "reference_style": "default",
+                "reference_note_id": "",
+                "style_preference": "default",
+            },
+            context_snapshot={"items": [{"title": "MCP Security", "collection": "AI"}]},
+            messages=[
+                {"role": "user", "content": "Summarize MCP security"},
+                {"role": "assistant", "content": "MCP security covers tool boundaries."},
+            ],
+        ),
+    )
+
+    assert [entry["node"] for entry in state.node_trace] == [
+        "GenerationIntentNode",
+        "PMAgentNode",
+        "UXAgentNode",
+        "CoderAgentNode",
+        "QANode",
+        "ReviewerNode",
+    ]
+    assert state.generation_intent["uses_style_prompt"] is False
+    assert state.qa_report["ok"] is True
+    assert state.review_decision["ok"] is True
+
+
+def test_html_generation_graph_marks_non_default_options_as_style_prompt() -> None:
+    state = HtmlGenerationGraph().run(
+        HtmlGenerationState(
+            run_id="run-2",
+            conversation_id="conversation-2",
+            spec={
+                "theme": "dark",
+                "target_use": "share",
+                "reference_style": "default",
+                "reference_note_id": "",
+                "style_preference": "report",
+            },
+            context_snapshot={"requested": {"collection": "Energy"}, "items": [{"title": "Energy Storage", "collection": "Energy"}]},
+            messages=[{"role": "user", "content": "Create a note about energy storage"}],
+        ),
+    )
+
+    assert state.generation_intent["uses_style_prompt"] is True
+    assert state.style_spec["theme"] == "dark"
+    assert state.content_brief["collection"] == "Energy"
 
 
 def test_ai_generate_note_rejects_invalid_spec_without_writing_file(tmp_path: Path) -> None:

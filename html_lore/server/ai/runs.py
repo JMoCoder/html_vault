@@ -65,8 +65,10 @@ def sanitize_run(run: dict[str, Any]) -> dict[str, Any]:
         "status": str(run.get("status") or ""),
         "conversation_id": str(run.get("conversation_id") or ""),
         "spec": run.get("spec") if isinstance(run.get("spec"), dict) else {},
+        "graph": str(run.get("graph") or ""),
+        "generation_intent": run.get("generation_intent") if isinstance(run.get("generation_intent"), dict) else {},
         "qa_report": run.get("qa_report") if isinstance(run.get("qa_report"), dict) else {},
         "review_decision": run.get("review_decision") if isinstance(run.get("review_decision"), dict) else {},
+        "node_trace": run.get("node_trace") if isinstance(run.get("node_trace"), list) else [],
         "item_id": str(run.get("item_id") or ""),
     }
-
