@@ -4,7 +4,7 @@ from pathlib import Path
 
 from html_lore.server.config import ServerSettings
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState
-from html_lore.server.ai.knowledge_qa_graph import KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
 from html_lore.server.ai.retrieval import extract_safe_text
@@ -364,11 +364,13 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         assert [entry["node"] for entry in response["node_trace"]] == [
             "InputGuardrailNode",
             "RetrieverNode",
+            "ExternalSearchNode",
             "EvidenceGateNode",
             "AnswerAgentNode",
             "OutputGuardrailNode",
             "ConversationPersistNode",
         ]
+        assert response["external_status"]["provider"] == "disabled"
 
         messages = server.request("GET", f"/api/ai/conversations/{conversation['id']}/messages")
         assert messages["count"] == 2
@@ -407,6 +409,29 @@ def test_ai_message_returns_no_evidence_answer_without_model_call(tmp_path: Path
         assert response["sources"] == []
         assert "没有足够资料" in response["message"]["content"]
         assert response["usage"] == {}
+    finally:
+        server.close()
+
+
+def test_ai_message_reports_external_expansion_unavailable_without_adapter(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir)
+    try:
+        conversation = server.json(
+            "POST",
+            "/api/ai/conversations",
+            {"context": {"item_id": "mcp.html"}, "source_mode": "local_plus_external"},
+        )["conversation"]
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "unrelated quantum banana"})
+        assert response["sources"] == []
+        assert response["usage"] == {}
+        assert response["message"]["content"] == EXTERNAL_UNAVAILABLE_ANSWER
+        assert response["external_status"] == {
+            "provider": "disabled",
+            "available": False,
+            "message": "External content expansion is not configured.",
+        }
     finally:
         server.close()
 

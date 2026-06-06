@@ -100,6 +100,7 @@ class AIConversationService:
             "usage": state.usage,
             "graph": KnowledgeQAGraph.name,
             "node_trace": state.node_trace,
+            "external_status": state.external_status,
         }
 
     def generate_note(self, conversation_id: str, values: dict[str, Any]) -> dict[str, Any]:

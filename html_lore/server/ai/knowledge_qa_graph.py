@@ -6,12 +6,14 @@ from typing import Any, Protocol
 from html_lore.server.items import ItemService
 
 from .conversations import ConversationStore
+from .external_search import DisabledExternalSearchAdapter, ExternalSearchAdapter, ExternalSearchUnavailable
 from .guardrails import validate_answer, validate_user_message
 from .model_client import ModelClient
 from .retrieval import retrieve_evidence
 
 
 NO_EVIDENCE_ANSWER = "当前上下文没有足够资料回答这个问题。请调整上下文、选择相关笔记，或开启内容拓展后再试。"
+EXTERNAL_UNAVAILABLE_ANSWER = "内容拓展尚未配置外部检索服务。当前上下文也没有足够资料回答这个问题。"
 
 
 class KnowledgeQANode(Protocol):
@@ -28,6 +30,8 @@ class KnowledgeQAState:
     content: str
     context_snapshot: dict[str, Any] = field(default_factory=dict)
     evidence: list[dict[str, Any]] = field(default_factory=list)
+    external_sources: list[dict[str, Any]] = field(default_factory=list)
+    external_status: dict[str, Any] = field(default_factory=dict)
     prompt_messages: list[dict[str, str]] = field(default_factory=list)
     answer: str = ""
     sources: list[dict[str, Any]] = field(default_factory=list)
@@ -49,11 +53,14 @@ class KnowledgeQAGraph:
         item_service: ItemService,
         model_client: ModelClient,
         conversation_store: ConversationStore,
+        external_search: ExternalSearchAdapter | None = None,
         nodes: tuple[KnowledgeQANode, ...] | None = None,
     ) -> None:
+        external_search = external_search or DisabledExternalSearchAdapter()
         self.nodes = nodes or (
             InputGuardrailNode(),
             RetrieverNode(item_service),
+            ExternalSearchNode(external_search),
             EvidenceGateNode(),
             AnswerAgentNode(model_client),
             OutputGuardrailNode(),
@@ -86,6 +93,30 @@ class RetrieverNode:
         state.evidence = retrieve_evidence(self.item_service, state.context_snapshot, state.content)
 
 
+class ExternalSearchNode:
+    name = "ExternalSearchNode"
+
+    def __init__(self, external_search: ExternalSearchAdapter) -> None:
+        self.external_search = external_search
+
+    def run(self, state: KnowledgeQAState) -> None:
+        source_mode = str(state.context_snapshot.get("source_mode") or "local_only")
+        state.external_status = {"provider": self.external_search.name, "available": self.external_search.available}
+        if source_mode != "local_plus_external":
+            return
+        if not self.external_search.available:
+            state.external_status["message"] = "External content expansion is not configured."
+            return
+        try:
+            results = self.external_search.search(state.content)
+        except ExternalSearchUnavailable as exc:
+            state.external_status.update({"available": False, "message": str(exc)})
+            return
+        state.external_sources = [result.as_dict() for result in results]
+        state.evidence.extend(state.external_sources)
+        state.external_status.update({"available": True, "count": len(state.external_sources)})
+
+
 class EvidenceGateNode:
     name = "EvidenceGateNode"
 
@@ -94,7 +125,10 @@ class EvidenceGateNode:
             state.sources = state.evidence
             state.prompt_messages = build_answer_prompt(state.content, state.evidence, state.context_snapshot)
             return
-        state.answer = NO_EVIDENCE_ANSWER
+        if str(state.context_snapshot.get("source_mode") or "local_only") == "local_plus_external":
+            state.answer = EXTERNAL_UNAVAILABLE_ANSWER
+        else:
+            state.answer = NO_EVIDENCE_ANSWER
         state.sources = []
         state.skipped_model_call = True
 
@@ -141,7 +175,7 @@ class ConversationPersistNode:
 def build_answer_prompt(content: str, evidence: list[dict[str, Any]], snapshot: dict[str, Any]) -> list[dict[str, str]]:
     source_mode = str(snapshot.get("source_mode") or "local_only")
     evidence_text = "\n\n".join(
-        f"[{index}] {item.get('title')} ({item.get('item_id')})\n{item.get('snippet')}"
+        format_evidence_for_prompt(index, item)
         for index, item in enumerate(evidence, start=1)
     )
     return [
@@ -162,3 +196,9 @@ def build_answer_prompt(content: str, evidence: list[dict[str, Any]], snapshot: 
             ),
         },
     ]
+
+
+def format_evidence_for_prompt(index: int, item: dict[str, Any]) -> str:
+    if item.get("kind") == "external":
+        return f"[{index}] EXTERNAL: {item.get('title')} ({item.get('url')})\n{item.get('snippet')}"
+    return f"[{index}] LOCAL: {item.get('title')} ({item.get('item_id')})\n{item.get('snippet')}"
