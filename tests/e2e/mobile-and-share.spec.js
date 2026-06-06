@@ -54,6 +54,49 @@ test("reader places original before share in the action row", async ({ page }) =
     .toBe(true);
 });
 
+test("reader keeps tags visible with both sidebars open on laptop width", async ({ page }) => {
+  await page.setViewportSize({ width: 1250, height: 820 });
+  await page.route("**/demo/manifest.json", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        version: 2,
+        title: "HTMlore Reader Layout Test",
+        items: [
+          {
+            id: "demo-notes/reader-layout.html",
+            title: "龙湖重庆停车场资产评估报告",
+            summary:
+              "测算模式：已知回报求对价，以目标项目 IRR 为约束条件，通过持有期现金流净现值反推最大可接受收购价格并形成敏感性分析。",
+            collection: "资产评估",
+            tags: ["2026", "测算", "收益法", "停车场"],
+            source: "imported",
+            created: "2026-06-06T00:00:00Z",
+            updated: "2026-06-06T00:00:00Z",
+            path: "content/demo-notes/reader-layout.html",
+          },
+        ],
+      }),
+    });
+  });
+  await page.goto("/demo/?lang=zh-CN", { waitUntil: "domcontentloaded" });
+
+  await page.locator(".item-card", { hasText: "龙湖重庆停车场资产评估报告" }).getByRole("button", { name: "Read" }).click();
+  await page.locator("#reader-ai-panel-open").click();
+
+  await expect(page.locator("#reader")).toBeVisible();
+  await expect(page.locator("body")).toHaveClass(/ai-panel-open/);
+  await expect
+    .poll(async () => {
+      const header = await page.locator(".reader-header").boundingBox();
+      const tags = await page.locator("#reader-tags").boundingBox();
+      const frame = await page.locator(".reader-frame-shell").boundingBox();
+      if (!header || !tags || !frame) return false;
+      return tags.height > 20 && tags.y + tags.height <= header.y + header.height - 2 && frame.y >= header.y + header.height - 1;
+    })
+    .toBe(true);
+});
+
 test("mobile reader lets metadata and actions scroll away under the global bar", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(() => localStorage.clear());

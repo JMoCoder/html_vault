@@ -9,6 +9,23 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.8.4] - 2026-06-06
+
+### Fixed
+
+- Increased the desktop reader header height budget so tags remain visible when
+  a two-line title and three-line summary are shown with both sidebars open on
+  laptop-width screens.
+
+### Added
+
+- Added Playwright coverage for the laptop-width reader layout with both
+  sidebars open.
+
+### Changed
+
+- Updated package, app, PWA, and demo cache versions to `0.8.4`.
+
 ## [0.8.3] - 2026-06-06
 
 ### Fixed

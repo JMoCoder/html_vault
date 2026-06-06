@@ -1545,7 +1545,7 @@ textarea {
   padding: 18px 18px 22px;
   border-bottom: 1px solid var(--line);
   background: var(--panel);
-  max-height: 204px;
+  max-height: min(280px, 45vh);
   overflow: hidden;
   position: relative;
   z-index: 2;
