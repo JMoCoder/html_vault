@@ -2072,7 +2072,8 @@ a.icon-action {
   background: var(--panel);
 }
 
-.settings-form label {
+.settings-form label,
+.settings-field {
   display: grid;
   gap: 7px;
   color: var(--muted);
@@ -2129,8 +2130,8 @@ a.icon-action {
 }
 
 .theme-mode-group button:hover {
-  border-color: var(--line);
-  background: var(--panel);
+  border-color: transparent;
+  background: transparent;
   color: var(--text);
 }
 
@@ -2151,8 +2152,8 @@ a.icon-action {
 }
 
 .theme-mode-group button.active:hover {
-  border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
-  background: var(--panel);
+  border-color: transparent;
+  background: transparent;
 }
 
 .settings-note {

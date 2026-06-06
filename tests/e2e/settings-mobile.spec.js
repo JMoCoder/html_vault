@@ -58,3 +58,24 @@ test("desktop settings keeps the left navigation layout", async ({ page }) => {
   expect(metrics.tabHeight).toBeGreaterThanOrEqual(38);
   expect(metrics.columns).toContain("220px");
 });
+
+test("theme mode selection does not highlight from surrounding whitespace", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/demo/?lang=en", { waitUntil: "domcontentloaded" });
+  await page.locator("#settings-open").click();
+
+  const systemButton = page.locator(".theme-mode-group [data-theme-mode='system']");
+  const group = page.locator(".theme-mode-group");
+  await expect(systemButton).toHaveClass(/active/);
+
+  const initialBackground = await systemButton.evaluate((node) => getComputedStyle(node).backgroundColor);
+  const groupBox = await group.boundingBox();
+  const darkBox = await page.locator(".theme-mode-group [data-theme-mode='dark']").boundingBox();
+  if (!groupBox || !darkBox) throw new Error("Theme controls are not measurable.");
+
+  await page.mouse.move(groupBox.x + groupBox.width - 2, groupBox.y + groupBox.height + 6);
+  await expect(systemButton).toHaveCSS("background-color", initialBackground);
+
+  await page.mouse.move(darkBox.x + darkBox.width + 6, darkBox.y + darkBox.height / 2);
+  await expect(systemButton).toHaveCSS("background-color", initialBackground);
+});
