@@ -70,5 +70,6 @@ def sanitize_run(run: dict[str, Any]) -> dict[str, Any]:
         "qa_report": run.get("qa_report") if isinstance(run.get("qa_report"), dict) else {},
         "review_decision": run.get("review_decision") if isinstance(run.get("review_decision"), dict) else {},
         "node_trace": run.get("node_trace") if isinstance(run.get("node_trace"), list) else [],
+        "material": run.get("material") if isinstance(run.get("material"), dict) else {},
         "item_id": str(run.get("item_id") or ""),
     }

@@ -11,6 +11,7 @@ from .external_search import build_external_search_adapter
 from .guardrails import GuardrailError
 from .html_generation import GenerationSpec, HtmlGenerationError, generate_note_from_conversation
 from .knowledge_qa_graph import KnowledgeQAGraph, KnowledgeQAState
+from .material_generation import MaterialGenerationError, generate_note_from_material
 from .model_client import ModelClient, test_provider
 from .providers import AIProviderConfigError, AIProviderConfigStore, ProviderCallError
 from .runs import AIRunError, AIRunStore
@@ -112,6 +113,18 @@ class AIConversationService:
         run = self.run_store.add(result["run"])
         return {"run": run, "item": result["item"]}
 
+    def generate_note_from_material(self, *, filename: str, content: bytes, instruction: str, values: dict[str, Any]) -> dict[str, Any]:
+        spec = GenerationSpec.from_values(values)
+        result = generate_note_from_material(
+            settings=self.settings,
+            filename=filename,
+            content=content,
+            instruction=instruction,
+            spec=spec,
+        )
+        run = self.run_store.add(result["run"])
+        return {"run": run, "item": result["item"]}
+
     def run(self, run_id: str) -> dict[str, Any]:
         return {"run": self.run_store.get(run_id)}
 
@@ -126,6 +139,7 @@ __all__ = [
     "ConversationStore",
     "GuardrailError",
     "HtmlGenerationError",
+    "MaterialGenerationError",
     "AIRunError",
     "AIRunStore",
 ]

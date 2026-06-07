@@ -27,6 +27,7 @@ from .ai.api import (
     ConversationStore,
     GuardrailError,
     HtmlGenerationError,
+    MaterialGenerationError,
 )
 from .auth import current_user, login, logout, read_session, require_session, session_status
 from .config import ServerSettings, load_settings
@@ -243,6 +244,35 @@ def create_app() -> FastAPI:
         except ConversationError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
         except (HtmlGenerationError, AIRunError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/api/ai/material-runs")
+    async def generate_ai_note_from_material(
+        _: ApiAuth,
+        service: Annotated[AIConversationService, Depends(get_ai_conversation_service)],
+        file: Annotated[UploadFile, File()],
+        instruction: Annotated[str, Form()] = "",
+        theme: Annotated[str, Form()] = "default",
+        target_use: Annotated[str, Form()] = "default",
+        reference_style: Annotated[str, Form()] = "default",
+        reference_note_id: Annotated[str, Form()] = "",
+        style_preference: Annotated[str, Form()] = "default",
+    ) -> dict:
+        content = await file.read()
+        try:
+            return service.generate_note_from_material(
+                filename=file.filename or "material.txt",
+                content=content,
+                instruction=instruction,
+                values={
+                    "theme": theme,
+                    "target_use": target_use,
+                    "reference_style": reference_style,
+                    "reference_note_id": reference_note_id,
+                    "style_preference": style_preference,
+                },
+            )
+        except (HtmlGenerationError, MaterialGenerationError, AIRunError) as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.get("/api/ai/runs/{run_id}")
