@@ -496,8 +496,11 @@ test("workspace AI content expansion controls conversation source mode", async (
       contentType: "application/json",
       body: JSON.stringify({
         message: { role: "assistant", content: "Answer from selected mode." },
-        sources: [],
-        external_status: {},
+        sources: [
+          { kind: "local", title: "MCP Security", item_id: "mcp.html" },
+          { kind: "external", title: "External MCP reference", url: "https://example.test/search?q=mcp" },
+        ],
+        external_status: { provider: "fake", available: true, count: 1 },
       }),
     });
   });
@@ -509,6 +512,9 @@ test("workspace AI content expansion controls conversation source mode", async (
   await page.locator("#ai-chat-form button[type='submit']").click();
   await expect.poll(() => conversationRequests.length).toBe(1);
   expect(conversationRequests[0].source_mode).toBe("local_plus_external");
+  await expect(page.locator(".ai-message-sources")).toContainText("Local");
+  await expect(page.locator(".ai-message-sources")).toContainText("External");
+  await expect(page.locator(".ai-message-sources")).toContainText("example.test");
 
   await page.locator("#ai-content-expansion").uncheck();
   await page.locator("#ai-chat-input").fill("Answer only from local notes.");

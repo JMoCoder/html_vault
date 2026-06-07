@@ -1221,6 +1221,9 @@ textarea {
 }
 
 .ai-message-sources em {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1231,6 +1234,15 @@ textarea {
   font-style: normal;
   color: var(--text);
   background: var(--panel);
+}
+
+.ai-message-sources em span {
+  color: var(--accent);
+  font-weight: 650;
+}
+
+.ai-message-sources em.external span {
+  color: #0369a1;
 }
 
 .ai-panel-actions {

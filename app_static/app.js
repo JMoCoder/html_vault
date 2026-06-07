@@ -53,6 +53,8 @@ const i18n = {
     aiProviderUnavailable: "AI provider is not configured on the server.",
     aiMessageFailed: "AI request failed.",
     aiSources: "Sources",
+    aiSourceLocal: "Local",
+    aiSourceExternal: "External",
     generateHtmlNote: "Generate note",
     generateNoteDialog: "Generate note",
     generateNoteIntro: "Create an HTML note from the current AI conversation and selected workspace context.",
@@ -401,6 +403,8 @@ const i18n = {
     aiProviderUnavailable: "服务端尚未配置 AI 服务商。",
     aiMessageFailed: "AI 请求失败。",
     aiSources: "来源",
+    aiSourceLocal: "本地",
+    aiSourceExternal: "外部",
     generateHtmlNote: "生成笔记",
     generateNoteDialog: "生成笔记",
     generateNoteIntro: "根据当前 AI 对话和已选择的工作区上下文生成 HTML 笔记。",
@@ -749,6 +753,8 @@ const i18n = {
     aiProviderUnavailable: "サーバー側の AI プロバイダーが未設定です。",
     aiMessageFailed: "AI リクエストに失敗しました。",
     aiSources: "出典",
+    aiSourceLocal: "ローカル",
+    aiSourceExternal: "外部",
     generateHtmlNote: "ノートを生成",
     generateNoteDialog: "ノートを生成",
     generateNoteIntro: "現在の AI 会話と選択中のワークスペース文脈から HTML ノートを生成します。",
@@ -3143,13 +3149,33 @@ function updateAiMessage(message, role, text, sources = []) {
 
 function aiMessageMarkup(role, text, sources = []) {
   const sourceMarkup = role === "assistant" && sources.length > 0
-    ? `<div class="ai-message-sources"><span>${escapeHtml(t("aiSources"))}</span>${sources.slice(0, 4).map((source) => `<em>${escapeHtml(source.title || source.item_id || "")}</em>`).join("")}</div>`
+    ? `<div class="ai-message-sources"><span>${escapeHtml(t("aiSources"))}</span>${sources.slice(0, 4).map(renderAiSourcePill).join("")}</div>`
     : "";
   return `
     <strong>${escapeHtml(role === "user" ? t("aiUserPlaceholder") : t("globalAiAssistant"))}</strong>
     <p>${escapeHtml(text)}</p>
     ${sourceMarkup}
   `;
+}
+
+function renderAiSourcePill(source) {
+  const external = source?.kind === "external";
+  const label = t(external ? "aiSourceExternal" : "aiSourceLocal");
+  const title = sourceDisplayTitle(source);
+  return `<em class="${external ? "external" : "local"}"><span>${escapeHtml(label)}</span>${escapeHtml(title)}</em>`;
+}
+
+function sourceDisplayTitle(source) {
+  if (!source) return "";
+  if (source.kind === "external" && source.url) {
+    try {
+      const host = new URL(source.url).hostname;
+      return `${source.title || host} · ${host}`;
+    } catch {
+      return source.title || source.url || "";
+    }
+  }
+  return source.title || source.item_id || "";
 }
 
 function scrollAiChatToBottom() {
