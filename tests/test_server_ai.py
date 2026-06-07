@@ -789,6 +789,9 @@ def test_ai_material_parse_failure_is_recorded_without_source_text(tmp_path: Pat
         run = listed["runs"][0]
         assert run["kind"] == "material_html_generation"
         assert run["status"] == "failed"
+        assert run["retryable"] is True
+        assert run["cancellable"] is False
+        assert run["operation"] == "material_to_html"
         assert run["error"]["code"] == "material_parse_failed"
         assert run["material"]["title"] == "private source"
         assert run["material"]["material_type"] == "unknown"
@@ -831,6 +834,9 @@ def test_ai_generation_review_failure_is_recorded_without_writing_file(tmp_path:
         run = listed["runs"][0]
         assert run["kind"] == "html_generation"
         assert run["status"] == "failed"
+        assert run["retryable"] is True
+        assert run["cancellable"] is False
+        assert run["operation"] == "conversation_to_html"
         assert run["error"]["code"] == "review_failed"
         assert "likely secret" in run["error"]["message"]
         assert run["item_id"] == ""

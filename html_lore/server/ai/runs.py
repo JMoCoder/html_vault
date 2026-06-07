@@ -64,10 +64,13 @@ def runs_path(settings: ServerSettings) -> Path | None:
 
 
 def sanitize_run(run: dict[str, Any]) -> dict[str, Any]:
+    status = str(run.get("status") or "")
+    kind = str(run.get("kind") or "")
     return {
         "id": str(run.get("id") or ""),
-        "kind": str(run.get("kind") or ""),
-        "status": str(run.get("status") or ""),
+        "kind": kind,
+        "operation": run_operation(kind),
+        "status": status,
         "started_at": str(run.get("started_at") or ""),
         "completed_at": str(run.get("completed_at") or ""),
         "duration_ms": sanitize_duration(run.get("duration_ms")),
@@ -82,7 +85,23 @@ def sanitize_run(run: dict[str, Any]) -> dict[str, Any]:
         "error": sanitize_error(run.get("error")),
         "material": run.get("material") if isinstance(run.get("material"), dict) else {},
         "item_id": str(run.get("item_id") or ""),
+        "retryable": sanitize_bool(run.get("retryable"), default=status == "failed" and kind in {"html_generation", "material_html_generation"}),
+        "cancellable": sanitize_bool(run.get("cancellable"), default=status in {"pending", "running"} and False),
     }
+
+
+def run_operation(kind: str) -> str:
+    if kind == "material_html_generation":
+        return "material_to_html"
+    if kind == "html_generation":
+        return "conversation_to_html"
+    return "unknown"
+
+
+def sanitize_bool(value: Any, *, default: bool) -> bool:
+    if isinstance(value, bool):
+        return value
+    return default
 
 
 def sanitize_duration(value: Any) -> int:

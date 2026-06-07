@@ -2337,6 +2337,14 @@ a.icon-action {
   color: var(--danger);
 }
 
+.ai-run-capability {
+  color: var(--accent);
+}
+
+.ai-run-capability.muted {
+  color: var(--muted);
+}
+
 .management-row label,
 .management-actions-panel p {
   display: grid;

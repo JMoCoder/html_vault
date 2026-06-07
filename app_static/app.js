@@ -117,6 +117,8 @@ const i18n = {
     aiRunCompletedAt: "Completed: {date}",
     aiRunItem: "Item: {id}",
     aiRunError: "Error: {message}",
+    aiRunRetryable: "Retryable",
+    aiRunNotCancellable: "Not cancellable",
     aiKnowledgeAssistant: "AI knowledge assistant",
     aiKnowledgeAssistantIntro: "Prepare an AI job to reclassify, retag, or review all knowledge items in the library. This module is a placeholder until database write support is implemented.",
     assistantOperation: "Operation",
@@ -447,6 +449,8 @@ const i18n = {
     aiRunCompletedAt: "完成时间：{date}",
     aiRunItem: "条目：{id}",
     aiRunError: "错误：{message}",
+    aiRunRetryable: "可重试",
+    aiRunNotCancellable: "不可取消",
     aiKnowledgeAssistant: "AI 知识库助理",
     aiKnowledgeAssistantIntro: "预留 AI 批量任务入口，用于对资料库全部内容重新分类、重新打标签或审核整理。数据库写入能力完成前，这里先作为模块占位。",
     assistantOperation: "任务类型",
@@ -777,6 +781,8 @@ const i18n = {
     aiRunCompletedAt: "完了時刻: {date}",
     aiRunItem: "項目: {id}",
     aiRunError: "エラー: {message}",
+    aiRunRetryable: "再試行可能",
+    aiRunNotCancellable: "キャンセル不可",
     aiKnowledgeAssistant: "AI ナレッジアシスタント",
     aiKnowledgeAssistantIntro: "ライブラリ全体を再分類、再タグ付け、レビュー整理する AI ジョブの入口です。データベース書き込み対応まではプレースホルダーです。",
     assistantOperation: "操作",
@@ -3699,6 +3705,10 @@ function renderAiRunRow(run) {
   const durationMeta = duration ? `<span>${escapeHtml(t("aiRunDuration", { duration }))}</span>` : "";
   const completedMeta = run.completed_at ? `<span>${escapeHtml(t("aiRunCompletedAt", { date: formatDateTime(run.completed_at) }))}</span>` : "";
   const errorMessage = run.error?.message ? `<span class="ai-run-error">${escapeHtml(t("aiRunError", { message: run.error.message }))}</span>` : "";
+  const capabilityMeta = [
+    run.retryable ? `<span class="ai-run-capability">${escapeHtml(t("aiRunRetryable"))}</span>` : "",
+    run.cancellable ? "" : `<span class="ai-run-capability muted">${escapeHtml(t("aiRunNotCancellable"))}</span>`,
+  ].join("");
   row.innerHTML = `
     <div class="management-name">
       <strong>${escapeHtml(kindLabel)}</strong>
@@ -3709,6 +3719,7 @@ function renderAiRunRow(run) {
         ${completedMeta}
         <span>${escapeHtml(t("aiRunNodeCount", { count: nodeCount }))}</span>
         ${errorMessage}
+        ${capabilityMeta}
       </span>
     </div>
     <code>${escapeHtml(String(run.id || "").slice(0, 12))}</code>

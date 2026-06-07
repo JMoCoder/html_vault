@@ -57,6 +57,8 @@ test("workspace file create mode uploads material to the AI generation endpoint"
     started_at: "2026-06-07T02:00:00.000Z",
     completed_at: "2026-06-07T02:00:01.250Z",
     duration_ms: 1250,
+    retryable: false,
+    cancellable: false,
     item_id: "generated/2026/06/material-note.html",
     node_trace: [
       { node: "MaterialParseNode", status: "ok" },
@@ -175,6 +177,7 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   await expect(page.locator("#ai-run-list")).toContainText("1.3s");
   await expect(page.locator("#ai-run-list")).toContainText("Completed:");
   await expect(page.locator("#ai-run-list")).toContainText("3 steps");
+  await expect(page.locator("#ai-run-list")).toContainText("Not cancellable");
   await expect(page.locator("#ai-run-list")).not.toContainText("Important uploaded source");
 });
 
@@ -189,6 +192,8 @@ test("workspace material generation failure refreshes AI run history", async ({ 
     started_at: "2026-06-07T03:00:00.000Z",
     completed_at: "2026-06-07T03:00:00.080Z",
     duration_ms: 80,
+    retryable: true,
+    cancellable: false,
     item_id: "",
     node_trace: [{ node: "MaterialParseNode", status: "failed" }],
     error: { code: "material_parse_failed", message: "Only HTML, Markdown, and plain text materials are supported in this beta." },
@@ -259,6 +264,8 @@ test("workspace material generation failure refreshes AI run history", async ({ 
   await expect(page.locator("#ai-run-list")).toContainText("Generated from uploaded material");
   await expect(page.locator("#ai-run-list")).toContainText("Failed");
   await expect(page.locator("#ai-run-list")).toContainText("Error:");
+  await expect(page.locator("#ai-run-list")).toContainText("Retryable");
+  await expect(page.locator("#ai-run-list")).toContainText("Not cancellable");
   await expect(page.locator("#ai-run-list")).toContainText("80ms");
   await expect(page.locator("#ai-run-list")).not.toContainText("private uploaded source text");
 });
