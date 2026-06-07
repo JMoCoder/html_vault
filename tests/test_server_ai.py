@@ -364,6 +364,52 @@ def test_ai_conversations_are_partitioned_by_login_user(tmp_path: Path) -> None:
         server.close()
 
 
+def test_ai_runs_are_partitioned_by_login_user(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    users_file = tmp_path / "users.json"
+    user_data_dir = tmp_path / "users"
+    store = UserStore(
+        ServerSettings(
+            content_dir=content_dir,
+            meta_dir=meta_dir,
+            public_dir=public_dir,
+            site_title="AI Run Auth Test",
+            max_upload_bytes=10 * 1024 * 1024,
+            users_file=users_file,
+        ),
+    )
+    store.add_user(username="alice", password="alice-password", data_id="alice")
+    store.add_user(username="bob", password="bob-password", data_id="bob")
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        users_file=users_file,
+        user_data_dir=user_data_dir,
+        session_secret="test-session-secret",
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+    )
+    try:
+        server.json("POST", "/api/auth/login", {"username": "alice", "password": "alice-password"})
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"scope": "global"}})["conversation"]
+        server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "Summarize my workspace"})
+        alice_runs = server.request("GET", "/api/ai/runs")
+        assert alice_runs["count"] == 1
+        assert alice_runs["runs"][0]["kind"] == "knowledge_qa"
+
+        server.request("POST", "/api/auth/logout")
+        server.json("POST", "/api/auth/login", {"username": "bob", "password": "bob-password"})
+        assert server.request("GET", "/api/ai/runs")["count"] == 0
+
+        server.request("POST", "/api/auth/logout")
+        server.json("POST", "/api/auth/login", {"username": "alice", "password": "alice-password"})
+        assert server.request("GET", "/api/ai/runs")["count"] == 1
+    finally:
+        server.close()
+
+
 def test_safe_text_extraction_ignores_scripts_hidden_content_and_comments() -> None:
     text = extract_safe_text(
         """
