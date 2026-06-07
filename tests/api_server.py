@@ -40,6 +40,12 @@ class ApiServer:
         ai_model: str = "",
         ai_enabled: bool = False,
         ai_external_search: str = "",
+        ai_max_context_items: int | None = None,
+        ai_max_prompt_chars: int | None = None,
+        ai_max_message_chars: int | None = None,
+        ai_max_response_tokens: int | None = None,
+        ai_rate_limit_requests: int | None = None,
+        ai_rate_limit_window_seconds: int | None = None,
     ) -> None:
         self.port = free_port()
         self.api_token = api_token
@@ -64,6 +70,18 @@ class ApiServer:
                 "HTML_LORE_AI_EXTERNAL_SEARCH": ai_external_search,
             },
         )
+        if ai_max_context_items is not None:
+            env["HTML_LORE_AI_MAX_CONTEXT_ITEMS"] = str(ai_max_context_items)
+        if ai_max_prompt_chars is not None:
+            env["HTML_LORE_AI_MAX_PROMPT_CHARS"] = str(ai_max_prompt_chars)
+        if ai_max_message_chars is not None:
+            env["HTML_LORE_AI_MAX_MESSAGE_CHARS"] = str(ai_max_message_chars)
+        if ai_max_response_tokens is not None:
+            env["HTML_LORE_AI_MAX_RESPONSE_TOKENS"] = str(ai_max_response_tokens)
+        if ai_rate_limit_requests is not None:
+            env["HTML_LORE_AI_RATE_LIMIT_REQUESTS"] = str(ai_rate_limit_requests)
+        if ai_rate_limit_window_seconds is not None:
+            env["HTML_LORE_AI_RATE_LIMIT_WINDOW_SECONDS"] = str(ai_rate_limit_window_seconds)
         if users_file:
             env["HTML_LORE_USERS_FILE"] = str(users_file)
         if user_data_dir:
@@ -215,6 +233,12 @@ def run_api_server(
     ai_model: str = "",
     ai_enabled: bool = False,
     ai_external_search: str = "",
+    ai_max_context_items: int | None = None,
+    ai_max_prompt_chars: int | None = None,
+    ai_max_message_chars: int | None = None,
+    ai_max_response_tokens: int | None = None,
+    ai_rate_limit_requests: int | None = None,
+    ai_rate_limit_window_seconds: int | None = None,
 ) -> ApiServer:
     return ApiServer(
         content_dir=content_dir,
@@ -233,4 +257,10 @@ def run_api_server(
         ai_model=ai_model,
         ai_enabled=ai_enabled,
         ai_external_search=ai_external_search,
+        ai_max_context_items=ai_max_context_items,
+        ai_max_prompt_chars=ai_max_prompt_chars,
+        ai_max_message_chars=ai_max_message_chars,
+        ai_max_response_tokens=ai_max_response_tokens,
+        ai_rate_limit_requests=ai_rate_limit_requests,
+        ai_rate_limit_window_seconds=ai_rate_limit_window_seconds,
     )

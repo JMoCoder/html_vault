@@ -133,6 +133,7 @@ const i18n = {
     aiRunDetailsFailed: "Run details could not be loaded.",
     aiRunSpec: "Spec",
     aiRunUsage: "Usage",
+    aiRunBudget: "Budget",
     aiRunNodes: "Steps",
     aiRunNoDetailData: "No detail data recorded.",
     aiRunInputTokens: "Input tokens: {count}",
@@ -484,6 +485,7 @@ const i18n = {
     aiRunDetailsFailed: "无法加载运行详情。",
     aiRunSpec: "配置",
     aiRunUsage: "用量",
+    aiRunBudget: "预算",
     aiRunNodes: "步骤",
     aiRunNoDetailData: "暂无详情数据。",
     aiRunInputTokens: "输入 Tokens：{count}",
@@ -835,6 +837,7 @@ const i18n = {
     aiRunDetailsFailed: "実行詳細を読み込めませんでした。",
     aiRunSpec: "設定",
     aiRunUsage: "使用量",
+    aiRunBudget: "予算",
     aiRunNodes: "ステップ",
     aiRunNoDetailData: "詳細データはありません。",
     aiRunInputTokens: "入力トークン: {count}",
@@ -3859,6 +3862,7 @@ function renderAiRunDetails(run) {
   }
   const specItems = renderKeyValueList(run.spec || {});
   const usageItems = renderAiRunUsage(run.usage || {});
+  const budgetItems = renderKeyValueList(run.budget || {});
   const nodeItems = Array.isArray(run.node_trace) && run.node_trace.length > 0
     ? `<ol>${run.node_trace.map((node) => `<li>${escapeHtml(node.node || node.name || t("aiRunNodes"))} <em>${escapeHtml(node.status || "")}</em></li>`).join("")}</ol>`
     : `<p>${escapeHtml(t("aiRunNodeCount", { count: 0 }))}</p>`;
@@ -3872,6 +3876,10 @@ function renderAiRunDetails(run) {
       <section>
         <h4>${escapeHtml(t("aiRunUsage"))}</h4>
         ${usageItems || `<p>${escapeHtml(t("aiRunNoDetailData"))}</p>`}
+      </section>
+      <section>
+        <h4>${escapeHtml(t("aiRunBudget"))}</h4>
+        ${budgetItems || `<p>${escapeHtml(t("aiRunNoDetailData"))}</p>`}
       </section>
       <section>
         <h4>${escapeHtml(t("aiRunNodes"))}</h4>

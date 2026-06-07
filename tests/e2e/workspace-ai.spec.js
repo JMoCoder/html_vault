@@ -85,6 +85,7 @@ test("workspace file create mode uploads material to the AI generation endpoint"
     ],
     spec: { source_mode: "local_only" },
     usage: { input_tokens: 120, output_tokens: 80, total_tokens: 200 },
+    budget: { message_chars: 24, max_message_chars: 4000, prompt_chars: 1300, max_prompt_chars: 12000, max_response_tokens: 1024 },
   };
   const manifestBefore = {
     version: 2,
@@ -228,6 +229,8 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   await expect(page.locator("#ai-run-list")).toContainText("Spec");
   await expect(page.locator("#ai-run-list")).toContainText("source_mode");
   await expect(page.locator("#ai-run-list")).toContainText("Input tokens: 120");
+  await expect(page.locator("#ai-run-list")).toContainText("Budget");
+  await expect(page.locator("#ai-run-list")).toContainText("prompt_chars");
   await expect(page.locator("#ai-run-list")).toContainText("RetrieverNode");
   await expect(page.locator("#ai-run-list")).not.toContainText("Important uploaded source should stay hidden");
 });

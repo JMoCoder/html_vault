@@ -8,6 +8,7 @@ from html_lore.server.items import ItemService, normalize_query
 
 
 VALID_SOURCE_MODES = {"local_only", "local_plus_external"}
+DEFAULT_MAX_CONTEXT_ITEMS = 50
 
 
 class AIContextError(ValueError):
@@ -35,8 +36,9 @@ class ResolvedContext:
 
 
 class ContextResolver:
-    def __init__(self, item_service: ItemService) -> None:
+    def __init__(self, item_service: ItemService, *, max_context_items: int = DEFAULT_MAX_CONTEXT_ITEMS) -> None:
         self.item_service = item_service
+        self.max_context_items = max(1, int(max_context_items or DEFAULT_MAX_CONTEXT_ITEMS))
 
     def resolve(self, values: dict[str, Any]) -> dict[str, Any]:
         source_mode = normalize_source_mode(values.get("source_mode", "local_only"))
@@ -79,6 +81,7 @@ class ContextResolver:
                 "sort": query.sort,
                 "limit": query.limit,
             }
+        self._validate_item_limit(items)
 
         return ResolvedContext(
             source_mode=source_mode,
@@ -87,6 +90,14 @@ class ContextResolver:
             items=items,
             created_at=utc_now(),
         ).as_dict()
+
+    def _validate_item_limit(self, items: list[dict[str, Any]]) -> None:
+        if len(items) <= self.max_context_items:
+            return
+        raise AIContextError(
+            f"AI context contains {len(items)} notes, exceeding the limit of {self.max_context_items}. "
+            "Narrow the context or select fewer notes.",
+        )
 
     def _items_by_ids(self, ids: list[str], *, include_archived: bool) -> list[dict[str, Any]]:
         items_by_id = {str(item.get("id") or ""): item for item in self.item_service.manifest().get("items", [])}
@@ -176,4 +187,3 @@ def context_item(item: dict[str, Any]) -> dict[str, Any]:
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
-

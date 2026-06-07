@@ -82,6 +82,7 @@ def sanitize_run(run: dict[str, Any]) -> dict[str, Any]:
         "review_decision": run.get("review_decision") if isinstance(run.get("review_decision"), dict) else {},
         "node_trace": run.get("node_trace") if isinstance(run.get("node_trace"), list) else [],
         "usage": sanitize_usage(run.get("usage")),
+        "budget": sanitize_budget(run.get("budget")),
         "error": sanitize_error(run.get("error")),
         "material": run.get("material") if isinstance(run.get("material"), dict) else {},
         "item_id": str(run.get("item_id") or ""),
@@ -118,6 +119,20 @@ def sanitize_usage(value: Any) -> dict[str, int]:
         return {}
     result: dict[str, int] = {}
     for key in ("input_tokens", "output_tokens", "total_tokens"):
+        try:
+            number = int(value.get(key) or 0)
+        except (TypeError, ValueError):
+            number = 0
+        if number > 0:
+            result[key] = number
+    return result
+
+
+def sanitize_budget(value: Any) -> dict[str, int]:
+    if not isinstance(value, dict):
+        return {}
+    result: dict[str, int] = {}
+    for key in ("message_chars", "max_message_chars", "prompt_chars", "max_prompt_chars", "max_response_tokens"):
         try:
             number = int(value.get(key) or 0)
         except (TypeError, ValueError):

@@ -29,6 +29,12 @@ class ServerSettings:
     ai_embedding_model: str = ""
     ai_enabled: bool = False
     ai_external_search: str = ""
+    ai_max_context_items: int = 50
+    ai_max_prompt_chars: int = 12000
+    ai_max_message_chars: int = 4000
+    ai_max_response_tokens: int = 1024
+    ai_rate_limit_requests: int = 20
+    ai_rate_limit_window_seconds: int = 60
 
     @property
     def auth_enabled(self) -> bool:
@@ -76,6 +82,12 @@ def load_settings() -> ServerSettings:
     ai_embedding_model = get_env("AI_EMBEDDING_MODEL", "").strip()
     ai_enabled = parse_bool(get_env("AI_ENABLED", "false"))
     ai_external_search = get_env("AI_EXTERNAL_SEARCH", "").strip()
+    ai_max_context_items = parse_positive_int(get_env("AI_MAX_CONTEXT_ITEMS", "50"), 50)
+    ai_max_prompt_chars = parse_positive_int(get_env("AI_MAX_PROMPT_CHARS", "12000"), 12000)
+    ai_max_message_chars = parse_positive_int(get_env("AI_MAX_MESSAGE_CHARS", "4000"), 4000)
+    ai_max_response_tokens = parse_positive_int(get_env("AI_MAX_RESPONSE_TOKENS", "1024"), 1024)
+    ai_rate_limit_requests = parse_positive_int(get_env("AI_RATE_LIMIT_REQUESTS", "20"), 20)
+    ai_rate_limit_window_seconds = parse_positive_int(get_env("AI_RATE_LIMIT_WINDOW_SECONDS", "60"), 60)
     return ServerSettings(
         content_dir=content_dir,
         meta_dir=meta_dir,
@@ -99,6 +111,12 @@ def load_settings() -> ServerSettings:
         ai_embedding_model=ai_embedding_model,
         ai_enabled=ai_enabled,
         ai_external_search=ai_external_search,
+        ai_max_context_items=ai_max_context_items,
+        ai_max_prompt_chars=ai_max_prompt_chars,
+        ai_max_message_chars=ai_max_message_chars,
+        ai_max_response_tokens=ai_max_response_tokens,
+        ai_rate_limit_requests=ai_rate_limit_requests,
+        ai_rate_limit_window_seconds=ai_rate_limit_window_seconds,
     )
 
 
@@ -115,6 +133,14 @@ def parse_csv(value: str) -> tuple[str, ...]:
 
 def parse_bool(value: str) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def parse_positive_int(value: str | None, default: int) -> int:
+    try:
+        parsed = int(str(value or "").strip())
+    except (TypeError, ValueError):
+        return default
+    return parsed if parsed > 0 else default
 
 
 def parse_optional_path(value: str | None, default: Path) -> Path | None:

@@ -31,6 +31,7 @@ from .ai.api import (
 )
 from .auth import current_user, login, logout, read_session, require_session, session_status
 from .config import ServerSettings, load_settings
+from .ai.rate_limit import AIRateLimitError, ai_rate_limiter
 from .items import ItemContentError, ItemDeleteError, ItemMetadataError, ItemService, ItemStateError, normalize_query
 from .jobs import JobError, JobService
 from .navigation import NavigationConfigError, NavigationConfigService
@@ -112,6 +113,26 @@ def verify_api_token(
 ApiAuth = Annotated[None, Depends(verify_api_token)]
 
 
+def verify_ai_rate_limit(
+    settings: Annotated[ServerSettings, Depends(get_settings)],
+    request: Request,
+) -> None:
+    user = read_session(settings, request) if settings.auth_enabled else None
+    client_host = request.client.host if request.client else "unknown"
+    key = f"user:{user.data_id}" if user else f"ip:{client_host}"
+    try:
+        ai_rate_limiter.check(
+            key,
+            max_requests=settings.ai_rate_limit_requests,
+            window_seconds=settings.ai_rate_limit_window_seconds,
+        )
+    except AIRateLimitError as exc:
+        raise HTTPException(status_code=429, detail=str(exc)) from exc
+
+
+AiRateLimit = Annotated[None, Depends(verify_ai_rate_limit)]
+
+
 def create_app() -> FastAPI:
     settings = get_settings()
     if settings.auth_enabled:
@@ -180,7 +201,7 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.post("/api/ai/test-provider")
-    def ai_test_provider(_: ApiAuth, service: Annotated[AIService, Depends(get_ai_service)]) -> dict:
+    def ai_test_provider(_: ApiAuth, __: AiRateLimit, service: Annotated[AIService, Depends(get_ai_service)]) -> dict:
         try:
             return service.test_provider()
         except AIProviderConfigError as exc:
@@ -229,7 +250,7 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.post("/api/ai/conversations/{conversation_id}/messages")
-    def create_ai_conversation_message(conversation_id: str, values: dict, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+    def create_ai_conversation_message(conversation_id: str, values: dict, _: ApiAuth, __: AiRateLimit, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
         try:
             return service.add_message(conversation_id, values)
         except GuardrailError as exc:
@@ -238,7 +259,7 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.post("/api/ai/conversations/{conversation_id}/generate-note")
-    def generate_ai_note(conversation_id: str, values: dict, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+    def generate_ai_note(conversation_id: str, values: dict, _: ApiAuth, __: AiRateLimit, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
         try:
             return service.generate_note(conversation_id, values)
         except ConversationError as exc:
@@ -249,6 +270,7 @@ def create_app() -> FastAPI:
     @app.post("/api/ai/material-runs")
     async def generate_ai_note_from_material(
         _: ApiAuth,
+        __: AiRateLimit,
         service: Annotated[AIConversationService, Depends(get_ai_conversation_service)],
         file: Annotated[UploadFile, File()],
         instruction: Annotated[str, Form()] = "",

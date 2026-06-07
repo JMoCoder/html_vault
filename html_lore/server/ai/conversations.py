@@ -33,7 +33,7 @@ class ConversationStore:
     def create(self, values: dict[str, Any]) -> dict[str, Any]:
         if self.path is None:
             raise ConversationError("Metadata directory is not configured.")
-        snapshot = ContextResolver(self.item_service).resolve(values)
+        snapshot = ContextResolver(self.item_service, max_context_items=self.settings.ai_max_context_items).resolve(values)
         now = utc_now()
         conversation = {
             "id": uuid.uuid4().hex,

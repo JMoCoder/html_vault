@@ -9,7 +9,7 @@ from html_lore.server.items import ItemService
 
 from .conversations import ConversationStore
 from .external_search import DisabledExternalSearchAdapter, ExternalSearchAdapter, ExternalSearchUnavailable, sanitize_external_results
-from .guardrails import validate_answer, validate_user_message
+from .guardrails import validate_answer, validate_message_budget, validate_prompt_budget, validate_user_message
 from .model_client import ModelClient
 from .retrieval import retrieve_evidence
 
@@ -38,6 +38,7 @@ class KnowledgeQAState:
     answer: str = ""
     sources: list[dict[str, Any]] = field(default_factory=list)
     usage: dict[str, Any] = field(default_factory=dict)
+    budget: dict[str, Any] = field(default_factory=dict)
     skipped_model_call: bool = False
     stored_conversation: dict[str, Any] = field(default_factory=dict)
     node_trace: list[dict[str, str]] = field(default_factory=list)
@@ -60,14 +61,17 @@ class KnowledgeQAGraph:
         conversation_store: ConversationStore,
         external_search: ExternalSearchAdapter | None = None,
         nodes: tuple[KnowledgeQANode, ...] | None = None,
+        max_message_chars: int = 4000,
+        max_prompt_chars: int = 12000,
+        max_response_tokens: int = 1024,
     ) -> None:
         external_search = external_search or DisabledExternalSearchAdapter()
         self.nodes = nodes or (
-            InputGuardrailNode(),
+            InputGuardrailNode(max_message_chars=max_message_chars),
             RetrieverNode(item_service),
             ExternalSearchNode(external_search),
-            EvidenceGateNode(),
-            AnswerAgentNode(model_client),
+            EvidenceGateNode(max_prompt_chars=max_prompt_chars),
+            AnswerAgentNode(model_client, max_response_tokens=max_response_tokens),
             OutputGuardrailNode(),
             ConversationPersistNode(conversation_store),
         )
@@ -89,9 +93,15 @@ class KnowledgeQAGraph:
 class InputGuardrailNode:
     name = "InputGuardrailNode"
 
+    def __init__(self, *, max_message_chars: int = 4000) -> None:
+        self.max_message_chars = max(1, int(max_message_chars or 4000))
+
     def run(self, state: KnowledgeQAState) -> None:
         state.content = state.content.strip()
         validate_user_message(state.content)
+        validate_message_budget(state.content, max_chars=self.max_message_chars)
+        state.budget["message_chars"] = len(state.content)
+        state.budget["max_message_chars"] = self.max_message_chars
         state.context_snapshot = state.conversation.get("context_snapshot") if isinstance(state.conversation.get("context_snapshot"), dict) else {}
 
 
@@ -132,10 +142,16 @@ class ExternalSearchNode:
 class EvidenceGateNode:
     name = "EvidenceGateNode"
 
+    def __init__(self, *, max_prompt_chars: int = 12000) -> None:
+        self.max_prompt_chars = max(1, int(max_prompt_chars or 12000))
+
     def run(self, state: KnowledgeQAState) -> None:
         if state.evidence:
             state.sources = state.evidence
             state.prompt_messages = build_answer_prompt(state.content, state.evidence, state.context_snapshot)
+            state.budget["prompt_chars"] = prompt_chars(state.prompt_messages)
+            state.budget["max_prompt_chars"] = self.max_prompt_chars
+            validate_prompt_budget(state.prompt_messages, max_chars=self.max_prompt_chars)
             return
         if str(state.context_snapshot.get("source_mode") or "local_only") == "local_plus_external":
             state.answer = EXTERNAL_UNAVAILABLE_ANSWER
@@ -148,13 +164,15 @@ class EvidenceGateNode:
 class AnswerAgentNode:
     name = "AnswerAgentNode"
 
-    def __init__(self, model_client: ModelClient) -> None:
+    def __init__(self, model_client: ModelClient, *, max_response_tokens: int = 1024) -> None:
         self.model_client = model_client
+        self.max_response_tokens = max(1, int(max_response_tokens or 1024))
 
     def run(self, state: KnowledgeQAState) -> None:
         if state.skipped_model_call:
             return
-        response = self.model_client.chat(messages=state.prompt_messages)
+        state.budget["max_response_tokens"] = self.max_response_tokens
+        response = self.model_client.chat(messages=state.prompt_messages, max_tokens=self.max_response_tokens)
         state.answer = str(response.get("content") or "").strip()
         state.usage = response.get("usage") if isinstance(response.get("usage"), dict) else {}
 
@@ -210,6 +228,10 @@ def build_answer_prompt(content: str, evidence: list[dict[str, Any]], snapshot: 
     ]
 
 
+def prompt_chars(messages: list[dict[str, str]]) -> int:
+    return sum(len(str(message.get("content") or "")) for message in messages)
+
+
 def format_evidence_for_prompt(index: int, item: dict[str, Any]) -> str:
     if item.get("kind") == "external":
         return f"[{index}] EXTERNAL: {item.get('title')} ({item.get('url')})\n{item.get('snippet')}"
@@ -240,6 +262,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
         "review_decision": {},
         "node_trace": state.node_trace,
         "usage": state.usage,
+        "budget": state.budget,
         "error": error or {},
         "material": {},
         "item_id": "",

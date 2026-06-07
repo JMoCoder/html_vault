@@ -302,6 +302,43 @@ def test_ai_context_resolver_supports_all_tag_match(tmp_path: Path) -> None:
         server.close()
 
 
+def test_ai_context_resolver_rejects_contexts_above_note_limit(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    for index in range(4):
+        make_note(content_dir, meta_dir, f"note-{index}.html", title=f"Note {index}", collection="AI", tags=["Limit"])
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, ai_max_context_items=3)
+    try:
+        code, error = server.json_error("POST", "/api/ai/context/resolve", {"context": {"scope": "global"}})
+        assert code == 400
+        assert "exceeding the limit of 3" in error["detail"]
+
+        code, error = server.json_error(
+            "POST",
+            "/api/ai/context/resolve",
+            {"context": {"manual_item_ids": [f"note-{index}.html" for index in range(4)]}},
+        )
+        assert code == 400
+        assert "select fewer notes" in error["detail"]
+
+        limited = server.json("POST", "/api/ai/context/resolve", {"context": {"scope": "global", "limit": 3}})["context"]
+        assert limited["item_count"] == 3
+    finally:
+        server.close()
+
+
+def test_ai_conversation_create_rejects_contexts_above_note_limit(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    for index in range(3):
+        make_note(content_dir, meta_dir, f"note-{index}.html", title=f"Note {index}", collection="AI", tags=["Limit"])
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, ai_max_context_items=2)
+    try:
+        code, error = server.json_error("POST", "/api/ai/conversations", {"context": {"scope": "global"}})
+        assert code == 400
+        assert "AI context contains 3 notes" in error["detail"]
+    finally:
+        server.close()
+
+
 def test_ai_conversation_crud_persists_context_snapshot(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = make_dirs(tmp_path)
     make_note(content_dir, meta_dir, "a.html", title="Alpha MCP", collection="AI", tags=["MCP"])
@@ -514,6 +551,129 @@ def test_ai_message_returns_no_evidence_answer_without_model_call(tmp_path: Path
         assert response["sources"] == []
         assert "没有足够资料" in response["message"]["content"]
         assert response["usage"] == {}
+    finally:
+        server.close()
+
+
+def test_ai_message_rejects_message_above_budget_and_records_run(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir, ai_max_message_chars=12)
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        code, error = server.json_error("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "Summarize this note please."})
+        assert code == 400
+        assert "under 12 characters" in error["detail"]
+
+        runs = server.request("GET", "/api/ai/runs")
+        assert runs["count"] == 1
+        run = runs["runs"][0]
+        assert run["status"] == "failed"
+        assert run["error"]["code"] == "guardrail_failed"
+        assert run["budget"] == {}
+        assert "Summarize this note" not in json.dumps(runs, ensure_ascii=False)
+    finally:
+        server.close()
+
+
+def test_ai_message_rejects_prompt_above_budget_without_model_call(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+        ai_max_prompt_chars=100,
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        code, error = server.json_error("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "What does MCP security cover?"})
+        assert code == 400
+        assert "AI prompt budget exceeded" in error["detail"]
+
+        runs = server.request("GET", "/api/ai/runs")
+        assert runs["count"] == 1
+        run = runs["runs"][0]
+        assert run["status"] == "failed"
+        assert run["error"]["code"] == "guardrail_failed"
+        assert run["budget"]["prompt_chars"] > 100
+        assert run["budget"]["max_prompt_chars"] == 100
+        assert "Fake AI response" not in json.dumps(runs, ensure_ascii=False)
+    finally:
+        server.close()
+
+
+def test_knowledge_qa_graph_passes_configured_response_token_limit(tmp_path: Path) -> None:
+    from html_lore.server.ai.conversations import ConversationStore
+    from html_lore.server.items import ItemService
+
+    class RecordingClient:
+        def __init__(self) -> None:
+            self.max_tokens = 0
+
+        def chat(self, *, messages, temperature=0.2, max_tokens=1024):
+            self.max_tokens = max_tokens
+            return {"content": "Short answer.", "usage": {"total_tokens": 7}}
+
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="QA Budget Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    item_service = ItemService(settings)
+    conversation_store = ConversationStore(settings, item_service)
+    conversation = conversation_store.create({"context": {"item_id": "mcp.html"}})
+    client = RecordingClient()
+
+    state = KnowledgeQAGraph(
+        item_service=item_service,
+        model_client=client,
+        conversation_store=conversation_store,
+        max_response_tokens=33,
+    ).run(
+        KnowledgeQAState(
+            conversation_id=conversation["id"],
+            conversation=conversation,
+            content="What does MCP security cover?",
+        ),
+    )
+
+    assert client.max_tokens == 33
+    assert state.budget["max_response_tokens"] == 33
+    assert state.answer == "Short answer."
+
+
+def test_ai_write_requests_are_rate_limited_while_run_reads_remain_available(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+        ai_rate_limit_requests=1,
+        ai_rate_limit_window_seconds=60,
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        first = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "What does MCP security cover?"})
+        assert "Fake AI response" in first["message"]["content"]
+
+        code, error = server.json_error("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "Summarize this note."})
+        assert code == 429
+        assert "AI request limit exceeded" in error["detail"]
+
+        runs = server.request("GET", "/api/ai/runs")
+        assert runs["count"] == 1
     finally:
         server.close()
 

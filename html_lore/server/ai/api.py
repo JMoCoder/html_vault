@@ -59,7 +59,7 @@ class AIConversationService:
         self.run_store = run_store
 
     def resolve_context(self, values: dict[str, Any]) -> dict[str, Any]:
-        return {"context": ContextResolver(self.item_service).resolve(values)}
+        return {"context": ContextResolver(self.item_service, max_context_items=self.settings.ai_max_context_items).resolve(values)}
 
     def create(self, values: dict[str, Any]) -> dict[str, Any]:
         return {"conversation": self.store.create(values)}
@@ -92,7 +92,13 @@ class AIConversationService:
                 model_client=ModelClient(self.provider_store.get()),
                 conversation_store=self.store,
                 external_search=build_external_search_adapter(self.settings),
+                max_message_chars=self.settings.ai_max_message_chars,
+                max_prompt_chars=self.settings.ai_max_prompt_chars,
+                max_response_tokens=self.settings.ai_max_response_tokens,
             ).run(state)
+        except GuardrailError as exc:
+            self.run_store.add(public_qa_run(state, status="failed", error={"code": "guardrail_failed", "message": str(exc)}))
+            raise
         except (AIProviderConfigError, ProviderCallError) as exc:
             self.run_store.add(public_qa_run(state, status="failed", error={"code": "provider_failed", "message": str(exc)}))
             raise ConversationError(str(exc)) from exc
