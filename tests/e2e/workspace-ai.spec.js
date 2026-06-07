@@ -177,3 +177,88 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   await expect(page.locator("#ai-run-list")).toContainText("3 steps");
   await expect(page.locator("#ai-run-list")).not.toContainText("Important uploaded source");
 });
+
+test("workspace material generation failure refreshes AI run history", async ({ page }) => {
+  await page.addInitScript(() => localStorage.clear());
+  await routeWorkspace(page);
+
+  const failedRun = {
+    id: "run-material-failed",
+    kind: "material_html_generation",
+    status: "failed",
+    started_at: "2026-06-07T03:00:00.000Z",
+    completed_at: "2026-06-07T03:00:00.080Z",
+    duration_ms: 80,
+    item_id: "",
+    node_trace: [{ node: "MaterialParseNode", status: "failed" }],
+    error: { code: "material_parse_failed", message: "Only HTML, Markdown, and plain text materials are supported in this beta." },
+    material: { title: "private source", material_type: "unknown", text_chars: 0 },
+  };
+  let runsRequested = 0;
+
+  await page.route("**/api/auth/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ enabled: false, authenticated: true, user: null, data_id: null }),
+    });
+  });
+  await page.route("**/api/ai/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ available: false, provider: "", model: "", external_search: false }),
+    });
+  });
+  await page.route("**/api/version", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ version: "0.8.4", latest_version: "0.8.4", update_available: false }),
+    });
+  });
+  await page.route("**/api/shares", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ shares: [], count: 0 }) });
+  });
+  await page.route("**/api/manifest", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ version: 2, title: "HTMlore Workspace", items: [] }),
+    });
+  });
+  await page.route("**/api/ai/runs**", async (route) => {
+    runsRequested += 1;
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ runs: [failedRun], count: 1 }),
+    });
+  });
+  await page.route("**/api/ai/material-runs", async (route) => {
+    await route.fulfill({
+      status: 400,
+      contentType: "application/json",
+      body: JSON.stringify({ detail: "Only HTML, Markdown, and plain text materials are supported in this beta." }),
+    });
+  });
+
+  await page.goto("/workspace/", { waitUntil: "domcontentloaded" });
+  await page.locator("#input-type").selectOption("file");
+  await page.locator("#new-item-input").fill("Turn this private source into a note.");
+
+  const fileChooserPromise = page.waitForEvent("filechooser");
+  await page.locator("#new-item-form button[type='submit']").click();
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles({
+    name: "private-source.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF private uploaded source text", "utf8"),
+  });
+
+  await expect(page.locator("#new-feedback")).toContainText("Material note generation failed.");
+  await expect.poll(() => runsRequested).toBeGreaterThan(0);
+
+  await page.locator("#settings-open").click();
+  await page.locator("[data-settings-tab='ai']").click();
+  await expect(page.locator("#ai-run-list")).toContainText("Generated from uploaded material");
+  await expect(page.locator("#ai-run-list")).toContainText("Failed");
+  await expect(page.locator("#ai-run-list")).toContainText("Error:");
+  await expect(page.locator("#ai-run-list")).toContainText("80ms");
+  await expect(page.locator("#ai-run-list")).not.toContainText("private uploaded source text");
+});

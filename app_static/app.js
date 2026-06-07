@@ -2195,6 +2195,7 @@ async function generateNoteFromMaterialFile(file) {
     elements.newItemInput.value = "";
     setFeedback("materialNoteDone", { title: result.item?.title || file.name });
   } catch (error) {
+    await loadAiRuns();
     setFeedback("materialNoteFailed");
     console.error(error);
   }
@@ -3227,6 +3228,7 @@ async function submitGenerateNoteDialog(event) {
     elements.generateNoteFeedback.textContent = t("generateNoteCreated", { title });
     appendAiMessage("assistant", t("generateNoteCreated", { title }), data.item ? [{ title, item_id: data.item.id }] : []);
   } catch (error) {
+    await loadAiRuns();
     elements.generateNoteFeedback.textContent = error?.message || t("generateNoteFailed");
     console.error(error);
   } finally {
