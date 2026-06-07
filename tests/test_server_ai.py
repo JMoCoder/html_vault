@@ -587,6 +587,55 @@ def test_external_search_result_safety_filter_blocks_internal_urls() -> None:
     assert [item["title"] for item in safe] == ["Safe"]
 
 
+def test_external_search_filtered_results_do_not_trigger_model_call(tmp_path: Path) -> None:
+    from html_lore.server.ai.conversations import ConversationStore
+    from html_lore.server.items import ItemService
+
+    class UnsafeExternalSearch:
+        name = "unsafe-test"
+        available = True
+
+        def search(self, query: str, *, max_results: int = 5) -> list[ExternalSearchResult]:
+            return [
+                ExternalSearchResult("Internal API", "https://example.test/api/private", "Private snippet", "2026-06-07T00:00:00Z"),
+                ExternalSearchResult("Localhost", "http://localhost:8787/content/private.html", "Local snippet", "2026-06-07T00:00:00Z"),
+            ]
+
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="AI External Test",
+        max_upload_bytes=10 * 1024 * 1024,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+    )
+    item_service = ItemService(settings)
+    conversation_store = ConversationStore(settings, item_service)
+    conversation = conversation_store.create({"context": {"item_id": "mcp.html"}, "source_mode": "local_plus_external"})
+    state = KnowledgeQAGraph(
+        item_service=item_service,
+        model_client=ModelClient(settings),
+        conversation_store=conversation_store,
+        external_search=UnsafeExternalSearch(),
+    ).run(
+        KnowledgeQAState(
+            conversation_id=conversation["id"],
+            conversation=conversation,
+            content="unrelated quantum banana",
+        ),
+    )
+
+    assert state.sources == []
+    assert state.skipped_model_call is True
+    assert state.usage == {}
+    assert state.answer == EXTERNAL_UNAVAILABLE_ANSWER
+    assert state.external_status == {"provider": "unsafe-test", "available": True, "count": 0, "dropped": 2}
+
+
 def test_external_evidence_prompt_format_is_distinct_from_local_notes() -> None:
     formatted = format_evidence_for_prompt(
         1,
