@@ -432,3 +432,87 @@ test("workspace note generation can select an existing note as reference style",
     reference_note_id: "style.html",
   });
 });
+
+test("workspace AI content expansion controls conversation source mode", async ({ page }) => {
+  await page.addInitScript(() => localStorage.clear());
+  await routeWorkspace(page);
+
+  const conversationRequests = [];
+  const manifest = {
+    version: 2,
+    title: "HTMlore Workspace",
+    items: [
+      {
+        id: "mcp.html",
+        title: "MCP Security",
+        summary: "Context note.",
+        collection: "AI",
+        tags: ["MCP"],
+        source: "imported",
+        created: "2026-06-07T00:00:00Z",
+        updated: "2026-06-07T00:00:00Z",
+        path: "content/mcp.html",
+      },
+    ],
+  };
+
+  await page.route("**/api/auth/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ enabled: false, authenticated: true, user: null, data_id: null }),
+    });
+  });
+  await page.route("**/api/ai/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ available: true, provider: "", model: "fake", external_search: true }),
+    });
+  });
+  await page.route("**/api/version", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ version: "0.8.4", latest_version: "0.8.4", update_available: false }),
+    });
+  });
+  await page.route("**/api/shares", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ shares: [], count: 0 }) });
+  });
+  await page.route("**/api/manifest", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify(manifest) });
+  });
+  await page.route("**/api/ai/runs**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ runs: [], count: 0 }) });
+  });
+  await page.route("**/api/ai/conversations", async (route) => {
+    const request = JSON.parse(route.request().postData() || "{}");
+    conversationRequests.push(request);
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ conversation: { id: `conversation-${conversationRequests.length}`, context_snapshot: request.context, messages: [] } }),
+    });
+  });
+  await page.route("**/api/ai/conversations/*/messages", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        message: { role: "assistant", content: "Answer from selected mode." },
+        sources: [],
+        external_status: {},
+      }),
+    });
+  });
+
+  await page.goto("/workspace/", { waitUntil: "domcontentloaded" });
+  await page.locator("#ai-panel-open").click();
+  await page.locator("#ai-content-expansion").check();
+  await page.locator("#ai-chat-input").fill("Expand this note.");
+  await page.locator("#ai-chat-form button[type='submit']").click();
+  await expect.poll(() => conversationRequests.length).toBe(1);
+  expect(conversationRequests[0].source_mode).toBe("local_plus_external");
+
+  await page.locator("#ai-content-expansion").uncheck();
+  await page.locator("#ai-chat-input").fill("Answer only from local notes.");
+  await page.locator("#ai-chat-form button[type='submit']").click();
+  await expect.poll(() => conversationRequests.length).toBe(2);
+  expect(conversationRequests[1].source_mode).toBe("local_only");
+});
