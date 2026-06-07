@@ -50,6 +50,18 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   let uploadHtmlCalled = false;
   let legacyJobCalled = false;
   let manifestCalls = 0;
+  const generatedRun = {
+    id: "run-material-test",
+    kind: "material_html_generation",
+    status: "completed",
+    item_id: "generated/2026/06/material-note.html",
+    node_trace: [
+      { node: "MaterialParseNode", status: "ok" },
+      { node: "ContentBriefNode", status: "ok" },
+      { node: "ReviewerNode", status: "ok" },
+    ],
+    material: { title: "material", material_type: "markdown", text_chars: 36 },
+  };
   const manifestBefore = {
     version: 2,
     title: "HTMlore Workspace",
@@ -94,6 +106,12 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   await page.route("**/api/shares", async (route) => {
     await route.fulfill({ contentType: "application/json", body: JSON.stringify({ shares: [], count: 0 }) });
   });
+  await page.route("**/api/ai/runs**", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ runs: [generatedRun], count: 1 }),
+    });
+  });
   await page.route("**/api/manifest", async (route) => {
     manifestCalls += 1;
     await route.fulfill({
@@ -117,7 +135,8 @@ test("workspace file create mode uploads material to the AI generation endpoint"
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
-        run_id: "run-material-test",
+        run_id: generatedRun.id,
+        run: generatedRun,
         item: manifestAfter.items[0],
         graph: { kind: "material_html_generation" },
       }),
@@ -145,4 +164,11 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   expect(materialRequest.method).toBe("POST");
   expect(materialRequest.postData).toContain("material.md");
   expect(materialRequest.postData).toContain("Turn this material into a concise study note.");
+
+  await page.locator("#settings-open").click();
+  await page.locator("[data-settings-tab='ai']").click();
+  await expect(page.locator("#ai-run-list")).toContainText("Generated from uploaded material");
+  await expect(page.locator("#ai-run-list")).toContainText("Completed");
+  await expect(page.locator("#ai-run-list")).toContainText("3 steps");
+  await expect(page.locator("#ai-run-list")).not.toContainText("Important uploaded source");
 });

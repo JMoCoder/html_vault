@@ -725,6 +725,40 @@ def test_ai_material_run_generates_note_and_stores_material_summary(tmp_path: Pa
         server.close()
 
 
+def test_ai_runs_list_returns_recent_sanitized_runs(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir)
+    try:
+        first = server.multipart(
+            "/api/ai/material-runs",
+            fields={"instruction": "Create the first note."},
+            file_field="file",
+            filename="first-material.html",
+            content=b"<html><body><h1>First Topic</h1><p>First private source text.</p></body></html>",
+            content_type="text/html",
+        )["run"]
+        second = server.multipart(
+            "/api/ai/material-runs",
+            fields={"instruction": "Create the second note."},
+            file_field="file",
+            filename="second-material.html",
+            content=b"<html><body><h1>Second Topic</h1><p>Second private source text.</p></body></html>",
+            content_type="text/html",
+        )["run"]
+
+        listed = server.request("GET", "/api/ai/runs", query={"limit": "1"})
+        assert listed["count"] == 1
+        assert listed["runs"][0]["id"] == second["id"]
+        assert listed["runs"][0]["kind"] == "material_html_generation"
+        assert listed["runs"][0]["material"]["title"] == "second material"
+        assert "text" not in listed["runs"][0]["material"]
+        raw_payload = json.dumps(listed, ensure_ascii=False)
+        assert "Second private source text" not in raw_payload
+        assert first["id"] != second["id"]
+    finally:
+        server.close()
+
+
 def test_ai_generate_note_rejects_invalid_spec_without_writing_file(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = make_dirs(tmp_path)
     make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])

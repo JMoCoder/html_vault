@@ -2279,6 +2279,60 @@ a.icon-action {
   font-weight: 600;
 }
 
+.ai-run-history {
+  display: grid;
+  gap: 14px;
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.ai-run-list {
+  display: grid;
+  gap: 10px;
+}
+
+.ai-run-row {
+  grid-template-columns: minmax(180px, 1fr) auto;
+}
+
+.ai-run-row code {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ai-run-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.ai-run-status {
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-style: normal;
+  color: var(--muted);
+  background: var(--panel-soft);
+}
+
+.ai-run-status.status-completed {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.13);
+}
+
+.ai-run-status.status-failed {
+  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.13);
+}
+
+.ai-run-status.status-running,
+.ai-run-status.status-pending {
+  color: #0369a1;
+  background: rgba(14, 165, 233, 0.13);
+}
+
 .management-row label,
 .management-actions-panel p {
   display: grid;

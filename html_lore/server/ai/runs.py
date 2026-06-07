@@ -25,6 +25,11 @@ class AIRunStore:
         self._write(data)
         return public
 
+    def list(self, limit: int = 20) -> list[dict[str, Any]]:
+        safe_limit = max(1, min(int(limit or 20), 100))
+        runs = [sanitize_run(run) for run in self._read().get("runs", []) if isinstance(run, dict)]
+        return list(reversed(runs))[:safe_limit]
+
     def get(self, run_id: str) -> dict[str, Any]:
         for run in self._read().get("runs", []):
             if run.get("id") == run_id:

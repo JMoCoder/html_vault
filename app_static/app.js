@@ -100,6 +100,20 @@ const i18n = {
     requiresWriter: "Requires metadata writer",
     visible: "Visible",
     aiProviders: "AI providers",
+    aiRunHistory: "Recent AI runs",
+    aiRunHistoryIntro: "Review recent AI generation runs without exposing prompts, source text, or API keys.",
+    aiRunHistoryEmpty: "No AI runs yet.",
+    aiRunHistoryUnavailable: "AI run history requires the backend server.",
+    aiRunHistoryFailed: "AI run history could not be loaded.",
+    aiRunHtmlGeneration: "Generated from conversation",
+    aiRunMaterialGeneration: "Generated from uploaded material",
+    aiRunUnknownKind: "AI run",
+    aiRunStatusCompleted: "Completed",
+    aiRunStatusFailed: "Failed",
+    aiRunStatusRunning: "Running",
+    aiRunStatusPending: "Pending",
+    aiRunNodeCount: "{count} steps",
+    aiRunItem: "Item: {id}",
     aiKnowledgeAssistant: "AI knowledge assistant",
     aiKnowledgeAssistantIntro: "Prepare an AI job to reclassify, retag, or review all knowledge items in the library. This module is a placeholder until database write support is implemented.",
     assistantOperation: "Operation",
@@ -413,6 +427,20 @@ const i18n = {
     requiresWriter: "需要元数据写入服务",
     visible: "显示",
     aiProviders: "AI 服务商配置",
+    aiRunHistory: "最近 AI 运行记录",
+    aiRunHistoryIntro: "查看最近的 AI 生成记录，不展示提示词、来源正文或 API Key。",
+    aiRunHistoryEmpty: "暂无 AI 运行记录。",
+    aiRunHistoryUnavailable: "AI 运行记录需要连接后端服务。",
+    aiRunHistoryFailed: "无法加载 AI 运行记录。",
+    aiRunHtmlGeneration: "根据对话生成",
+    aiRunMaterialGeneration: "根据上传资料生成",
+    aiRunUnknownKind: "AI 运行",
+    aiRunStatusCompleted: "已完成",
+    aiRunStatusFailed: "失败",
+    aiRunStatusRunning: "运行中",
+    aiRunStatusPending: "等待中",
+    aiRunNodeCount: "{count} 个步骤",
+    aiRunItem: "条目：{id}",
     aiKnowledgeAssistant: "AI 知识库助理",
     aiKnowledgeAssistantIntro: "预留 AI 批量任务入口，用于对资料库全部内容重新分类、重新打标签或审核整理。数据库写入能力完成前，这里先作为模块占位。",
     assistantOperation: "任务类型",
@@ -726,6 +754,20 @@ const i18n = {
     requiresWriter: "メタデータ書き込みサービスが必要",
     visible: "表示",
     aiProviders: "AI プロバイダー設定",
+    aiRunHistory: "最近の AI 実行",
+    aiRunHistoryIntro: "プロンプト、元テキスト、API Key を表示せず、最近の AI 生成実行を確認します。",
+    aiRunHistoryEmpty: "AI 実行はまだありません。",
+    aiRunHistoryUnavailable: "AI 実行履歴にはバックエンドサーバーが必要です。",
+    aiRunHistoryFailed: "AI 実行履歴を読み込めませんでした。",
+    aiRunHtmlGeneration: "会話から生成",
+    aiRunMaterialGeneration: "アップロード資料から生成",
+    aiRunUnknownKind: "AI 実行",
+    aiRunStatusCompleted: "完了",
+    aiRunStatusFailed: "失敗",
+    aiRunStatusRunning: "実行中",
+    aiRunStatusPending: "待機中",
+    aiRunNodeCount: "{count} ステップ",
+    aiRunItem: "項目: {id}",
     aiKnowledgeAssistant: "AI ナレッジアシスタント",
     aiKnowledgeAssistantIntro: "ライブラリ全体を再分類、再タグ付け、レビュー整理する AI ジョブの入口です。データベース書き込み対応まではプレースホルダーです。",
     assistantOperation: "操作",
@@ -1030,6 +1072,7 @@ const state = {
   activeSettingsTab: "basic",
   aiConfig: loadAiConfig(),
   aiStatus: null,
+  aiRuns: [],
   aiConversationId: "",
   aiConversationContextKey: "",
   aiContentExpansion: false,
@@ -1117,6 +1160,8 @@ const elements = {
   modelMaxTokens: document.querySelector("#model-max-tokens"),
   testProvider: document.querySelector("#test-provider"),
   settingsFeedback: document.querySelector("#settings-feedback"),
+  aiRunList: document.querySelector("#ai-run-list"),
+  aiRunFeedback: document.querySelector("#ai-run-feedback"),
   versionStatus: document.querySelector("#version-status"),
   libraryNav: document.querySelector("#library-nav"),
   collectionNav: document.querySelector("#collection-nav"),
@@ -1998,6 +2043,7 @@ function openSettings(tab = "basic", updateHash = true) {
   clearFeedback();
   setSettingsTab(tab, false);
   elements.settingsPage.hidden = false;
+  maybeRefreshAiRuns();
   if (updateHash) {
     updateSettingsHash(state.activeSettingsTab);
   }
@@ -2034,6 +2080,9 @@ function setSettingsTab(tab, updateHash = true) {
   const validTabs = new Set([...elements.settingsTabs].map((item) => item.dataset.settingsTab));
   state.activeSettingsTab = validTabs.has(tab) ? tab : "basic";
   renderSettingsTabs();
+  if (!elements.settingsPage.hidden) {
+    maybeRefreshAiRuns();
+  }
   if (updateHash) {
     updateSettingsHash(state.activeSettingsTab);
   }
@@ -2133,6 +2182,7 @@ async function generateNoteFromMaterialFile(file) {
     if (!response.ok) throw new Error(`Agent returned ${response.status}`);
     const result = await response.json();
     await refreshManifestAndWorkspace();
+    await loadAiRuns();
     elements.newItemInput.value = "";
     setFeedback("materialNoteDone", { title: result.item?.title || file.name });
   } catch (error) {
@@ -3163,6 +3213,7 @@ async function submitGenerateNoteDialog(event) {
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
     await refreshManifestAndWorkspace();
+    await loadAiRuns();
     const title = data.item?.title || data.item?.id || t("item");
     elements.generateNoteFeedback.textContent = t("generateNoteCreated", { title });
     appendAiMessage("assistant", t("generateNoteCreated", { title }), data.item ? [{ title, item_id: data.item.id }] : []);
@@ -3586,6 +3637,82 @@ function renderAiConfig() {
   elements.modelTemperature.value = config.temperature || "0.7";
   elements.modelMaxTokens.value = config.maxTokens || "4096";
   elements.apiKey.value = "";
+}
+
+function maybeRefreshAiRuns() {
+  if (state.activeSettingsTab !== "ai") return;
+  loadAiRuns();
+}
+
+async function loadAiRuns() {
+  if (!elements.aiRunList) return;
+  if (!state.agentUrl) {
+    state.aiRuns = [];
+    renderAiRuns();
+    elements.aiRunFeedback.textContent = t("aiRunHistoryUnavailable");
+    return;
+  }
+  try {
+    const response = await apiFetch("/api/ai/runs?limit=20", { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    state.aiRuns = Array.isArray(data.runs) ? data.runs : [];
+    renderAiRuns();
+    elements.aiRunFeedback.textContent = "";
+  } catch (error) {
+    state.aiRuns = [];
+    renderAiRuns();
+    elements.aiRunFeedback.textContent = t("aiRunHistoryFailed");
+    console.error(error);
+  }
+}
+
+function renderAiRuns() {
+  if (!elements.aiRunList) return;
+  if (state.aiRuns.length === 0) {
+    elements.aiRunList.innerHTML = `<div class="empty-state">${escapeHtml(t("aiRunHistoryEmpty"))}</div>`;
+    return;
+  }
+  elements.aiRunList.replaceChildren(...state.aiRuns.map(renderAiRunRow));
+}
+
+function renderAiRunRow(run) {
+  const row = document.createElement("div");
+  row.className = "management-row ai-run-row";
+  const kindLabel = getAiRunKindLabel(run);
+  const statusLabel = getAiRunStatusLabel(run.status);
+  const statusClass = `status-${String(run.status || "pending").toLowerCase().replace(/[^a-z0-9-]/g, "") || "pending"}`;
+  const nodeCount = Array.isArray(run.node_trace) ? run.node_trace.length : 0;
+  const itemMeta = run.item_id ? `<span>${escapeHtml(t("aiRunItem", { id: run.item_id }))}</span>` : "";
+  row.innerHTML = `
+    <div class="management-name">
+      <strong>${escapeHtml(kindLabel)}</strong>
+      <span class="ai-run-meta">
+        <em class="ai-run-status ${statusClass}">${escapeHtml(statusLabel)}</em>
+        ${itemMeta}
+        <span>${escapeHtml(t("aiRunNodeCount", { count: nodeCount }))}</span>
+      </span>
+    </div>
+    <code>${escapeHtml(String(run.id || "").slice(0, 12))}</code>
+  `;
+  return row;
+}
+
+function getAiRunKindLabel(run) {
+  const kind = String(run?.kind || "");
+  if (kind === "html_generation") return t("aiRunHtmlGeneration");
+  if (kind === "material_html_generation") return t("aiRunMaterialGeneration");
+  return t("aiRunUnknownKind");
+}
+
+function getAiRunStatusLabel(status) {
+  const key = {
+    completed: "aiRunStatusCompleted",
+    failed: "aiRunStatusFailed",
+    running: "aiRunStatusRunning",
+    pending: "aiRunStatusPending",
+  }[String(status || "").toLowerCase()];
+  return key ? t(key) : String(status || t("aiRunStatusPending"));
 }
 
 function syncAiConfigFromServer(provider) {

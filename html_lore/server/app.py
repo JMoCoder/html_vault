@@ -275,6 +275,13 @@ def create_app() -> FastAPI:
         except (HtmlGenerationError, MaterialGenerationError, AIRunError) as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.get("/api/ai/runs")
+    def ai_runs(_: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)], limit: int = 20) -> dict:
+        try:
+            return service.runs(limit=limit)
+        except AIRunError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.get("/api/ai/runs/{run_id}")
     def ai_run(run_id: str, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
         try:

@@ -125,6 +125,10 @@ class AIConversationService:
         run = self.run_store.add(result["run"])
         return {"run": run, "item": result["item"]}
 
+    def runs(self, limit: int = 20) -> dict[str, Any]:
+        runs = self.run_store.list(limit=limit)
+        return {"runs": runs, "count": len(runs)}
+
     def run(self, run_id: str) -> dict[str, Any]:
         return {"run": self.run_store.get(run_id)}
 
