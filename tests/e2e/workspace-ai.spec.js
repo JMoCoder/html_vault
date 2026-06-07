@@ -320,3 +320,111 @@ test("workspace material generation failure refreshes AI run history", async ({ 
   await expect(page.locator("#ai-run-list")).toContainText("80ms");
   await expect(page.locator("#ai-run-list")).not.toContainText("private uploaded source text");
 });
+
+test("workspace note generation can select an existing note as reference style", async ({ page }) => {
+  await page.addInitScript(() => localStorage.clear());
+  await routeWorkspace(page);
+
+  let conversationRequest = null;
+  let generationRequest = null;
+  const manifest = {
+    version: 2,
+    title: "HTMlore Workspace",
+    items: [
+      {
+        id: "mcp.html",
+        title: "MCP Security",
+        summary: "Context note.",
+        collection: "AI",
+        tags: ["MCP"],
+        source: "imported",
+        created: "2026-06-07T00:00:00Z",
+        updated: "2026-06-07T00:00:00Z",
+        path: "content/mcp.html",
+      },
+      {
+        id: "style.html",
+        title: "Style Reference",
+        summary: "Reference style note.",
+        collection: "Design",
+        tags: ["Style"],
+        source: "imported",
+        created: "2026-06-07T00:00:00Z",
+        updated: "2026-06-07T00:00:00Z",
+        path: "content/style.html",
+      },
+      {
+        id: "archived-style.html",
+        title: "Archived Style",
+        summary: "Should not be offered.",
+        collection: "Archive",
+        tags: ["Style"],
+        source: "imported",
+        archived: true,
+        created: "2026-06-07T00:00:00Z",
+        updated: "2026-06-07T00:00:00Z",
+        path: "content/archived-style.html",
+      },
+    ],
+  };
+
+  await page.route("**/api/auth/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ enabled: false, authenticated: true, user: null, data_id: null }),
+    });
+  });
+  await page.route("**/api/ai/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ available: true, provider: "", model: "fake", external_search: false }),
+    });
+  });
+  await page.route("**/api/version", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ version: "0.8.4", latest_version: "0.8.4", update_available: false }),
+    });
+  });
+  await page.route("**/api/shares", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ shares: [], count: 0 }) });
+  });
+  await page.route("**/api/manifest", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify(manifest) });
+  });
+  await page.route("**/api/ai/runs**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ runs: [], count: 0 }) });
+  });
+  await page.route("**/api/ai/conversations", async (route) => {
+    conversationRequest = JSON.parse(route.request().postData() || "{}");
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ conversation: { id: "conversation-reference-test", context_snapshot: conversationRequest.context, messages: [] } }),
+    });
+  });
+  await page.route("**/api/ai/conversations/*/generate-note", async (route) => {
+    generationRequest = JSON.parse(route.request().postData() || "{}");
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        run: { id: "run-reference-test", kind: "html_generation", status: "completed" },
+        item: { id: "generated/reference-note.html", title: "Generated Reference Note" },
+      }),
+    });
+  });
+
+  await page.goto("/workspace/", { waitUntil: "domcontentloaded" });
+  await page.locator("#ai-panel-open").click();
+  await page.locator("#ai-generate-note").click();
+  await expect(page.locator("#generate-reference-note")).toContainText("Style Reference");
+  await expect(page.locator("#generate-reference-note")).not.toContainText("Archived Style");
+  await page.locator("#generate-reference-note").selectOption("style.html");
+  await page.locator("#generate-note-submit").click();
+
+  await expect(page.locator("#generate-note-feedback")).toContainText("Generated note: Generated Reference Note");
+  expect(conversationRequest).not.toBeNull();
+  expect(generationRequest).toMatchObject({
+    reference_style: "note",
+    reference_note_id: "style.html",
+  });
+});

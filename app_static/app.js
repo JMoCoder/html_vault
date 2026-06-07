@@ -59,6 +59,8 @@ const i18n = {
     generateTheme: "Theme",
     generateTargetUse: "Target use",
     generateStylePreference: "Style preference",
+    generateReferenceNote: "Reference style",
+    generateReferenceDefault: "Default",
     generateDefault: "Default",
     generateDark: "Dark",
     generateLight: "Light",
@@ -404,6 +406,8 @@ const i18n = {
     generateTheme: "主题",
     generateTargetUse: "目标用途",
     generateStylePreference: "样式偏好",
+    generateReferenceNote: "参考样式",
+    generateReferenceDefault: "默认",
     generateDefault: "默认",
     generateDark: "暗色",
     generateLight: "亮色",
@@ -749,6 +753,8 @@ const i18n = {
     generateTheme: "テーマ",
     generateTargetUse: "用途",
     generateStylePreference: "スタイル",
+    generateReferenceNote: "参照スタイル",
+    generateReferenceDefault: "デフォルト",
     generateDefault: "デフォルト",
     generateDark: "ダーク",
     generateLight: "ライト",
@@ -1282,6 +1288,7 @@ const elements = {
   generateTheme: document.querySelector("#generate-theme"),
   generateTargetUse: document.querySelector("#generate-target-use"),
   generateStylePreference: document.querySelector("#generate-style-preference"),
+  generateReferenceNote: document.querySelector("#generate-reference-note"),
   generateNoteFeedback: document.querySelector("#generate-note-feedback"),
   generateNoteSubmit: document.querySelector("#generate-note-submit"),
   generateNoteCancel: document.querySelector("#generate-note-cancel"),
@@ -3238,9 +3245,30 @@ function openGenerateNoteDialog() {
   elements.generateTheme.value = "default";
   elements.generateTargetUse.value = "default";
   elements.generateStylePreference.value = "default";
+  renderGenerateReferenceOptions();
   elements.generateNoteFeedback.textContent = state.agentUrl ? "" : t("generateNoteNeedsAgent");
   elements.generateNoteDialog.hidden = false;
   elements.generateTheme.focus();
+}
+
+function renderGenerateReferenceOptions() {
+  if (!elements.generateReferenceNote) return;
+  elements.generateReferenceNote.replaceChildren();
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = t("generateReferenceDefault");
+  elements.generateReferenceNote.append(defaultOption);
+  state.items
+    .filter((item) => item?.id && !isArchived(item))
+    .slice()
+    .sort((a, b) => getItemTitle(a).localeCompare(getItemTitle(b)))
+    .forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item.id;
+      option.textContent = getItemTitle(item);
+      elements.generateReferenceNote.append(option);
+    });
+  elements.generateReferenceNote.value = "";
 }
 
 function closeGenerateNoteDialog() {
@@ -3266,8 +3294,8 @@ async function submitGenerateNoteDialog(event) {
         theme: elements.generateTheme.value,
         target_use: elements.generateTargetUse.value,
         style_preference: elements.generateStylePreference.value,
-        reference_style: "default",
-        reference_note_id: "",
+        reference_style: elements.generateReferenceNote.value ? "note" : "default",
+        reference_note_id: elements.generateReferenceNote.value,
       }),
     });
     const data = await response.json().catch(() => ({}));

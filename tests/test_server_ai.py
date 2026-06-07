@@ -681,6 +681,41 @@ def test_ai_generate_note_from_conversation_persists_generated_item_and_run(tmp_
         server.close()
 
 
+def test_ai_generate_note_accepts_reference_note_spec(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    make_note(content_dir, meta_dir, "style.html", title="Style Reference", collection="AI", tags=["Style"])
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        generated = server.json(
+            "POST",
+            f"/api/ai/conversations/{conversation['id']}/generate-note",
+            {
+                "theme": "default",
+                "target_use": "default",
+                "style_preference": "default",
+                "reference_style": "note",
+                "reference_note_id": "style.html",
+            },
+        )
+
+        run = generated["run"]
+        assert run["spec"]["reference_style"] == "note"
+        assert run["spec"]["reference_note_id"] == "style.html"
+        assert run["generation_intent"]["reference_style"] == "note"
+        assert run["generation_intent"]["reference_note_id"] == "style.html"
+    finally:
+        server.close()
+
+
 def test_html_generation_graph_records_node_trace_and_default_intent() -> None:
     state = HtmlGenerationGraph().run(
         HtmlGenerationState(
@@ -948,11 +983,35 @@ def test_ai_generate_note_rejects_invalid_spec_without_writing_file(tmp_path: Pa
         code, error = server.json_error(
             "POST",
             f"/api/ai/conversations/{conversation['id']}/generate-note",
-            {"theme": "neon"},
+            {"theme": "neon", "reference_style": "copy-all-html"},
         )
         after = set(content_dir.rglob("*.html"))
         assert code == 400
         assert "Unsupported theme" in error["detail"]
         assert after == before
+
+        code, error = server.json_error(
+            "POST",
+            f"/api/ai/conversations/{conversation['id']}/generate-note",
+            {"reference_style": "copy-all-html"},
+        )
+        assert code == 400
+        assert "Unsupported reference_style" in error["detail"]
+
+        code, error = server.json_error(
+            "POST",
+            f"/api/ai/conversations/{conversation['id']}/generate-note",
+            {"reference_style": "note", "reference_note_id": ""},
+        )
+        assert code == 400
+        assert "Reference note is required" in error["detail"]
+
+        code, error = server.json_error(
+            "POST",
+            f"/api/ai/conversations/{conversation['id']}/generate-note",
+            {"reference_style": "note", "reference_note_id": "../private.html"},
+        )
+        assert code == 400
+        assert "Unsupported reference note" in error["detail"]
     finally:
         server.close()

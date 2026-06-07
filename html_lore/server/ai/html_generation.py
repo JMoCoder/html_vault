@@ -18,6 +18,7 @@ from .html_generation_graph import HtmlGenerationGraph, HtmlGenerationState
 
 VALID_THEMES = {"default", "dark", "light"}
 VALID_TARGET_USES = {"default", "personal", "share"}
+VALID_REFERENCE_STYLES = {"default", "image", "note"}
 VALID_STYLE_PREFERENCES = {"default", "report", "website", "ppt"}
 
 
@@ -37,12 +38,21 @@ class GenerationSpec:
 
     @classmethod
     def from_values(cls, values: dict[str, Any]) -> "GenerationSpec":
+        theme = validate_enum(values.get("theme", "default"), VALID_THEMES, "theme")
+        target_use = validate_enum(values.get("target_use", values.get("targetUse", "default")), VALID_TARGET_USES, "target_use")
+        style_preference = validate_enum(values.get("style_preference", values.get("stylePreference", "default")), VALID_STYLE_PREFERENCES, "style_preference")
+        reference_style = validate_enum(values.get("reference_style", values.get("referenceStyle", "default")), VALID_REFERENCE_STYLES, "reference_style")
+        reference_note_id = normalize_reference_note_id(values.get("reference_note_id") or values.get("referenceNoteId") or "")
+        if reference_style == "default":
+            reference_note_id = ""
+        if reference_style == "note" and not reference_note_id:
+            raise HtmlGenerationError("Reference note is required.")
         return cls(
-            theme=validate_enum(values.get("theme", "default"), VALID_THEMES, "theme"),
-            target_use=validate_enum(values.get("target_use", values.get("targetUse", "default")), VALID_TARGET_USES, "target_use"),
-            reference_style=str(values.get("reference_style") or values.get("referenceStyle") or "default").strip() or "default",
-            reference_note_id=str(values.get("reference_note_id") or values.get("referenceNoteId") or "").strip(),
-            style_preference=validate_enum(values.get("style_preference", values.get("stylePreference", "default")), VALID_STYLE_PREFERENCES, "style_preference"),
+            theme=theme,
+            target_use=target_use,
+            reference_style=reference_style,
+            reference_note_id=reference_note_id,
+            style_preference=style_preference,
         )
 
     def as_dict(self) -> dict[str, str]:
@@ -192,6 +202,21 @@ def validate_enum(value: Any, valid: set[str], name: str) -> str:
     cleaned = str(value or "default").strip() or "default"
     if cleaned not in valid:
         raise HtmlGenerationError(f"Unsupported {name}.")
+    return cleaned
+
+
+def normalize_reference_note_id(value: Any) -> str:
+    cleaned = str(value or "").strip()
+    if not cleaned:
+        return ""
+    parts = cleaned.replace("\\", "/").split("/")
+    if (
+        len(cleaned) > 240
+        or any(ord(char) < 32 for char in cleaned)
+        or cleaned.startswith("/")
+        or any(part in {"", ".", ".."} for part in parts)
+    ):
+        raise HtmlGenerationError("Unsupported reference note.")
     return cleaned
 
 
