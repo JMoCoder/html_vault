@@ -54,6 +54,9 @@ test("workspace file create mode uploads material to the AI generation endpoint"
     id: "run-material-test",
     kind: "material_html_generation",
     status: "completed",
+    started_at: "2026-06-07T02:00:00.000Z",
+    completed_at: "2026-06-07T02:00:01.250Z",
+    duration_ms: 1250,
     item_id: "generated/2026/06/material-note.html",
     node_trace: [
       { node: "MaterialParseNode", status: "ok" },
@@ -169,6 +172,8 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   await page.locator("[data-settings-tab='ai']").click();
   await expect(page.locator("#ai-run-list")).toContainText("Generated from uploaded material");
   await expect(page.locator("#ai-run-list")).toContainText("Completed");
+  await expect(page.locator("#ai-run-list")).toContainText("1.3s");
+  await expect(page.locator("#ai-run-list")).toContainText("Completed:");
   await expect(page.locator("#ai-run-list")).toContainText("3 steps");
   await expect(page.locator("#ai-run-list")).not.toContainText("Important uploaded source");
 });

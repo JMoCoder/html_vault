@@ -33,7 +33,7 @@ class AIRunStore:
     def get(self, run_id: str) -> dict[str, Any]:
         for run in self._read().get("runs", []):
             if run.get("id") == run_id:
-                return run
+                return sanitize_run(run) if isinstance(run, dict) else {}
         raise AIRunError("AI run not found.")
 
     def _read(self) -> dict[str, Any]:
@@ -68,6 +68,9 @@ def sanitize_run(run: dict[str, Any]) -> dict[str, Any]:
         "id": str(run.get("id") or ""),
         "kind": str(run.get("kind") or ""),
         "status": str(run.get("status") or ""),
+        "started_at": str(run.get("started_at") or ""),
+        "completed_at": str(run.get("completed_at") or ""),
+        "duration_ms": sanitize_duration(run.get("duration_ms")),
         "conversation_id": str(run.get("conversation_id") or ""),
         "spec": run.get("spec") if isinstance(run.get("spec"), dict) else {},
         "graph": str(run.get("graph") or ""),
@@ -75,6 +78,42 @@ def sanitize_run(run: dict[str, Any]) -> dict[str, Any]:
         "qa_report": run.get("qa_report") if isinstance(run.get("qa_report"), dict) else {},
         "review_decision": run.get("review_decision") if isinstance(run.get("review_decision"), dict) else {},
         "node_trace": run.get("node_trace") if isinstance(run.get("node_trace"), list) else [],
+        "usage": sanitize_usage(run.get("usage")),
+        "error": sanitize_error(run.get("error")),
         "material": run.get("material") if isinstance(run.get("material"), dict) else {},
         "item_id": str(run.get("item_id") or ""),
     }
+
+
+def sanitize_duration(value: Any) -> int:
+    try:
+        return max(0, int(value or 0))
+    except (TypeError, ValueError):
+        return 0
+
+
+def sanitize_usage(value: Any) -> dict[str, int]:
+    if not isinstance(value, dict):
+        return {}
+    result: dict[str, int] = {}
+    for key in ("input_tokens", "output_tokens", "total_tokens"):
+        try:
+            number = int(value.get(key) or 0)
+        except (TypeError, ValueError):
+            number = 0
+        if number > 0:
+            result[key] = number
+    return result
+
+
+def sanitize_error(value: Any) -> dict[str, str]:
+    if not isinstance(value, dict):
+        return {}
+    code = str(value.get("code") or "").strip()[:80]
+    message = str(value.get("message") or "").strip()[:240]
+    result: dict[str, str] = {}
+    if code:
+        result["code"] = code
+    if message:
+        result["message"] = message
+    return result

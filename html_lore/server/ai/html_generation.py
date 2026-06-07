@@ -60,6 +60,7 @@ def generate_note_from_conversation(
     spec: GenerationSpec,
 ) -> dict[str, Any]:
     graph = HtmlGenerationGraph()
+    started_at = datetime.now(timezone.utc)
     state = graph.run(
         HtmlGenerationState(
             run_id=uuid.uuid4().hex,
@@ -74,7 +75,11 @@ def generate_note_from_conversation(
     if not state.review_decision["ok"]:
         raise HtmlGenerationError(state.review_decision["message"])
     state_dict = state.as_dict()
+    completed_at = datetime.now(timezone.utc)
     state_dict["graph"] = graph.name
+    state_dict["started_at"] = started_at.isoformat()
+    state_dict["completed_at"] = completed_at.isoformat()
+    state_dict["duration_ms"] = int((completed_at - started_at).total_seconds() * 1000)
     item = persist_generated_note(settings=settings, state=state_dict)
     return {"run": public_run(state_dict, item), "item": item}
 
@@ -131,6 +136,9 @@ def public_run(state: dict[str, Any], item: dict[str, Any]) -> dict[str, Any]:
         "id": state.get("run_id"),
         "kind": "html_generation",
         "status": "completed",
+        "started_at": state.get("started_at"),
+        "completed_at": state.get("completed_at"),
+        "duration_ms": state.get("duration_ms"),
         "conversation_id": state.get("conversation_id"),
         "spec": state.get("spec"),
         "graph": state.get("graph") or "HtmlGenerationGraph.beta",
@@ -138,6 +146,8 @@ def public_run(state: dict[str, Any], item: dict[str, Any]) -> dict[str, Any]:
         "qa_report": state.get("qa_report"),
         "review_decision": state.get("review_decision"),
         "node_trace": state.get("node_trace") if isinstance(state.get("node_trace"), list) else [],
+        "usage": state.get("usage") if isinstance(state.get("usage"), dict) else {},
+        "error": state.get("error") if isinstance(state.get("error"), dict) else {},
         "item_id": item.get("id"),
     }
 

@@ -717,10 +717,15 @@ def test_ai_material_run_generates_note_and_stores_material_summary(tmp_path: Pa
         assert run["material"]["material_type"] == "html"
         assert run["material"]["title"] == "source material"
         assert "text" not in run["material"]
+        assert run["started_at"]
+        assert run["completed_at"]
+        assert isinstance(run["duration_ms"], int)
+        assert run["duration_ms"] >= 0
         assert (content_dir / item["id"]).exists()
 
         fetched_run = server.request("GET", f"/api/ai/runs/{run['id']}")["run"]
         assert fetched_run["material"] == run["material"]
+        assert fetched_run["completed_at"] == run["completed_at"]
     finally:
         server.close()
 
@@ -750,6 +755,8 @@ def test_ai_runs_list_returns_recent_sanitized_runs(tmp_path: Path) -> None:
         assert listed["count"] == 1
         assert listed["runs"][0]["id"] == second["id"]
         assert listed["runs"][0]["kind"] == "material_html_generation"
+        assert listed["runs"][0]["completed_at"] == second["completed_at"]
+        assert isinstance(listed["runs"][0]["duration_ms"], int)
         assert listed["runs"][0]["material"]["title"] == "second material"
         assert "text" not in listed["runs"][0]["material"]
         raw_payload = json.dumps(listed, ensure_ascii=False)

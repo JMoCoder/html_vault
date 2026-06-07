@@ -113,7 +113,10 @@ const i18n = {
     aiRunStatusRunning: "Running",
     aiRunStatusPending: "Pending",
     aiRunNodeCount: "{count} steps",
+    aiRunDuration: "{duration}",
+    aiRunCompletedAt: "Completed: {date}",
     aiRunItem: "Item: {id}",
+    aiRunError: "Error: {message}",
     aiKnowledgeAssistant: "AI knowledge assistant",
     aiKnowledgeAssistantIntro: "Prepare an AI job to reclassify, retag, or review all knowledge items in the library. This module is a placeholder until database write support is implemented.",
     assistantOperation: "Operation",
@@ -440,7 +443,10 @@ const i18n = {
     aiRunStatusRunning: "运行中",
     aiRunStatusPending: "等待中",
     aiRunNodeCount: "{count} 个步骤",
+    aiRunDuration: "{duration}",
+    aiRunCompletedAt: "完成时间：{date}",
     aiRunItem: "条目：{id}",
+    aiRunError: "错误：{message}",
     aiKnowledgeAssistant: "AI 知识库助理",
     aiKnowledgeAssistantIntro: "预留 AI 批量任务入口，用于对资料库全部内容重新分类、重新打标签或审核整理。数据库写入能力完成前，这里先作为模块占位。",
     assistantOperation: "任务类型",
@@ -767,7 +773,10 @@ const i18n = {
     aiRunStatusRunning: "実行中",
     aiRunStatusPending: "待機中",
     aiRunNodeCount: "{count} ステップ",
+    aiRunDuration: "{duration}",
+    aiRunCompletedAt: "完了時刻: {date}",
     aiRunItem: "項目: {id}",
+    aiRunError: "エラー: {message}",
     aiKnowledgeAssistant: "AI ナレッジアシスタント",
     aiKnowledgeAssistantIntro: "ライブラリ全体を再分類、再タグ付け、レビュー整理する AI ジョブの入口です。データベース書き込み対応まではプレースホルダーです。",
     assistantOperation: "操作",
@@ -3684,13 +3693,20 @@ function renderAiRunRow(run) {
   const statusClass = `status-${String(run.status || "pending").toLowerCase().replace(/[^a-z0-9-]/g, "") || "pending"}`;
   const nodeCount = Array.isArray(run.node_trace) ? run.node_trace.length : 0;
   const itemMeta = run.item_id ? `<span>${escapeHtml(t("aiRunItem", { id: run.item_id }))}</span>` : "";
+  const duration = formatDuration(run.duration_ms);
+  const durationMeta = duration ? `<span>${escapeHtml(t("aiRunDuration", { duration }))}</span>` : "";
+  const completedMeta = run.completed_at ? `<span>${escapeHtml(t("aiRunCompletedAt", { date: formatDateTime(run.completed_at) }))}</span>` : "";
+  const errorMessage = run.error?.message ? `<span class="ai-run-error">${escapeHtml(t("aiRunError", { message: run.error.message }))}</span>` : "";
   row.innerHTML = `
     <div class="management-name">
       <strong>${escapeHtml(kindLabel)}</strong>
       <span class="ai-run-meta">
         <em class="ai-run-status ${statusClass}">${escapeHtml(statusLabel)}</em>
         ${itemMeta}
+        ${durationMeta}
+        ${completedMeta}
         <span>${escapeHtml(t("aiRunNodeCount", { count: nodeCount }))}</span>
+        ${errorMessage}
       </span>
     </div>
     <code>${escapeHtml(String(run.id || "").slice(0, 12))}</code>
@@ -4171,6 +4187,13 @@ function formatDateTime(value) {
     minute: "2-digit",
   });
   return formatter.format(date);
+}
+
+function formatDuration(value) {
+  const milliseconds = Number(value || 0);
+  if (!Number.isFinite(milliseconds) || milliseconds <= 0) return "";
+  if (milliseconds < 1000) return `${Math.round(milliseconds)}ms`;
+  return `${(milliseconds / 1000).toFixed(milliseconds < 10_000 ? 1 : 0)}s`;
 }
 
 function escapeHtml(value) {
