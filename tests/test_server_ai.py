@@ -9,6 +9,7 @@ from html_lore.server.ai.material_generation import MaterialGenerationError, par
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
 from html_lore.server.ai.retrieval import extract_safe_text
+from html_lore.server.ai.runs import AIRunStore
 from html_lore.server.users import UserStore
 
 from tests.api_server import run_api_server
@@ -45,6 +46,48 @@ def make_note(content_dir: Path, meta_dir: Path, item_id: str, *, title: str, co
         ),
         encoding="utf-8",
     )
+
+
+def test_ai_run_store_sanitizes_list_and_detail(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    store = AIRunStore(
+        ServerSettings(
+            content_dir=content_dir,
+            meta_dir=meta_dir,
+            public_dir=public_dir,
+            site_title="HTMlore",
+            max_upload_bytes=10 * 1024 * 1024,
+        ),
+    )
+
+    stored = store.add(
+        {
+            "id": "run-secret-test",
+            "kind": "knowledge_qa",
+            "status": "completed",
+            "spec": {"source_mode": "local_only"},
+            "usage": {"input_tokens": 10, "output_tokens": 5, "total_tokens": 15},
+            "node_trace": [{"node": "RetrieverNode", "status": "ok"}],
+            "prompt": "Do not expose this prompt.",
+            "source_text": "Private uploaded source text.",
+            "api_key": "sk-test-secret-value",
+            "unsafe_private_prompt": "Hidden private prompt.",
+        },
+    )
+    listed = store.list()
+    fetched = store.get(stored["id"])
+    raw = json.dumps({"listed": listed, "fetched": fetched}, ensure_ascii=False)
+
+    assert listed[0]["id"] == "run-secret-test"
+    assert fetched["usage"]["total_tokens"] == 15
+    assert fetched["node_trace"] == [{"node": "RetrieverNode", "status": "ok"}]
+    assert "prompt" not in fetched
+    assert "source_text" not in fetched
+    assert "api_key" not in fetched
+    assert "unsafe_private_prompt" not in fetched
+    assert "Do not expose" not in raw
+    assert "Private uploaded source text" not in raw
+    assert "sk-test-secret-value" not in raw
 
 
 def test_ai_status_is_unavailable_without_provider(tmp_path: Path) -> None:
