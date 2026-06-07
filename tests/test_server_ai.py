@@ -4,7 +4,7 @@ from pathlib import Path
 
 from html_lore.server.config import ServerSettings
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState
-from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, format_evidence_for_prompt
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
 from html_lore.server.ai.retrieval import extract_safe_text
@@ -434,6 +434,47 @@ def test_ai_message_reports_external_expansion_unavailable_without_adapter(tmp_p
         }
     finally:
         server.close()
+
+
+def test_ai_message_uses_fake_external_search_when_expansion_is_enabled(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+        ai_external_search="fake",
+    )
+    try:
+        conversation = server.json(
+            "POST",
+            "/api/ai/conversations",
+            {"context": {"item_id": "mcp.html"}, "source_mode": "local_plus_external"},
+        )["conversation"]
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "unrelated quantum banana"})
+        assert response["external_status"] == {"provider": "fake", "available": True, "count": 1}
+        assert response["sources"][0]["kind"] == "external"
+        assert response["sources"][0]["url"].startswith("https://example.test/search")
+        assert "Fake AI response" in response["message"]["content"]
+    finally:
+        server.close()
+
+
+def test_external_evidence_prompt_format_is_distinct_from_local_notes() -> None:
+    formatted = format_evidence_for_prompt(
+        1,
+        {
+            "kind": "external",
+            "title": "External source",
+            "url": "https://example.test/source",
+            "snippet": "External snippet",
+        },
+    )
+    assert formatted.startswith("[1] EXTERNAL: External source (https://example.test/source)")
+    assert "LOCAL" not in formatted
 
 
 def test_knowledge_qa_graph_skips_model_when_evidence_is_missing(tmp_path: Path) -> None:

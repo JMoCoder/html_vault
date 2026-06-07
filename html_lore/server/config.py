@@ -28,6 +28,7 @@ class ServerSettings:
     ai_model: str = ""
     ai_embedding_model: str = ""
     ai_enabled: bool = False
+    ai_external_search: str = ""
 
     @property
     def auth_enabled(self) -> bool:
@@ -74,6 +75,7 @@ def load_settings() -> ServerSettings:
     ai_model = get_env("AI_MODEL", "").strip()
     ai_embedding_model = get_env("AI_EMBEDDING_MODEL", "").strip()
     ai_enabled = parse_bool(get_env("AI_ENABLED", "false"))
+    ai_external_search = get_env("AI_EXTERNAL_SEARCH", "").strip()
     return ServerSettings(
         content_dir=content_dir,
         meta_dir=meta_dir,
@@ -96,6 +98,7 @@ def load_settings() -> ServerSettings:
         ai_model=ai_model,
         ai_embedding_model=ai_embedding_model,
         ai_enabled=ai_enabled,
+        ai_external_search=ai_external_search,
     )
 
 

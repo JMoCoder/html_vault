@@ -7,6 +7,7 @@ from html_lore.server.items import ItemService
 
 from .context import AIContextError, ContextResolver
 from .conversations import ConversationError, ConversationStore
+from .external_search import build_external_search_adapter
 from .guardrails import GuardrailError
 from .html_generation import GenerationSpec, HtmlGenerationError, generate_note_from_conversation
 from .knowledge_qa_graph import KnowledgeQAGraph, KnowledgeQAState
@@ -84,6 +85,7 @@ class AIConversationService:
                 item_service=self.item_service,
                 model_client=ModelClient(self.provider_store.get()),
                 conversation_store=self.store,
+                external_search=build_external_search_adapter(self.settings),
             ).run(
                 KnowledgeQAState(
                     conversation_id=conversation_id,

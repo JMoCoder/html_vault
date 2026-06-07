@@ -39,6 +39,7 @@ class ApiServer:
         ai_api_key: str = "",
         ai_model: str = "",
         ai_enabled: bool = False,
+        ai_external_search: str = "",
     ) -> None:
         self.port = free_port()
         self.api_token = api_token
@@ -60,6 +61,7 @@ class ApiServer:
                 "HTML_LORE_AI_API_KEY": ai_api_key,
                 "HTML_LORE_AI_MODEL": ai_model,
                 "HTML_LORE_AI_ENABLED": "true" if ai_enabled else "",
+                "HTML_LORE_AI_EXTERNAL_SEARCH": ai_external_search,
             },
         )
         if users_file:
@@ -202,6 +204,7 @@ def run_api_server(
     ai_api_key: str = "",
     ai_model: str = "",
     ai_enabled: bool = False,
+    ai_external_search: str = "",
 ) -> ApiServer:
     return ApiServer(
         content_dir=content_dir,
@@ -219,4 +222,5 @@ def run_api_server(
         ai_api_key=ai_api_key,
         ai_model=ai_model,
         ai_enabled=ai_enabled,
+        ai_external_search=ai_external_search,
     )

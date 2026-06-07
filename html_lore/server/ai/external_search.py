@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
+from html_lore.server.config import ServerSettings
+
 
 class ExternalSearchError(RuntimeError):
     pass
@@ -50,6 +52,32 @@ class DisabledExternalSearchAdapter:
 
     def search(self, query: str, *, max_results: int = 5) -> list[ExternalSearchResult]:
         raise ExternalSearchUnavailable("External content expansion is not configured.")
+
+
+class FakeExternalSearchAdapter:
+    name = "fake"
+
+    @property
+    def available(self) -> bool:
+        return True
+
+    def search(self, query: str, *, max_results: int = 5) -> list[ExternalSearchResult]:
+        cleaned = " ".join(str(query or "").split()) or "HTMlore"
+        return [
+            ExternalSearchResult(
+                title=f"External reference for {cleaned[:48]}",
+                url=f"https://example.test/search?q={cleaned.replace(' ', '+')}",
+                snippet=f"Fake external source related to: {cleaned[:160]}",
+                accessed_at=utc_now(),
+            ),
+        ][:max_results]
+
+
+def build_external_search_adapter(settings: ServerSettings) -> ExternalSearchAdapter:
+    provider = settings.ai_external_search.strip().lower()
+    if provider == "fake":
+        return FakeExternalSearchAdapter()
+    return DisabledExternalSearchAdapter()
 
 
 def utc_now() -> str:
