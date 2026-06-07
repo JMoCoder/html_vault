@@ -10,6 +10,7 @@ from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
 from html_lore.server.ai.retrieval import extract_safe_text
 from html_lore.server.ai.runs import AIRunStore
+from html_lore.server.ai.external_search import ExternalSearchResult, is_safe_external_url, sanitize_external_results
 from html_lore.server.users import UserStore
 
 from tests.api_server import run_api_server
@@ -559,12 +560,31 @@ def test_ai_message_uses_fake_external_search_when_expansion_is_enabled(tmp_path
             {"context": {"item_id": "mcp.html"}, "source_mode": "local_plus_external"},
         )["conversation"]
         response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "unrelated quantum banana"})
-        assert response["external_status"] == {"provider": "fake", "available": True, "count": 1}
+        assert response["external_status"] == {"provider": "fake", "available": True, "count": 1, "dropped": 0}
         assert response["sources"][0]["kind"] == "external"
         assert response["sources"][0]["url"].startswith("https://example.test/search")
         assert "Fake AI response" in response["message"]["content"]
     finally:
         server.close()
+
+
+def test_external_search_result_safety_filter_blocks_internal_urls() -> None:
+    assert is_safe_external_url("https://example.test/source") is True
+    assert is_safe_external_url("http://localhost/api/private") is False
+    assert is_safe_external_url("http://127.0.0.1:8787/api/manifest") is False
+    assert is_safe_external_url("https://example.test/api/private") is False
+    assert is_safe_external_url("https://example.test/content/imported/note.html") is False
+    assert is_safe_external_url("file:///etc/passwd") is False
+
+    safe, dropped = sanitize_external_results(
+        [
+            ExternalSearchResult("Safe", "https://example.test/source", "Safe snippet", "2026-06-07T00:00:00Z"),
+            ExternalSearchResult("Internal API", "https://example.test/api/private", "Private snippet", "2026-06-07T00:00:00Z"),
+            ExternalSearchResult("Localhost", "http://localhost:8787/content/private.html", "Local snippet", "2026-06-07T00:00:00Z"),
+        ],
+    )
+    assert dropped == 2
+    assert [item["title"] for item in safe] == ["Safe"]
 
 
 def test_external_evidence_prompt_format_is_distinct_from_local_notes() -> None:

@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Protocol
+from urllib.parse import urlparse
 
 from html_lore.server.config import ServerSettings
 
@@ -78,6 +79,34 @@ def build_external_search_adapter(settings: ServerSettings) -> ExternalSearchAda
     if provider == "fake":
         return FakeExternalSearchAdapter()
     return DisabledExternalSearchAdapter()
+
+
+def sanitize_external_results(results: list[ExternalSearchResult]) -> tuple[list[dict[str, Any]], int]:
+    safe: list[dict[str, Any]] = []
+    dropped = 0
+    for result in results:
+        data = result.as_dict()
+        if is_safe_external_url(data.get("url")):
+            safe.append(data)
+        else:
+            dropped += 1
+    return safe, dropped
+
+
+def is_safe_external_url(value: Any) -> bool:
+    parsed = urlparse(str(value or "").strip())
+    if parsed.scheme not in {"http", "https"}:
+        return False
+    host = (parsed.hostname or "").lower()
+    if not host:
+        return False
+    if host in {"localhost", "127.0.0.1", "0.0.0.0"} or host.endswith(".localhost"):
+        return False
+    if host.startswith("10.") or host.startswith("192.168.") or host.startswith("169.254."):
+        return False
+    if parsed.path.startswith(("/api/", "/content/", "/share/", "/public/")):
+        return False
+    return True
 
 
 def utc_now() -> str:

@@ -8,7 +8,7 @@ from typing import Any, Protocol
 from html_lore.server.items import ItemService
 
 from .conversations import ConversationStore
-from .external_search import DisabledExternalSearchAdapter, ExternalSearchAdapter, ExternalSearchUnavailable
+from .external_search import DisabledExternalSearchAdapter, ExternalSearchAdapter, ExternalSearchUnavailable, sanitize_external_results
 from .guardrails import validate_answer, validate_user_message
 from .model_client import ModelClient
 from .retrieval import retrieve_evidence
@@ -124,9 +124,9 @@ class ExternalSearchNode:
         except ExternalSearchUnavailable as exc:
             state.external_status.update({"available": False, "message": str(exc)})
             return
-        state.external_sources = [result.as_dict() for result in results]
+        state.external_sources, dropped = sanitize_external_results(results)
         state.evidence.extend(state.external_sources)
-        state.external_status.update({"available": True, "count": len(state.external_sources)})
+        state.external_status.update({"available": True, "count": len(state.external_sources), "dropped": dropped})
 
 
 class EvidenceGateNode:
