@@ -61,6 +61,7 @@ const i18n = {
     generateStylePreference: "Style preference",
     generateReferenceNote: "Reference style",
     generateReferenceDefault: "Default",
+    generateShareSafetyHint: "Share-target notes are reviewed with the public share safety rules. Static, self-contained output is more likely to pass.",
     generateDefault: "Default",
     generateDark: "Dark",
     generateLight: "Light",
@@ -408,6 +409,7 @@ const i18n = {
     generateStylePreference: "样式偏好",
     generateReferenceNote: "参考样式",
     generateReferenceDefault: "默认",
+    generateShareSafetyHint: "分享用途会按公开分享安全规则预检。静态、无外部依赖的输出更容易通过。",
     generateDefault: "默认",
     generateDark: "暗色",
     generateLight: "亮色",
@@ -755,6 +757,7 @@ const i18n = {
     generateStylePreference: "スタイル",
     generateReferenceNote: "参照スタイル",
     generateReferenceDefault: "デフォルト",
+    generateShareSafetyHint: "共有用途のノートは公開共有の安全ルールで事前確認されます。静的で自己完結した出力ほど通過しやすくなります。",
     generateDefault: "デフォルト",
     generateDark: "ダーク",
     generateLight: "ライト",
@@ -1287,6 +1290,7 @@ const elements = {
   generateNoteForm: document.querySelector("#generate-note-form"),
   generateTheme: document.querySelector("#generate-theme"),
   generateTargetUse: document.querySelector("#generate-target-use"),
+  generateShareHint: document.querySelector("#generate-share-hint"),
   generateStylePreference: document.querySelector("#generate-style-preference"),
   generateReferenceNote: document.querySelector("#generate-reference-note"),
   generateNoteFeedback: document.querySelector("#generate-note-feedback"),
@@ -3246,9 +3250,15 @@ function openGenerateNoteDialog() {
   elements.generateTargetUse.value = "default";
   elements.generateStylePreference.value = "default";
   renderGenerateReferenceOptions();
+  syncGenerateTargetUseHint();
   elements.generateNoteFeedback.textContent = state.agentUrl ? "" : t("generateNoteNeedsAgent");
   elements.generateNoteDialog.hidden = false;
   elements.generateTheme.focus();
+}
+
+function syncGenerateTargetUseHint() {
+  if (!elements.generateShareHint) return;
+  elements.generateShareHint.hidden = elements.generateTargetUse.value !== "share";
 }
 
 function renderGenerateReferenceOptions() {
@@ -4481,6 +4491,7 @@ elements.shareDialog.addEventListener("click", (event) => {
   if (event.target === elements.shareDialog) closeShareDialog();
 });
 elements.generateNoteForm.addEventListener("submit", submitGenerateNoteDialog);
+elements.generateTargetUse.addEventListener("change", syncGenerateTargetUseHint);
 elements.generateNoteCancel.addEventListener("click", closeGenerateNoteDialog);
 elements.generateNoteCancelIcon.addEventListener("click", closeGenerateNoteDialog);
 elements.generateNoteDialog.addEventListener("click", (event) => {

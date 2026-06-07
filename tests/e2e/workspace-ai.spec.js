@@ -418,12 +418,16 @@ test("workspace note generation can select an existing note as reference style",
   await page.locator("#ai-generate-note").click();
   await expect(page.locator("#generate-reference-note")).toContainText("Style Reference");
   await expect(page.locator("#generate-reference-note")).not.toContainText("Archived Style");
+  await expect(page.locator("#generate-share-hint")).toBeHidden();
+  await page.locator("#generate-target-use").selectOption("share");
+  await expect(page.locator("#generate-share-hint")).toBeVisible();
   await page.locator("#generate-reference-note").selectOption("style.html");
   await page.locator("#generate-note-submit").click();
 
   await expect(page.locator("#generate-note-feedback")).toContainText("Generated note: Generated Reference Note");
   expect(conversationRequest).not.toBeNull();
   expect(generationRequest).toMatchObject({
+    target_use: "share",
     reference_style: "note",
     reference_note_id: "style.html",
   });
