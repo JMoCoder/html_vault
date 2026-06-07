@@ -83,6 +83,8 @@ test("workspace file create mode uploads material to the AI generation endpoint"
       { node: "RetrieverNode", status: "ok" },
       { node: "AnswerAgentNode", status: "ok" },
     ],
+    spec: { source_mode: "local_only" },
+    usage: { input_tokens: 120, output_tokens: 80, total_tokens: 200 },
   };
   const manifestBefore = {
     version: 2,
@@ -131,6 +133,19 @@ test("workspace file create mode uploads material to the AI generation endpoint"
     await route.fulfill({ contentType: "application/json", body: JSON.stringify({ shares: [], count: 0 }) });
   });
   await page.route("**/api/ai/runs**", async (route) => {
+    const pathname = new URL(route.request().url()).pathname;
+    if (pathname.endsWith(`/api/ai/runs/${refreshedRun.id}`)) {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          run: {
+            ...refreshedRun,
+            unsafe_private_prompt: "Important uploaded source should stay hidden",
+          },
+        }),
+      });
+      return;
+    }
     runsRequested += 1;
     await route.fulfill({
       contentType: "application/json",
@@ -208,6 +223,13 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   await page.locator("#ai-run-refresh").click();
   await expect.poll(() => runsRequested).toBeGreaterThan(requestsBeforeRefresh);
   await expect(page.locator("#ai-run-list")).toContainText("Knowledge Q&A");
+
+  await page.locator("#ai-run-list .ai-run-row", { hasText: "Knowledge Q&A" }).getByRole("button", { name: "Details" }).click();
+  await expect(page.locator("#ai-run-list")).toContainText("Spec");
+  await expect(page.locator("#ai-run-list")).toContainText("source_mode");
+  await expect(page.locator("#ai-run-list")).toContainText("Input tokens: 120");
+  await expect(page.locator("#ai-run-list")).toContainText("RetrieverNode");
+  await expect(page.locator("#ai-run-list")).not.toContainText("Important uploaded source should stay hidden");
 });
 
 test("workspace material generation failure refreshes AI run history", async ({ page }) => {

@@ -121,6 +121,17 @@ const i18n = {
     aiRunError: "Error: {message}",
     aiRunRetryable: "Retryable",
     aiRunNotCancellable: "Not cancellable",
+    aiRunDetails: "Details",
+    aiRunHideDetails: "Hide",
+    aiRunDetailsLoading: "Loading run details...",
+    aiRunDetailsFailed: "Run details could not be loaded.",
+    aiRunSpec: "Spec",
+    aiRunUsage: "Usage",
+    aiRunNodes: "Steps",
+    aiRunNoDetailData: "No detail data recorded.",
+    aiRunInputTokens: "Input tokens: {count}",
+    aiRunOutputTokens: "Output tokens: {count}",
+    aiRunTotalTokens: "Total tokens: {count}",
     aiKnowledgeAssistant: "AI knowledge assistant",
     aiKnowledgeAssistantIntro: "Prepare an AI job to reclassify, retag, or review all knowledge items in the library. This module is a placeholder until database write support is implemented.",
     assistantOperation: "Operation",
@@ -455,6 +466,17 @@ const i18n = {
     aiRunError: "错误：{message}",
     aiRunRetryable: "可重试",
     aiRunNotCancellable: "不可取消",
+    aiRunDetails: "详情",
+    aiRunHideDetails: "收起",
+    aiRunDetailsLoading: "正在加载运行详情...",
+    aiRunDetailsFailed: "无法加载运行详情。",
+    aiRunSpec: "配置",
+    aiRunUsage: "用量",
+    aiRunNodes: "步骤",
+    aiRunNoDetailData: "暂无详情数据。",
+    aiRunInputTokens: "输入 Tokens：{count}",
+    aiRunOutputTokens: "输出 Tokens：{count}",
+    aiRunTotalTokens: "总 Tokens：{count}",
     aiKnowledgeAssistant: "AI 知识库助理",
     aiKnowledgeAssistantIntro: "预留 AI 批量任务入口，用于对资料库全部内容重新分类、重新打标签或审核整理。数据库写入能力完成前，这里先作为模块占位。",
     assistantOperation: "任务类型",
@@ -789,6 +811,17 @@ const i18n = {
     aiRunError: "エラー: {message}",
     aiRunRetryable: "再試行可能",
     aiRunNotCancellable: "キャンセル不可",
+    aiRunDetails: "詳細",
+    aiRunHideDetails: "閉じる",
+    aiRunDetailsLoading: "実行詳細を読み込み中...",
+    aiRunDetailsFailed: "実行詳細を読み込めませんでした。",
+    aiRunSpec: "設定",
+    aiRunUsage: "使用量",
+    aiRunNodes: "ステップ",
+    aiRunNoDetailData: "詳細データはありません。",
+    aiRunInputTokens: "入力トークン: {count}",
+    aiRunOutputTokens: "出力トークン: {count}",
+    aiRunTotalTokens: "合計トークン: {count}",
     aiKnowledgeAssistant: "AI ナレッジアシスタント",
     aiKnowledgeAssistantIntro: "ライブラリ全体を再分類、再タグ付け、レビュー整理する AI ジョブの入口です。データベース書き込み対応まではプレースホルダーです。",
     assistantOperation: "操作",
@@ -1094,6 +1127,8 @@ const state = {
   aiConfig: loadAiConfig(),
   aiStatus: null,
   aiRuns: [],
+  selectedAiRunId: "",
+  aiRunDetails: {},
   aiConversationId: "",
   aiConversationContextKey: "",
   aiContentExpansion: false,
@@ -3709,6 +3744,9 @@ function renderAiRuns() {
 function renderAiRunRow(run) {
   const row = document.createElement("div");
   row.className = "management-row ai-run-row";
+  const runId = String(run.id || "");
+  const selected = runId && state.selectedAiRunId === runId;
+  const details = selected ? state.aiRunDetails[runId] : null;
   const kindLabel = getAiRunKindLabel(run);
   const statusLabel = getAiRunStatusLabel(run.status);
   const statusClass = `status-${String(run.status || "pending").toLowerCase().replace(/[^a-z0-9-]/g, "") || "pending"}`;
@@ -3735,9 +3773,94 @@ function renderAiRunRow(run) {
         ${capabilityMeta}
       </span>
     </div>
-    <code>${escapeHtml(String(run.id || "").slice(0, 12))}</code>
+    <div class="ai-run-actions-inline">
+      <button type="button" class="secondary-button" data-ai-run-details="${escapeHtml(runId)}">${escapeHtml(t(selected ? "aiRunHideDetails" : "aiRunDetails"))}</button>
+      <code>${escapeHtml(runId.slice(0, 12))}</code>
+    </div>
+    ${selected ? renderAiRunDetails(details) : ""}
   `;
+  row.querySelector("[data-ai-run-details]")?.addEventListener("click", () => toggleAiRunDetails(runId));
   return row;
+}
+
+function renderAiRunDetails(run) {
+  if (!run) {
+    return `<div class="ai-run-detail-panel">${escapeHtml(t("aiRunDetailsLoading"))}</div>`;
+  }
+  if (run.error_loading) {
+    return `<div class="ai-run-detail-panel ai-run-error">${escapeHtml(t("aiRunDetailsFailed"))}</div>`;
+  }
+  const specItems = renderKeyValueList(run.spec || {});
+  const usageItems = renderAiRunUsage(run.usage || {});
+  const nodeItems = Array.isArray(run.node_trace) && run.node_trace.length > 0
+    ? `<ol>${run.node_trace.map((node) => `<li>${escapeHtml(node.node || node.name || t("aiRunNodes"))} <em>${escapeHtml(node.status || "")}</em></li>`).join("")}</ol>`
+    : `<p>${escapeHtml(t("aiRunNodeCount", { count: 0 }))}</p>`;
+  const errorMessage = run.error?.message ? `<p class="ai-run-error">${escapeHtml(t("aiRunError", { message: run.error.message }))}</p>` : "";
+  return `
+    <div class="ai-run-detail-panel">
+      <section>
+        <h4>${escapeHtml(t("aiRunSpec"))}</h4>
+        ${specItems || `<p>${escapeHtml(t("aiRunNoDetailData"))}</p>`}
+      </section>
+      <section>
+        <h4>${escapeHtml(t("aiRunUsage"))}</h4>
+        ${usageItems || `<p>${escapeHtml(t("aiRunNoDetailData"))}</p>`}
+      </section>
+      <section>
+        <h4>${escapeHtml(t("aiRunNodes"))}</h4>
+        ${nodeItems}
+      </section>
+      ${errorMessage}
+    </div>
+  `;
+}
+
+function renderKeyValueList(values) {
+  const entries = Object.entries(values || {}).filter(([, value]) => value !== "" && value !== null && value !== undefined);
+  if (entries.length === 0) return "";
+  return `<dl>${entries.map(([key, value]) => `<div><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(formatAiRunValue(value))}</dd></div>`).join("")}</dl>`;
+}
+
+function renderAiRunUsage(usage) {
+  const rows = [];
+  if (usage.input_tokens) rows.push(t("aiRunInputTokens", { count: usage.input_tokens }));
+  if (usage.output_tokens) rows.push(t("aiRunOutputTokens", { count: usage.output_tokens }));
+  if (usage.total_tokens) rows.push(t("aiRunTotalTokens", { count: usage.total_tokens }));
+  return rows.length > 0 ? `<ul>${rows.map((row) => `<li>${escapeHtml(row)}</li>`).join("")}</ul>` : "";
+}
+
+function formatAiRunValue(value) {
+  if (Array.isArray(value)) return value.join(", ");
+  if (typeof value === "object" && value !== null) return JSON.stringify(value);
+  return String(value);
+}
+
+async function toggleAiRunDetails(runId) {
+  if (!runId) return;
+  if (state.selectedAiRunId === runId) {
+    state.selectedAiRunId = "";
+    renderAiRuns();
+    return;
+  }
+  state.selectedAiRunId = runId;
+  renderAiRuns();
+  if (!state.aiRunDetails[runId]) {
+    await loadAiRunDetails(runId);
+  }
+}
+
+async function loadAiRunDetails(runId) {
+  if (!state.agentUrl) return;
+  try {
+    const response = await apiFetch(`/api/ai/runs/${encodeURIComponent(runId)}`, { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    state.aiRunDetails[runId] = data.run || {};
+  } catch (error) {
+    state.aiRunDetails[runId] = { error_loading: true };
+    console.error(error);
+  }
+  renderAiRuns();
 }
 
 function getAiRunKindLabel(run) {
