@@ -67,6 +67,10 @@ def test_share_link_allows_public_sanitized_note_without_login(tmp_path: Path) -
         assert "\"collection\"" not in public_json
         assert "\"tags\"" not in public_json
         assert "\"url_path\"" not in public_json
+        assert "ai_provider" not in public_json.lower()
+        assert "api_key" not in public_json.lower()
+        assert "token_hash" not in public_json.lower()
+        assert "run" not in public_json.lower()
         assert "HTMlore shared note" in public_page
         assert "HTMlore shared note" in public_page_trailing_slash
         assert "GitHub repository" not in public_page_trailing_slash
@@ -110,8 +114,12 @@ def test_public_share_token_does_not_grant_private_api_access(tmp_path: Path) ->
         for private_path in [
             "/api/manifest",
             "/api/shares",
+            "/api/ai/status",
+            "/api/ai/runs",
+            "/api/ai/conversations",
             "/api/items/imported/docker-network.html/raw",
             f"/api/items/imported/docker-network.html/raw?access_token={created['token']}",
+            f"/api/ai/status?access_token={created['token']}",
         ]:
             try:
                 urllib.request.urlopen(f"http://127.0.0.1:{server.port}{private_path}", timeout=5)

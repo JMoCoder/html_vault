@@ -2,6 +2,7 @@ import json
 import urllib.error
 from pathlib import Path
 
+from html_lore.builder import build_site
 from html_lore.server.config import ServerSettings
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
 from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, format_evidence_for_prompt
@@ -127,6 +128,40 @@ def test_ai_provider_roundtrip_rejects_api_key_and_redacts_env_secret(tmp_path: 
         code, error = server.json_error("PUT", "/api/ai/providers", {"provider": "fake", "enabled": True, "api_key": "browser-secret"})
         assert code == 400
         assert "browser-secret" not in json.dumps(error)
+    finally:
+        server.close()
+
+
+def test_ai_secret_is_not_written_to_public_static_files(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    secret = "test-secret-key-should-not-be-public"
+    build_site(content_dir=content_dir, meta_dir=meta_dir, output_dir=public_dir, site_title="AI Static Secret Test")
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="openai-compatible",
+        ai_base_url="https://example.test",
+        ai_api_key=secret,
+        ai_model="gpt-5.5",
+        ai_enabled=True,
+    )
+    try:
+        public_manifest = server.request("GET", "/manifest.json")
+        api_manifest = server.request("GET", "/api/manifest")
+        status = server.request("GET", "/api/ai/status")
+        assert secret not in json.dumps(public_manifest, ensure_ascii=False)
+        assert secret not in json.dumps(api_manifest, ensure_ascii=False)
+        assert secret not in json.dumps(status, ensure_ascii=False)
+
+        public_payload = "\n".join(
+            path.read_text(encoding="utf-8", errors="ignore")
+            for path in public_dir.rglob("*")
+            if path.is_file() and path.suffix.lower() in {".html", ".js", ".css", ".json", ".webmanifest"}
+        )
+        assert secret not in public_payload
+        assert "HTML_LORE_AI_API_KEY" not in public_payload
     finally:
         server.close()
 
