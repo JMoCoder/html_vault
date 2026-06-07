@@ -766,6 +766,79 @@ def test_ai_runs_list_returns_recent_sanitized_runs(tmp_path: Path) -> None:
         server.close()
 
 
+def test_ai_material_parse_failure_is_recorded_without_source_text(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir)
+    try:
+        before = set(content_dir.rglob("*.html"))
+        code, error = server.multipart_error(
+            "/api/ai/material-runs",
+            fields={"instruction": "Create a note."},
+            file_field="file",
+            filename="private-source.pdf",
+            content=b"%PDF private source text that must not enter run history",
+            content_type="application/pdf",
+        )
+        after = set(content_dir.rglob("*.html"))
+        assert code == 400
+        assert "Only HTML, Markdown, and plain text" in error["detail"]
+        assert after == before
+
+        listed = server.request("GET", "/api/ai/runs")
+        assert listed["count"] == 1
+        run = listed["runs"][0]
+        assert run["kind"] == "material_html_generation"
+        assert run["status"] == "failed"
+        assert run["error"]["code"] == "material_parse_failed"
+        assert run["material"]["title"] == "private source"
+        assert run["material"]["material_type"] == "unknown"
+        assert "text" not in run["material"]
+        assert "private source text" not in json.dumps(listed, ensure_ascii=False)
+    finally:
+        server.close()
+
+
+def test_ai_generation_review_failure_is_recorded_without_writing_file(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir)
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        conversation_path = meta_dir / "ai" / "conversations.json"
+        data = json.loads(conversation_path.read_text(encoding="utf-8"))
+        for stored in data["conversations"]:
+            if stored["id"] == conversation["id"]:
+                stored["messages"] = [
+                    {"role": "user", "content": "Create a note about sk-test-secret-value"},
+                    {"role": "assistant", "content": "The note should not expose secrets."},
+                ]
+                stored["message_count"] = 2
+        conversation_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+        before = set(content_dir.rglob("*.html"))
+        code, error = server.json_error(
+            "POST",
+            f"/api/ai/conversations/{conversation['id']}/generate-note",
+            {"theme": "default", "target_use": "default", "style_preference": "default"},
+        )
+        after = set(content_dir.rglob("*.html"))
+        assert code == 400
+        assert "likely secret" in error["detail"]
+        assert after == before
+
+        listed = server.request("GET", "/api/ai/runs")
+        assert listed["count"] == 1
+        run = listed["runs"][0]
+        assert run["kind"] == "html_generation"
+        assert run["status"] == "failed"
+        assert run["error"]["code"] == "review_failed"
+        assert "likely secret" in run["error"]["message"]
+        assert run["item_id"] == ""
+        assert "sk-test-secret-value" not in json.dumps(listed, ensure_ascii=False)
+    finally:
+        server.close()
+
+
 def test_ai_generate_note_rejects_invalid_spec_without_writing_file(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = make_dirs(tmp_path)
     make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])

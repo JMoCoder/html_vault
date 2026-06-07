@@ -109,19 +109,27 @@ class AIConversationService:
     def generate_note(self, conversation_id: str, values: dict[str, Any]) -> dict[str, Any]:
         conversation = self.store.get(conversation_id)
         spec = GenerationSpec.from_values(values)
-        result = generate_note_from_conversation(settings=self.settings, conversation=conversation, spec=spec)
+        try:
+            result = generate_note_from_conversation(settings=self.settings, conversation=conversation, spec=spec)
+        except HtmlGenerationError as exc:
+            self._store_failed_run(exc)
+            raise
         run = self.run_store.add(result["run"])
         return {"run": run, "item": result["item"]}
 
     def generate_note_from_material(self, *, filename: str, content: bytes, instruction: str, values: dict[str, Any]) -> dict[str, Any]:
         spec = GenerationSpec.from_values(values)
-        result = generate_note_from_material(
-            settings=self.settings,
-            filename=filename,
-            content=content,
-            instruction=instruction,
-            spec=spec,
-        )
+        try:
+            result = generate_note_from_material(
+                settings=self.settings,
+                filename=filename,
+                content=content,
+                instruction=instruction,
+                spec=spec,
+            )
+        except (HtmlGenerationError, MaterialGenerationError) as exc:
+            self._store_failed_run(exc)
+            raise
         run = self.run_store.add(result["run"])
         return {"run": run, "item": result["item"]}
 
@@ -131,6 +139,11 @@ class AIConversationService:
 
     def run(self, run_id: str) -> dict[str, Any]:
         return {"run": self.run_store.get(run_id)}
+
+    def _store_failed_run(self, exc: Exception) -> None:
+        run = getattr(exc, "run", None)
+        if isinstance(run, dict) and run:
+            self.run_store.add(run)
 
 
 __all__ = [

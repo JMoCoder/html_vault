@@ -22,7 +22,9 @@ VALID_STYLE_PREFERENCES = {"default", "report", "website", "ppt"}
 
 
 class HtmlGenerationError(ValueError):
-    pass
+    def __init__(self, message: str, *, run: dict[str, Any] | None = None) -> None:
+        super().__init__(message)
+        self.run = run
 
 
 @dataclass(frozen=True)
@@ -70,16 +72,18 @@ def generate_note_from_conversation(
             messages=[message for message in conversation.get("messages", []) if isinstance(message, dict)],
         ),
     )
-    if not state.qa_report["ok"]:
-        raise HtmlGenerationError(state.qa_report["message"])
-    if not state.review_decision["ok"]:
-        raise HtmlGenerationError(state.review_decision["message"])
-    state_dict = state.as_dict()
     completed_at = datetime.now(timezone.utc)
+    state_dict = state.as_dict()
     state_dict["graph"] = graph.name
     state_dict["started_at"] = started_at.isoformat()
     state_dict["completed_at"] = completed_at.isoformat()
     state_dict["duration_ms"] = int((completed_at - started_at).total_seconds() * 1000)
+    if not state.qa_report["ok"]:
+        message = str(state.qa_report["message"])
+        raise HtmlGenerationError(message, run=failed_run(state_dict, message, "qa_failed"))
+    if not state.review_decision["ok"]:
+        message = str(state.review_decision["message"])
+        raise HtmlGenerationError(message, run=failed_run(state_dict, message, "review_failed"))
     item = persist_generated_note(settings=settings, state=state_dict)
     return {"run": public_run(state_dict, item), "item": item}
 
@@ -149,6 +153,27 @@ def public_run(state: dict[str, Any], item: dict[str, Any]) -> dict[str, Any]:
         "usage": state.get("usage") if isinstance(state.get("usage"), dict) else {},
         "error": state.get("error") if isinstance(state.get("error"), dict) else {},
         "item_id": item.get("id"),
+    }
+
+
+def failed_run(state: dict[str, Any], message: str, code: str) -> dict[str, Any]:
+    return {
+        "id": state.get("run_id"),
+        "kind": "html_generation",
+        "status": "failed",
+        "started_at": state.get("started_at"),
+        "completed_at": state.get("completed_at"),
+        "duration_ms": state.get("duration_ms"),
+        "conversation_id": state.get("conversation_id"),
+        "spec": state.get("spec"),
+        "graph": state.get("graph") or "HtmlGenerationGraph.beta",
+        "generation_intent": state.get("generation_intent") if isinstance(state.get("generation_intent"), dict) else {},
+        "qa_report": state.get("qa_report") if isinstance(state.get("qa_report"), dict) else {},
+        "review_decision": state.get("review_decision") if isinstance(state.get("review_decision"), dict) else {},
+        "node_trace": state.get("node_trace") if isinstance(state.get("node_trace"), list) else [],
+        "usage": state.get("usage") if isinstance(state.get("usage"), dict) else {},
+        "error": {"code": code, "message": message},
+        "item_id": "",
     }
 
 

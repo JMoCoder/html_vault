@@ -2,16 +2,19 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any
 
 from html_lore.server.config import ServerSettings
 
-from .html_generation import GenerationSpec, generate_note_from_conversation
+from .html_generation import GenerationSpec, HtmlGenerationError, generate_note_from_conversation
 from .retrieval import extract_safe_text
 
 
 class MaterialGenerationError(ValueError):
-    pass
+    def __init__(self, message: str, *, run: dict[str, Any] | None = None) -> None:
+        super().__init__(message)
+        self.run = run
 
 
 @dataclass(frozen=True)
@@ -36,17 +39,68 @@ def generate_note_from_material(
     instruction: str,
     spec: GenerationSpec,
 ) -> dict[str, Any]:
-    material = parse_material(filename=filename, content=content, max_bytes=settings.max_upload_bytes)
+    started_at = datetime.now(timezone.utc)
+    try:
+        material = parse_material(filename=filename, content=content, max_bytes=settings.max_upload_bytes)
+    except MaterialGenerationError as exc:
+        raise MaterialGenerationError(
+            str(exc),
+            run=failed_material_run(
+                filename=filename,
+                material=None,
+                started_at=started_at,
+                message=str(exc),
+                code="material_parse_failed",
+            ),
+        ) from exc
     task = instruction.strip() or "Generate an HTML knowledge note from the uploaded material."
     conversation = material_conversation(material, task)
-    result = generate_note_from_conversation(settings=settings, conversation=conversation, spec=spec)
+    try:
+        result = generate_note_from_conversation(settings=settings, conversation=conversation, spec=spec)
+    except HtmlGenerationError as exc:
+        if exc.run:
+            exc.run["kind"] = "material_html_generation"
+            exc.run["material"] = material_summary(material)
+        raise
     result["run"]["kind"] = "material_html_generation"
-    result["run"]["material"] = {
+    result["run"]["material"] = material_summary(material)
+    return result
+
+
+def material_summary(material: ParsedMaterial) -> dict[str, Any]:
+    return {
         "title": material.title,
         "material_type": material.material_type,
         "text_chars": len(material.text),
     }
-    return result
+
+
+def failed_material_run(*, filename: str, material: ParsedMaterial | None, started_at: datetime, message: str, code: str) -> dict[str, Any]:
+    completed_at = datetime.now(timezone.utc)
+    material_info = material_summary(material) if material else {
+        "title": title_from_filename(filename or "material"),
+        "material_type": material_type_from_filename(filename),
+        "text_chars": 0,
+    }
+    return {
+        "id": f"material_{uuid.uuid4().hex}",
+        "kind": "material_html_generation",
+        "status": "failed",
+        "started_at": started_at.isoformat(),
+        "completed_at": completed_at.isoformat(),
+        "duration_ms": int((completed_at - started_at).total_seconds() * 1000),
+        "conversation_id": "",
+        "spec": {},
+        "graph": "MaterialToHtmlGraph.beta",
+        "generation_intent": {},
+        "qa_report": {},
+        "review_decision": {},
+        "node_trace": [{"node": "MaterialParseNode", "status": "failed"}],
+        "usage": {},
+        "error": {"code": code, "message": message},
+        "material": material_info,
+        "item_id": "",
+    }
 
 
 def parse_material(*, filename: str, content: bytes, max_bytes: int) -> ParsedMaterial:
@@ -107,6 +161,17 @@ def title_from_filename(filename: str) -> str:
     if "." in stem:
         stem = stem.rsplit(".", 1)[0]
     return normalize_text(stem.replace("-", " ").replace("_", " ")) or "Uploaded material"
+
+
+def material_type_from_filename(filename: str) -> str:
+    lowered = (filename or "").lower()
+    if lowered.endswith((".html", ".htm")):
+        return "html"
+    if lowered.endswith((".md", ".markdown")):
+        return "markdown"
+    if lowered.endswith((".txt", ".text")):
+        return "text"
+    return "unknown"
 
 
 def normalize_text(value: str) -> str:

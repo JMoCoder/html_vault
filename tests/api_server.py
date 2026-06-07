@@ -154,6 +154,16 @@ class ApiServer:
             return response.read().decode("utf-8")
 
     def multipart(self, path: str, *, fields: dict[str, str], file_field: str, filename: str, content: bytes, content_type: str) -> Any:
+        return json.loads(self.multipart_text(path, fields=fields, file_field=file_field, filename=filename, content=content, content_type=content_type))
+
+    def multipart_error(self, path: str, *, fields: dict[str, str], file_field: str, filename: str, content: bytes, content_type: str) -> tuple[int, Any]:
+        try:
+            self.multipart_text(path, fields=fields, file_field=file_field, filename=filename, content=content, content_type=content_type)
+        except urllib.error.HTTPError as exc:
+            return exc.code, json.loads(exc.read().decode("utf-8"))
+        raise AssertionError("Expected HTTP error response.")
+
+    def multipart_text(self, path: str, *, fields: dict[str, str], file_field: str, filename: str, content: bytes, content_type: str) -> str:
         boundary = "----html-lore-test-boundary"
         chunks: list[bytes] = []
         for name, value in fields.items():
@@ -176,7 +186,7 @@ class ApiServer:
             ],
         )
         body = b"".join(chunks)
-        return self.request(
+        return self.request_text(
             "POST",
             path,
             body=body,
