@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from html import escape
 from typing import Any, Protocol
 
+from html_lore.server.shares import scan_share_content
+
 
 class HtmlGenerationNode(Protocol):
     name: str
@@ -197,8 +199,14 @@ def review_html(html: str, spec: dict[str, str]) -> dict[str, Any]:
     lowered = html.lower()
     if "html_lore_ai_api_key" in lowered or re.search(r"sk-[a-z0-9_-]{12,}", html, re.IGNORECASE):
         return {"ok": False, "message": "Generated HTML contains a likely secret."}
-    if spec.get("target_use") == "share" and ("<script" in lowered or "http://" in lowered):
-        return {"ok": False, "message": "Share-target generation failed safety review."}
+    if spec.get("target_use") == "share":
+        scan = scan_share_content(html)
+        if not scan["shareable"]:
+            return {
+                "ok": False,
+                "message": "Share-target generation failed safety review.",
+                "safety": scan,
+            }
     return {"ok": True, "message": "Review passed."}
 
 

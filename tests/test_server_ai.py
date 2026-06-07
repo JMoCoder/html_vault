@@ -3,7 +3,7 @@ import urllib.error
 from pathlib import Path
 
 from html_lore.server.config import ServerSettings
-from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState
+from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
 from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, format_evidence_for_prompt
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
@@ -640,6 +640,23 @@ def test_html_generation_graph_marks_non_default_options_as_style_prompt() -> No
     assert state.generation_intent["uses_style_prompt"] is True
     assert state.style_spec["theme"] == "dark"
     assert state.content_brief["collection"] == "Energy"
+
+
+def test_html_generation_share_review_uses_share_safety_scan() -> None:
+    decision = review_html(
+        """
+        <!doctype html>
+        <html>
+          <head><script src="https://cdn.example.com/chart.umd.min.js"></script></head>
+          <body><canvas id="chart"></canvas><script>new Chart(document.getElementById('chart'), {});</script></body>
+        </html>
+        """,
+        {"target_use": "share"},
+    )
+    assert decision["ok"] is False
+    assert decision["safety"]["shareable"] is False
+    assert "blocked-tag:script" in decision["safety"]["reasons"]
+    assert "requires-static-export:chart" in decision["safety"]["reasons"]
 
 
 def test_ai_generate_note_rejects_invalid_spec_without_writing_file(tmp_path: Path) -> None:
