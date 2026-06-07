@@ -376,6 +376,20 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         messages = server.request("GET", f"/api/ai/conversations/{conversation['id']}/messages")
         assert messages["count"] == 2
         assert [message["role"] for message in messages["messages"]] == ["user", "assistant"]
+
+        runs = server.request("GET", "/api/ai/runs")
+        assert runs["count"] == 1
+        run = runs["runs"][0]
+        assert run["kind"] == "knowledge_qa"
+        assert run["operation"] == "knowledge_qa"
+        assert run["status"] == "completed"
+        assert run["retryable"] is False
+        assert run["cancellable"] is False
+        assert run["qa_report"]["source_count"] == 1
+        raw_runs = json.dumps(runs, ensure_ascii=False)
+        assert "What does MCP security cover?" not in raw_runs
+        assert "Fake AI response" not in raw_runs
+        assert "Test summary" not in raw_runs
     finally:
         server.close()
 
@@ -530,6 +544,42 @@ def test_ai_message_guardrail_rejects_secret_exfiltration_request(tmp_path: Path
         )
         assert code == 400
         assert "bypass security" in error["detail"]
+    finally:
+        server.close()
+
+
+def test_ai_message_provider_failure_is_recorded_without_question_text(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="openai-compatible",
+        ai_model="gpt-5.5",
+        ai_enabled=True,
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        code, error = server.json_error(
+            "POST",
+            f"/api/ai/conversations/{conversation['id']}/messages",
+            {"content": "What does MCP security cover?"},
+        )
+        assert code == 400
+        assert "AI API key is not configured" in error["detail"]
+
+        runs = server.request("GET", "/api/ai/runs")
+        assert runs["count"] == 1
+        run = runs["runs"][0]
+        assert run["kind"] == "knowledge_qa"
+        assert run["status"] == "failed"
+        assert run["retryable"] is True
+        assert run["cancellable"] is False
+        assert run["error"]["code"] == "provider_failed"
+        raw_runs = json.dumps(runs, ensure_ascii=False)
+        assert "What does MCP security cover?" not in raw_runs
+        assert "Test summary" not in raw_runs
     finally:
         server.close()
 

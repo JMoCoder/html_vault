@@ -10,7 +10,7 @@ from .conversations import ConversationError, ConversationStore
 from .external_search import build_external_search_adapter
 from .guardrails import GuardrailError
 from .html_generation import GenerationSpec, HtmlGenerationError, generate_note_from_conversation
-from .knowledge_qa_graph import KnowledgeQAGraph, KnowledgeQAState
+from .knowledge_qa_graph import KnowledgeQAGraph, KnowledgeQAState, public_qa_run
 from .material_generation import MaterialGenerationError, generate_note_from_material
 from .model_client import ModelClient, test_provider
 from .providers import AIProviderConfigError, AIProviderConfigStore, ProviderCallError
@@ -81,21 +81,22 @@ class AIConversationService:
     def add_message(self, conversation_id: str, values: dict[str, Any]) -> dict[str, Any]:
         content = str(values.get("content") or values.get("message") or "").strip()
         conversation = self.store.get(conversation_id)
+        state = KnowledgeQAState(
+            conversation_id=conversation_id,
+            conversation=conversation,
+            content=content,
+        )
         try:
             state = KnowledgeQAGraph(
                 item_service=self.item_service,
                 model_client=ModelClient(self.provider_store.get()),
                 conversation_store=self.store,
                 external_search=build_external_search_adapter(self.settings),
-            ).run(
-                KnowledgeQAState(
-                    conversation_id=conversation_id,
-                    conversation=conversation,
-                    content=content,
-                ),
-            )
+            ).run(state)
         except (AIProviderConfigError, ProviderCallError) as exc:
+            self.run_store.add(public_qa_run(state, status="failed", error={"code": "provider_failed", "message": str(exc)}))
             raise ConversationError(str(exc)) from exc
+        self.run_store.add(public_qa_run(state))
         return {
             "conversation": state.stored_conversation,
             "message": state.stored_conversation["messages"][-1],

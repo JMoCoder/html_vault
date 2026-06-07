@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from typing import Any, Protocol
 
 from html_lore.server.items import ItemService
@@ -39,6 +41,9 @@ class KnowledgeQAState:
     skipped_model_call: bool = False
     stored_conversation: dict[str, Any] = field(default_factory=dict)
     node_trace: list[dict[str, str]] = field(default_factory=list)
+    started_at: str = ""
+    completed_at: str = ""
+    duration_ms: int = 0
 
     def mark_completed(self, node_name: str) -> None:
         self.node_trace.append({"node": node_name, "status": "completed"})
@@ -68,9 +73,16 @@ class KnowledgeQAGraph:
         )
 
     def run(self, state: KnowledgeQAState) -> KnowledgeQAState:
-        for node in self.nodes:
-            node.run(state)
-            state.mark_completed(node.name)
+        started_at = datetime.now(timezone.utc)
+        state.started_at = started_at.isoformat()
+        try:
+            for node in self.nodes:
+                node.run(state)
+                state.mark_completed(node.name)
+        finally:
+            completed_at = datetime.now(timezone.utc)
+            state.completed_at = completed_at.isoformat()
+            state.duration_ms = int((completed_at - started_at).total_seconds() * 1000)
         return state
 
 
@@ -202,3 +214,33 @@ def format_evidence_for_prompt(index: int, item: dict[str, Any]) -> str:
     if item.get("kind") == "external":
         return f"[{index}] EXTERNAL: {item.get('title')} ({item.get('url')})\n{item.get('snippet')}"
     return f"[{index}] LOCAL: {item.get('title')} ({item.get('item_id')})\n{item.get('snippet')}"
+
+
+def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: dict[str, str] | None = None) -> dict[str, Any]:
+    local_sources = [source for source in state.sources if source.get("kind") != "external"]
+    external_sources = [source for source in state.sources if source.get("kind") == "external"]
+    return {
+        "id": f"qa_{uuid.uuid4().hex}",
+        "kind": "knowledge_qa",
+        "status": status,
+        "started_at": state.started_at,
+        "completed_at": state.completed_at,
+        "duration_ms": state.duration_ms,
+        "conversation_id": state.conversation_id,
+        "spec": {"source_mode": str(state.context_snapshot.get("source_mode") or "local_only")},
+        "graph": KnowledgeQAGraph.name,
+        "generation_intent": {},
+        "qa_report": {
+            "source_count": len(state.sources),
+            "local_source_count": len(local_sources),
+            "external_source_count": len(external_sources),
+            "skipped_model_call": bool(state.skipped_model_call),
+            "external_status": state.external_status,
+        },
+        "review_decision": {},
+        "node_trace": state.node_trace,
+        "usage": state.usage,
+        "error": error or {},
+        "material": {},
+        "item_id": "",
+    }

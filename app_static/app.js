@@ -107,6 +107,7 @@ const i18n = {
     aiRunHistoryFailed: "AI run history could not be loaded.",
     aiRunHtmlGeneration: "Generated from conversation",
     aiRunMaterialGeneration: "Generated from uploaded material",
+    aiRunKnowledgeQa: "Knowledge Q&A",
     aiRunUnknownKind: "AI run",
     aiRunStatusCompleted: "Completed",
     aiRunStatusFailed: "Failed",
@@ -439,6 +440,7 @@ const i18n = {
     aiRunHistoryFailed: "无法加载 AI 运行记录。",
     aiRunHtmlGeneration: "根据对话生成",
     aiRunMaterialGeneration: "根据上传资料生成",
+    aiRunKnowledgeQa: "知识库问答",
     aiRunUnknownKind: "AI 运行",
     aiRunStatusCompleted: "已完成",
     aiRunStatusFailed: "失败",
@@ -771,6 +773,7 @@ const i18n = {
     aiRunHistoryFailed: "AI 実行履歴を読み込めませんでした。",
     aiRunHtmlGeneration: "会話から生成",
     aiRunMaterialGeneration: "アップロード資料から生成",
+    aiRunKnowledgeQa: "ナレッジ Q&A",
     aiRunUnknownKind: "AI 実行",
     aiRunStatusCompleted: "完了",
     aiRunStatusFailed: "失敗",
@@ -3120,8 +3123,10 @@ async function submitAiMessage(event) {
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
     updateAiMessage(pendingMessage, "assistant", data.message?.content || t("aiAssistantPlaceholder"), data.sources || []);
+    await loadAiRuns();
   } catch (error) {
     updateAiMessage(pendingMessage, "assistant", error?.message || t("aiMessageFailed"));
+    await loadAiRuns();
     console.error(error);
   }
 }
@@ -3731,6 +3736,7 @@ function getAiRunKindLabel(run) {
   const kind = String(run?.kind || "");
   if (kind === "html_generation") return t("aiRunHtmlGeneration");
   if (kind === "material_html_generation") return t("aiRunMaterialGeneration");
+  if (kind === "knowledge_qa") return t("aiRunKnowledgeQa");
   return t("aiRunUnknownKind");
 }
 

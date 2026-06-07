@@ -85,7 +85,7 @@ def sanitize_run(run: dict[str, Any]) -> dict[str, Any]:
         "error": sanitize_error(run.get("error")),
         "material": run.get("material") if isinstance(run.get("material"), dict) else {},
         "item_id": str(run.get("item_id") or ""),
-        "retryable": sanitize_bool(run.get("retryable"), default=status == "failed" and kind in {"html_generation", "material_html_generation"}),
+        "retryable": sanitize_bool(run.get("retryable"), default=status == "failed" and kind in {"html_generation", "material_html_generation", "knowledge_qa"}),
         "cancellable": sanitize_bool(run.get("cancellable"), default=status in {"pending", "running"} and False),
     }
 
@@ -95,6 +95,8 @@ def run_operation(kind: str) -> str:
         return "material_to_html"
     if kind == "html_generation":
         return "conversation_to_html"
+    if kind == "knowledge_qa":
+        return "knowledge_qa"
     return "unknown"
 
 
