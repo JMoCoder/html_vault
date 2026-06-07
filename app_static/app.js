@@ -277,6 +277,9 @@ const i18n = {
     importingHtml: "Importing HTML file...",
     importHtmlDone: "Imported {title}",
     importHtmlFailed: "HTML import failed.",
+    generatingMaterialNote: "Generating note from uploaded material...",
+    materialNoteDone: "Generated note: {title}",
+    materialNoteFailed: "Material note generation failed.",
     noSummary: "No summary yet.",
     read: "Read",
     original: "Original",
@@ -587,6 +590,9 @@ const i18n = {
     importingHtml: "正在导入 HTML 文件...",
     importHtmlDone: "已导入 {title}",
     importHtmlFailed: "HTML 导入失败。",
+    generatingMaterialNote: "正在根据上传资料生成笔记...",
+    materialNoteDone: "已生成笔记：{title}",
+    materialNoteFailed: "资料生成笔记失败。",
     noSummary: "暂无摘要。",
     read: "阅读",
     original: "原文",
@@ -897,6 +903,9 @@ const i18n = {
     importingHtml: "HTML ファイルをインポート中...",
     importHtmlDone: "{title} をインポートしました",
     importHtmlFailed: "HTML インポートに失敗しました。",
+    generatingMaterialNote: "アップロード資料からノートを生成中...",
+    materialNoteDone: "生成済みノート: {title}",
+    materialNoteFailed: "資料からのノート生成に失敗しました。",
     noSummary: "概要はまだありません。",
     read: "読む",
     original: "原文",
@@ -1068,6 +1077,7 @@ const elements = {
   navSections: document.querySelectorAll("[data-nav-section]"),
   importEntries: document.querySelectorAll("[data-import-entry]"),
   htmlImportFile: ensureHtmlImportInput(),
+  materialGenerateFile: document.querySelector("#material-generate-file"),
   siteTitle: document.querySelector("#site-title"),
   languageSelect: document.querySelector("#language-select"),
   themeModeButtons: document.querySelectorAll("[data-theme-mode]"),
@@ -2050,6 +2060,11 @@ function openFromHash() {
 
 async function submitNewItem(event) {
   event.preventDefault();
+  if (elements.inputType.value === "file") {
+    openMaterialGeneratePicker();
+    return;
+  }
+
   const input = elements.newItemInput.value.trim();
   if (!input) {
     setFeedback("emptyInput");
@@ -2084,6 +2099,46 @@ async function submitNewItem(event) {
 function openHtmlImportPicker() {
   elements.htmlImportFile.value = "";
   elements.htmlImportFile.click();
+}
+
+function openMaterialGeneratePicker() {
+  if (!state.agentUrl) {
+    setFeedback("agentNotConfigured");
+    return;
+  }
+  elements.materialGenerateFile.value = "";
+  elements.materialGenerateFile.click();
+}
+
+async function generateNoteFromMaterialFile(file) {
+  if (!file) return;
+  if (!state.agentUrl) {
+    setFeedback("agentNotConfigured");
+    return;
+  }
+  setFeedback("generatingMaterialNote");
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("instruction", elements.newItemInput.value.trim());
+  formData.append("theme", "default");
+  formData.append("target_use", "default");
+  formData.append("style_preference", "default");
+  formData.append("reference_style", "default");
+
+  try {
+    const response = await apiFetch("/api/ai/material-runs", {
+      method: "POST",
+      body: formData,
+    });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    const result = await response.json();
+    await refreshManifestAndWorkspace();
+    elements.newItemInput.value = "";
+    setFeedback("materialNoteDone", { title: result.item?.title || file.name });
+  } catch (error) {
+    setFeedback("materialNoteFailed");
+    console.error(error);
+  }
 }
 
 async function importHtmlFile(file) {
@@ -4115,6 +4170,7 @@ elements.importEntries.forEach((button) => {
   button.addEventListener("click", openHtmlImportPicker);
 });
 elements.htmlImportFile.addEventListener("change", (event) => importHtmlFile(event.target.files?.[0]));
+elements.materialGenerateFile.addEventListener("change", (event) => generateNoteFromMaterialFile(event.target.files?.[0]));
 window.addEventListener("hashchange", openFromHash);
 window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener("change", () => {
   if (state.themeMode === "system") applyTheme();

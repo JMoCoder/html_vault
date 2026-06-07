@@ -1,0 +1,148 @@
+const { expect, test } = require("@playwright/test");
+const fs = require("fs");
+const path = require("path");
+
+function appStaticFile(name) {
+  return path.join(__dirname, "../../app_static", name);
+}
+
+async function routeWorkspace(page) {
+  await page.route("**/workspace/", async (route) => {
+    await route.fulfill({
+      contentType: "text/html",
+      body: fs.readFileSync(appStaticFile("index.html"), "utf8"),
+    });
+  });
+  await page.route("**/config.js", async (route) => {
+    await route.fulfill({
+      contentType: "application/javascript",
+      body: 'window.HTML_LORE_AGENT_URL = "http://127.0.0.1:8090";',
+    });
+  });
+  await page.route("**/app.js**", async (route) => {
+    await route.fulfill({
+      contentType: "application/javascript",
+      body: fs.readFileSync(appStaticFile("app.js"), "utf8"),
+    });
+  });
+  await page.route("**/style.css**", async (route) => {
+    await route.fulfill({
+      contentType: "text/css",
+      body: fs.readFileSync(appStaticFile("style.css"), "utf8"),
+    });
+  });
+  await page.route("**/assets/html-lore-logo.svg", async (route) => {
+    await route.fulfill({
+      contentType: "image/svg+xml",
+      body: fs.readFileSync(appStaticFile("assets/html-lore-logo.svg"), "utf8"),
+    });
+  });
+  await page.route("**/manifest.webmanifest", async (route) => {
+    await route.fulfill({ contentType: "application/manifest+json", body: "{}" });
+  });
+}
+
+test("workspace file create mode uploads material to the AI generation endpoint", async ({ page }) => {
+  await page.addInitScript(() => localStorage.clear());
+  await routeWorkspace(page);
+
+  let materialRequest = null;
+  let uploadHtmlCalled = false;
+  let legacyJobCalled = false;
+  let manifestCalls = 0;
+  const manifestBefore = {
+    version: 2,
+    title: "HTMlore Workspace",
+    items: [],
+  };
+  const manifestAfter = {
+    version: 2,
+    title: "HTMlore Workspace",
+    items: [
+      {
+        id: "generated/2026/06/material-note.html",
+        title: "Generated Material Note",
+        summary: "Generated from uploaded material.",
+        collection: "Generated",
+        tags: ["AI"],
+        source: "generated",
+        created: "2026-06-07T00:00:00Z",
+        updated: "2026-06-07T00:00:00Z",
+        path: "content/generated/2026/06/material-note.html",
+      },
+    ],
+  };
+
+  await page.route("**/api/auth/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ enabled: false, authenticated: true, user: null, data_id: null }),
+    });
+  });
+  await page.route("**/api/ai/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ available: false, provider: "", model: "", external_search: false }),
+    });
+  });
+  await page.route("**/api/version", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ version: "0.8.4", latest_version: "0.8.4", update_available: false }),
+    });
+  });
+  await page.route("**/api/shares", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ shares: [], count: 0 }) });
+  });
+  await page.route("**/api/manifest", async (route) => {
+    manifestCalls += 1;
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(manifestCalls > 1 ? manifestAfter : manifestBefore),
+    });
+  });
+  await page.route("**/api/uploads/html", async (route) => {
+    uploadHtmlCalled = true;
+    await route.abort();
+  });
+  await page.route("**/api/jobs", async (route) => {
+    legacyJobCalled = true;
+    await route.abort();
+  });
+  await page.route("**/api/ai/material-runs", async (route) => {
+    materialRequest = {
+      method: route.request().method(),
+      postData: route.request().postData() || "",
+    };
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        run_id: "run-material-test",
+        item: manifestAfter.items[0],
+        graph: { kind: "material_html_generation" },
+      }),
+    });
+  });
+
+  await page.goto("/workspace/", { waitUntil: "domcontentloaded" });
+  await page.locator("#input-type").selectOption("file");
+  await page.locator("#new-item-input").fill("Turn this material into a concise study note.");
+
+  const fileChooserPromise = page.waitForEvent("filechooser");
+  await page.locator("#new-item-form button[type='submit']").click();
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles({
+    name: "material.md",
+    mimeType: "text/markdown",
+    buffer: Buffer.from("# Material\n\nImportant uploaded source.", "utf8"),
+  });
+
+  await expect(page.locator("#new-feedback")).toContainText("Generated note: Generated Material Note");
+  await expect(page.locator(".item-card", { hasText: "Generated Material Note" })).toBeVisible();
+  expect(uploadHtmlCalled).toBe(false);
+  expect(legacyJobCalled).toBe(false);
+  expect(materialRequest).not.toBeNull();
+  expect(materialRequest.method).toBe("POST");
+  expect(materialRequest.postData).toContain("material.md");
+  expect(materialRequest.postData).toContain("Turn this material into a concise study note.");
+});
