@@ -67,6 +67,23 @@ test("workspace file create mode uploads material to the AI generation endpoint"
     ],
     material: { title: "material", material_type: "markdown", text_chars: 36 },
   };
+  const refreshedRun = {
+    id: "run-qa-refresh-test",
+    kind: "knowledge_qa",
+    status: "completed",
+    started_at: "2026-06-07T02:05:00.000Z",
+    completed_at: "2026-06-07T02:05:00.640Z",
+    duration_ms: 640,
+    retryable: false,
+    cancellable: false,
+    source_mode: "local_only",
+    local_sources: { count: 1 },
+    external_sources: { count: 0, enabled: false, status: "skipped" },
+    node_trace: [
+      { node: "RetrieverNode", status: "ok" },
+      { node: "AnswerAgentNode", status: "ok" },
+    ],
+  };
   const manifestBefore = {
     version: 2,
     title: "HTMlore Workspace",
@@ -89,6 +106,8 @@ test("workspace file create mode uploads material to the AI generation endpoint"
       },
     ],
   };
+  let runsRequested = 0;
+  let showRefreshedRun = false;
 
   await page.route("**/api/auth/status", async (route) => {
     await route.fulfill({
@@ -112,9 +131,13 @@ test("workspace file create mode uploads material to the AI generation endpoint"
     await route.fulfill({ contentType: "application/json", body: JSON.stringify({ shares: [], count: 0 }) });
   });
   await page.route("**/api/ai/runs**", async (route) => {
+    runsRequested += 1;
     await route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ runs: [generatedRun], count: 1 }),
+      body: JSON.stringify({
+        runs: showRefreshedRun ? [refreshedRun, generatedRun] : [generatedRun],
+        count: showRefreshedRun ? 2 : 1,
+      }),
     });
   });
   await page.route("**/api/manifest", async (route) => {
@@ -179,6 +202,12 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   await expect(page.locator("#ai-run-list")).toContainText("3 steps");
   await expect(page.locator("#ai-run-list")).toContainText("Not cancellable");
   await expect(page.locator("#ai-run-list")).not.toContainText("Important uploaded source");
+
+  const requestsBeforeRefresh = runsRequested;
+  showRefreshedRun = true;
+  await page.locator("#ai-run-refresh").click();
+  await expect.poll(() => runsRequested).toBeGreaterThan(requestsBeforeRefresh);
+  await expect(page.locator("#ai-run-list")).toContainText("Knowledge Q&A");
 });
 
 test("workspace material generation failure refreshes AI run history", async ({ page }) => {

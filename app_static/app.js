@@ -105,6 +105,7 @@ const i18n = {
     aiRunHistoryEmpty: "No AI runs yet.",
     aiRunHistoryUnavailable: "AI run history requires the backend server.",
     aiRunHistoryFailed: "AI run history could not be loaded.",
+    refreshAiRuns: "Refresh runs",
     aiRunHtmlGeneration: "Generated from conversation",
     aiRunMaterialGeneration: "Generated from uploaded material",
     aiRunKnowledgeQa: "Knowledge Q&A",
@@ -438,6 +439,7 @@ const i18n = {
     aiRunHistoryEmpty: "暂无 AI 运行记录。",
     aiRunHistoryUnavailable: "AI 运行记录需要连接后端服务。",
     aiRunHistoryFailed: "无法加载 AI 运行记录。",
+    refreshAiRuns: "刷新运行记录",
     aiRunHtmlGeneration: "根据对话生成",
     aiRunMaterialGeneration: "根据上传资料生成",
     aiRunKnowledgeQa: "知识库问答",
@@ -771,6 +773,7 @@ const i18n = {
     aiRunHistoryEmpty: "AI 実行はまだありません。",
     aiRunHistoryUnavailable: "AI 実行履歴にはバックエンドサーバーが必要です。",
     aiRunHistoryFailed: "AI 実行履歴を読み込めませんでした。",
+    refreshAiRuns: "実行履歴を更新",
     aiRunHtmlGeneration: "会話から生成",
     aiRunMaterialGeneration: "アップロード資料から生成",
     aiRunKnowledgeQa: "ナレッジ Q&A",
@@ -1178,6 +1181,7 @@ const elements = {
   modelMaxTokens: document.querySelector("#model-max-tokens"),
   testProvider: document.querySelector("#test-provider"),
   settingsFeedback: document.querySelector("#settings-feedback"),
+  aiRunRefresh: document.querySelector("#ai-run-refresh"),
   aiRunList: document.querySelector("#ai-run-list"),
   aiRunFeedback: document.querySelector("#ai-run-feedback"),
   versionStatus: document.querySelector("#version-status"),
@@ -3668,10 +3672,12 @@ function maybeRefreshAiRuns() {
 
 async function loadAiRuns() {
   if (!elements.aiRunList) return;
+  if (elements.aiRunRefresh) elements.aiRunRefresh.disabled = true;
   if (!state.agentUrl) {
     state.aiRuns = [];
     renderAiRuns();
     elements.aiRunFeedback.textContent = t("aiRunHistoryUnavailable");
+    if (elements.aiRunRefresh) elements.aiRunRefresh.disabled = false;
     return;
   }
   try {
@@ -3686,6 +3692,8 @@ async function loadAiRuns() {
     renderAiRuns();
     elements.aiRunFeedback.textContent = t("aiRunHistoryFailed");
     console.error(error);
+  } finally {
+    if (elements.aiRunRefresh) elements.aiRunRefresh.disabled = false;
   }
 }
 
@@ -4293,6 +4301,7 @@ elements.testWebdav.addEventListener("click", testWebdavSettings);
 elements.exportManifest.addEventListener("click", exportManifestData);
 elements.exportPreferences.addEventListener("click", exportPreferencesData);
 elements.testProvider.addEventListener("click", testProviderConfig);
+elements.aiRunRefresh?.addEventListener("click", loadAiRuns);
 elements.newItemForm.addEventListener("submit", submitNewItem);
 elements.readerClose.addEventListener("click", closeReader);
 elements.readerEdit.addEventListener("click", () => {
