@@ -418,6 +418,7 @@ test("workspace note generation can select an existing note as reference style",
   await page.locator("#ai-generate-note").click();
   await expect(page.locator("#generate-reference-note")).toContainText("Style Reference");
   await expect(page.locator("#generate-reference-note")).not.toContainText("Archived Style");
+  await expect(page.locator("[data-i18n='generateReferenceImageComingSoon']")).toContainText("Screenshot style reference");
   await expect(page.locator("#generate-share-hint")).toBeHidden();
   await page.locator("#generate-target-use").selectOption("share");
   await expect(page.locator("#generate-share-hint")).toBeVisible();

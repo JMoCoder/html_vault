@@ -47,6 +47,8 @@ class GenerationSpec:
             reference_note_id = ""
         if reference_style == "note" and not reference_note_id:
             raise HtmlGenerationError("Reference note is required.")
+        if reference_style == "image":
+            raise HtmlGenerationError("Reference image style is not implemented yet.")
         return cls(
             theme=theme,
             target_use=target_use,

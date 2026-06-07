@@ -1128,5 +1128,14 @@ def test_ai_generate_note_rejects_invalid_spec_without_writing_file(tmp_path: Pa
         )
         assert code == 400
         assert "Unsupported reference note" in error["detail"]
+
+        code, error = server.json_error(
+            "POST",
+            f"/api/ai/conversations/{conversation['id']}/generate-note",
+            {"reference_style": "image"},
+        )
+        assert code == 400
+        assert "Reference image style is not implemented" in error["detail"]
+        assert set(content_dir.rglob("*.html")) == before
     finally:
         server.close()
