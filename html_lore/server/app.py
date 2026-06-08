@@ -18,6 +18,7 @@ from html_lore import __version__
 from .ai.api import (
     AIContextError,
     AIConversationService,
+    AIJobError,
     AIProviderConfigError,
     AIProviderConfigStore,
     AIService,
@@ -267,6 +268,15 @@ def create_app() -> FastAPI:
         except (HtmlGenerationError, AIRunError) as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/api/ai/conversations/{conversation_id}/generate-note/jobs")
+    def enqueue_ai_note(conversation_id: str, values: dict, _: ApiAuth, __: AiRateLimit, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.enqueue_generate_note(conversation_id, values)
+        except ConversationError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except (HtmlGenerationError, AIJobError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.post("/api/ai/material-runs")
     async def generate_ai_note_from_material(
         _: ApiAuth,
@@ -297,6 +307,36 @@ def create_app() -> FastAPI:
         except (HtmlGenerationError, MaterialGenerationError, AIRunError) as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/api/ai/material-jobs")
+    async def enqueue_ai_note_from_material(
+        _: ApiAuth,
+        __: AiRateLimit,
+        service: Annotated[AIConversationService, Depends(get_ai_conversation_service)],
+        file: Annotated[UploadFile, File()],
+        instruction: Annotated[str, Form()] = "",
+        theme: Annotated[str, Form()] = "default",
+        target_use: Annotated[str, Form()] = "default",
+        reference_style: Annotated[str, Form()] = "default",
+        reference_note_id: Annotated[str, Form()] = "",
+        style_preference: Annotated[str, Form()] = "default",
+    ) -> dict:
+        content = await file.read()
+        try:
+            return service.enqueue_generate_note_from_material(
+                filename=file.filename or "material.txt",
+                content=content,
+                instruction=instruction,
+                values={
+                    "theme": theme,
+                    "target_use": target_use,
+                    "reference_style": reference_style,
+                    "reference_note_id": reference_note_id,
+                    "style_preference": style_preference,
+                },
+            )
+        except (HtmlGenerationError, MaterialGenerationError, AIJobError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.get("/api/ai/runs")
     def ai_runs(_: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)], limit: int = 20) -> dict:
         try:
@@ -309,6 +349,27 @@ def create_app() -> FastAPI:
         try:
             return service.run(run_id)
         except AIRunError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get("/api/ai/jobs")
+    def ai_jobs(_: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)], limit: int = 20) -> dict:
+        try:
+            return service.jobs(limit=limit)
+        except AIJobError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/api/ai/jobs/{job_id}")
+    def ai_job(job_id: str, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.job(job_id)
+        except AIJobError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.delete("/api/ai/jobs/{job_id}")
+    def cancel_ai_job(job_id: str, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.cancel_job(job_id)
+        except AIJobError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.post("/api/rebuild")

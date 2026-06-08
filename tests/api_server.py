@@ -46,6 +46,7 @@ class ApiServer:
         ai_max_response_tokens: int | None = None,
         ai_rate_limit_requests: int | None = None,
         ai_rate_limit_window_seconds: int | None = None,
+        ai_retrieval_mode: str | None = None,
     ) -> None:
         self.port = free_port()
         self.api_token = api_token
@@ -82,6 +83,8 @@ class ApiServer:
             env["HTML_LORE_AI_RATE_LIMIT_REQUESTS"] = str(ai_rate_limit_requests)
         if ai_rate_limit_window_seconds is not None:
             env["HTML_LORE_AI_RATE_LIMIT_WINDOW_SECONDS"] = str(ai_rate_limit_window_seconds)
+        if ai_retrieval_mode is not None:
+            env["HTML_LORE_AI_RETRIEVAL_MODE"] = ai_retrieval_mode
         if users_file:
             env["HTML_LORE_USERS_FILE"] = str(users_file)
         if user_data_dir:
@@ -239,6 +242,7 @@ def run_api_server(
     ai_max_response_tokens: int | None = None,
     ai_rate_limit_requests: int | None = None,
     ai_rate_limit_window_seconds: int | None = None,
+    ai_retrieval_mode: str | None = None,
 ) -> ApiServer:
     return ApiServer(
         content_dir=content_dir,
@@ -263,4 +267,5 @@ def run_api_server(
         ai_max_response_tokens=ai_max_response_tokens,
         ai_rate_limit_requests=ai_rate_limit_requests,
         ai_rate_limit_window_seconds=ai_rate_limit_window_seconds,
+        ai_retrieval_mode=ai_retrieval_mode,
     )

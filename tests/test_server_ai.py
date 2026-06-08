@@ -1,4 +1,5 @@
 import json
+import time
 import urllib.error
 from pathlib import Path
 
@@ -9,7 +10,7 @@ from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, 
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
-from html_lore.server.ai.retrieval import extract_safe_text
+from html_lore.server.ai.retrieval import extract_safe_text, retrieve_evidence_with_status
 from html_lore.server.ai.runs import AIRunStore
 from html_lore.server.ai.external_search import ExternalSearchResult, is_safe_external_url, sanitize_external_results
 from html_lore.server.users import UserStore
@@ -48,6 +49,17 @@ def make_note(content_dir: Path, meta_dir: Path, item_id: str, *, title: str, co
         ),
         encoding="utf-8",
     )
+
+
+def wait_for_ai_job(server, job_id: str, *, timeout: float = 5) -> dict:
+    deadline = time.time() + timeout
+    last = {}
+    while time.time() < deadline:
+        last = server.request("GET", f"/api/ai/jobs/{job_id}")["job"]
+        if last["status"] in {"completed", "failed", "cancelled"}:
+            return last
+        time.sleep(0.1)
+    raise AssertionError(f"Timed out waiting for AI job {job_id}: {last}")
 
 
 def test_ai_run_store_sanitizes_list_and_detail(tmp_path: Path) -> None:
@@ -685,6 +697,65 @@ def test_knowledge_qa_graph_passes_configured_response_token_limit(tmp_path: Pat
     assert state.answer == "Short answer."
 
 
+def test_vector_retrieval_mode_falls_back_to_keyword_when_embedding_is_unavailable(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+        ai_retrieval_mode="vector",
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "What does MCP security cover?"})
+        assert response["retrieval_status"] == {
+            "requested_mode": "vector",
+            "effective_mode": "keyword",
+            "fallback": True,
+            "reason": "embedding_not_implemented",
+            "source_count": 1,
+        }
+        assert response["sources"][0]["item_id"] == "mcp.html"
+
+        runs = server.request("GET", "/api/ai/runs")
+        assert runs["runs"][0]["qa_report"]["retrieval"]["fallback"] is True
+        assert runs["runs"][0]["qa_report"]["retrieval"]["effective_mode"] == "keyword"
+    finally:
+        server.close()
+
+
+def test_retrieval_status_normalizes_unknown_mode_to_keyword(tmp_path: Path) -> None:
+    from html_lore.server.items import ItemService
+
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Retrieval Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    result = retrieve_evidence_with_status(
+        ItemService(settings),
+        {"item_ids": ["mcp.html"]},
+        "MCP security",
+        mode="surprise",
+    )
+
+    assert result.status == {
+        "requested_mode": "keyword",
+        "effective_mode": "keyword",
+        "fallback": False,
+        "source_count": 1,
+    }
+    assert result.evidence[0]["item_id"] == "mcp.html"
+
+
 def test_ai_write_requests_are_rate_limited_while_run_reads_remain_available(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = make_dirs(tmp_path)
     make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
@@ -991,6 +1062,42 @@ def test_ai_generate_note_from_conversation_persists_generated_item_and_run(tmp_
         server.close()
 
 
+def test_ai_generate_note_job_completes_and_links_run(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP", "Security"])
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "What does MCP Security cover?"})
+
+        queued = server.json(
+            "POST",
+            f"/api/ai/conversations/{conversation['id']}/generate-note/jobs",
+            {"theme": "default", "target_use": "default", "style_preference": "default"},
+        )
+        assert queued["job"]["status"] == "pending"
+        job = wait_for_ai_job(server, queued["job_id"])
+
+        assert job["status"] == "completed"
+        assert job["kind"] == "html_generation"
+        assert job["run_id"]
+        assert job["item_id"].startswith("generated/")
+        assert job["cancellable"] is False
+        run = server.request("GET", f"/api/ai/runs/{job['run_id']}")["run"]
+        assert run["item_id"] == job["item_id"]
+        manifest = server.request("GET", "/api/manifest")
+        assert any(entry["id"] == job["item_id"] for entry in manifest["items"])
+    finally:
+        server.close()
+
+
 def test_ai_generate_note_accepts_reference_note_spec(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = make_dirs(tmp_path)
     make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
@@ -1164,6 +1271,39 @@ def test_ai_material_run_generates_note_and_stores_material_summary(tmp_path: Pa
         fetched_run = server.request("GET", f"/api/ai/runs/{run['id']}")["run"]
         assert fetched_run["material"] == run["material"]
         assert fetched_run["completed_at"] == run["completed_at"]
+    finally:
+        server.close()
+
+
+def test_ai_material_job_completes_without_persisting_source_text(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir)
+    try:
+        queued = server.multipart(
+            "/api/ai/material-jobs",
+            fields={
+                "instruction": "Create a concise knowledge note.",
+                "theme": "default",
+                "target_use": "default",
+                "style_preference": "default",
+            },
+            file_field="file",
+            filename="private-material.html",
+            content=b"<html><body><h1>Material Topic</h1><p>Very private source body.</p></body></html>",
+            content_type="text/html",
+        )
+        assert queued["job"]["status"] == "pending"
+        job = wait_for_ai_job(server, queued["job_id"])
+        jobs = server.request("GET", "/api/ai/jobs")
+        raw_jobs = (meta_dir / "ai" / "jobs.json").read_text(encoding="utf-8")
+
+        assert job["status"] == "completed"
+        assert job["kind"] == "material_html_generation"
+        assert job["run_id"]
+        assert job["item_id"].startswith("generated/")
+        assert jobs["count"] == 1
+        assert "Very private source body" not in json.dumps(jobs, ensure_ascii=False)
+        assert "Very private source body" not in raw_jobs
     finally:
         server.close()
 

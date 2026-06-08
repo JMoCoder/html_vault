@@ -7,9 +7,12 @@ from typing import Any
 
 from html_lore.server.items import ItemContentError, ItemService
 
+from .model_client import ModelClient
+
 
 MAX_CHUNK_CHARS = 1800
 MAX_EVIDENCE_CHARS = 5000
+RETRIEVAL_MODES = {"keyword", "vector", "hybrid"}
 
 
 @dataclass(frozen=True)
@@ -26,6 +29,16 @@ class Evidence:
             "snippet": self.snippet,
             "score": self.score,
         }
+
+
+class RetrievalUnavailable(RuntimeError):
+    pass
+
+
+@dataclass(frozen=True)
+class RetrievalResult:
+    evidence: list[dict[str, Any]]
+    status: dict[str, Any]
 
 
 class SafeTextExtractor(HTMLParser):
@@ -66,6 +79,63 @@ def extract_safe_text(html: str) -> str:
 
 
 def retrieve_evidence(item_service: ItemService, context_snapshot: dict[str, Any], query: str, *, max_results: int = 5) -> list[dict[str, Any]]:
+    return retrieve_keyword_evidence(item_service, context_snapshot, query, max_results=max_results)
+
+
+def retrieve_evidence_with_status(
+    item_service: ItemService,
+    context_snapshot: dict[str, Any],
+    query: str,
+    *,
+    mode: str = "keyword",
+    model_client: ModelClient | None = None,
+    max_results: int = 5,
+) -> RetrievalResult:
+    requested_mode = normalize_retrieval_mode(mode)
+    if requested_mode == "keyword":
+        evidence = retrieve_keyword_evidence(item_service, context_snapshot, query, max_results=max_results)
+        return RetrievalResult(
+            evidence=evidence,
+            status={
+                "requested_mode": requested_mode,
+                "effective_mode": "keyword",
+                "fallback": False,
+                "source_count": len(evidence),
+            },
+        )
+
+    try:
+        evidence = retrieve_vector_evidence(
+            item_service,
+            context_snapshot,
+            query,
+            model_client=model_client,
+            max_results=max_results,
+        )
+        return RetrievalResult(
+            evidence=evidence,
+            status={
+                "requested_mode": requested_mode,
+                "effective_mode": "vector",
+                "fallback": False,
+                "source_count": len(evidence),
+            },
+        )
+    except Exception as exc:
+        evidence = retrieve_keyword_evidence(item_service, context_snapshot, query, max_results=max_results)
+        return RetrievalResult(
+            evidence=evidence,
+            status={
+                "requested_mode": requested_mode,
+                "effective_mode": "keyword",
+                "fallback": True,
+                "reason": retrieval_error_reason(exc),
+                "source_count": len(evidence),
+            },
+        )
+
+
+def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[str, Any], query: str, *, max_results: int = 5) -> list[dict[str, Any]]:
     item_ids = [str(item_id) for item_id in context_snapshot.get("item_ids", []) if item_id]
     if not item_ids:
         return []
@@ -105,6 +175,36 @@ def retrieve_evidence(item_service: ItemService, context_snapshot: dict[str, Any
     if not evidences and fallback_candidates:
         return [evidence.as_dict() for evidence in fallback_candidates[:max_results]]
     return [evidence.as_dict() for evidence in sorted(evidences, key=lambda item: (-item.score, item.title))[:max_results]]
+
+
+def retrieve_vector_evidence(
+    item_service: ItemService,
+    context_snapshot: dict[str, Any],
+    query: str,
+    *,
+    model_client: ModelClient | None,
+    max_results: int = 5,
+) -> list[dict[str, Any]]:
+    if model_client is None:
+        raise RetrievalUnavailable("Embedding model client is not configured.")
+    # The embedding/vector-store path is intentionally scaffolded only. It lets
+    # deployments enable vector mode without breaking QA while the concrete
+    # vector store remains a later pluggable backend.
+    model_client.embed(text=query)
+    raise RetrievalUnavailable("Vector store is not configured.")
+
+
+def normalize_retrieval_mode(mode: str) -> str:
+    normalized = str(mode or "keyword").strip().lower()
+    return normalized if normalized in RETRIEVAL_MODES else "keyword"
+
+
+def retrieval_error_reason(exc: Exception) -> str:
+    if isinstance(exc, NotImplementedError):
+        return "embedding_not_implemented"
+    if isinstance(exc, RetrievalUnavailable):
+        return "vector_unavailable"
+    return exc.__class__.__name__
 
 
 def evidence_text(item: dict[str, Any], html: str) -> str:

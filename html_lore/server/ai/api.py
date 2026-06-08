@@ -10,6 +10,7 @@ from .conversations import ConversationError, ConversationStore
 from .external_search import build_external_search_adapter
 from .guardrails import GuardrailError
 from .html_generation import GenerationSpec, HtmlGenerationError, generate_note_from_conversation
+from .jobs import AIJobError, AIJobStore, ai_job_queue
 from .knowledge_qa_graph import KnowledgeQAGraph, KnowledgeQAState, public_qa_run
 from .material_generation import MaterialGenerationError, generate_note_from_material
 from .model_client import ModelClient, test_provider
@@ -95,6 +96,7 @@ class AIConversationService:
                 max_message_chars=self.settings.ai_max_message_chars,
                 max_prompt_chars=self.settings.ai_max_prompt_chars,
                 max_response_tokens=self.settings.ai_max_response_tokens,
+                retrieval_mode=self.settings.ai_retrieval_mode,
             ).run(state)
         except GuardrailError as exc:
             self.run_store.add(public_qa_run(state, status="failed", error={"code": "guardrail_failed", "message": str(exc)}))
@@ -111,6 +113,7 @@ class AIConversationService:
             "graph": KnowledgeQAGraph.name,
             "node_trace": state.node_trace,
             "external_status": state.external_status,
+            "retrieval_status": state.retrieval_status,
         }
 
     def generate_note(self, conversation_id: str, values: dict[str, Any]) -> dict[str, Any]:
@@ -123,6 +126,24 @@ class AIConversationService:
             raise
         run = self.run_store.add(result["run"])
         return {"run": run, "item": result["item"]}
+
+    def enqueue_generate_note(self, conversation_id: str, values: dict[str, Any]) -> dict[str, Any]:
+        conversation = self.store.get(conversation_id)
+        spec = GenerationSpec.from_values(values)
+        store = AIJobStore(self.settings)
+        job = store.create(kind="html_generation", label=f"Generate note from conversation {conversation_id[:12]}")
+
+        def task() -> dict[str, Any]:
+            try:
+                result = generate_note_from_conversation(settings=self.settings, conversation=conversation, spec=spec)
+            except HtmlGenerationError as exc:
+                self._store_failed_run(exc)
+                raise
+            run = self.run_store.add(result["run"])
+            return {"run": run, "item": result["item"]}
+
+        ai_job_queue.enqueue(settings=self.settings, job=job, task=task)
+        return {"job": job, "job_id": job["job_id"]}
 
     def generate_note_from_material(self, *, filename: str, content: bytes, instruction: str, values: dict[str, Any]) -> dict[str, Any]:
         spec = GenerationSpec.from_values(values)
@@ -140,12 +161,45 @@ class AIConversationService:
         run = self.run_store.add(result["run"])
         return {"run": run, "item": result["item"]}
 
+    def enqueue_generate_note_from_material(self, *, filename: str, content: bytes, instruction: str, values: dict[str, Any]) -> dict[str, Any]:
+        spec = GenerationSpec.from_values(values)
+        store = AIJobStore(self.settings)
+        job = store.create(kind="material_html_generation", label=filename or "Uploaded material")
+
+        def task() -> dict[str, Any]:
+            try:
+                result = generate_note_from_material(
+                    settings=self.settings,
+                    filename=filename,
+                    content=content,
+                    instruction=instruction,
+                    spec=spec,
+                )
+            except (HtmlGenerationError, MaterialGenerationError) as exc:
+                self._store_failed_run(exc)
+                raise
+            run = self.run_store.add(result["run"])
+            return {"run": run, "item": result["item"]}
+
+        ai_job_queue.enqueue(settings=self.settings, job=job, task=task)
+        return {"job": job, "job_id": job["job_id"]}
+
     def runs(self, limit: int = 20) -> dict[str, Any]:
         runs = self.run_store.list(limit=limit)
         return {"runs": runs, "count": len(runs)}
 
     def run(self, run_id: str) -> dict[str, Any]:
         return {"run": self.run_store.get(run_id)}
+
+    def jobs(self, limit: int = 20) -> dict[str, Any]:
+        jobs = AIJobStore(self.settings).list(limit=limit)
+        return {"jobs": jobs, "count": len(jobs)}
+
+    def job(self, job_id: str) -> dict[str, Any]:
+        return {"job": AIJobStore(self.settings).get(job_id)}
+
+    def cancel_job(self, job_id: str) -> dict[str, Any]:
+        return {"job": AIJobStore(self.settings).cancel(job_id)}
 
     def _store_failed_run(self, exc: Exception) -> None:
         run = getattr(exc, "run", None)
@@ -166,4 +220,5 @@ __all__ = [
     "MaterialGenerationError",
     "AIRunError",
     "AIRunStore",
+    "AIJobError",
 ]

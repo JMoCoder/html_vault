@@ -112,6 +112,11 @@ const i18n = {
     aiRunHistoryUnavailable: "AI run history requires the backend server.",
     aiRunHistoryFailed: "AI run history could not be loaded.",
     refreshAiRuns: "Refresh runs",
+    aiJobQueue: "Queue",
+    aiJobQueueEmpty: "No active AI jobs.",
+    aiJobQueued: "AI job queued: {jobId}",
+    aiJobCompleted: "AI job completed.",
+    aiJobFailed: "AI job failed: {message}",
     aiRunHtmlGeneration: "Generated from conversation",
     aiRunMaterialGeneration: "Generated from uploaded material",
     aiRunKnowledgeQa: "Knowledge Q&A",
@@ -464,6 +469,11 @@ const i18n = {
     aiRunHistoryUnavailable: "AI 运行记录需要连接后端服务。",
     aiRunHistoryFailed: "无法加载 AI 运行记录。",
     refreshAiRuns: "刷新运行记录",
+    aiJobQueue: "队列",
+    aiJobQueueEmpty: "暂无活跃 AI 任务。",
+    aiJobQueued: "AI 任务已加入队列：{jobId}",
+    aiJobCompleted: "AI 任务已完成。",
+    aiJobFailed: "AI 任务失败：{message}",
     aiRunHtmlGeneration: "根据对话生成",
     aiRunMaterialGeneration: "根据上传资料生成",
     aiRunKnowledgeQa: "知识库问答",
@@ -816,6 +826,11 @@ const i18n = {
     aiRunHistoryUnavailable: "AI 実行履歴にはバックエンドサーバーが必要です。",
     aiRunHistoryFailed: "AI 実行履歴を読み込めませんでした。",
     refreshAiRuns: "実行履歴を更新",
+    aiJobQueue: "キュー",
+    aiJobQueueEmpty: "アクティブな AI ジョブはありません。",
+    aiJobQueued: "AI ジョブをキューに追加しました: {jobId}",
+    aiJobCompleted: "AI ジョブが完了しました。",
+    aiJobFailed: "AI ジョブに失敗しました: {message}",
     aiRunHtmlGeneration: "会話から生成",
     aiRunMaterialGeneration: "アップロード資料から生成",
     aiRunKnowledgeQa: "ナレッジ Q&A",
@@ -1148,6 +1163,12 @@ const state = {
   aiConfig: loadAiConfig(),
   aiStatus: null,
   aiRuns: [],
+  aiJobs: [],
+  aiJobsOpen: false,
+  aiJobsLoaded: false,
+  aiJobsPollTimer: 0,
+  aiKnownCompletedJobIds: new Set(),
+  aiSubmittedJobIds: new Set(),
   selectedAiRunId: "",
   aiRunDetails: {},
   aiConversationId: "",
@@ -1263,6 +1284,8 @@ const elements = {
   aiChatInput: document.querySelector("#ai-chat-input"),
   aiContentExpansion: document.querySelector("#ai-content-expansion"),
   aiGenerateNote: document.querySelector("#ai-generate-note"),
+  aiJobToggle: document.querySelector("#ai-job-toggle"),
+  aiJobList: document.querySelector("#ai-job-list"),
   luckyButton: document.querySelector("#lucky-button"),
   searchInput: document.querySelector("#search-input"),
   contentGrid: document.querySelector("#content-grid"),
@@ -2255,16 +2278,17 @@ async function generateNoteFromMaterialFile(file) {
   formData.append("reference_style", "default");
 
   try {
-    const response = await apiFetch("/api/ai/material-runs", {
+    const response = await apiFetch("/api/ai/material-jobs", {
       method: "POST",
       body: formData,
     });
     if (!response.ok) throw new Error(`Agent returned ${response.status}`);
     const result = await response.json();
-    await refreshManifestAndWorkspace();
-    await loadAiRuns();
+    trackSubmittedAiJob(result.job_id || "");
+    await loadAiJobs();
+    startAiJobPolling();
     elements.newItemInput.value = "";
-    setFeedback("materialNoteDone", { title: result.item?.title || file.name });
+    setFeedback("queuedJob", { jobId: result.job_id || "" });
   } catch (error) {
     await loadAiRuns();
     setFeedback("materialNoteFailed");
@@ -3061,6 +3085,7 @@ function openAiPanel() {
   applyAiPanelState();
   renderAiContext();
   renderInitialAiMessage();
+  loadAiJobs();
   elements.aiChatInput.focus();
 }
 
@@ -3329,7 +3354,7 @@ async function submitGenerateNoteDialog(event) {
   elements.generateNoteFeedback.textContent = t("generateNoteRunning");
   try {
     const conversationId = await ensureAiConversation();
-    const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversationId)}/generate-note`, {
+    const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversationId)}/generate-note/jobs`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -3342,11 +3367,11 @@ async function submitGenerateNoteDialog(event) {
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
-    await refreshManifestAndWorkspace();
-    await loadAiRuns();
-    const title = data.item?.title || data.item?.id || t("item");
-    elements.generateNoteFeedback.textContent = t("generateNoteCreated", { title });
-    appendAiMessage("assistant", t("generateNoteCreated", { title }), data.item ? [{ title, item_id: data.item.id }] : []);
+    trackSubmittedAiJob(data.job_id || "");
+    await loadAiJobs();
+    startAiJobPolling();
+    elements.generateNoteFeedback.textContent = t("aiJobQueued", { jobId: data.job_id || "" });
+    appendAiMessage("assistant", t("aiJobQueued", { jobId: data.job_id || "" }));
   } catch (error) {
     await loadAiRuns();
     elements.generateNoteFeedback.textContent = error?.message || t("generateNoteFailed");
@@ -3773,6 +3798,118 @@ function renderAiConfig() {
 function maybeRefreshAiRuns() {
   if (state.activeSettingsTab !== "ai") return;
   loadAiRuns();
+}
+
+async function loadAiJobs() {
+  if (!elements.aiJobList || !state.agentUrl) {
+    state.aiJobs = [];
+    renderAiJobs();
+    return;
+  }
+  try {
+    const response = await apiFetch("/api/ai/jobs?limit=8", { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    const previous = new Set(state.aiJobs.map((job) => `${job.job_id}:${job.status}`));
+    const wasLoaded = state.aiJobsLoaded;
+    state.aiJobs = Array.isArray(data.jobs) ? data.jobs : [];
+    renderAiJobs();
+    if (!wasLoaded) {
+      state.aiJobs.filter((job) => job.status === "completed").forEach((job) => state.aiKnownCompletedJobIds.add(job.job_id));
+    }
+    const completedNow = state.aiJobs.filter((job) => {
+      if (job.status !== "completed" || state.aiKnownCompletedJobIds.has(job.job_id)) return false;
+      return wasLoaded || state.aiSubmittedJobIds.has(job.job_id);
+    });
+    const failedNow = wasLoaded ? state.aiJobs.filter((job) => job.status === "failed" && !previous.has(`${job.job_id}:failed`)) : [];
+    state.aiJobsLoaded = true;
+    completedNow.forEach((job) => state.aiKnownCompletedJobIds.add(job.job_id));
+    completedNow.forEach((job) => state.aiSubmittedJobIds.delete(job.job_id));
+    if (completedNow.length > 0) {
+      await refreshManifestAndWorkspace();
+      await loadAiRuns();
+      appendAiMessage("assistant", t("aiJobCompleted"));
+    }
+    failedNow.forEach((job) => appendAiMessage("assistant", t("aiJobFailed", { message: job.error?.message || job.message || job.job_id })));
+    if (hasActiveAiJobs()) startAiJobPolling();
+    else stopAiJobPolling();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function toggleAiJobs() {
+  state.aiJobsOpen = !state.aiJobsOpen;
+  renderAiJobs();
+  if (state.aiJobsOpen) loadAiJobs();
+}
+
+function renderAiJobs() {
+  if (!elements.aiJobList || !elements.aiJobToggle) return;
+  const activeCount = state.aiJobs.filter((job) => ["pending", "running"].includes(job.status)).length;
+  elements.aiJobToggle.textContent = activeCount > 0 ? `${t("aiJobQueue")} ${activeCount}` : t("aiJobQueue");
+  elements.aiJobToggle.classList.toggle("active", state.aiJobsOpen || activeCount > 0);
+  elements.aiJobList.hidden = !state.aiJobsOpen;
+  if (!state.aiJobsOpen) return;
+  if (state.aiJobs.length === 0) {
+    elements.aiJobList.innerHTML = `<div class="empty-state">${escapeHtml(t("aiJobQueueEmpty"))}</div>`;
+    return;
+  }
+  elements.aiJobList.replaceChildren(...state.aiJobs.map(renderAiJobRow));
+}
+
+function renderAiJobRow(job) {
+  const row = document.createElement("div");
+  row.className = "ai-job-row";
+  const statusClass = `status-${String(job.status || "pending").toLowerCase().replace(/[^a-z0-9-]/g, "") || "pending"}`;
+  const label = job.label || getAiRunKindLabel(job);
+  const itemMeta = job.item_id ? `<span>${escapeHtml(t("aiRunItem", { id: job.item_id }))}</span>` : "";
+  const message = job.message ? `<span>${escapeHtml(job.message)}</span>` : "";
+  row.innerHTML = `
+    <div>
+      <strong>${escapeHtml(label)}</strong>
+      <span class="ai-run-meta">
+        <em class="ai-run-status ${statusClass}">${escapeHtml(getAiRunStatusLabel(job.status))}</em>
+        ${itemMeta}
+        ${message}
+      </span>
+    </div>
+    ${job.cancellable ? `<button type="button" class="icon-button" data-ai-job-cancel="${escapeHtml(job.job_id)}" aria-label="${escapeHtml(t("cancel"))}" title="${escapeHtml(t("cancel"))}">×</button>` : ""}
+  `;
+  row.querySelector("[data-ai-job-cancel]")?.addEventListener("click", () => cancelAiJob(job.job_id));
+  return row;
+}
+
+async function cancelAiJob(jobId) {
+  if (!jobId || !state.agentUrl) return;
+  try {
+    const response = await apiFetch(`/api/ai/jobs/${encodeURIComponent(jobId)}`, { method: "DELETE" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    await loadAiJobs();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function hasActiveAiJobs() {
+  return state.aiJobs.some((job) => ["pending", "running"].includes(job.status));
+}
+
+function startAiJobPolling() {
+  if (state.aiJobsPollTimer) return;
+  state.aiJobsPollTimer = window.setInterval(loadAiJobs, 1600);
+}
+
+function trackSubmittedAiJob(jobId) {
+  if (!jobId) return;
+  state.aiSubmittedJobIds.add(jobId);
+}
+
+function stopAiJobPolling() {
+  if (!state.aiJobsPollTimer) return;
+  window.clearInterval(state.aiJobsPollTimer);
+  state.aiJobsPollTimer = 0;
 }
 
 async function loadAiRuns() {
@@ -4447,6 +4584,7 @@ elements.aiChatForm.addEventListener("submit", submitAiMessage);
 elements.aiChatInput.addEventListener("keydown", handleAiChatInputKeydown);
 elements.aiContentExpansion.addEventListener("change", (event) => setAiContentExpansion(event.target.checked));
 elements.aiGenerateNote.addEventListener("click", openGenerateNoteDialog);
+elements.aiJobToggle?.addEventListener("click", toggleAiJobs);
 elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.multiFilterToggle.addEventListener("click", toggleMultiFilterPopover);
 elements.tagMatchButtons.forEach((button) => {

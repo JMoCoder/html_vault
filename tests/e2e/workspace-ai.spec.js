@@ -111,6 +111,7 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   };
   let runsRequested = 0;
   let showRefreshedRun = false;
+  let jobsRequested = 0;
 
   await page.route("**/api/auth/status", async (route) => {
     await route.fulfill({
@@ -171,7 +172,30 @@ test("workspace file create mode uploads material to the AI generation endpoint"
     legacyJobCalled = true;
     await route.abort();
   });
-  await page.route("**/api/ai/material-runs", async (route) => {
+  await page.route("**/api/ai/jobs**", async (route) => {
+    jobsRequested += 1;
+    const completed = jobsRequested > 1;
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        jobs: [
+          {
+            job_id: "ai-job-material-test",
+            kind: "material_html_generation",
+            status: completed ? "completed" : "pending",
+            label: "material.md",
+            run_id: completed ? generatedRun.id : "",
+            item_id: completed ? "generated/2026/06/material-note.html" : "",
+            cancellable: !completed,
+            retryable: false,
+            message: completed ? "AI job completed." : "",
+          },
+        ],
+        count: 1,
+      }),
+    });
+  });
+  await page.route("**/api/ai/material-jobs", async (route) => {
     materialRequest = {
       method: route.request().method(),
       postData: route.request().postData() || "",
@@ -179,10 +203,14 @@ test("workspace file create mode uploads material to the AI generation endpoint"
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
-        run_id: generatedRun.id,
-        run: generatedRun,
-        item: manifestAfter.items[0],
-        graph: { kind: "material_html_generation" },
+        job_id: "ai-job-material-test",
+        job: {
+          job_id: "ai-job-material-test",
+          kind: "material_html_generation",
+          status: "pending",
+          label: "material.md",
+          cancellable: true,
+        },
       }),
     });
   });
@@ -200,7 +228,7 @@ test("workspace file create mode uploads material to the AI generation endpoint"
     buffer: Buffer.from("# Material\n\nImportant uploaded source.", "utf8"),
   });
 
-  await expect(page.locator("#new-feedback")).toContainText("Generated note: Generated Material Note");
+  await expect(page.locator("#new-feedback")).toContainText("Queued job ai-job-material-test");
   await expect(page.locator(".item-card", { hasText: "Generated Material Note" })).toBeVisible();
   expect(uploadHtmlCalled).toBe(false);
   expect(legacyJobCalled).toBe(false);
@@ -208,6 +236,9 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   expect(materialRequest.method).toBe("POST");
   expect(materialRequest.postData).toContain("material.md");
   expect(materialRequest.postData).toContain("Turn this material into a concise study note.");
+  await page.locator("#ai-panel-open").click();
+  await page.locator("#ai-job-toggle").click();
+  await expect(page.locator("#ai-job-list")).toContainText("material.md");
 
   await page.locator("#settings-open").click();
   await page.locator("[data-settings-tab='ai']").click();
@@ -289,7 +320,10 @@ test("workspace material generation failure refreshes AI run history", async ({ 
       body: JSON.stringify({ runs: [failedRun], count: 1 }),
     });
   });
-  await page.route("**/api/ai/material-runs", async (route) => {
+  await page.route("**/api/ai/jobs**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ jobs: [], count: 0 }) });
+  });
+  await page.route("**/api/ai/material-jobs", async (route) => {
     await route.fulfill({
       status: 400,
       contentType: "application/json",
@@ -398,6 +432,9 @@ test("workspace note generation can select an existing note as reference style",
   await page.route("**/api/ai/runs**", async (route) => {
     await route.fulfill({ contentType: "application/json", body: JSON.stringify({ runs: [], count: 0 }) });
   });
+  await page.route("**/api/ai/jobs**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ jobs: [], count: 0 }) });
+  });
   await page.route("**/api/ai/conversations", async (route) => {
     conversationRequest = JSON.parse(route.request().postData() || "{}");
     await route.fulfill({
@@ -405,13 +442,19 @@ test("workspace note generation can select an existing note as reference style",
       body: JSON.stringify({ conversation: { id: "conversation-reference-test", context_snapshot: conversationRequest.context, messages: [] } }),
     });
   });
-  await page.route("**/api/ai/conversations/*/generate-note", async (route) => {
+  await page.route("**/api/ai/conversations/*/generate-note/jobs", async (route) => {
     generationRequest = JSON.parse(route.request().postData() || "{}");
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
-        run: { id: "run-reference-test", kind: "html_generation", status: "completed" },
-        item: { id: "generated/reference-note.html", title: "Generated Reference Note" },
+        job_id: "ai-job-reference-test",
+        job: {
+          job_id: "ai-job-reference-test",
+          kind: "html_generation",
+          status: "pending",
+          label: "Generate reference note",
+          cancellable: true,
+        },
       }),
     });
   });
@@ -428,7 +471,7 @@ test("workspace note generation can select an existing note as reference style",
   await page.locator("#generate-reference-note").selectOption("style.html");
   await page.locator("#generate-note-submit").click();
 
-  await expect(page.locator("#generate-note-feedback")).toContainText("Generated note: Generated Reference Note");
+  await expect(page.locator("#generate-note-feedback")).toContainText("AI job queued: ai-job-reference-test");
   expect(conversationRequest).not.toBeNull();
   expect(generationRequest).toMatchObject({
     target_use: "share",
@@ -486,6 +529,9 @@ test("workspace AI content expansion controls conversation source mode", async (
   });
   await page.route("**/api/ai/runs**", async (route) => {
     await route.fulfill({ contentType: "application/json", body: JSON.stringify({ runs: [], count: 0 }) });
+  });
+  await page.route("**/api/ai/jobs**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ jobs: [], count: 0 }) });
   });
   await page.route("**/api/ai/conversations", async (route) => {
     const request = JSON.parse(route.request().postData() || "{}");

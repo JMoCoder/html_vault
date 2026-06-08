@@ -1282,6 +1282,48 @@ textarea {
   cursor: pointer;
 }
 
+.ai-panel-actions .secondary-button,
+.ai-panel-actions .ai-job-toggle {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.ai-panel-actions .ai-job-toggle.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.ai-job-list {
+  margin: 0 18px 12px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 88%, var(--accent) 12%);
+}
+
+.ai-job-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 28px;
+  align-items: start;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+}
+
+.ai-job-row:last-child {
+  border-bottom: 0;
+}
+
+.ai-job-row strong {
+  display: block;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
 .ai-chat-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 82px;

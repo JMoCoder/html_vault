@@ -11,7 +11,7 @@ from .conversations import ConversationStore
 from .external_search import DisabledExternalSearchAdapter, ExternalSearchAdapter, ExternalSearchUnavailable, sanitize_external_results
 from .guardrails import validate_answer, validate_message_budget, validate_prompt_budget, validate_user_message
 from .model_client import ModelClient
-from .retrieval import retrieve_evidence
+from .retrieval import retrieve_evidence_with_status
 
 
 NO_EVIDENCE_ANSWER = "当前上下文没有足够资料回答这个问题。请调整上下文、选择相关笔记，或开启内容拓展后再试。"
@@ -32,6 +32,7 @@ class KnowledgeQAState:
     content: str
     context_snapshot: dict[str, Any] = field(default_factory=dict)
     evidence: list[dict[str, Any]] = field(default_factory=list)
+    retrieval_status: dict[str, Any] = field(default_factory=dict)
     external_sources: list[dict[str, Any]] = field(default_factory=list)
     external_status: dict[str, Any] = field(default_factory=dict)
     prompt_messages: list[dict[str, str]] = field(default_factory=list)
@@ -64,11 +65,12 @@ class KnowledgeQAGraph:
         max_message_chars: int = 4000,
         max_prompt_chars: int = 12000,
         max_response_tokens: int = 1024,
+        retrieval_mode: str = "keyword",
     ) -> None:
         external_search = external_search or DisabledExternalSearchAdapter()
         self.nodes = nodes or (
             InputGuardrailNode(max_message_chars=max_message_chars),
-            RetrieverNode(item_service),
+            RetrieverNode(item_service, model_client=model_client, retrieval_mode=retrieval_mode),
             ExternalSearchNode(external_search),
             EvidenceGateNode(max_prompt_chars=max_prompt_chars),
             AnswerAgentNode(model_client, max_response_tokens=max_response_tokens),
@@ -108,11 +110,21 @@ class InputGuardrailNode:
 class RetrieverNode:
     name = "RetrieverNode"
 
-    def __init__(self, item_service: ItemService) -> None:
+    def __init__(self, item_service: ItemService, *, model_client: ModelClient | None = None, retrieval_mode: str = "keyword") -> None:
         self.item_service = item_service
+        self.model_client = model_client
+        self.retrieval_mode = retrieval_mode
 
     def run(self, state: KnowledgeQAState) -> None:
-        state.evidence = retrieve_evidence(self.item_service, state.context_snapshot, state.content)
+        result = retrieve_evidence_with_status(
+            self.item_service,
+            state.context_snapshot,
+            state.content,
+            mode=self.retrieval_mode,
+            model_client=self.model_client,
+        )
+        state.evidence = result.evidence
+        state.retrieval_status = result.status
 
 
 class ExternalSearchNode:
@@ -257,6 +269,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
             "local_source_count": len(local_sources),
             "external_source_count": len(external_sources),
             "skipped_model_call": bool(state.skipped_model_call),
+            "retrieval": state.retrieval_status,
             "external_status": state.external_status,
         },
         "review_decision": {},

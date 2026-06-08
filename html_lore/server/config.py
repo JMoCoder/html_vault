@@ -35,6 +35,7 @@ class ServerSettings:
     ai_max_response_tokens: int = 1024
     ai_rate_limit_requests: int = 20
     ai_rate_limit_window_seconds: int = 60
+    ai_retrieval_mode: str = "keyword"
 
     @property
     def auth_enabled(self) -> bool:
@@ -88,6 +89,7 @@ def load_settings() -> ServerSettings:
     ai_max_response_tokens = parse_positive_int(get_env("AI_MAX_RESPONSE_TOKENS", "1024"), 1024)
     ai_rate_limit_requests = parse_positive_int(get_env("AI_RATE_LIMIT_REQUESTS", "20"), 20)
     ai_rate_limit_window_seconds = parse_positive_int(get_env("AI_RATE_LIMIT_WINDOW_SECONDS", "60"), 60)
+    ai_retrieval_mode = parse_choice(get_env("AI_RETRIEVAL_MODE", "keyword"), {"keyword", "vector", "hybrid"}, "keyword")
     return ServerSettings(
         content_dir=content_dir,
         meta_dir=meta_dir,
@@ -117,6 +119,7 @@ def load_settings() -> ServerSettings:
         ai_max_response_tokens=ai_max_response_tokens,
         ai_rate_limit_requests=ai_rate_limit_requests,
         ai_rate_limit_window_seconds=ai_rate_limit_window_seconds,
+        ai_retrieval_mode=ai_retrieval_mode,
     )
 
 
@@ -141,6 +144,11 @@ def parse_positive_int(value: str | None, default: int) -> int:
     except (TypeError, ValueError):
         return default
     return parsed if parsed > 0 else default
+
+
+def parse_choice(value: str | None, choices: set[str], default: str) -> str:
+    normalized = str(value or "").strip().lower()
+    return normalized if normalized in choices else default
 
 
 def parse_optional_path(value: str | None, default: Path) -> Path | None:
