@@ -129,9 +129,11 @@ const i18n = {
     aiRunHistoryUnavailable: "AI run history requires the backend server.",
     aiRunHistoryFailed: "AI run history could not be loaded.",
     refreshAiRuns: "Refresh runs",
-    aiJobQueue: "Queue",
-    aiJobQueueEmpty: "No active AI jobs.",
+    aiJobQueue: "Generation history",
+    aiJobQueueEmpty: "No generation history yet.",
     aiJobQueued: "AI job queued: {jobId}",
+    aiJobRetry: "Retry",
+    aiJobRetrying: "Retrying AI job: {jobId}",
     aiJobCompleted: "AI job completed.",
     aiJobFailed: "AI job failed: {message}",
     aiRunHtmlGeneration: "Generated from conversation",
@@ -503,9 +505,11 @@ const i18n = {
     aiRunHistoryUnavailable: "AI 运行记录需要连接后端服务。",
     aiRunHistoryFailed: "无法加载 AI 运行记录。",
     refreshAiRuns: "刷新运行记录",
-    aiJobQueue: "队列",
-    aiJobQueueEmpty: "暂无活跃 AI 任务。",
+    aiJobQueue: "生成历史",
+    aiJobQueueEmpty: "暂无生成历史。",
     aiJobQueued: "AI 任务已加入队列：{jobId}",
+    aiJobRetry: "重试",
+    aiJobRetrying: "正在重试 AI 任务：{jobId}",
     aiJobCompleted: "AI 任务已完成。",
     aiJobFailed: "AI 任务失败：{message}",
     aiRunHtmlGeneration: "根据对话生成",
@@ -877,9 +881,11 @@ const i18n = {
     aiRunHistoryUnavailable: "AI 実行履歴にはバックエンドサーバーが必要です。",
     aiRunHistoryFailed: "AI 実行履歴を読み込めませんでした。",
     refreshAiRuns: "実行履歴を更新",
-    aiJobQueue: "キュー",
-    aiJobQueueEmpty: "アクティブな AI ジョブはありません。",
+    aiJobQueue: "生成履歴",
+    aiJobQueueEmpty: "生成履歴はまだありません。",
     aiJobQueued: "AI ジョブをキューに追加しました: {jobId}",
+    aiJobRetry: "再試行",
+    aiJobRetrying: "AI ジョブを再試行中: {jobId}",
     aiJobCompleted: "AI ジョブが完了しました。",
     aiJobFailed: "AI ジョブに失敗しました: {message}",
     aiRunHtmlGeneration: "会話から生成",
@@ -1201,7 +1207,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.9.0",
+  currentVersion: "0.9.1",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -3251,7 +3257,7 @@ function getAiCompactContextParts() {
   if (manualItems.length > 0) {
     return { value: t("aiContextManualCount", { count: manualItems.length }) };
   }
-  if (!elements.reader.hidden && state.currentReaderItemId) {
+  if (state.currentReaderItemId) {
     const item = getItemById(state.currentReaderItemId);
     return {
       prefix: aiContextPrefix("aiContextReader"),
@@ -3278,7 +3284,7 @@ function getAiContextLabel(options = {}) {
   const parts = [];
   let primaryCollection = "";
   let primaryTag = "";
-  if (!elements.reader.hidden && state.currentReaderItemId) {
+  if (state.currentReaderItemId) {
     const item = getItemById(state.currentReaderItemId);
     parts.push(t("aiContextReader", { title: item ? getItemTitle(item) : t("item") }));
   } else if (state.query.trim()) {
@@ -3565,7 +3571,7 @@ function buildAiContextPayload() {
   };
   if (manualItemIds.length > 0) {
     context.manual_item_ids = manualItemIds;
-  } else if (!elements.reader.hidden && state.currentReaderItemId) {
+  } else if (state.currentReaderItemId) {
     context.item_id = state.currentReaderItemId;
   } else if (state.filter.type === "library") {
     context.scope = state.filter.value === "all" ? "global" : "library";
@@ -4247,7 +4253,7 @@ async function loadAiJobs() {
     return;
   }
   try {
-    const response = await apiFetch("/api/ai/jobs?limit=8", { cache: "no-store" });
+    const response = await apiFetch("/api/ai/jobs?limit=20", { cache: "no-store" });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
     const previous = new Set(state.aiJobs.map((job) => `${job.job_id}:${job.status}`));
@@ -4538,7 +4544,7 @@ function renderAiJobs() {
   if (!elements.aiJobList || !elements.aiJobToggle) return;
   const activeCount = activeAiJobCount();
   elements.aiJobToggle.innerHTML = `${queueIcon()}<span>${escapeHtml(t("aiJobQueue"))}</span>${activeCount > 0 ? `<em>${activeCount}</em>` : ""}`;
-  elements.aiJobToggle.classList.toggle("active", state.aiJobsOpen || activeCount > 0);
+  elements.aiJobToggle.classList.toggle("active", state.aiJobsOpen);
   renderAiMoreMenu();
   elements.aiJobList.hidden = !state.aiJobsOpen;
   if (!state.aiJobsOpen) return;
@@ -4547,7 +4553,8 @@ function renderAiJobs() {
     elements.aiJobList.replaceChildren(header, emptyState(t("aiJobQueueEmpty")));
     return;
   }
-  elements.aiJobList.replaceChildren(header, ...state.aiJobs.map(renderAiJobRow));
+  const orderedJobs = [...state.aiJobs].sort((a, b) => String(a.created_at || "").localeCompare(String(b.created_at || "")));
+  elements.aiJobList.replaceChildren(header, ...orderedJobs.map(renderAiJobRow));
 }
 
 function renderAiPopoverHeader(label, onClose) {
@@ -4577,21 +4584,33 @@ function renderAiJobRow(job) {
   const row = document.createElement("div");
   row.className = "ai-job-row";
   const statusClass = `status-${String(job.status || "pending").toLowerCase().replace(/[^a-z0-9-]/g, "") || "pending"}`;
+  row.classList.add(statusClass);
   const label = job.label || getAiRunKindLabel(job);
+  const isActive = ["pending", "running"].includes(job.status);
+  const isCompleted = job.status === "completed";
+  const isFailed = job.status === "failed";
   const itemMeta = job.item_id ? `<span>${escapeHtml(t("aiRunItem", { id: job.item_id }))}</span>` : "";
-  const message = job.message ? `<span>${escapeHtml(job.message)}</span>` : "";
+  const timeMeta = isCompleted ? `<span>${escapeHtml(formatDateTime(job.completed_at || job.updated_at))}</span>` : "";
+  const messageText = isCompleted ? "" : (job.error?.message || job.message || "");
+  const message = messageText ? `<span>${escapeHtml(messageText)}</span>` : "";
+  const action = job.cancellable
+    ? `<button type="button" class="ai-job-icon-button" data-ai-job-cancel="${escapeHtml(job.job_id)}" aria-label="${escapeHtml(t("cancel"))}" title="${escapeHtml(t("cancel"))}">×</button>`
+    : (isFailed && job.retryable ? `<button type="button" class="ai-job-icon-button" data-ai-job-retry="${escapeHtml(job.job_id)}" aria-label="${escapeHtml(t("aiJobRetry"))}" title="${escapeHtml(t("aiJobRetry"))}">${retryIcon()}</button>` : "");
   row.innerHTML = `
     <div>
       <strong>${escapeHtml(label)}</strong>
       <span class="ai-run-meta">
+        ${isActive ? '<i class="ai-job-progress-dot" aria-hidden="true"></i>' : ""}
         <em class="ai-run-status ${statusClass}">${escapeHtml(getAiRunStatusLabel(job.status))}</em>
         ${itemMeta}
+        ${timeMeta}
         ${message}
       </span>
     </div>
-    ${job.cancellable ? `<button type="button" class="icon-button" data-ai-job-cancel="${escapeHtml(job.job_id)}" aria-label="${escapeHtml(t("cancel"))}" title="${escapeHtml(t("cancel"))}">×</button>` : ""}
+    ${action}
   `;
   row.querySelector("[data-ai-job-cancel]")?.addEventListener("click", () => cancelAiJob(job.job_id));
+  row.querySelector("[data-ai-job-retry]")?.addEventListener("click", () => retryAiJob(job.job_id));
   return row;
 }
 
@@ -4603,6 +4622,22 @@ async function cancelAiJob(jobId) {
     if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
     await loadAiJobs();
   } catch (error) {
+    console.error(error);
+  }
+}
+
+async function retryAiJob(jobId) {
+  if (!jobId || !state.agentUrl) return;
+  try {
+    const response = await apiFetch(`/api/ai/jobs/${encodeURIComponent(jobId)}/retry`, { method: "POST" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    state.aiSubmittedJobIds.add(data.job_id || jobId);
+    appendAiMessage("assistant", t("aiJobRetrying", { jobId: data.job_id || jobId }));
+    await loadAiJobs();
+    startAiJobPolling();
+  } catch (error) {
+    appendAiMessage("assistant", error?.message || t("aiJobFailed", { message: jobId }));
     console.error(error);
   }
 }
@@ -5116,6 +5151,17 @@ function historyIcon() {
   `;
 }
 
+function retryIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 12a9 9 0 0 1 15.3-6.4"></path>
+      <path d="M18 2v5h-5"></path>
+      <path d="M21 12a9 9 0 0 1-15.3 6.4"></path>
+      <path d="M6 22v-5h5"></path>
+    </svg>
+  `;
+}
+
 function enterArrowIcon() {
   return `
     <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -5232,7 +5278,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.0-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.1-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });

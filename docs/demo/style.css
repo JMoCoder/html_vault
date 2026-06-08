@@ -1482,9 +1482,13 @@ textarea {
   width: 32px;
   height: 32px;
   flex: 0 0 auto;
+  display: grid;
+  place-items: center;
   border-color: transparent;
+  padding: 0;
   background: transparent;
   color: var(--muted);
+  line-height: 1;
 }
 
 .ai-panel-actions .icon-action:hover,
@@ -1552,22 +1556,24 @@ textarea {
   background: transparent;
   color: var(--text);
   text-align: left;
+  cursor: pointer;
 }
 
-.ai-more-menu-item:hover,
-.ai-more-menu-item.active {
+.ai-more-menu-item:hover {
   border-color: var(--line);
   background: var(--panel-soft);
   color: var(--accent-dark);
 }
 
 .ai-more-menu-item.active {
-  border-color: rgba(15, 118, 110, .34);
+  color: var(--text);
 }
 
 .ai-more-menu-item .button-icon {
   width: 16px;
   height: 16px;
+  justify-self: center;
+  align-self: center;
 }
 
 .ai-more-menu-item em {
@@ -1591,13 +1597,17 @@ textarea {
   right: 14px;
   bottom: calc(100% + 8px);
   z-index: 4;
-  max-height: min(260px, 42vh);
+  max-height: min(320px, 48vh);
   overflow: auto;
   padding: 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: color-mix(in srgb, var(--panel) 92%, var(--accent) 8%);
   box-shadow: var(--shadow);
+}
+
+.ai-history-list {
+  max-height: min(300px, 46vh);
 }
 
 .ai-job-list[hidden],
@@ -1675,7 +1685,7 @@ textarea {
 .ai-job-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 28px;
-  align-items: start;
+  align-items: center;
   gap: 8px;
   padding: 8px 0;
   border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
@@ -1692,6 +1702,57 @@ textarea {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 12px;
+}
+
+.ai-job-row .ai-run-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ai-job-progress-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--accent);
+  animation: ai-job-pulse 1.1s ease-in-out infinite;
+}
+
+.ai-job-icon-button {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.ai-job-icon-button:hover {
+  border-color: var(--line);
+  color: var(--accent);
+  background: var(--panel-soft);
+}
+
+.ai-job-icon-button .button-icon {
+  width: 15px;
+  height: 15px;
+}
+
+@keyframes ai-job-pulse {
+  0%, 100% {
+    opacity: .36;
+    transform: scale(.82);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .ai-chat-form {

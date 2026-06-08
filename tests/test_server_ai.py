@@ -56,7 +56,13 @@ def wait_for_ai_job(server, job_id: str, *, timeout: float = 5) -> dict:
     deadline = time.time() + timeout
     last = {}
     while time.time() < deadline:
-        last = server.request("GET", f"/api/ai/jobs/{job_id}")["job"]
+        try:
+            last = server.request("GET", f"/api/ai/jobs/{job_id}")["job"]
+        except urllib.error.HTTPError as exc:
+            if exc.code != 404:
+                raise
+            time.sleep(0.1)
+            continue
         if last["status"] in {"completed", "failed", "cancelled"}:
             return last
         time.sleep(0.1)
@@ -1376,6 +1382,100 @@ def test_ai_material_job_completes_without_persisting_source_text(tmp_path: Path
         assert jobs["count"] == 1
         assert "Very private source body" not in json.dumps(jobs, ensure_ascii=False)
         assert "Very private source body" not in raw_jobs
+    finally:
+        server.close()
+
+
+def test_ai_failed_conversation_job_can_retry_without_exposing_payload(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir)
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        conversation_path = meta_dir / "ai" / "conversations.json"
+        data = json.loads(conversation_path.read_text(encoding="utf-8"))
+        for stored in data["conversations"]:
+            if stored["id"] == conversation["id"]:
+                stored["messages"] = [
+                    {"role": "user", "content": "Create a note about sk-test-secret-value"},
+                    {"role": "assistant", "content": "The note should not expose secrets."},
+                ]
+                stored["message_count"] = 2
+        conversation_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+        queued = server.json(
+            "POST",
+            f"/api/ai/conversations/{conversation['id']}/generate-note/jobs",
+            {"theme": "default", "target_use": "default", "style_preference": "default"},
+        )
+        failed = wait_for_ai_job(server, queued["job_id"])
+        listed_failed = server.request("GET", "/api/ai/jobs")
+        assert failed["status"] == "failed"
+        assert failed["retryable"] is True
+        assert "payload" not in failed
+        assert "payload" not in json.dumps(listed_failed, ensure_ascii=False)
+        assert "sk-test-secret-value" not in json.dumps(listed_failed, ensure_ascii=False)
+
+        data = json.loads(conversation_path.read_text(encoding="utf-8"))
+        for stored in data["conversations"]:
+            if stored["id"] == conversation["id"]:
+                stored["messages"] = [
+                    {"role": "user", "content": "Create a note about MCP Security."},
+                    {"role": "assistant", "content": "The note should summarize safe MCP practices."},
+                ]
+                stored["message_count"] = 2
+        conversation_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+        retried = server.request("POST", f"/api/ai/jobs/{queued['job_id']}/retry")["job"]
+        completed = wait_for_ai_job(server, queued["job_id"])
+        assert retried["job_id"] == queued["job_id"]
+        assert retried["status"] == "pending"
+        assert retried["attempts"] == 1
+        assert completed["status"] == "completed"
+        assert completed["retryable"] is False
+        assert completed["item_id"].startswith("generated/")
+        assert completed["message"] == "AI job completed."
+        assert "payload" not in completed
+    finally:
+        server.close()
+
+
+def test_ai_material_jobs_are_not_retryable_without_persisting_source(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir)
+    try:
+        # Directly created material jobs do not carry uploaded source payload in the job store,
+        # so failed material tasks are not exposed as retryable queue items.
+        store_path = meta_dir / "ai" / "jobs.json"
+        store_path.parent.mkdir(parents=True, exist_ok=True)
+        store_path.write_text(
+            json.dumps(
+                {
+                    "version": 1,
+                    "jobs": [
+                        {
+                            "job_id": "ai_job_material_failed",
+                            "kind": "material_html_generation",
+                            "status": "failed",
+                            "label": "private-source.pdf",
+                            "created_at": "2026-06-08T00:00:00+00:00",
+                            "updated_at": "2026-06-08T00:00:01+00:00",
+                            "started_at": "2026-06-08T00:00:00+00:00",
+                            "completed_at": "2026-06-08T00:00:01+00:00",
+                            "message": "Material parsing failed.",
+                            "error": {"code": "material_parse_failed", "message": "Unsupported material."},
+                        },
+                    ],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        job = server.request("GET", "/api/ai/jobs/ai_job_material_failed")["job"]
+        code, error = server.json_error("POST", "/api/ai/jobs/ai_job_material_failed/retry", {})
+        assert job["retryable"] is False
+        assert code == 400
+        assert "cannot be retried" in error["detail"]
     finally:
         server.close()
 

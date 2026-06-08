@@ -32,7 +32,7 @@ class AIJobStore:
         self.settings = settings
         self.path = ai_jobs_path(settings)
 
-    def create(self, *, kind: str, label: str = "") -> dict[str, Any]:
+    def create(self, *, kind: str, label: str = "", payload: dict[str, Any] | None = None) -> dict[str, Any]:
         now = utc_now()
         job = sanitize_ai_job(
             {
@@ -49,22 +49,25 @@ class AIJobStore:
                 "item_id": "",
                 "error": {},
                 "cancel_requested": False,
+                "payload": payload if isinstance(payload, dict) else {},
+                "attempts": 0,
             },
+            include_private=True,
         )
         data = self._read()
         data.setdefault("jobs", []).append(job)
         self._write(data)
-        return job
+        return sanitize_ai_job(job)
 
     def list(self, limit: int = 20) -> list[dict[str, Any]]:
         safe_limit = max(1, min(int(limit or 20), 100))
         jobs = [sanitize_ai_job(job) for job in self._read().get("jobs", []) if isinstance(job, dict)]
         return sorted(jobs, key=lambda job: str(job.get("created_at") or ""), reverse=True)[:safe_limit]
 
-    def get(self, job_id: str) -> dict[str, Any]:
+    def get(self, job_id: str, *, include_private: bool = False) -> dict[str, Any]:
         for job in self._read().get("jobs", []):
             if job.get("job_id") == job_id:
-                return sanitize_ai_job(job)
+                return sanitize_ai_job(job, include_private=include_private)
         raise AIJobError("AI job not found.")
 
     def update(self, job_id: str, values: dict[str, Any]) -> dict[str, Any]:
@@ -75,7 +78,7 @@ class AIJobStore:
                 continue
             job.update(values)
             job["updated_at"] = now
-            data["jobs"] = [sanitize_ai_job(item) for item in data.get("jobs", []) if isinstance(item, dict)]
+            data["jobs"] = [sanitize_ai_job(item, include_private=True) for item in data.get("jobs", []) if isinstance(item, dict)]
             self._write(data)
             return self.get(job_id)
         raise AIJobError("AI job not found.")
@@ -180,11 +183,12 @@ def ai_jobs_path(settings: ServerSettings) -> Path:
     return settings.meta_dir / "ai" / "jobs.json"
 
 
-def sanitize_ai_job(job: dict[str, Any]) -> dict[str, Any]:
+def sanitize_ai_job(job: dict[str, Any], *, include_private: bool = False) -> dict[str, Any]:
     status = str(job.get("status") or "pending")
     if status not in AI_JOB_STATUSES:
         status = "pending"
-    return {
+    payload = job.get("payload") if isinstance(job.get("payload"), dict) else {}
+    sanitized = {
         "job_id": str(job.get("job_id") or ""),
         "kind": str(job.get("kind") or ""),
         "status": status,
@@ -199,7 +203,35 @@ def sanitize_ai_job(job: dict[str, Any]) -> dict[str, Any]:
         "error": sanitize_error(job.get("error")),
         "cancel_requested": bool(job.get("cancel_requested")),
         "cancellable": status in {"pending", "running"},
-        "retryable": status == "failed",
+        "retryable": status == "failed" and is_retryable_payload(payload),
+        "attempts": sanitize_int(job.get("attempts")),
+    }
+    if include_private:
+        sanitized["payload"] = sanitize_private_payload(payload)
+    return sanitized
+
+
+def is_retryable_payload(payload: dict[str, Any]) -> bool:
+    return str(payload.get("type") or "") == "conversation_html_generation" and bool(str(payload.get("conversation_id") or "").strip())
+
+
+def sanitize_private_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        return {}
+    payload_type = str(payload.get("type") or "")
+    if payload_type != "conversation_html_generation":
+        return {}
+    spec = payload.get("spec") if isinstance(payload.get("spec"), dict) else {}
+    return {
+        "type": payload_type,
+        "conversation_id": str(payload.get("conversation_id") or "")[:120],
+        "spec": {
+            "theme": str(spec.get("theme") or "default")[:40],
+            "target_use": str(spec.get("target_use") or "default")[:40],
+            "reference_style": str(spec.get("reference_style") or "default")[:40],
+            "reference_note_id": str(spec.get("reference_note_id") or "")[:240],
+            "style_preference": str(spec.get("style_preference") or "default")[:40],
+        },
     }
 
 
@@ -214,6 +246,14 @@ def sanitize_error(value: Any) -> dict[str, str]:
     if message:
         result["message"] = message
     return result
+
+
+def sanitize_int(value: Any) -> int:
+    try:
+        parsed = int(value or 0)
+    except (TypeError, ValueError):
+        return 0
+    return max(0, parsed)
 
 
 def utc_now() -> str:

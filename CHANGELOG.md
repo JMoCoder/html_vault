@@ -9,6 +9,31 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-06-08
+
+### Changed
+
+- Renamed the AI sidebar queue popover to generation history in English,
+  Chinese, and Japanese.
+- Display generation jobs in chronological order, with the newest entries at
+  the bottom of the popover.
+- Updated package, app, PWA, demo, and provider user-agent versions to `0.9.1`.
+
+### Fixed
+
+- Fixed AI More menu item highlighting and icon centering.
+- Fixed AI sidebar conversation history so reader-page history is scoped to the
+  current note instead of showing global conversations.
+- Fixed generation-history rows so completed jobs show completion time, active
+  jobs show a live status marker, and failed retryable jobs show a retry action.
+
+### Security
+
+- Added a retry endpoint for failed conversation-to-HTML generation jobs while
+  keeping retry metadata private in the backend job store.
+- Kept uploaded-material generation jobs non-retryable from history unless their
+  source material can be retried without persisting private upload content.
+
 ## [0.9.0] - 2026-06-08
 
 ### Added

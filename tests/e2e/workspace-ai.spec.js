@@ -112,6 +112,7 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   let runsRequested = 0;
   let showRefreshedRun = false;
   let jobsRequested = 0;
+  let failedJobRetried = false;
 
   await page.route("**/api/auth/status", async (route) => {
     await route.fulfill({
@@ -173,12 +174,42 @@ test("workspace file create mode uploads material to the AI generation endpoint"
     await route.abort();
   });
   await page.route("**/api/ai/jobs**", async (route) => {
+    if (route.request().method() === "POST" && route.request().url().includes("/retry")) {
+      failedJobRetried = true;
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          job_id: "ai-job-failed-retry",
+          job: {
+            job_id: "ai-job-failed-retry",
+            kind: "html_generation",
+            status: "pending",
+            label: "Failed note",
+            cancellable: true,
+            retryable: false,
+            attempts: 1,
+          },
+        }),
+      });
+      return;
+    }
     jobsRequested += 1;
     const completed = jobsRequested > 1;
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
         jobs: [
+          {
+            job_id: "ai-job-failed-retry",
+            kind: "html_generation",
+            status: failedJobRetried ? "pending" : "failed",
+            label: "Failed note",
+            retryable: !failedJobRetried,
+            cancellable: failedJobRetried,
+            created_at: "2026-06-07T01:00:00.000Z",
+            updated_at: "2026-06-07T01:01:00.000Z",
+            error: failedJobRetried ? {} : { message: "Provider failed." },
+          },
           {
             job_id: "ai-job-material-test",
             kind: "material_html_generation",
@@ -189,9 +220,11 @@ test("workspace file create mode uploads material to the AI generation endpoint"
             cancellable: !completed,
             retryable: false,
             message: completed ? "AI job completed." : "",
+            created_at: "2026-06-07T02:00:00.000Z",
+            completed_at: completed ? "2026-06-07T02:02:00.000Z" : "",
           },
         ],
-        count: 1,
+        count: 2,
       }),
     });
   });
@@ -239,7 +272,12 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   await page.locator("#ai-panel-open").click();
   await page.locator("#ai-more-toggle").click();
   await page.locator("#ai-job-toggle").click();
+  await expect(page.locator("#ai-job-list")).toContainText("Generation history");
+  await expect(page.locator("#ai-job-list")).toContainText("Failed note");
   await expect(page.locator("#ai-job-list")).toContainText("material.md");
+  await expect(page.locator("#ai-job-list").getByRole("button", { name: "Retry" })).toBeVisible();
+  await page.locator("#ai-job-list").getByRole("button", { name: "Retry" }).click();
+  await expect(page.locator("#ai-chat-log")).toContainText("Retrying AI job");
 
   await page.locator("#settings-open").click();
   await page.locator("[data-settings-tab='ai']").click();
@@ -691,7 +729,7 @@ test("workspace AI restores latest context conversation and can start a fresh on
     const url = new URL(route.request().url());
     const contextKey = url.searchParams.get("context_key") || "";
     conversationListRequests.push(contextKey);
-    const conversations = contextKey ? [oldConversation] : [historyConversation, oldConversation];
+    const conversations = contextKey === oldConversation.context_key ? [oldConversation] : [historyConversation, oldConversation];
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({ conversations, count: conversations.length }),
@@ -765,6 +803,7 @@ test("workspace AI restores latest context conversation and can start a fresh on
   await page.locator("#ai-history-toggle").click();
   await expect(page.locator("#ai-history-list")).toContainText("MCP Security");
   await expect(page.locator("#ai-history-list")).not.toContainText("Docker Notes");
+  expect(conversationListRequests.at(-1)).toBe(oldConversation.context_key);
   await expect.poll(() => conversationListRequests.includes(oldConversation.context_key)).toBe(true);
   await page.locator("#ai-more-toggle").click();
   await expect(page.locator("#ai-history-list")).toBeHidden();

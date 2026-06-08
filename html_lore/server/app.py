@@ -372,6 +372,13 @@ def create_app() -> FastAPI:
         except AIJobError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 
+    @app.post("/api/ai/jobs/{job_id}/retry")
+    def retry_ai_job(job_id: str, _: ApiAuth, __: AiRateLimit, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.retry_job(job_id)
+        except AIJobError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.delete("/api/ai/jobs/{job_id}")
     def cancel_ai_job(job_id: str, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
         try:

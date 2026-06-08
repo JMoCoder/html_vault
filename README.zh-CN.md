@@ -48,7 +48,7 @@ HTMlore 是一个自托管 HTML 知识库工作台，用于保存、浏览、阅
 - 服务端 AI 服务商配置，支持 OpenAI-compatible 接口。API key 只从后端环境变量读取，不允许通过浏览器设置接口提交或读取。
 - 知识库问答 beta：支持上下文检索、Markdown 回复渲染、来源引用、会话持久化、按当前上下文恢复最近会话和会话历史。
 - AI 回复支持严格模式与内容拓展模式。严格模式只基于当前资料库上下文回答；内容拓展模式预留外部来源检索，启用时必须返回明确来源。
-- AI 运行记录、轻量异步任务队列、队列弹窗，以及设置页中的全局 AI 会话管理。
+- AI 运行记录、轻量异步生成历史、失败的对话生成任务重试，以及设置页中的全局 AI 会话管理。
 - 从 AI 对话生成 HTML 笔记的 beta 能力，采用 PM/UX/Coder/QA/Reviewer 分阶段图结构。
 - 上传 HTML、Markdown 或纯文本资料生成 HTML 笔记的 beta 能力，先进行安全文本抽取，再复用 HTML 生成图结构。
 - 关键词检索已落地；vector/hybrid 检索模式已预留接口，在向量库未配置时自动回退到关键词检索。
@@ -253,6 +253,7 @@ html-lore serve-api --host 127.0.0.1 --port 8787
 - `GET /api/ai/runs/{run_id}`
 - `GET /api/ai/jobs`
 - `GET /api/ai/jobs/{job_id}`
+- `POST /api/ai/jobs/{job_id}/retry`
 - `DELETE /api/ai/jobs/{job_id}`
 
 API 覆盖当前前端核心流程：上传、列表、搜索、筛选、阅读、元信息编辑、收藏、归档、取消归档、已归档笔记永久删除、侧栏显隐持久化、重建任务、版本检查、AI 服务商状态检查、知识库问答、会话历史和 beta AI 笔记生成任务。

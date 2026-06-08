@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HTMlore 変更履歴</title>
+<title>HTMlore Changelog</title>
 <style>
 :root{--ink:#17201c;--muted:#65736f;--line:#d9e4e1;--panel:#fff;--bg:#f4f7f6;--brand:#0f766e;--blue:#2563eb;--gold:#b86b00}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.64}.wrap{max-width:1120px;margin:0 auto;padding:34px 28px 70px}.hero{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:20px}.eyebrow{margin:0 0 10px;color:var(--brand);font-size:12px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}h1{max-width:820px;margin:0;font-size:clamp(36px,5.4vw,62px);line-height:1.05}h2{margin:34px 0 14px;padding-top:18px;border-top:1px solid var(--line);font-size:28px}h3{margin:22px 0 10px;font-size:20px}p{margin:0 0 14px;color:var(--muted)}a{color:var(--brand);font-weight:760}.badge{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #a7ddd4;border-radius:8px;color:var(--brand);background:#e0f5ef;font-weight:850;white-space:nowrap}.timeline{border:1px solid var(--line);border-radius:10px;background:var(--panel);box-shadow:0 16px 44px rgba(28,48,40,.08)}.doc{padding:28px}.doc ul{margin:0 0 18px;padding-left:22px;color:var(--muted)}.doc li{margin:7px 0}.doc code{padding:2px 5px;border-radius:5px;background:#eef4f2;color:#064e3b}.doc pre{overflow:auto;margin:18px 0;padding:16px;border-radius:8px;background:#111b18;color:#e7f8f4}.doc pre code{padding:0;background:transparent;color:inherit}@media(max-width:760px){.wrap{padding:22px 18px 54px}.hero{display:block}.badge{margin-top:16px}.doc{padding:22px}h1{font-size:36px}}
 </style>
@@ -12,33 +12,64 @@
 <main class="wrap">
 <section class="hero">
 <article class="intro">
-<p class="eyebrow">リリース履歴</p>
-<h1>HTMlore 変更履歴</h1>
+<p class="eyebrow">Release history</p>
+<h1>HTMlore Changelog</h1>
 </article>
-<aside class="stat"><span class="badge">0.9.0</span></aside>
+<aside class="stat"><span class="badge">0.9.1</span></aside>
 </section>
 <section class="timeline doc">
 <h1>Changelog</h1>
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
 <h2>[Unreleased]</h2>
+<h2>[0.9.1] - 2026-06-08</h2>
+<h3>Changed</h3>
+<ul>
+<li>AI サイドバーの「Queue」を「生成履歴」に変更し、英語・中国語・日本語 UI を同期しました。</li>
+<li>生成履歴を時系列で表示し、最新の項目がポップオーバー下部に出るようにしました。</li>
+<li>パッケージ、アプリ、PWA、Demo cache、provider user-agent のバージョンを <code>0.9.1</code> に更新しました。</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>AI More メニューのアイコン位置と、項目が初期状態で強調表示される問題を修正しました。</li>
+<li>リーダー画面の AI 会話履歴が全体履歴ではなく、現在のノートの履歴に絞り込まれるよう修正しました。</li>
+<li>生成履歴の行表示を改善し、完了済みジョブは生成時刻、実行中ジョブは動的ステータス、</li>
+</ul>
+<p>失敗かつ再試行可能なジョブは再試行アクションを表示するようにしました。</p>
+<h3>Security</h3>
+<ul>
+<li>失敗した conversation-to-HTML 生成ジョブの再試行 API を追加し、再試行メタデータは</li>
+</ul>
+<p>バックエンドの非公開ジョブストアに保持するようにしました。</p>
+<ul>
+<li>アップロード資料からの生成ジョブは、アップロード本文を永続化せず再試行できる場合を除き、</li>
+</ul>
+<p>履歴からの再試行対象にしない設計を維持しました。</p>
 <h2>[0.9.0] - 2026-06-08</h2>
 <h3>Added</h3>
 <ul>
 <li>OpenAI-compatible エンドポイント向けのサーバー側 AI provider 設定を追加し、</li>
+</ul>
 <p>API key はバックエンド環境変数からのみ読み取るようにしました。</p>
+<ul>
 <li>ナレッジベース Q&amp;A beta を追加しました。コンテキスト解決、キーワード検索、</li>
+</ul>
 <p>strict/content expansion モード、Markdown 回答表示、ソース表示、rate limit を含みます。</p>
+<ul>
 <li>AI 会話の永続化、コンテキスト別の最新会話復元、AI サイドバー内のコンテキスト別履歴、</li>
+</ul>
 <p>Settings のグローバル会話管理を追加しました。</p>
+<ul>
 <li>軽量 AI ジョブキュー、実行履歴、キューポップオーバー、job/run API を追加しました。</li>
 <li>既存の AI 会話から HTML ノートを生成する beta 機能を追加しました。PM/UX/Coder/QA/Reviewer</li>
+</ul>
 <p>の段階的グラフを使います。</p>
+<ul>
 <li>HTML、Markdown、プレーンテキスト資料アップロードから HTML ノートを生成する beta 機能を追加しました。</li>
 <li>vector/hybrid 検索スキャフォールドを追加し、vector store 未設定時はキーワード検索へフォールバックします。</li>
 <li>プロンプト予算、未対応リクエスト、秘密情報らしき出力、共有向け HTML 安全確認の AI ガードレールを追加しました。</li>
 <li>AI パネル UI を改善しました。コンパクトなコンテキスト header、入力エリア resize、返信状態、</li>
-<p>コンテキストリセット、会話履歴、キュー/More メニュー、会話管理のアイコンボタンを含みます。</p>
 </ul>
+<p>コンテキストリセット、会話履歴、キュー/More メニュー、会話管理のアイコンボタンを含みます。</p>
 <h3>Changed</h3>
 <ul>
 <li>英語、中国語、日本語 README を更新し、現在の AI 機能、サーバー側 AI 設定、beta 制限を記載しました。</li>
@@ -48,28 +79,32 @@
 <h3>Security</h3>
 <ul>
 <li>AI provider の公開 status が <code>has_api_key</code> などの公開フィールドだけを返すことを確認しました。</li>
+</ul>
 <p>ブラウザー設定 API は生の API key を受け付けず、返しません。</p>
+<ul>
 <li>AI provider secret が status、provider config、生成 run payload から漏れないことを確認するテストを追加しました。</li>
 </ul>
 <h3>Fixed</h3>
 <ul>
 <li>全体コンテキスト Q&amp;A 検索を改善し、overview 系の質問で単一ノートに寄りすぎず、</li>
+</ul>
 <p>選択済みコンテキスト全体を使えるようにしました。</p>
+<ul>
 <li>static build で <code>app_static</code> が自身の内部へコピーされる問題を修正しました。</li>
 <li>AI サイドバーのメニュー状態、会話履歴のコンテキスト絞り込み、Settings 表示時に右サイドバーを閉じる挙動を修正し、</li>
-<p>Playwright カバレッジを追加しました。</p>
 </ul>
+<p>Playwright カバレッジを追加しました。</p>
 <h2>[0.8.4] - 2026-06-06</h2>
 <h3>Fixed</h3>
 <ul>
 <li>デスクトップのリーダー header の高さ上限を広げ、ノート PC 幅で左右のサイドバーを</li>
-<p>両方開いたときに、2 行タイトルと 3 行概要でタグが切れる問題を修正しました。</p>
 </ul>
+<p>両方開いたときに、2 行タイトルと 3 行概要でタグが切れる問題を修正しました。</p>
 <h3>Added</h3>
 <ul>
 <li>ノート PC 幅で左右サイドバーを開いたリーダーレイアウトを検証する Playwright</li>
-<p>カバレッジを追加しました。</p>
 </ul>
+<p>カバレッジを追加しました。</p>
 <h3>Changed</h3>
 <ul>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.8.4</code> に更新しました。</li>
@@ -78,14 +113,17 @@
 <h3>Fixed</h3>
 <ul>
 <li>モバイルの設定ページナビゲーションをコンパクトな横スクロールタブバーに変更し、</li>
-<p>長い設定セクション名がスマートフォン画面で大きなブロックや横はみ出しとして 表示されないようにしました。</p>
+</ul>
+<p>長い設定セクション名がスマートフォン画面で大きなブロックや横はみ出しとして</p>
+<p>表示されないようにしました。</p>
+<ul>
 <li>デスクトップの設定ページは既存の左ナビゲーションレイアウトを維持しました。</li>
 </ul>
 <h3>Added</h3>
 <ul>
 <li>モバイル設定タブのスクロールバーとデスクトップ設定ナビゲーションのレイアウトを</li>
-<p>検証する Playwright カバレッジを追加しました。</p>
 </ul>
+<p>検証する Playwright カバレッジを追加しました。</p>
 <h3>Changed</h3>
 <ul>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.8.3</code> に更新しました。</li>
@@ -94,10 +132,13 @@
 <h3>Fixed</h3>
 <ul>
 <li>タグフィルターの件数表示位置を調整しました。現在の選択結果数は</li>
-<p>&quot;Tag filters&quot; タイトル横にアクセント色のインライン文字として表示し、下部の 重複した &quot;Tags&quot; ラベルを削除しました。</p>
-<li>カードの日付は安定した item 作成日を優先するようになり、アーカイブ解除などの</li>
-<p>状態更新でカード左下の日付が変わらなくなりました。</p>
 </ul>
+<p>&quot;Tag filters&quot; タイトル横にアクセント色のインライン文字として表示し、下部の</p>
+<p>重複した &quot;Tags&quot; ラベルを削除しました。</p>
+<ul>
+<li>カードの日付は安定した item 作成日を優先するようになり、アーカイブ解除などの</li>
+</ul>
+<p>状態更新でカード左下の日付が変わらなくなりました。</p>
 <h3>Changed</h3>
 <ul>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.8.2</code> に更新しました。</li>
@@ -106,17 +147,22 @@
 <h3>Added</h3>
 <ul>
 <li>タグフィルターポップオーバーに動的な結果数を追加しました。タイトルには</li>
-<p>現在の絞り込み件数を表示し、OR モードでは各タグを独立集計、AND モードでは 現在の共通集合内の共起タグ数を表示します。</p>
-<li>共有ダイアログと共有リンク管理に、共有の有効期限と現在状態を表示するように</li>
-<p>しました。</p>
 </ul>
+<p>現在の絞り込み件数を表示し、OR モードでは各タグを独立集計、AND モードでは</p>
+<p>現在の共通集合内の共起タグ数を表示します。</p>
+<ul>
+<li>共有ダイアログと共有リンク管理に、共有の有効期限と現在状態を表示するように</li>
+</ul>
+<p>しました。</p>
 <h3>Fixed</h3>
 <ul>
 <li>公開共有 HTML ページ内のアンカーリンクがワークスペース shell へ戻らず、</li>
-<p>共有ドキュメント内で移動するよう修正しました。</p>
-<li>3 行の概要でもタグ行が header 境界に近づきすぎないよう、リーダー header の</li>
-<p>余白を増やしました。</p>
 </ul>
+<p>共有ドキュメント内で移動するよう修正しました。</p>
+<ul>
+<li>3 行の概要でもタグ行が header 境界に近づきすぎないよう、リーダー header の</li>
+</ul>
+<p>余白を増やしました。</p>
 <h3>Changed</h3>
 <ul>
 <li>フィルターポップオーバーの OR/AND タグ一致ボタンを小さくしました。</li>
@@ -126,36 +172,47 @@
 <h3>Removed</h3>
 <ul>
 <li>従来の <code>html_vault</code> Python 互換パッケージ、旧 <code>html-vault</code> CLI entry point、</li>
-<p><code>HTML_VAULT_*</code> runtime environment fallback を削除しました。現在の runtime 設定は <code>html_lore</code>、<code>html-lore</code>、<code>HTML_LORE_*</code> のみを使用します。</p>
 </ul>
+<p><code>HTML_VAULT_*</code> runtime environment fallback を削除しました。現在の runtime</p>
+<p>設定は <code>html_lore</code>、<code>html-lore</code>、<code>HTML_LORE_*</code> のみを使用します。</p>
 <h3>Changed</h3>
 <ul>
 <li>Docker、デプロイ例、移行ノート、Python package discovery を、名称変更後の</li>
+</ul>
 <p>HTMlore runtime path のみを使うよう更新しました。</p>
+<ul>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.8.0</code> に更新しました。</li>
 </ul>
 <h2>[0.7.9] - 2026-06-05</h2>
 <h3>Added</h3>
 <ul>
 <li>サイドバー footer に GitHub ショートカットと並ぶ HTMlore ホームページ入口を</li>
-<p>追加しました。</p>
-<li>ルーティングやキャッシュ問題の後でも、既存の有効な共有に安全な</li>
-<p><code>/share/{token}</code> 入口ページを復元できる静的共有 shell 修復を追加しました。</p>
 </ul>
+<p>追加しました。</p>
+<ul>
+<li>ルーティングやキャッシュ問題の後でも、既存の有効な共有に安全な</li>
+</ul>
+<p><code>/share/{token}</code> 入口ページを復元できる静的共有 shell 修復を追加しました。</p>
 <h3>Changed</h3>
 <ul>
 <li>ワークスペースのブランド logo は公開プロジェクトホームページではなく、</li>
+</ul>
 <p>ワークスペースホームへ戻るようになりました。</p>
+<ul>
 <li>Agent Server 接続状態を Settings &gt; User profile に移動しました。</li>
 <li>サイドバー footer のユーザー状態ボタンを削除し、アカウント詳細は settings</li>
-<p>内に集約しました。</p>
-<li>モバイルのリーダーページでは、リーダーメタ情報と操作ヘッダーがノート本文と</li>
-<p>一緒にスクロールして隠れ、グローバルトップバーだけが残ります。</p>
 </ul>
+<p>内に集約しました。</p>
+<ul>
+<li>モバイルのリーダーページでは、リーダーメタ情報と操作ヘッダーがノート本文と</li>
+</ul>
+<p>一緒にスクロールして隠れ、グローバルトップバーだけが残ります。</p>
 <h3>Fixed</h3>
 <ul>
 <li>ノートのアーカイブ後に count 0 のタグを非表示にし、アーカイブ解除時に復元</li>
+</ul>
 <p>されるようにしました。</p>
+<ul>
 <li><code>/share/{token}/</code> ルートを修正し、<code>/share/{token}</code> と同じ動作にしました。</li>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.9</code> に更新しました。</li>
 </ul>
@@ -163,15 +220,27 @@
 <h3>Fixed</h3>
 <ul>
 <li><code>0.7.7</code> で追加したリーダーの「幅に合わせる / 原文ワイド」ボタンを削除しました。</li>
+</ul>
 <p>モバイルの読書体験は、未確認の操作入口を追加せずに再設計します。</p>
+<ul>
 <li>モバイルのサイドバーを非表示または狭い左レールではなく、上部の縦方向</li>
-<p>折りたたみバーに変更し、ワークスペースを横方向に圧迫せずナビゲーションを 使えるようにしました。</p>
+</ul>
+<p>折りたたみバーに変更し、ワークスペースを横方向に圧迫せずナビゲーションを</p>
+<p>使えるようにしました。</p>
+<ul>
 <li>デプロイルーティングが誤って <code>/share/{token}</code> にワークスペース shell を</li>
-<p>返した場合でも、<code>/api/public/shares/{token}</code> から公開内容を取得して共有ページを 描画する静的 fallback を追加しました。</p>
+</ul>
+<p>返した場合でも、<code>/api/public/shares/{token}</code> から公開内容を取得して共有ページを</p>
+<p>描画する静的 fallback を追加しました。</p>
+<ul>
 <li>共有作成時に <code>public/share/&lt;token&gt;/index.html</code> の静的入口を生成し、共有の</li>
+</ul>
 <p>取り消しまたは置き換え時に古い入口を削除するようにしました。</p>
+<ul>
 <li>モバイルサイドバーの折りたたみと静的共有 fallback の描画を確認する</li>
+</ul>
 <p>Playwright テストを追加しました。</p>
+<ul>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.8</code> に更新しました。</li>
 </ul>
 <h2>[0.7.7] - 2026-06-05</h2>
@@ -182,9 +251,13 @@
 <h3>Fixed</h3>
 <ul>
 <li>モバイルのリーダーレイアウトを改善し、狭い画面で左サイドバーが読書領域を</li>
+</ul>
 <p>占有しないようにしました。</p>
+<ul>
 <li>モバイルでリーダー操作ボタンが iframe 本文より上に残るようにし、ノート内容に</li>
+</ul>
 <p>視覚的に覆われないようにしました。</p>
+<ul>
 <li>モバイルリーダー viewport を確認する Playwright テストを追加しました。</li>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.7</code> に更新しました。</li>
 </ul>
@@ -192,22 +265,37 @@
 <h3>Security</h3>
 <ul>
 <li>公開共有 JSON レスポンスを最小化し、共有閲覧者に内部 item ID、</li>
-<p>collection/tag メタデータ、共有管理 ID、アクセスカウンター、コピー可能な 管理 URL フィールドを返さないようにしました。</p>
+</ul>
+<p>collection/tag メタデータ、共有管理 ID、アクセスカウンター、コピー可能な</p>
+<p>管理 URL フィールドを返さないようにしました。</p>
+<ul>
 <li>共有更新 API から、取り消し済みまたは期限切れの共有を再有効化・延長できない</li>
+</ul>
 <p>ようにしました。</p>
+<ul>
 <li>共有 HTML のサニタイズを強化し、resource <code>src</code> が非公開の <code>/api/</code>、</li>
-<p><code>/content/</code> パスや外部トラッキングリソースを指せないようにしました。 検証済みの inline SVG data image のみ引き続き許可します。</p>
+</ul>
+<p><code>/content/</code> パスや外部トラッキングリソースを指せないようにしました。</p>
+<p>検証済みの inline SVG data image のみ引き続き許可します。</p>
+<ul>
 <li>非公開 API 分離、公開レスポンス最小化、無効共有の更新拒否、resource source</li>
+</ul>
 <p>剥離を確認する共有セキュリティテストを追加しました。</p>
+<ul>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.6</code> に更新しました。</li>
 </ul>
 <h2>[0.7.5] - 2026-06-04</h2>
 <h3>Fixed</h3>
 <ul>
 <li>Caddy デプロイの公開共有ページルートを修正しました。<code>/share/*</code> は</li>
+</ul>
 <p>静的アプリの fallback ではなく、バックエンド API へ reverse proxy されます。</p>
+<ul>
 <li>任意の Basic Auth Caddy 例を更新し、<code>/share/*</code> と</li>
-<p><code>/api/public/shares/*</code> は公開アクセス可能なまま、ワークスペースと 非公開 API ルートは保護されるようにしました。</p>
+</ul>
+<p><code>/api/public/shares/*</code> は公開アクセス可能なまま、ワークスペースと</p>
+<p>非公開 API ルートは保護されるようにしました。</p>
+<ul>
 <li>公開共有ルートを確認するデプロイ設定テストを追加しました。</li>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.5</code> に更新しました。</li>
 </ul>
@@ -215,42 +303,63 @@
 <h3>Fixed</h3>
 <ul>
 <li>共有ページのノート HTML を隔離 iframe 内で描画するようにし、元ページの</li>
-<p>グローバル CSS が HTMlore の共有シェルを崩したり、アイコン画像を巨大表示 したりしないようにしました。</p>
+</ul>
+<p>グローバル CSS が HTMlore の共有シェルを崩したり、アイコン画像を巨大表示</p>
+<p>したりしないようにしました。</p>
+<ul>
 <li>共有 <code>url_path</code> を永続化し、共有済みノートの共有ダイアログを再度開いた</li>
+</ul>
 <p>ときにも既存の公開リンクをコピーできるようにしました。</p>
+<ul>
 <li>共有取り消しボタンを共有ダイアログと共有リンク管理行の左側に移動しました。</li>
 <li>PWA service worker が <code>/share/</code>、<code>/api/</code>、<code>/content/</code> ルートをアプリシェル</li>
+</ul>
 <p>キャッシュで横取りしないようにしました。</p>
+<ul>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.4</code> に更新しました。</li>
 </ul>
 <h2>[0.7.3] - 2026-06-04</h2>
 <h3>Added</h3>
 <ul>
 <li>公開共有ページで安全な inline CSS と同一ページ内の <code>#anchor</code> リンクを保持しつつ、</li>
-<p>外部 CSS リソースと危険な CSS 機能は引き続きブロックするようにしました。</p>
-<li>Chart.js/canvas ノート向けに <code>requires-static-export:chart</code> の共有安全フィードバックを追加し、</li>
-<p>スクリプト実行ではなく静的チャート書き出しが必要であることを明示しました。</p>
 </ul>
+<p>外部 CSS リソースと危険な CSS 機能は引き続きブロックするようにしました。</p>
+<ul>
+<li>Chart.js/canvas ノート向けに <code>requires-static-export:chart</code> の共有安全フィードバックを追加し、</li>
+</ul>
+<p>スクリプト実行ではなく静的チャート書き出しが必要であることを明示しました。</p>
 <h3>Fixed</h3>
 <ul>
 <li>公開共有ページが完全な HTML 文書を入れ子にして表示する問題を修正しました。安全な head</li>
+</ul>
 <p>スタイルは共有ページの head に配置し、本文断片のみを共有コンテンツ領域に表示します。</p>
+<ul>
 <li>インポート完了メッセージの余白とカード概要領域の余裕を増やし、アップロード表示の詰まりと</li>
+</ul>
 <p>概要/タグのわずかな接触を避けました。</p>
+<ul>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.3</code> に更新しました。</li>
 </ul>
 <h2>[0.7.2] - 2026-06-04</h2>
 <h3>Added</h3>
 <ul>
 <li>期限付き token リンク、共有管理 API、公開用のサニタイズ済み共有ページ、</li>
+</ul>
 <p>共有取り消しを備えたバックエンド連携の公開ノート共有機能を追加しました。</p>
+<ul>
 <li>公開共有の作成前に、実行可能 HTML、フォーム/埋め込み、危険な URL scheme、</li>
+</ul>
 <p>ローカル/プライベート参照、疑わしい secret をブロックする共有安全チェックを追加しました。</p>
+<ul>
 <li>ローカルの <code>toggleGroup(&#x27;id&#x27;)</code> 折りたたみ操作だけをプラットフォーム内蔵操作へ変換する</li>
+</ul>
 <p>限定的な安全共有変換を追加し、公開共有ページでは元スクリプトと外部フォント/リソースリンクを除去します。</p>
+<ul>
 <li>リーダーページの共有 UI、設定内の共有リンク管理を追加し、リーダー内の内部リンクコピー操作を削除しました。</li>
 <li>ワークスペースの Agent 接続状態をサイドバーのプロフィール popover へ移動し、</li>
+</ul>
 <p>その popover の大きなアバターからも画像をアップロードできるようにしました。</p>
+<ul>
 <li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.2</code> に更新しました。</li>
 </ul>
 <h2>[0.7.1] - 2026-06-04</h2>
@@ -265,12 +374,17 @@
 <h3>Changed</h3>
 <ul>
 <li>HTMlore への名称変更、リポジトリ移行、主要実装の <code>html_lore</code></li>
-<p>名前空間、<code>html-lore</code> CLI、<code>HTML_LORE_*</code> 設定名を <code>0.7.0</code> 安定版として昇格しました。</p>
+</ul>
+<p>名前空間、<code>html-lore</code> CLI、<code>HTML_LORE_*</code> 設定名を <code>0.7.0</code></p>
+<p>安定版として昇格しました。</p>
+<ul>
 <li>旧プロジェクト名から HTMlore へアップグレードするデプロイ向けに移行ガイドを追加しました。</li>
 <li>HTMlore への名称変更後に残っていたサンプル内容と静的アセット内の旧プロジェクト名参照を整理しました。</li>
 <li>公開ホームページ、Demo README ノート、アプリのアクセシビリティラベル、logo 説明を、HTMlore の現在のライブラリ/知識表現に更新しました。</li>
 <li>公開ホームページとワークスペースの wordmark を調整し、両方で <code>HTM</code> +</li>
+</ul>
 <p>アクセント付き <code>lore</code> の同じスタイルを使うようにしました。</p>
+<ul>
 <li>従来の <code>html-vault</code> console script を互換 wrapper 経由にし、help 出力では旧コマンド名を保ちながら <code>html_lore</code> 実装を使うようにしました。</li>
 <li>既定 Docker デプロイで使うローカルログイン/session とセルフホスト用マルチユーザーデータ設定を <code>.env.example</code> に追加しました。</li>
 <li>バックエンド API Docker イメージにヘルスチェックを追加しました。</li>
@@ -293,7 +407,9 @@
 <h3>Added</h3>
 <ul>
 <li>新しい <code>html-lore</code> CLI エントリを追加し、0.x 互換期間中は従来の</li>
+</ul>
 <p><code>html-vault</code> コマンドも引き続き利用できるようにしました。</p>
+<ul>
 <li>既存実装パッケージを指す互換入口として、<code>html_lore</code> Python 公開名前空間を追加しました。</li>
 <li><code>HTML_LORE_*</code> 実行時設定名を追加し、従来の <code>HTML_VAULT_*</code> 環境変数も fallback として読み取ります。</li>
 <li>ブラウザ設定を <code>html-vault-*</code> localStorage キーから <code>html-lore-*</code> キーへコピーする移行処理を追加しました。旧キーは削除しません。</li>

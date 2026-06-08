@@ -134,18 +134,12 @@ class AIConversationService:
         conversation = self.store.get(conversation_id)
         spec = GenerationSpec.from_values(values)
         store = AIJobStore(self.settings)
-        job = store.create(kind="html_generation", label=f"Generate note from conversation {conversation_id[:12]}")
-
-        def task() -> dict[str, Any]:
-            try:
-                result = generate_note_from_conversation(settings=self.settings, conversation=conversation, spec=spec)
-            except HtmlGenerationError as exc:
-                self._store_failed_run(exc)
-                raise
-            run = self.run_store.add(result["run"])
-            return {"run": run, "item": result["item"]}
-
-        ai_job_queue.enqueue(settings=self.settings, job=job, task=task)
+        job = store.create(
+            kind="html_generation",
+            label=f"Generate note from conversation {conversation_id[:12]}",
+            payload={"type": "conversation_html_generation", "conversation_id": conversation_id, "spec": spec.as_dict()},
+        )
+        ai_job_queue.enqueue(settings=self.settings, job=job, task=self._conversation_generation_task(conversation_id, spec.as_dict()))
         return {"job": job, "job_id": job["job_id"]}
 
     def generate_note_from_material(self, *, filename: str, content: bytes, instruction: str, values: dict[str, Any]) -> dict[str, Any]:
@@ -203,6 +197,49 @@ class AIConversationService:
 
     def cancel_job(self, job_id: str) -> dict[str, Any]:
         return {"job": AIJobStore(self.settings).cancel(job_id)}
+
+    def retry_job(self, job_id: str) -> dict[str, Any]:
+        store = AIJobStore(self.settings)
+        job = store.get(job_id, include_private=True)
+        if job.get("status") != "failed":
+            raise AIJobError("Only failed AI jobs can be retried.")
+        payload = job.get("payload") if isinstance(job.get("payload"), dict) else {}
+        if str(payload.get("type") or "") != "conversation_html_generation":
+            raise AIJobError("This AI job cannot be retried.")
+        conversation_id = str(payload.get("conversation_id") or "").strip()
+        spec_values = payload.get("spec") if isinstance(payload.get("spec"), dict) else {}
+        spec = GenerationSpec.from_values(spec_values)
+        self.store.get(conversation_id)
+        retried = store.update(
+            job_id,
+            {
+                "status": "pending",
+                "started_at": "",
+                "completed_at": "",
+                "message": "AI job queued for retry.",
+                "run_id": "",
+                "item_id": "",
+                "error": {},
+                "cancel_requested": False,
+                "attempts": int(job.get("attempts") or 0) + 1,
+            },
+        )
+        ai_job_queue.enqueue(settings=self.settings, job=retried, task=self._conversation_generation_task(conversation_id, spec.as_dict()))
+        return {"job": retried, "job_id": retried["job_id"]}
+
+    def _conversation_generation_task(self, conversation_id: str, spec_values: dict[str, Any]):
+        def task() -> dict[str, Any]:
+            conversation = self.store.get(conversation_id)
+            spec = GenerationSpec.from_values(spec_values)
+            try:
+                result = generate_note_from_conversation(settings=self.settings, conversation=conversation, spec=spec)
+            except HtmlGenerationError as exc:
+                self._store_failed_run(exc)
+                raise
+            run = self.run_store.add(result["run"])
+            return {"run": run, "item": result["item"]}
+
+        return task
 
     def _store_failed_run(self, exc: Exception) -> None:
         run = getattr(exc, "run", None)

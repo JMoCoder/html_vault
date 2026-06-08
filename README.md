@@ -77,8 +77,8 @@ Implemented today:
 - Strict / external-expansion mode for AI answers. Strict mode answers from the
   selected notebook context; expansion mode is wired for explicit external
   sources when an external search adapter is configured.
-- AI run history, lightweight asynchronous job queue, queue popover, and global
-  conversation management in Settings.
+- AI run history, lightweight asynchronous generation history, retryable failed
+  conversation-generation jobs, and global conversation management in Settings.
 - Beta HTML note generation from an AI conversation using a staged
   PM/UX/Coder/QA/Reviewer graph.
 - Beta material-to-HTML generation from uploaded HTML, Markdown, or text
@@ -310,6 +310,7 @@ Implemented endpoints:
 - `GET /api/ai/runs/{run_id}`
 - `GET /api/ai/jobs`
 - `GET /api/ai/jobs/{job_id}`
+- `POST /api/ai/jobs/{job_id}/retry`
 - `DELETE /api/ai/jobs/{job_id}`
 
 The API supports current frontend workflows: upload, list, search, filter,

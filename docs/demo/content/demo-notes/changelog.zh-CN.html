@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,15 +12,33 @@
 <main class="wrap">
 <section class="hero">
 <article class="intro">
-<p class="eyebrow">发布历史</p>
+<p class="eyebrow">发布轨迹</p>
 <h1>HTMlore 更新日志</h1>
 </article>
-<aside class="stat"><span class="badge">0.9.0</span></aside>
+<aside class="stat"><span class="badge">0.9.1</span></aside>
 </section>
 <section class="timeline doc">
 <h1>更新日志</h1>
 <p>语言：<a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
 <h2>[Unreleased]</h2>
+<h2>[0.9.1] - 2026-06-08</h2>
+<h3>变更</h3>
+<ul>
+<li>将 AI 侧栏中的“队列”统一调整为“生成历史”，并同步英文、中文、日文界面。</li>
+<li>生成历史按时间顺序展示，最新记录显示在弹窗底部。</li>
+<li>包版本、应用版本、PWA、Demo 缓存版本和 provider user-agent 更新为 <code>0.9.1</code>。</li>
+</ul>
+<h3>修复</h3>
+<ul>
+<li>修复 AI 更多菜单中图标未居中、菜单项默认全部高亮的问题。</li>
+<li>修复阅读页 AI 会话历史未限定到当前笔记、错误显示全局会话的问题。</li>
+<li>优化生成历史行状态：已完成显示生成时间，生成中显示动态状态，失败且可重试的任务显示重试入口。</li>
+</ul>
+<h3>安全</h3>
+<ul>
+<li>新增失败的“对话生成 HTML 笔记”任务重试接口，同时将重试元数据保留在后端私有任务记录中。</li>
+<li>上传资料生成任务默认不从历史中开放重试，避免为了重试而持久化用户上传资料正文。</li>
+</ul>
 <h2>[0.9.0] - 2026-06-08</h2>
 <h3>新增</h3>
 <ul>
@@ -55,8 +73,8 @@
 <h3>修复</h3>
 <ul>
 <li>提高桌面阅读页头部的高度预算，修复笔记本宽度下同时打开左右侧边栏时，</li>
-<p>两行标题与三行摘要会截断标签的问题。</p>
 </ul>
+<p>两行标题与三行摘要会截断标签的问题。</p>
 <h3>新增</h3>
 <ul>
 <li>新增 Playwright 覆盖笔记本宽度、左右侧边栏同时打开时的阅读页布局。</li>
@@ -69,7 +87,9 @@
 <h3>修复</h3>
 <ul>
 <li>将手机端设置页导航改为紧凑的横向滑动标签栏，避免较长设置栏目名在手机视口中</li>
+</ul>
 <p>渲染成过大的块状标签或横向溢出。</p>
+<ul>
 <li>桌面端设置页继续保留原有左侧导航布局，不受移动端规则影响。</li>
 </ul>
 <h3>新增</h3>
@@ -84,10 +104,12 @@
 <h3>修复</h3>
 <ul>
 <li>优化标签筛选计数位置：当前筛选结果数以内联主题色文字显示在“标签筛选”</li>
-<p>标题后面，并移除下方重复的“标签”小标题。</p>
-<li>卡片日期优先使用稳定的条目创建日期，归档/取消归档等状态更新不再改变卡片</li>
-<p>左下角显示日期。</p>
 </ul>
+<p>标题后面，并移除下方重复的“标签”小标题。</p>
+<ul>
+<li>卡片日期优先使用稳定的条目创建日期，归档/取消归档等状态更新不再改变卡片</li>
+</ul>
+<p>左下角显示日期。</p>
 <h3>变更</h3>
 <ul>
 <li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.8.2</code>。</li>
@@ -96,13 +118,17 @@
 <h3>新增</h3>
 <ul>
 <li>标签筛选弹窗新增动态结果数量。标题显示当前筛选后的条目数；或模式下各标签</li>
+</ul>
 <p>数字保持独立统计；且模式下各标签数字显示当前交集内的共现数量。</p>
+<ul>
 <li>分享弹窗与分享链接管理新增分享有效期和当前状态展示。</li>
 </ul>
 <h3>修复</h3>
 <ul>
 <li>公开分享 HTML 页面中的锚点链接会限定在分享文档内跳转，不再跳回工作台空白</li>
+</ul>
 <p>shell。</p>
+<ul>
 <li>增加阅读页头部间距，避免三行摘要时标签行过于贴近头部边界。</li>
 </ul>
 <h3>变更</h3>
@@ -114,12 +140,15 @@
 <h3>移除</h3>
 <ul>
 <li>移除旧 <code>html_vault</code> Python 兼容包、旧 <code>html-vault</code> CLI 入口，以及</li>
-<p><code>HTML_VAULT_*</code> 运行时环境变量 fallback。当前运行配置仅使用 <code>html_lore</code>、<code>html-lore</code> 和 <code>HTML_LORE_*</code>。</p>
 </ul>
+<p><code>HTML_VAULT_*</code> 运行时环境变量 fallback。当前运行配置仅使用</p>
+<p><code>html_lore</code>、<code>html-lore</code> 和 <code>HTML_LORE_*</code>。</p>
 <h3>变更</h3>
 <ul>
 <li>Docker、部署示例、迁移说明和 Python 包发现逻辑统一使用更名后的 HTMlore</li>
+</ul>
 <p>运行链路。</p>
+<ul>
 <li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.8.0</code>。</li>
 </ul>
 <h2>[0.7.9] - 2026-06-05</h2>
@@ -127,8 +156,8 @@
 <ul>
 <li>左侧栏底部新增 HTMlore 官网入口，与 GitHub 入口并列。</li>
 <li>新增静态分享入口修复逻辑，已有有效分享在路由或缓存异常后也可恢复安全的</li>
-<p><code>/share/{token}</code> 入口页。</p>
 </ul>
+<p><code>/share/{token}</code> 入口页。</p>
 <h3>变更</h3>
 <ul>
 <li>工作台左上角品牌 LOGO 点击后返回工作台主页，不再打开项目展示主页。</li>
@@ -146,13 +175,21 @@
 <h3>修复</h3>
 <ul>
 <li>移除 <code>0.7.7</code> 中新增的阅读器“适配宽度 / 原文宽屏”按钮；移动端阅读体验后续</li>
+</ul>
 <p>将在不增加未经确认操作入口的前提下重新设计。</p>
+<ul>
 <li>移动端侧栏从隐藏或窄左侧栏改为顶部上下折叠栏，保留导航可用性，同时不再</li>
+</ul>
 <p>横向挤压工作区。</p>
+<ul>
 <li>新增静态分享兜底：当部署路由误将 <code>/share/{token}</code> 返回为工作台外壳时，</li>
+</ul>
 <p>前端会从 <code>/api/public/shares/{token}</code> 拉取公开内容并渲染分享页。</p>
+<ul>
 <li>创建分享时生成 <code>public/share/&lt;token&gt;/index.html</code> 静态入口；撤销或替换分享时</li>
+</ul>
 <p>自动删除旧入口。</p>
+<ul>
 <li>新增 Playwright 测试，覆盖移动端侧栏折叠和静态分享兜底渲染。</li>
 <li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.8</code>。</li>
 </ul>
@@ -172,21 +209,31 @@
 <h3>安全</h3>
 <ul>
 <li>最小化公开分享 JSON 响应：分享访问者不再获得内部条目 ID、集合/标签元数据、</li>
+</ul>
 <p>分享管理 ID、访问计数或可复制管理链接字段。</p>
+<ul>
 <li>禁止通过分享更新 API 重新激活或延长已撤销、已过期的分享。</li>
 <li>加强分享 HTML 净化：资源 <code>src</code> 不能再指向私有 <code>/api/</code>、<code>/content/</code> 路径，</li>
+</ul>
 <p>也不能指向外部追踪资源；仅保留通过检查的内联 SVG data 图片。</p>
+<ul>
 <li>新增分享安全测试，覆盖私有 API 隔离、公开响应最小化、失效分享拒绝更新和</li>
+</ul>
 <p>资源来源剥离。</p>
+<ul>
 <li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.6</code>。</li>
 </ul>
 <h2>[0.7.5] - 2026-06-04</h2>
 <h3>修复</h3>
 <ul>
 <li>修复 Caddy 部署中的公开分享页路由：<code>/share/*</code> 现在会反代到后端 API，</li>
+</ul>
 <p>不再被静态应用 fallback 返回工作台外壳。</p>
+<ul>
 <li>更新可选 Basic Auth Caddy 示例：<code>/share/*</code> 和 <code>/api/public/shares/*</code></li>
+</ul>
 <p>保持公开可访问，同时工作台和私有 API 路由继续受保护。</p>
+<ul>
 <li>新增部署配置测试，覆盖公开分享路由。</li>
 <li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.5</code>。</li>
 </ul>
@@ -194,26 +241,36 @@
 <h3>修复</h3>
 <ul>
 <li>分享页中的笔记 HTML 改为在隔离 iframe 中渲染，避免源页面全局样式破坏</li>
+</ul>
 <p>HTMlore 分享外壳，或出现被异常放大的图标内容。</p>
+<ul>
 <li>持久化分享 <code>url_path</code>，已分享笔记再次打开分享弹窗时可继续复制现有公开链接，</li>
+</ul>
 <p>不再只在创建瞬间显示。</p>
+<ul>
 <li>将取消分享按钮移动到分享弹窗和分享链接管理行的左侧。</li>
 <li>PWA service worker 不再拦截 <code>/share/</code>、<code>/api/</code>、<code>/content/</code> 路由，避免公开</li>
+</ul>
 <p>分享页或原文内容被工作台缓存回退污染。</p>
+<ul>
 <li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.4</code>。</li>
 </ul>
 <h2>[0.7.3] - 2026-06-04</h2>
 <h3>新增</h3>
 <ul>
 <li>公开分享页现在会保留安全的内联 CSS 和同页 <code>#anchor</code> 锚点链接，同时继续阻止外部</li>
-<p>CSS 资源和危险 CSS 特性。</p>
-<li>针对 Chart.js/canvas 类笔记新增 <code>requires-static-export:chart</code> 分享安全反馈，明确这类</li>
-<p>笔记需要静态图表导出，而不是执行脚本。</p>
 </ul>
+<p>CSS 资源和危险 CSS 特性。</p>
+<ul>
+<li>针对 Chart.js/canvas 类笔记新增 <code>requires-static-export:chart</code> 分享安全反馈，明确这类</li>
+</ul>
+<p>笔记需要静态图表导出，而不是执行脚本。</p>
 <h3>修复</h3>
 <ul>
 <li>修复公开分享页错误嵌套完整 HTML 文档的问题：现在会把安全 head 样式放入分享页 head，</li>
+</ul>
 <p>并只把正文片段放入分享内容区。</p>
+<ul>
 <li>增加导入反馈文字间距和卡片摘要区域余量，避免上传提示过近以及摘要/标签轻微贴边。</li>
 <li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.3</code>。</li>
 </ul>
@@ -221,11 +278,17 @@
 <h3>新增</h3>
 <ul>
 <li>新增基于后端的公开笔记分享能力，支持带有效期的 token 链接、分享管理 API、</li>
+</ul>
 <p>公开净化分享页和取消分享。</p>
+<ul>
 <li>新增分享安全检查：公开分享前会阻止可执行 HTML、表单/嵌入内容、危险 URL</li>
+</ul>
 <p>协议、本地/私有引用和疑似密钥。</p>
+<ul>
 <li>新增受限的安全分享转换：本地 <code>toggleGroup(&#x27;id&#x27;)</code> 折叠交互会转换为平台内置交互，</li>
+</ul>
 <p>同时公开分享页仍会移除原始脚本和外部字体/资源链接。</p>
+<ul>
 <li>新增阅读页分享入口、设置页分享链接管理，并移除阅读页内部复制链接动作。</li>
 <li>将工作台 Agent 连接状态移动到侧栏用户资料弹窗，并支持在该弹窗中点击大头像上传头像。</li>
 <li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.2</code>。</li>
@@ -242,19 +305,29 @@
 <h3>变更</h3>
 <ul>
 <li>将 HTMlore 更名、仓库迁移、主实现 <code>html_lore</code> 命名空间、<code>html-lore</code></li>
+</ul>
 <p>CLI 和 <code>HTML_LORE_*</code> 配置名提升为 <code>0.7.0</code> 稳定发布。</p>
+<ul>
 <li>新增更名迁移指南，用于从旧项目名称升级到 HTMlore。</li>
 <li>在 HTMlore 更名后，清理示例内容和静态资源中残留的旧项目名称引用。</li>
 <li>更新官网、Demo README 笔记、应用无障碍标签和 logo 描述，统一使用</li>
+</ul>
 <p>HTMlore 当前的资料库/知识表达。</p>
+<ul>
 <li>优化官网与工作台 wordmark，使两边统一使用 <code>HTM</code> + 着色 <code>lore</code> 的样式。</li>
 <li>将旧 <code>html-vault</code> 控制台命令接入兼容 wrapper，使其 help 输出保留旧命令名，</li>
+</ul>
 <p>同时继续使用 <code>html_lore</code> 实现。</p>
+<ul>
 <li>扩展 <code>.env.example</code>，补齐默认 Docker 部署使用的本地登录/session 和</li>
+</ul>
 <p>自托管多用户数据设置。</p>
+<ul>
 <li>为后端 API Docker 镜像新增健康检查。</li>
 <li>新增 GitHub Actions CI，覆盖 pytest、Playwright Demo 检查和 Docker</li>
+</ul>
 <p>Compose 配置验证。</p>
+<ul>
 <li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.7.0</code>。</li>
 </ul>
 <h2>[0.6.8] - 2026-06-04</h2>
