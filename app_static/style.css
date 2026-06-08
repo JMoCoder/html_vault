@@ -1516,7 +1516,7 @@ textarea {
   display: none;
 }
 
-.ai-more-menu-item {
+.ai-panel-actions .ai-more-menu-item {
   width: 100%;
   min-height: 32px;
   display: grid;
@@ -1532,24 +1532,24 @@ textarea {
   cursor: pointer;
 }
 
-.ai-more-menu-item:hover {
+.ai-panel-actions .ai-more-menu-item:hover {
   border-color: var(--line);
   background: var(--panel-soft);
   color: var(--accent-dark);
 }
 
-.ai-more-menu-item.active {
+.ai-panel-actions .ai-more-menu-item.active {
   color: var(--text);
 }
 
-.ai-more-menu-item .button-icon {
+.ai-panel-actions .ai-more-menu-item .button-icon {
   width: 16px;
   height: 16px;
   justify-self: center;
   align-self: center;
 }
 
-.ai-more-menu-item em {
+.ai-panel-actions .ai-more-menu-item em {
   min-width: 16px;
   height: 16px;
   display: grid;

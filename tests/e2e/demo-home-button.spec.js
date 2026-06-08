@@ -87,6 +87,28 @@ test("sidebar footer stays inside a narrow resized sidebar", async ({ page }) =>
 
 test("AI panel sends with Enter and keeps Shift Enter for new lines", async ({ page }) => {
   await page.locator("#ai-panel-open").click();
+  await page.locator("#ai-more-toggle").click();
+  await expect(page.locator("#ai-more-menu")).toBeVisible();
+  const menuMetrics = await page.locator("#ai-more-menu .ai-more-menu-item").evaluateAll((items) => items.map((item) => {
+    const style = getComputedStyle(item);
+    return {
+      background: style.backgroundColor,
+      color: style.color,
+    };
+  }));
+  expect(menuMetrics.every((item) => item.background === "rgba(0, 0, 0, 0)" || item.background === "transparent")).toBe(true);
+  const moreButtonMetrics = await page.locator("#ai-more-toggle").evaluate((button) => {
+    const icon = button.querySelector(".button-icon");
+    const buttonBox = button.getBoundingClientRect();
+    const iconBox = icon.getBoundingClientRect();
+    return {
+      dx: Math.abs((buttonBox.left + buttonBox.width / 2) - (iconBox.left + iconBox.width / 2)),
+      dy: Math.abs((buttonBox.top + buttonBox.height / 2) - (iconBox.top + iconBox.height / 2)),
+    };
+  });
+  expect(moreButtonMetrics.dx).toBeLessThan(1);
+  expect(moreButtonMetrics.dy).toBeLessThan(1);
+  await page.locator("#ai-more-toggle").click();
   await page.locator("#ai-chat-input").fill("First line");
   await page.keyboard.press("Shift+Enter");
   await page.keyboard.type("Second line");
@@ -174,8 +196,91 @@ test("share dialog and management show expiry and static status", async ({ page 
   await page.locator("[data-settings-tab='shares']").click();
   const row = page.locator("#share-management-list .share-row").first();
   await expect(row.locator(".share-status")).toContainText("Active");
+  await expect(row).toContainText("HTMlore README 完整说明");
   await expect(row).toContainText("2026");
   await expect(row).toContainText("2 visits");
+});
+
+test("share management sorts active links before expired links by note creation time", async ({ page }) => {
+  const baseShare = {
+    duration: "7d",
+    revoked: false,
+    access_count: 1,
+  };
+  const shares = [
+    {
+      ...baseShare,
+      id: "share-expired-older",
+      item_id: "demo-notes/readme.zh-CN.html",
+      token: "token-expired-older",
+      url_path: "/share/token-expired-older",
+      expires_at: "2026-06-01T08:30:00Z",
+      active: false,
+    },
+    {
+      ...baseShare,
+      id: "share-expired-newer",
+      item_id: "demo-notes/changelog.zh-CN.html",
+      token: "token-expired-newer",
+      url_path: "/share/token-expired-newer",
+      expires_at: "2026-06-01T09:30:00Z",
+      active: false,
+      access_count: 3,
+    },
+    {
+      ...baseShare,
+      id: "share-active-older",
+      item_id: "demo-notes/readme.zh-CN.html",
+      token: "token-active-older",
+      url_path: "/share/token-active-older",
+      expires_at: "2026-06-11T09:30:00Z",
+      active: true,
+    },
+    {
+      ...baseShare,
+      id: "share-active-newer",
+      item_id: "demo-notes/changelog.zh-CN.html",
+      token: "token-active-newer",
+      url_path: "/share/token-active-newer",
+      expires_at: "2026-06-13T09:30:00Z",
+      active: true,
+      access_count: 5,
+    },
+  ];
+  await page.route("**/demo/config.js", async (route) => {
+    await route.fulfill({
+      contentType: "application/javascript",
+      body: 'window.HTML_LORE_AGENT_URL = "http://127.0.0.1:8090";',
+    });
+  });
+  await page.route("**/api/auth/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ enabled: false, authenticated: true, user: null, data_id: null }),
+    });
+  });
+  await page.route("**/api/shares", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ shares, count: shares.length }),
+    });
+  });
+
+  await page.goto("/demo/?lang=en");
+  await page.locator("#settings-open").click();
+  await page.locator("[data-settings-tab='shares']").click();
+
+  const rowTitles = await page.locator("#share-management-list .share-row strong").allTextContents();
+  expect(rowTitles).toEqual([
+    "HTMlore 更新日志",
+    "HTMlore README 完整说明",
+    "HTMlore 更新日志",
+    "HTMlore README 完整说明",
+  ]);
+  await expect(page.locator("#share-management-list .share-row").nth(0).locator(".share-status")).toContainText("Active");
+  await expect(page.locator("#share-management-list .share-row").nth(1).locator(".share-status")).toContainText("Active");
+  await expect(page.locator("#share-management-list .share-row").nth(2).locator(".share-status")).toContainText("Expired");
+  await expect(page.locator("#share-management-list .share-row").nth(3).locator(".share-status")).toContainText("Expired");
 });
 
 test("tag filter counts follow OR and AND selection semantics", async ({ page }) => {

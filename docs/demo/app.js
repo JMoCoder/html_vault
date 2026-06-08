@@ -2599,12 +2599,25 @@ function renderReaderShareState() {
 
 function renderShareManagement() {
   if (!elements.shareManagementList) return;
-  const activeShares = state.shares.filter((share) => !share.revoked);
+  const activeShares = sortShareManagementRows(state.shares.filter((share) => !share.revoked));
   if (activeShares.length === 0) {
     elements.shareManagementList.innerHTML = `<div class="empty-state">${escapeHtml(t("noShares"))}</div>`;
     return;
   }
   elements.shareManagementList.replaceChildren(...activeShares.map(renderShareManagementRow));
+}
+
+function sortShareManagementRows(shares) {
+  return [...shares].sort((left, right) => {
+    const leftActive = getShareStatus(left).active ? 0 : 1;
+    const rightActive = getShareStatus(right).active ? 0 : 1;
+    if (leftActive !== rightActive) return leftActive - rightActive;
+    const leftItem = getItemById(left.item_id);
+    const rightItem = getItemById(right.item_id);
+    const leftTime = getItemDisplayDate(leftItem || {}) || left.created_at || left.updated_at || "";
+    const rightTime = getItemDisplayDate(rightItem || {}) || right.created_at || right.updated_at || "";
+    return String(rightTime).localeCompare(String(leftTime)) || String(right.updated_at || "").localeCompare(String(left.updated_at || "")) || String(right.id || "").localeCompare(String(left.id || ""));
+  });
 }
 
 function renderShareManagementRow(share) {
@@ -4350,7 +4363,7 @@ function renderAiMoreMenu() {
   elements.aiMoreMenu.hidden = !state.aiMoreOpen;
   if (elements.aiHistoryToggle) {
     elements.aiHistoryToggle.innerHTML = `${historyIcon()}<span>${escapeHtml(t("aiConversationHistory"))}</span>`;
-    elements.aiHistoryToggle.classList.toggle("active", state.aiHistoryOpen);
+    elements.aiHistoryToggle.setAttribute("aria-expanded", String(state.aiHistoryOpen));
   }
   if (elements.aiNewChat) {
     elements.aiNewChat.innerHTML = `${plusIcon()}<span>${escapeHtml(t("aiNewConversation"))}</span>`;
