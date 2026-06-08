@@ -65,9 +65,12 @@ class AIConversationService:
     def create(self, values: dict[str, Any]) -> dict[str, Any]:
         return {"conversation": self.store.create(values)}
 
-    def list(self) -> dict[str, Any]:
-        conversations = self.store.list()
+    def list(self, *, context_key: str = "", limit: int = 100) -> dict[str, Any]:
+        conversations = self.store.list(context_key=context_key, limit=limit)
         return {"conversations": conversations, "count": len(conversations)}
+
+    def latest(self, context_key: str) -> dict[str, Any]:
+        return {"conversation": self.store.latest_for_context(context_key)}
 
     def get(self, conversation_id: str) -> dict[str, Any]:
         return {"conversation": self.store.get(conversation_id)}

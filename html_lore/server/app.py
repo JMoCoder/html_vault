@@ -223,9 +223,16 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.get("/api/ai/conversations")
-    def ai_conversations(_: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+    def ai_conversations(_: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)], context_key: str = "", limit: int = 100) -> dict:
         try:
-            return service.list()
+            return service.list(context_key=context_key, limit=limit)
+        except ConversationError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/api/ai/conversations/latest")
+    def ai_latest_conversation(context_key: str, _: ApiAuth, service: Annotated[AIConversationService, Depends(get_ai_conversation_service)]) -> dict:
+        try:
+            return service.latest(context_key)
         except ConversationError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

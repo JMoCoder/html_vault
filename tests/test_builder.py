@@ -25,3 +25,17 @@ def test_build_site_writes_manifest_and_static_files(tmp_path: Path) -> None:
     saved = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
     assert saved["version"] == 2
     assert len(saved["items"]) == 4
+
+
+def test_build_site_can_use_app_static_as_output_for_local_dev(tmp_path: Path) -> None:
+    root = Path(__file__).resolve().parents[1]
+
+    manifest = build_site(
+        content_dir=root / "examples" / "content",
+        meta_dir=root / "examples" / "meta",
+        output_dir=root / "app_static",
+    )
+
+    assert manifest["version"] == 2
+    assert (root / "app_static" / "index.html").exists()
+    assert (root / "app_static" / "share" / "index.html").exists()

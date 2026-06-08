@@ -107,11 +107,13 @@ test("mobile reader lets metadata and actions scroll away under the global bar",
   const sidebar = page.locator(".sidebar");
   const reader = page.locator("#reader");
   const header = page.locator(".reader-header");
-  const summary = page.locator("#reader-summary");
   const frame = page.locator("#reader-frame");
   await expect(reader).toBeVisible();
   await expect(header).toBeVisible();
-  await expect(summary).toBeVisible();
+  await expect(page.locator("#reader-summary")).toHaveCount(0);
+  await expect(page.locator("#reader-title")).toBeVisible();
+  await expect(page.locator("#reader-source")).toBeVisible();
+  await expect(page.locator("#reader-tags")).toBeVisible();
 
   await expect
     .poll(async () => {

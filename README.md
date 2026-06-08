@@ -37,12 +37,12 @@ Markdown-first authoring. HTMlore takes a different path:
   the UI architecture for AI-assisted workflows, while credentials and model
   calls are kept out of the static frontend.
 
-## 0.x Current Scope
+## 0.9.x Current Scope
 
-The current `0.x` line focuses on real local, private-network, and self-hosted
-use: Docker deployment, built-in login, HTML import, persistent metadata,
-filtering, reading, archiving, public sharing, and a documented security
-boundary for public deployment.
+The current `0.9.x` line focuses on real local, private-network, and
+self-hosted use: Docker deployment, built-in login, HTML import, persistent
+metadata, filtering, reading, archiving, public sharing, and the first
+server-side AI workflows.
 
 Implemented today:
 
@@ -66,19 +66,45 @@ Implemented today:
   favorite/archive actions, and metadata editing.
 - Archive behavior with edit lock and permanent delete for archived notes.
 - Sidebar visibility management for library views, collections, and tags.
-- Global AI sidebar UI scaffold with context labels.
-- AI provider, data, user, account/security, project info, and update sections
-  in settings.
+- Global AI sidebar with workspace, collection, tag, reader, and manually
+  selected note contexts.
+- Server-side AI provider configuration for OpenAI-compatible endpoints. API
+  keys stay in backend environment variables and are never accepted through the
+  browser settings endpoint.
+- Knowledge-base Q&A beta with context-aware retrieval, Markdown-rendered
+  answers, source pills, conversation persistence, latest-conversation restore,
+  and per-context history.
+- Strict / external-expansion mode for AI answers. Strict mode answers from the
+  selected notebook context; expansion mode is wired for explicit external
+  sources when an external search adapter is configured.
+- AI run history, lightweight asynchronous job queue, queue popover, and global
+  conversation management in Settings.
+- Beta HTML note generation from an AI conversation using a staged
+  PM/UX/Coder/QA/Reviewer graph.
+- Beta material-to-HTML generation from uploaded HTML, Markdown, or text
+  material, reusing the HTML generation graph after safe text extraction.
+- Keyword retrieval with vector/hybrid retrieval mode scaffolding and automatic
+  fallback to keyword retrieval while the pluggable vector store is not yet
+  configured.
+- AI guardrails for prompt size, unsupported requests, secret-like output, and
+  share-target HTML safety review.
+- AI provider, data, user, account/security, conversation history, project
+  info, and update sections in settings.
 - PWA manifest and service worker.
 - Chinese, English, and Japanese system UI labels.
 - Light/dark theme switching and resizable sidebars.
 - `GET /api/version` and update hints from GitHub releases/tags.
 - Optional Caddy Basic Auth example for public deployments.
 
-Not implemented yet:
+Still limited or not implemented yet:
 
-- Real AI model calls.
-- AI-generated HTML notes.
+- The AI features are beta and are designed for self-hosted validation before
+  hosted/cloud product work.
+- External web search is adapter-scaffolded but not bundled with a default
+  provider.
+- Vector store / embedding retrieval is scaffolded and falls back to keyword
+  retrieval unless a future vector backend is configured.
+- PDF material parsing is intentionally deferred.
 - AI-powered reclassification/tagging jobs.
 - Cloud sync or hosted subscription service.
 - Full backup/restore and WebDAV execution.
@@ -264,11 +290,51 @@ Implemented endpoints:
 - `POST /api/uploads/html`
 - `GET /api/uploads/{upload_id}`
 - `DELETE /api/items/{id}`
+- `GET /api/ai/providers`
+- `PUT /api/ai/providers`
+- `GET /api/ai/status`
+- `POST /api/ai/test-provider`
+- `POST /api/ai/context/resolve`
+- `POST /api/ai/conversations`
+- `GET /api/ai/conversations`
+- `GET /api/ai/conversations/latest`
+- `GET /api/ai/conversations/{conversation_id}`
+- `DELETE /api/ai/conversations/{conversation_id}`
+- `GET /api/ai/conversations/{conversation_id}/messages`
+- `POST /api/ai/conversations/{conversation_id}/messages`
+- `POST /api/ai/conversations/{conversation_id}/generate-note`
+- `POST /api/ai/conversations/{conversation_id}/generate-note/jobs`
+- `POST /api/ai/material-runs`
+- `POST /api/ai/material-jobs`
+- `GET /api/ai/runs`
+- `GET /api/ai/runs/{run_id}`
+- `GET /api/ai/jobs`
+- `GET /api/ai/jobs/{job_id}`
+- `DELETE /api/ai/jobs/{job_id}`
 
 The API supports current frontend workflows: upload, list, search, filter,
 read, edit metadata, favorite, archive, unarchive, permanent delete for
-archived notes, navigation visibility persistence, rebuild jobs, and version
-checks.
+archived notes, navigation visibility persistence, rebuild jobs, version
+checks, provider status checks, knowledge-base Q&A, conversation history, and
+beta AI note-generation jobs.
+
+## AI Configuration
+
+AI credentials belong on the server. The frontend settings page can enable a
+provider, base URL, model, and embedding model reference, but it cannot submit
+or read an API key. Configure the key through the deployment environment:
+
+```bash
+HTML_LORE_AI_ENABLED=true
+HTML_LORE_AI_PROVIDER=openai-compatible
+HTML_LORE_AI_BASE_URL=https://your-newapi.example.com/v1
+HTML_LORE_AI_MODEL=gpt-5.5
+HTML_LORE_AI_API_KEY=replace-with-your-server-side-key
+```
+
+For development tests, `HTML_LORE_AI_PROVIDER=fake` can exercise the UI and
+conversation flow without sending model requests. Public provider status only
+returns `has_api_key`, never the secret value.
 
 ## Security Model
 
@@ -304,11 +370,12 @@ Near-term backend and notebook work:
 
 AI work:
 
-- Provider-side credential storage on the server.
-- AI-generated HTML notes.
-- Knowledge-base Q&A through the global AI sidebar.
-- AI-assisted classification, tagging, summarization, and cleanup jobs.
-- User confirmation and audit trails for destructive AI batch operations.
+- Improve Q&A retrieval quality and add a real vector-store backend.
+- Add configurable external search providers for content expansion mode.
+- Improve the beta multi-agent HTML generation graph with real model-mediated
+  planning, coding, QA, and review steps.
+- Add AI-assisted classification, tagging, summarization, and cleanup jobs.
+- Add user confirmation and audit trails for destructive AI batch operations.
 
 Future product direction:
 

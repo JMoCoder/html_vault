@@ -9,6 +9,56 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-06-08
+
+### Added
+
+- Added server-side AI provider configuration for OpenAI-compatible endpoints,
+  with API keys read only from backend environment variables.
+- Added a knowledge-base Q&A beta flow with context resolution, keyword
+  retrieval, strict/content-expansion modes, Markdown-rendered assistant
+  messages, source pills, and rate limiting.
+- Added persistent AI conversations, latest conversation restore per context,
+  per-context history in the AI sidebar, and global conversation management in
+  Settings.
+- Added a lightweight AI job queue, run history, queue popover, and job/run API
+  endpoints.
+- Added beta HTML note generation from existing conversations using a staged
+  PM/UX/Coder/QA/Reviewer graph.
+- Added beta material-to-HTML generation from uploaded HTML, Markdown, or plain
+  text files.
+- Added vector/hybrid retrieval scaffolding with keyword fallback while the
+  pluggable vector store is not yet configured.
+- Added AI guardrails for prompt budget, unsupported requests, secret-like
+  output, and share-target HTML safety checks.
+- Added frontend AI panel refinements: compact context header, resizable
+  composer area, reply status, context reset, conversation history, queue/more
+  menu behavior, and icon-only conversation management actions.
+
+### Changed
+
+- Updated README files in English, Chinese, and Japanese to document current AI
+  capabilities, server-side AI configuration, and beta limitations.
+- Regenerated the static demo README and CHANGELOG notes from the current
+  documentation.
+- Updated package, app, PWA, demo, and provider user-agent versions to `0.9.0`.
+
+### Security
+
+- Confirmed AI public provider responses expose only public status fields such
+  as `has_api_key`; raw API keys are not accepted by the browser settings API
+  and are not returned to the frontend.
+- Added tests that assert AI provider secrets are not leaked through status,
+  provider config, or generated run payloads.
+
+### Fixed
+
+- Improved global-context Q&A retrieval so overview-style questions can use the
+  full selected context instead of over-focusing on a single note.
+- Fixed static build copying so `app_static` is not copied into itself.
+- Fixed AI sidebar menu state, conversation-history filtering, settings
+  sidebar closing behavior, and related Playwright coverage.
+
 ## [0.8.4] - 2026-06-06
 
 ### Fixed

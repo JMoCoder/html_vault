@@ -128,7 +128,7 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   await page.route("**/api/version", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ version: "0.8.4", latest_version: "0.8.4", update_available: false }),
+      body: JSON.stringify({ version: "0.9.0", latest_version: "0.9.0", update_available: false }),
     });
   });
   await page.route("**/api/shares", async (route) => {
@@ -237,6 +237,7 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   expect(materialRequest.postData).toContain("material.md");
   expect(materialRequest.postData).toContain("Turn this material into a concise study note.");
   await page.locator("#ai-panel-open").click();
+  await page.locator("#ai-more-toggle").click();
   await page.locator("#ai-job-toggle").click();
   await expect(page.locator("#ai-job-list")).toContainText("material.md");
 
@@ -301,7 +302,7 @@ test("workspace material generation failure refreshes AI run history", async ({ 
   await page.route("**/api/version", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ version: "0.8.4", latest_version: "0.8.4", update_available: false }),
+      body: JSON.stringify({ version: "0.9.0", latest_version: "0.9.0", update_available: false }),
     });
   });
   await page.route("**/api/shares", async (route) => {
@@ -420,7 +421,7 @@ test("workspace note generation can select an existing note as reference style",
   await page.route("**/api/version", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ version: "0.8.4", latest_version: "0.8.4", update_available: false }),
+      body: JSON.stringify({ version: "0.9.0", latest_version: "0.9.0", update_available: false }),
     });
   });
   await page.route("**/api/shares", async (route) => {
@@ -434,6 +435,9 @@ test("workspace note generation can select an existing note as reference style",
   });
   await page.route("**/api/ai/jobs**", async (route) => {
     await route.fulfill({ contentType: "application/json", body: JSON.stringify({ jobs: [], count: 0 }) });
+  });
+  await page.route("**/api/ai/conversations/latest**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ conversation: null }) });
   });
   await page.route("**/api/ai/conversations", async (route) => {
     conversationRequest = JSON.parse(route.request().postData() || "{}");
@@ -518,7 +522,7 @@ test("workspace AI content expansion controls conversation source mode", async (
   await page.route("**/api/version", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ version: "0.8.4", latest_version: "0.8.4", update_available: false }),
+      body: JSON.stringify({ version: "0.9.0", latest_version: "0.9.0", update_available: false }),
     });
   });
   await page.route("**/api/shares", async (route) => {
@@ -532,6 +536,9 @@ test("workspace AI content expansion controls conversation source mode", async (
   });
   await page.route("**/api/ai/jobs**", async (route) => {
     await route.fulfill({ contentType: "application/json", body: JSON.stringify({ jobs: [], count: 0 }) });
+  });
+  await page.route("**/api/ai/conversations/latest**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ conversation: null }) });
   });
   await page.route("**/api/ai/conversations", async (route) => {
     const request = JSON.parse(route.request().postData() || "{}");
@@ -571,4 +578,211 @@ test("workspace AI content expansion controls conversation source mode", async (
   await page.locator("#ai-chat-form button[type='submit']").click();
   await expect.poll(() => conversationRequests.length).toBe(2);
   expect(conversationRequests[1].source_mode).toBe("local_only");
+});
+
+test("workspace AI restores latest context conversation and can start a fresh one", async ({ page }) => {
+  await page.addInitScript(() => localStorage.clear());
+  await routeWorkspace(page);
+
+  const manifest = {
+    version: 2,
+    title: "HTMlore Workspace",
+    items: [
+      {
+        id: "notes/mcp.html",
+        title: "MCP Security",
+        summary: "Security notes for MCP.",
+        collection: "AI",
+        tags: ["MCP", "Security"],
+        source: "imported",
+        created: "2026-06-07T00:00:00Z",
+        updated: "2026-06-07T00:00:00Z",
+        path: "content/notes/mcp.html",
+      },
+      {
+        id: "notes/docker.html",
+        title: "Docker Notes",
+        summary: "Container notes.",
+        collection: "Ops",
+        tags: ["Docker"],
+        source: "imported",
+        created: "2026-06-07T00:00:00Z",
+        updated: "2026-06-07T00:00:00Z",
+        path: "content/notes/docker.html",
+      },
+    ],
+  };
+  const oldConversation = {
+    id: "conversation-old",
+    title: "MCP Security",
+    context_key: 'local_only:reader:{"item_id":"notes/mcp.html"}',
+    context_snapshot: {},
+    message_count: 2,
+    created_at: "2026-06-07T01:00:00.000Z",
+    updated_at: "2026-06-07T01:05:00.000Z",
+  };
+  const historyConversation = {
+    id: "conversation-history",
+    title: "Docker Notes",
+    context_key: 'local_only:reader:{"item_id":"notes/docker.html"}',
+    context_snapshot: {},
+    message_count: 2,
+    created_at: "2026-06-07T02:00:00.000Z",
+    updated_at: "2026-06-07T02:05:00.000Z",
+  };
+  const messagesByConversation = {
+    "conversation-old": [
+      { role: "user", content: "Summarize this note.", sources: [] },
+      { role: "assistant", content: "**MCP** security summary.", sources: [{ kind: "local", title: "MCP Security", item_id: "notes/mcp.html" }] },
+    ],
+    "conversation-history": [
+      { role: "user", content: "Show Docker risks.", sources: [] },
+      { role: "assistant", content: "Docker risk summary.", sources: [{ kind: "local", title: "Docker Notes", item_id: "notes/docker.html" }] },
+    ],
+  };
+  const latestRequests = [];
+  const conversationCreates = [];
+  const conversationListRequests = [];
+  let deletedConversationId = "";
+
+  await page.route("**/api/auth/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ enabled: false, authenticated: true, user: null, data_id: null }),
+    });
+  });
+  await page.route("**/api/ai/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ available: true, provider: "", model: "fake", external_search: false }),
+    });
+  });
+  await page.route("**/api/version", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ version: "0.9.0", latest_version: "0.9.0", update_available: false }),
+    });
+  });
+  await page.route("**/api/shares", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ shares: [], count: 0 }) });
+  });
+  await page.route("**/api/manifest", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify(manifest) });
+  });
+  await page.route("**/api/ai/runs**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ runs: [], count: 0 }) });
+  });
+  await page.route("**/api/ai/jobs**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ jobs: [], count: 0 }) });
+  });
+  await page.route("**/api/content/**", async (route) => {
+    await route.fulfill({ contentType: "text/html", body: "<h1>Reader content</h1>" });
+  });
+  await page.route("**/api/ai/conversations/latest**", async (route) => {
+    const url = new URL(route.request().url());
+    const contextKey = url.searchParams.get("context_key") || "";
+    latestRequests.push(contextKey);
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ conversation: contextKey === oldConversation.context_key ? oldConversation : null }),
+    });
+  });
+  await page.route("**/api/ai/conversations?*", async (route) => {
+    const url = new URL(route.request().url());
+    const contextKey = url.searchParams.get("context_key") || "";
+    conversationListRequests.push(contextKey);
+    const conversations = contextKey ? [oldConversation] : [historyConversation, oldConversation];
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ conversations, count: conversations.length }),
+    });
+  });
+  await page.route("**/api/ai/conversations/*", async (route) => {
+    if (route.request().method() === "DELETE") {
+      deletedConversationId = decodeURIComponent(route.request().url().split("/api/ai/conversations/")[1] || "");
+      await route.fulfill({ contentType: "application/json", body: JSON.stringify({ id: deletedConversationId, deleted: true }) });
+      return;
+    }
+    await route.fallback();
+  });
+  await page.route("**/api/ai/conversations", async (route) => {
+    const request = JSON.parse(route.request().postData() || "{}");
+    conversationCreates.push(request);
+    const created = {
+      id: `conversation-new-${conversationCreates.length}`,
+      title: "MCP Security",
+      context_key: oldConversation.context_key,
+      context_snapshot: request.context,
+      message_count: 0,
+      messages: [],
+      created_at: "2026-06-07T03:00:00.000Z",
+      updated_at: "2026-06-07T03:00:00.000Z",
+    };
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ conversation: created }) });
+  });
+  await page.route("**/api/ai/conversations/*/messages", async (route) => {
+    const match = route.request().url().match(/\/api\/ai\/conversations\/([^/]+)\/messages/);
+    const conversationId = match ? decodeURIComponent(match[1]) : "";
+    if (route.request().method() === "GET") {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ messages: messagesByConversation[conversationId] || [], count: messagesByConversation[conversationId]?.length || 0 }),
+      });
+      return;
+    }
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        message: { role: "assistant", content: "Fresh answer from new conversation.", sources: [{ kind: "local", title: "MCP Security" }] },
+        sources: [{ kind: "local", title: "MCP Security" }],
+      }),
+    });
+  });
+
+  await page.goto("/workspace/", { waitUntil: "domcontentloaded" });
+  await page.locator(".item-card", { hasText: "MCP Security" }).getByRole("button", { name: "Read" }).click();
+  await page.locator("#reader-ai-panel-open").click();
+
+  await expect(page.locator("#ai-chat-log")).toContainText("Summarize this note.");
+  await expect(page.locator("#ai-chat-log")).toContainText("MCP security summary.");
+  await expect.poll(() => latestRequests.includes(oldConversation.context_key)).toBe(true);
+
+  await page.locator("#ai-more-toggle").click();
+  await page.locator("#ai-new-chat").click();
+  await expect(page.locator("#ai-chat-log .ai-message")).toHaveCount(0);
+
+  await page.locator("#reader-close").click();
+  await page.locator(".item-card", { hasText: "MCP Security" }).getByRole("button", { name: "Read" }).click();
+  await expect(page.locator("#ai-chat-log .ai-message")).toHaveCount(0);
+
+  await page.locator("#ai-chat-input").fill("Start a fresh summary.");
+  await page.locator("#ai-chat-form button[type='submit']").click();
+  await expect.poll(() => conversationCreates.length).toBe(1);
+  expect(conversationCreates[0]).toMatchObject({ source_mode: "local_only", context: { item_id: "notes/mcp.html" } });
+  await expect(page.locator("#ai-chat-log")).toContainText("Fresh answer from new conversation.");
+
+  await page.locator("#ai-more-toggle").click();
+  await page.locator("#ai-history-toggle").click();
+  await expect(page.locator("#ai-history-list")).toContainText("MCP Security");
+  await expect(page.locator("#ai-history-list")).not.toContainText("Docker Notes");
+  await expect.poll(() => conversationListRequests.includes(oldConversation.context_key)).toBe(true);
+  await page.locator("#ai-more-toggle").click();
+  await expect(page.locator("#ai-history-list")).toBeHidden();
+  await expect(page.locator("#ai-more-menu")).toBeVisible();
+  await page.locator("#ai-more-toggle").click();
+  await expect(page.locator("#ai-more-menu")).toBeHidden();
+
+  await page.locator("#settings-open").click();
+  await page.locator("[data-settings-tab='ai-conversations']").click();
+  await expect(page.locator("#ai-conversation-list")).toContainText("Docker Notes");
+  await expect(page.locator("#ai-conversation-list")).toContainText("MCP Security");
+  await page.locator("#ai-conversation-list .ai-conversation-row", { hasText: "Docker Notes" }).getByRole("button", { name: "Open" }).click();
+  await expect(page.locator("#ai-chat-log")).toContainText("Show Docker risks.");
+  await expect(page.locator("#ai-chat-log")).toContainText("Docker risk summary.");
+
+  await page.locator("#settings-open").click();
+  await page.locator("[data-settings-tab='ai-conversations']").click();
+  page.once("dialog", async (dialog) => dialog.accept());
+  await page.locator("#ai-conversation-list .ai-conversation-row", { hasText: "Docker Notes" }).getByRole("button", { name: "Delete" }).click();
+  await expect.poll(() => deletedConversationId).toBe("conversation-history");
 });

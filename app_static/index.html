@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Noto+Serif+SC:wght@600;900&family=Noto+Serif+JP:wght@600;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.8.4">
+  <link rel="stylesheet" href="style.css?v=0.9.0">
 </head>
 <body>
   <section class="login-screen" id="login-screen" hidden>
@@ -219,7 +219,6 @@
         <div class="reader-heading">
           <p class="eyebrow" id="reader-source">Item</p>
           <h2 id="reader-title"></h2>
-          <p id="reader-summary"></p>
           <div class="reader-tags" id="reader-tags"></div>
         </div>
         <div class="reader-actions">
@@ -281,6 +280,7 @@
           <div class="settings-divider" aria-hidden="true"></div>
           <button type="button" class="settings-tab" data-settings-tab="ai" data-i18n="aiProviders"></button>
           <button type="button" class="settings-tab" data-settings-tab="ai-assistant" data-i18n="aiKnowledgeAssistant"></button>
+          <button type="button" class="settings-tab" data-settings-tab="ai-conversations" data-i18n="aiConversationHistoryAll"></button>
           <div class="settings-divider" aria-hidden="true"></div>
           <button type="button" class="settings-tab" data-settings-tab="terms" data-i18n="userAgreement"></button>
           <button type="button" class="settings-tab" data-settings-tab="about" data-i18n="aboutProject"></button>
@@ -435,6 +435,20 @@
               </div>
               <p class="settings-feedback" id="assistant-feedback"></p>
             </form>
+          </section>
+
+          <section class="settings-section" data-settings-section="ai-conversations">
+            <div class="section-heading">
+              <h3 data-i18n="aiConversationHistoryAll"></h3>
+              <p data-i18n="aiConversationHistoryAllIntro"></p>
+            </div>
+            <div class="settings-form">
+              <div class="settings-actions">
+                <button type="button" class="secondary-button" id="ai-conversation-refresh" data-i18n="refreshConversations"></button>
+              </div>
+              <div class="ai-conversation-list" id="ai-conversation-list"></div>
+              <p class="settings-feedback" id="ai-conversation-feedback"></p>
+            </div>
           </section>
 
           <section class="settings-section" data-settings-section="backup">
@@ -593,36 +607,47 @@
     <aside class="ai-panel" id="ai-panel" aria-label="Global AI assistant" data-i18n-attr="aria-label:globalAiPanel" hidden>
       <div class="ai-panel-resize" id="ai-panel-resize" role="separator" aria-orientation="vertical" aria-label="Resize AI panel" data-i18n-attr="aria-label:resizeAiPanel"></div>
       <header class="ai-panel-header">
-        <div>
-          <p class="eyebrow" data-i18n="globalAiAssistant"></p>
+        <div class="ai-panel-title-row">
           <h2 data-i18n="aiConversation"></h2>
+          <span id="ai-context-compact"></span>
         </div>
         <button class="icon-button" type="button" id="ai-panel-close" aria-label="Close AI assistant" data-i18n-attr="aria-label:closeGlobalAi">×</button>
       </header>
 
       <div class="ai-context-card">
-        <span data-i18n="aiContext"></span>
+        <span data-i18n="aiCurrentContext"></span>
         <strong id="ai-context-label"></strong>
       </div>
 
       <div class="ai-chat-log" id="ai-chat-log" aria-live="polite"></div>
 
-      <div class="ai-panel-actions">
-        <button type="button" id="ai-generate-note" data-i18n="generateHtmlNote"></button>
-        <button type="button" class="secondary-button ai-job-toggle" id="ai-job-toggle" data-i18n="aiJobQueue"></button>
-        <span data-i18n="aiPanelComingSoon"></span>
+      <div class="ai-composer" id="ai-composer">
+        <div class="ai-composer-resize" id="ai-composer-resize" role="separator" aria-orientation="horizontal" aria-label="Resize AI input area" data-i18n-attr="aria-label:resizeAiComposer"></div>
+        <div class="ai-panel-actions">
+          <button type="button" id="ai-generate-note" data-i18n="generateHtmlNote"></button>
+          <label class="ai-source-toggle">
+            <input id="ai-content-expansion" type="checkbox">
+            <span data-i18n="aiContentExpansion"></span>
+          </label>
+          <div class="ai-more-menu-wrap">
+            <button type="button" class="icon-action ai-more-toggle" id="ai-more-toggle" aria-label="More AI actions" title="More AI actions" data-i18n-attr="aria-label:aiMoreActions,title:aiMoreActions"></button>
+            <div class="ai-more-menu" id="ai-more-menu" hidden>
+              <button type="button" class="ai-more-menu-item ai-new-chat" id="ai-new-chat" aria-label="New AI conversation" title="New AI conversation" data-i18n-attr="aria-label:aiNewConversation,title:aiNewConversation"></button>
+              <button type="button" class="ai-more-menu-item ai-history-toggle" id="ai-history-toggle" aria-label="AI conversation history" title="AI conversation history" data-i18n-attr="aria-label:aiConversationHistory,title:aiConversationHistory"></button>
+              <button type="button" class="ai-more-menu-item ai-job-toggle" id="ai-job-toggle" aria-label="AI job queue" title="AI job queue" data-i18n-attr="aria-label:aiJobQueue,title:aiJobQueue"></button>
+            </div>
+          </div>
+        </div>
+        <div class="ai-history-list" id="ai-history-list" hidden></div>
+        <div class="ai-job-list" id="ai-job-list" hidden></div>
+
+        <form class="ai-chat-form" id="ai-chat-form">
+          <div class="ai-chat-input-box">
+            <textarea id="ai-chat-input" rows="2" data-i18n-attr="placeholder:aiChatPlaceholder"></textarea>
+            <button type="submit" class="ai-send-button" aria-label="Send" title="Send" data-i18n-attr="aria-label:send,title:send"></button>
+          </div>
+        </form>
       </div>
-      <div class="ai-job-list" id="ai-job-list" hidden></div>
-
-      <label class="ai-source-toggle">
-        <input id="ai-content-expansion" type="checkbox">
-        <span data-i18n="aiContentExpansion"></span>
-      </label>
-
-      <form class="ai-chat-form" id="ai-chat-form">
-        <textarea id="ai-chat-input" rows="4" data-i18n-attr="placeholder:aiChatPlaceholder"></textarea>
-        <button type="submit" data-i18n="send"></button>
-      </form>
     </aside>
 
     <section class="metadata-editor" id="metadata-editor" aria-label="Edit note metadata" data-i18n-attr="aria-label:metadataEditor" hidden>
@@ -739,6 +764,6 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="app.js?v=0.8.4" type="module"></script>
+  <script src="app.js?v=0.9.0" type="module"></script>
 </body>
 </html>

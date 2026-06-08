@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <base href="/demo/">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f766e">
@@ -11,9 +12,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Noto+Serif+SC:wght@600;900&family=Noto+Serif+JP:wght@600;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.8.4">
+  <link rel="stylesheet" href="style.css?v=0.9.0">
 </head>
 <body>
+  <a class="demo-home-link" href="../" aria-label="HTMlore homepage" title="HTMlore homepage">
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M19 12H5"></path>
+      <path d="m12 19-7-7 7-7"></path>
+    </svg>
+  </a>
+
   <section class="login-screen" id="login-screen" hidden>
     <div class="login-panel">
       <div class="login-brand">
@@ -187,6 +195,7 @@
       </header>
 
       <input id="html-import-file" type="file" accept=".html,.htm,text/html" hidden>
+      <input id="material-generate-file" type="file" accept=".html,.htm,.md,.markdown,.txt,text/html,text/markdown,text/plain" hidden>
 
       <section class="new-card" id="new-card">
         <div class="new-card-header">
@@ -217,7 +226,6 @@
         <div class="reader-heading">
           <p class="eyebrow" id="reader-source">Item</p>
           <h2 id="reader-title"></h2>
-          <p id="reader-summary"></p>
           <div class="reader-tags" id="reader-tags"></div>
         </div>
         <div class="reader-actions">
@@ -279,6 +287,7 @@
           <div class="settings-divider" aria-hidden="true"></div>
           <button type="button" class="settings-tab" data-settings-tab="ai" data-i18n="aiProviders"></button>
           <button type="button" class="settings-tab" data-settings-tab="ai-assistant" data-i18n="aiKnowledgeAssistant"></button>
+          <button type="button" class="settings-tab" data-settings-tab="ai-conversations" data-i18n="aiConversationHistoryAll"></button>
           <div class="settings-divider" aria-hidden="true"></div>
           <button type="button" class="settings-tab" data-settings-tab="terms" data-i18n="userAgreement"></button>
           <button type="button" class="settings-tab" data-settings-tab="about" data-i18n="aboutProject"></button>
@@ -390,6 +399,18 @@
               </div>
               <p class="settings-feedback" id="settings-feedback"></p>
             </form>
+
+            <div class="ai-run-history">
+              <div class="section-heading">
+                <h3 data-i18n="aiRunHistory"></h3>
+                <p data-i18n="aiRunHistoryIntro"></p>
+              </div>
+              <div class="settings-actions ai-run-actions">
+                <button type="button" class="secondary-button" id="ai-run-refresh" data-i18n="refreshAiRuns"></button>
+              </div>
+              <div class="ai-run-list" id="ai-run-list"></div>
+              <p class="settings-feedback" id="ai-run-feedback"></p>
+            </div>
           </section>
 
           <section class="settings-section" data-settings-section="ai-assistant">
@@ -421,6 +442,20 @@
               </div>
               <p class="settings-feedback" id="assistant-feedback"></p>
             </form>
+          </section>
+
+          <section class="settings-section" data-settings-section="ai-conversations">
+            <div class="section-heading">
+              <h3 data-i18n="aiConversationHistoryAll"></h3>
+              <p data-i18n="aiConversationHistoryAllIntro"></p>
+            </div>
+            <div class="settings-form">
+              <div class="settings-actions">
+                <button type="button" class="secondary-button" id="ai-conversation-refresh" data-i18n="refreshConversations"></button>
+              </div>
+              <div class="ai-conversation-list" id="ai-conversation-list"></div>
+              <p class="settings-feedback" id="ai-conversation-feedback"></p>
+            </div>
           </section>
 
           <section class="settings-section" data-settings-section="backup">
@@ -579,29 +614,47 @@
     <aside class="ai-panel" id="ai-panel" aria-label="Global AI assistant" data-i18n-attr="aria-label:globalAiPanel" hidden>
       <div class="ai-panel-resize" id="ai-panel-resize" role="separator" aria-orientation="vertical" aria-label="Resize AI panel" data-i18n-attr="aria-label:resizeAiPanel"></div>
       <header class="ai-panel-header">
-        <div>
-          <p class="eyebrow" data-i18n="globalAiAssistant"></p>
+        <div class="ai-panel-title-row">
           <h2 data-i18n="aiConversation"></h2>
+          <span id="ai-context-compact"></span>
         </div>
         <button class="icon-button" type="button" id="ai-panel-close" aria-label="Close AI assistant" data-i18n-attr="aria-label:closeGlobalAi">×</button>
       </header>
 
       <div class="ai-context-card">
-        <span data-i18n="aiContext"></span>
+        <span data-i18n="aiCurrentContext"></span>
         <strong id="ai-context-label"></strong>
       </div>
 
       <div class="ai-chat-log" id="ai-chat-log" aria-live="polite"></div>
 
-      <div class="ai-panel-actions">
-        <button type="button" id="ai-generate-note" data-i18n="generateHtmlNote"></button>
-        <span data-i18n="aiPanelComingSoon"></span>
-      </div>
+      <div class="ai-composer" id="ai-composer">
+        <div class="ai-composer-resize" id="ai-composer-resize" role="separator" aria-orientation="horizontal" aria-label="Resize AI input area" data-i18n-attr="aria-label:resizeAiComposer"></div>
+        <div class="ai-panel-actions">
+          <button type="button" id="ai-generate-note" data-i18n="generateHtmlNote"></button>
+          <label class="ai-source-toggle">
+            <input id="ai-content-expansion" type="checkbox">
+            <span data-i18n="aiContentExpansion"></span>
+          </label>
+          <div class="ai-more-menu-wrap">
+            <button type="button" class="icon-action ai-more-toggle" id="ai-more-toggle" aria-label="More AI actions" title="More AI actions" data-i18n-attr="aria-label:aiMoreActions,title:aiMoreActions"></button>
+            <div class="ai-more-menu" id="ai-more-menu" hidden>
+              <button type="button" class="ai-more-menu-item ai-new-chat" id="ai-new-chat" aria-label="New AI conversation" title="New AI conversation" data-i18n-attr="aria-label:aiNewConversation,title:aiNewConversation"></button>
+              <button type="button" class="ai-more-menu-item ai-history-toggle" id="ai-history-toggle" aria-label="AI conversation history" title="AI conversation history" data-i18n-attr="aria-label:aiConversationHistory,title:aiConversationHistory"></button>
+              <button type="button" class="ai-more-menu-item ai-job-toggle" id="ai-job-toggle" aria-label="AI job queue" title="AI job queue" data-i18n-attr="aria-label:aiJobQueue,title:aiJobQueue"></button>
+            </div>
+          </div>
+        </div>
+        <div class="ai-history-list" id="ai-history-list" hidden></div>
+        <div class="ai-job-list" id="ai-job-list" hidden></div>
 
-      <form class="ai-chat-form" id="ai-chat-form">
-        <textarea id="ai-chat-input" rows="4" data-i18n-attr="placeholder:aiChatPlaceholder"></textarea>
-        <button type="submit" data-i18n="send"></button>
-      </form>
+        <form class="ai-chat-form" id="ai-chat-form">
+          <div class="ai-chat-input-box">
+            <textarea id="ai-chat-input" rows="2" data-i18n-attr="placeholder:aiChatPlaceholder"></textarea>
+            <button type="submit" class="ai-send-button" aria-label="Send" title="Send" data-i18n-attr="aria-label:send,title:send"></button>
+          </div>
+        </form>
+      </div>
     </aside>
 
     <section class="metadata-editor" id="metadata-editor" aria-label="Edit note metadata" data-i18n-attr="aria-label:metadataEditor" hidden>
@@ -667,17 +720,57 @@
         </div>
       </form>
     </section>
+
+    <section class="metadata-editor" id="generate-note-dialog" aria-label="Generate note" data-i18n-attr="aria-label:generateNoteDialog" hidden>
+      <form class="metadata-dialog" id="generate-note-form">
+        <div class="metadata-dialog-header">
+          <h2 data-i18n="generateNoteDialog"></h2>
+          <button class="icon-button" type="button" id="generate-note-cancel-icon" aria-label="Cancel" title="Cancel" data-i18n-attr="aria-label:cancel,title:cancel">×</button>
+        </div>
+        <p class="security-note" data-i18n="generateNoteIntro"></p>
+        <div class="form-grid">
+          <label>
+            <span data-i18n="generateTheme"></span>
+            <select id="generate-theme">
+              <option value="default" data-i18n="generateDefault"></option>
+              <option value="dark" data-i18n="generateDark"></option>
+              <option value="light" data-i18n="generateLight"></option>
+            </select>
+          </label>
+          <label>
+            <span data-i18n="generateTargetUse"></span>
+            <select id="generate-target-use">
+              <option value="default" data-i18n="generateDefault"></option>
+              <option value="personal" data-i18n="generatePersonal"></option>
+              <option value="share" data-i18n="generateShare"></option>
+            </select>
+          </label>
+        </div>
+        <p class="security-note compact-note" id="generate-share-hint" data-i18n="generateShareSafetyHint" hidden></p>
+        <label>
+          <span data-i18n="generateStylePreference"></span>
+          <select id="generate-style-preference">
+            <option value="default" data-i18n="generateDefault"></option>
+            <option value="report" data-i18n="generateReport"></option>
+            <option value="website" data-i18n="generateWebsite"></option>
+            <option value="ppt" data-i18n="generatePpt"></option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="generateReferenceNote"></span>
+          <select id="generate-reference-note"></select>
+        </label>
+        <p class="settings-note" data-i18n="generateReferenceImageComingSoon"></p>
+        <p class="settings-feedback" id="generate-note-feedback"></p>
+        <div class="metadata-actions">
+          <button type="submit" id="generate-note-submit" data-i18n="generateNoteSubmit"></button>
+          <button type="button" class="secondary-button" id="generate-note-cancel" data-i18n="cancel"></button>
+        </div>
+      </form>
+    </section>
   </div>
 
-  <a class="demo-home-link" href="../" aria-label="Back to homepage" title="Back to homepage">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M19 12H5"></path>
-      <path d="m12 19-7-7 7-7"></path>
-    </svg>
-    <span>Home</span>
-  </a>
-
   <script src="config.js"></script>
-  <script src="app.js?v=0.8.4" type="module"></script>
+  <script src="app.js?v=0.9.0" type="module"></script>
 </body>
 </html>

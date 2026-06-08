@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,199 +15,770 @@
 <p class="eyebrow">リリース履歴</p>
 <h1>HTMlore 変更履歴</h1>
 </article>
-<aside class="stat"><span class="badge">0.7.0</span></aside>
+<aside class="stat"><span class="badge">0.9.0</span></aside>
 </section>
 <section class="timeline doc">
 <h1>Changelog</h1>
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
+<h2>[Unreleased]</h2>
+<h2>[0.9.0] - 2026-06-08</h2>
+<h3>Added</h3>
+<ul>
+<li>OpenAI-compatible エンドポイント向けのサーバー側 AI provider 設定を追加し、</li>
+<p>API key はバックエンド環境変数からのみ読み取るようにしました。</p>
+<li>ナレッジベース Q&amp;A beta を追加しました。コンテキスト解決、キーワード検索、</li>
+<p>strict/content expansion モード、Markdown 回答表示、ソース表示、rate limit を含みます。</p>
+<li>AI 会話の永続化、コンテキスト別の最新会話復元、AI サイドバー内のコンテキスト別履歴、</li>
+<p>Settings のグローバル会話管理を追加しました。</p>
+<li>軽量 AI ジョブキュー、実行履歴、キューポップオーバー、job/run API を追加しました。</li>
+<li>既存の AI 会話から HTML ノートを生成する beta 機能を追加しました。PM/UX/Coder/QA/Reviewer</li>
+<p>の段階的グラフを使います。</p>
+<li>HTML、Markdown、プレーンテキスト資料アップロードから HTML ノートを生成する beta 機能を追加しました。</li>
+<li>vector/hybrid 検索スキャフォールドを追加し、vector store 未設定時はキーワード検索へフォールバックします。</li>
+<li>プロンプト予算、未対応リクエスト、秘密情報らしき出力、共有向け HTML 安全確認の AI ガードレールを追加しました。</li>
+<li>AI パネル UI を改善しました。コンパクトなコンテキスト header、入力エリア resize、返信状態、</li>
+<p>コンテキストリセット、会話履歴、キュー/More メニュー、会話管理のアイコンボタンを含みます。</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>英語、中国語、日本語 README を更新し、現在の AI 機能、サーバー側 AI 設定、beta 制限を記載しました。</li>
+<li>最新ドキュメントから静的 Demo の README / CHANGELOG ノートを再生成しました。</li>
+<li>パッケージ、アプリ、PWA、Demo cache、provider user-agent のバージョンを <code>0.9.0</code> に更新しました。</li>
+</ul>
+<h3>Security</h3>
+<ul>
+<li>AI provider の公開 status が <code>has_api_key</code> などの公開フィールドだけを返すことを確認しました。</li>
+<p>ブラウザー設定 API は生の API key を受け付けず、返しません。</p>
+<li>AI provider secret が status、provider config、生成 run payload から漏れないことを確認するテストを追加しました。</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>全体コンテキスト Q&amp;A 検索を改善し、overview 系の質問で単一ノートに寄りすぎず、</li>
+<p>選択済みコンテキスト全体を使えるようにしました。</p>
+<li>static build で <code>app_static</code> が自身の内部へコピーされる問題を修正しました。</li>
+<li>AI サイドバーのメニュー状態、会話履歴のコンテキスト絞り込み、Settings 表示時に右サイドバーを閉じる挙動を修正し、</li>
+<p>Playwright カバレッジを追加しました。</p>
+</ul>
+<h2>[0.8.4] - 2026-06-06</h2>
+<h3>Fixed</h3>
+<ul>
+<li>デスクトップのリーダー header の高さ上限を広げ、ノート PC 幅で左右のサイドバーを</li>
+<p>両方開いたときに、2 行タイトルと 3 行概要でタグが切れる問題を修正しました。</p>
+</ul>
+<h3>Added</h3>
+<ul>
+<li>ノート PC 幅で左右サイドバーを開いたリーダーレイアウトを検証する Playwright</li>
+<p>カバレッジを追加しました。</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.8.4</code> に更新しました。</li>
+</ul>
+<h2>[0.8.3] - 2026-06-06</h2>
+<h3>Fixed</h3>
+<ul>
+<li>モバイルの設定ページナビゲーションをコンパクトな横スクロールタブバーに変更し、</li>
+<p>長い設定セクション名がスマートフォン画面で大きなブロックや横はみ出しとして 表示されないようにしました。</p>
+<li>デスクトップの設定ページは既存の左ナビゲーションレイアウトを維持しました。</li>
+</ul>
+<h3>Added</h3>
+<ul>
+<li>モバイル設定タブのスクロールバーとデスクトップ設定ナビゲーションのレイアウトを</li>
+<p>検証する Playwright カバレッジを追加しました。</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.8.3</code> に更新しました。</li>
+</ul>
+<h2>[0.8.2] - 2026-06-05</h2>
+<h3>Fixed</h3>
+<ul>
+<li>タグフィルターの件数表示位置を調整しました。現在の選択結果数は</li>
+<p>&quot;Tag filters&quot; タイトル横にアクセント色のインライン文字として表示し、下部の 重複した &quot;Tags&quot; ラベルを削除しました。</p>
+<li>カードの日付は安定した item 作成日を優先するようになり、アーカイブ解除などの</li>
+<p>状態更新でカード左下の日付が変わらなくなりました。</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.8.2</code> に更新しました。</li>
+</ul>
+<h2>[0.8.1] - 2026-06-05</h2>
+<h3>Added</h3>
+<ul>
+<li>タグフィルターポップオーバーに動的な結果数を追加しました。タイトルには</li>
+<p>現在の絞り込み件数を表示し、OR モードでは各タグを独立集計、AND モードでは 現在の共通集合内の共起タグ数を表示します。</p>
+<li>共有ダイアログと共有リンク管理に、共有の有効期限と現在状態を表示するように</li>
+<p>しました。</p>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>公開共有 HTML ページ内のアンカーリンクがワークスペース shell へ戻らず、</li>
+<p>共有ドキュメント内で移動するよう修正しました。</p>
+<li>3 行の概要でもタグ行が header 境界に近づきすぎないよう、リーダー header の</li>
+<p>余白を増やしました。</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>フィルターポップオーバーの OR/AND タグ一致ボタンを小さくしました。</li>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.8.1</code> に更新しました。</li>
+</ul>
+<h2>[0.8.0] - 2026-06-05</h2>
+<h3>Removed</h3>
+<ul>
+<li>従来の <code>html_vault</code> Python 互換パッケージ、旧 <code>html-vault</code> CLI entry point、</li>
+<p><code>HTML_VAULT_*</code> runtime environment fallback を削除しました。現在の runtime 設定は <code>html_lore</code>、<code>html-lore</code>、<code>HTML_LORE_*</code> のみを使用します。</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Docker、デプロイ例、移行ノート、Python package discovery を、名称変更後の</li>
+<p>HTMlore runtime path のみを使うよう更新しました。</p>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.8.0</code> に更新しました。</li>
+</ul>
+<h2>[0.7.9] - 2026-06-05</h2>
+<h3>Added</h3>
+<ul>
+<li>サイドバー footer に GitHub ショートカットと並ぶ HTMlore ホームページ入口を</li>
+<p>追加しました。</p>
+<li>ルーティングやキャッシュ問題の後でも、既存の有効な共有に安全な</li>
+<p><code>/share/{token}</code> 入口ページを復元できる静的共有 shell 修復を追加しました。</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>ワークスペースのブランド logo は公開プロジェクトホームページではなく、</li>
+<p>ワークスペースホームへ戻るようになりました。</p>
+<li>Agent Server 接続状態を Settings &gt; User profile に移動しました。</li>
+<li>サイドバー footer のユーザー状態ボタンを削除し、アカウント詳細は settings</li>
+<p>内に集約しました。</p>
+<li>モバイルのリーダーページでは、リーダーメタ情報と操作ヘッダーがノート本文と</li>
+<p>一緒にスクロールして隠れ、グローバルトップバーだけが残ります。</p>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>ノートのアーカイブ後に count 0 のタグを非表示にし、アーカイブ解除時に復元</li>
+<p>されるようにしました。</p>
+<li><code>/share/{token}/</code> ルートを修正し、<code>/share/{token}</code> と同じ動作にしました。</li>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.9</code> に更新しました。</li>
+</ul>
+<h2>[0.7.8] - 2026-06-05</h2>
+<h3>Fixed</h3>
+<ul>
+<li><code>0.7.7</code> で追加したリーダーの「幅に合わせる / 原文ワイド」ボタンを削除しました。</li>
+<p>モバイルの読書体験は、未確認の操作入口を追加せずに再設計します。</p>
+<li>モバイルのサイドバーを非表示または狭い左レールではなく、上部の縦方向</li>
+<p>折りたたみバーに変更し、ワークスペースを横方向に圧迫せずナビゲーションを 使えるようにしました。</p>
+<li>デプロイルーティングが誤って <code>/share/{token}</code> にワークスペース shell を</li>
+<p>返した場合でも、<code>/api/public/shares/{token}</code> から公開内容を取得して共有ページを 描画する静的 fallback を追加しました。</p>
+<li>共有作成時に <code>public/share/&lt;token&gt;/index.html</code> の静的入口を生成し、共有の</li>
+<p>取り消しまたは置き換え時に古い入口を削除するようにしました。</p>
+<li>モバイルサイドバーの折りたたみと静的共有 fallback の描画を確認する</li>
+<p>Playwright テストを追加しました。</p>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.8</code> に更新しました。</li>
+</ul>
+<h2>[0.7.7] - 2026-06-05</h2>
+<h3>Added</h3>
+<ul>
+<li>リーダーの幅モードに関する初期実験入口を追加しました。</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>モバイルのリーダーレイアウトを改善し、狭い画面で左サイドバーが読書領域を</li>
+<p>占有しないようにしました。</p>
+<li>モバイルでリーダー操作ボタンが iframe 本文より上に残るようにし、ノート内容に</li>
+<p>視覚的に覆われないようにしました。</p>
+<li>モバイルリーダー viewport を確認する Playwright テストを追加しました。</li>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.7</code> に更新しました。</li>
+</ul>
+<h2>[0.7.6] - 2026-06-04</h2>
+<h3>Security</h3>
+<ul>
+<li>公開共有 JSON レスポンスを最小化し、共有閲覧者に内部 item ID、</li>
+<p>collection/tag メタデータ、共有管理 ID、アクセスカウンター、コピー可能な 管理 URL フィールドを返さないようにしました。</p>
+<li>共有更新 API から、取り消し済みまたは期限切れの共有を再有効化・延長できない</li>
+<p>ようにしました。</p>
+<li>共有 HTML のサニタイズを強化し、resource <code>src</code> が非公開の <code>/api/</code>、</li>
+<p><code>/content/</code> パスや外部トラッキングリソースを指せないようにしました。 検証済みの inline SVG data image のみ引き続き許可します。</p>
+<li>非公開 API 分離、公開レスポンス最小化、無効共有の更新拒否、resource source</li>
+<p>剥離を確認する共有セキュリティテストを追加しました。</p>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.6</code> に更新しました。</li>
+</ul>
+<h2>[0.7.5] - 2026-06-04</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Caddy デプロイの公開共有ページルートを修正しました。<code>/share/*</code> は</li>
+<p>静的アプリの fallback ではなく、バックエンド API へ reverse proxy されます。</p>
+<li>任意の Basic Auth Caddy 例を更新し、<code>/share/*</code> と</li>
+<p><code>/api/public/shares/*</code> は公開アクセス可能なまま、ワークスペースと 非公開 API ルートは保護されるようにしました。</p>
+<li>公開共有ルートを確認するデプロイ設定テストを追加しました。</li>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.5</code> に更新しました。</li>
+</ul>
+<h2>[0.7.4] - 2026-06-04</h2>
+<h3>Fixed</h3>
+<ul>
+<li>共有ページのノート HTML を隔離 iframe 内で描画するようにし、元ページの</li>
+<p>グローバル CSS が HTMlore の共有シェルを崩したり、アイコン画像を巨大表示 したりしないようにしました。</p>
+<li>共有 <code>url_path</code> を永続化し、共有済みノートの共有ダイアログを再度開いた</li>
+<p>ときにも既存の公開リンクをコピーできるようにしました。</p>
+<li>共有取り消しボタンを共有ダイアログと共有リンク管理行の左側に移動しました。</li>
+<li>PWA service worker が <code>/share/</code>、<code>/api/</code>、<code>/content/</code> ルートをアプリシェル</li>
+<p>キャッシュで横取りしないようにしました。</p>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.4</code> に更新しました。</li>
+</ul>
+<h2>[0.7.3] - 2026-06-04</h2>
+<h3>Added</h3>
+<ul>
+<li>公開共有ページで安全な inline CSS と同一ページ内の <code>#anchor</code> リンクを保持しつつ、</li>
+<p>外部 CSS リソースと危険な CSS 機能は引き続きブロックするようにしました。</p>
+<li>Chart.js/canvas ノート向けに <code>requires-static-export:chart</code> の共有安全フィードバックを追加し、</li>
+<p>スクリプト実行ではなく静的チャート書き出しが必要であることを明示しました。</p>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>公開共有ページが完全な HTML 文書を入れ子にして表示する問題を修正しました。安全な head</li>
+<p>スタイルは共有ページの head に配置し、本文断片のみを共有コンテンツ領域に表示します。</p>
+<li>インポート完了メッセージの余白とカード概要領域の余裕を増やし、アップロード表示の詰まりと</li>
+<p>概要/タグのわずかな接触を避けました。</p>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.3</code> に更新しました。</li>
+</ul>
+<h2>[0.7.2] - 2026-06-04</h2>
+<h3>Added</h3>
+<ul>
+<li>期限付き token リンク、共有管理 API、公開用のサニタイズ済み共有ページ、</li>
+<p>共有取り消しを備えたバックエンド連携の公開ノート共有機能を追加しました。</p>
+<li>公開共有の作成前に、実行可能 HTML、フォーム/埋め込み、危険な URL scheme、</li>
+<p>ローカル/プライベート参照、疑わしい secret をブロックする共有安全チェックを追加しました。</p>
+<li>ローカルの <code>toggleGroup(&#x27;id&#x27;)</code> 折りたたみ操作だけをプラットフォーム内蔵操作へ変換する</li>
+<p>限定的な安全共有変換を追加し、公開共有ページでは元スクリプトと外部フォント/リソースリンクを除去します。</p>
+<li>リーダーページの共有 UI、設定内の共有リンク管理を追加し、リーダー内の内部リンクコピー操作を削除しました。</li>
+<li>ワークスペースの Agent 接続状態をサイドバーのプロフィール popover へ移動し、</li>
+<p>その popover の大きなアバターからも画像をアップロードできるようにしました。</p>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.2</code> に更新しました。</li>
+</ul>
+<h2>[0.7.1] - 2026-06-04</h2>
+<h3>Fixed</h3>
+<ul>
+<li>デプロイ済みワークスペースでカード上の Original リンクが静的な <code>content/...</code> パスを開き、SPA fallback によってアプリ画面へ置き換わる問題を修正しました。ログインセッション付きの raw item API を使うようになりました。</li>
+<li>セルフホスト HTTP/HTTPS デプロイで同一 origin の API を自動検出しつつ、GitHub Pages と静的 Demo はバックエンドなしのまま維持しました。</li>
+<li>Playwright 検証中は service worker をブロックし、API 連携モードと静的 Demo モードのカード Original リンクをカバーするテストを追加しました。</li>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.7.1</code> に更新しました。</li>
+</ul>
 <h2>[0.7.0] - 2026-06-04</h2>
 <h3>Changed</h3>
-<ul><li>HTMlore への名称変更、リポジトリ移行、主要実装の <code>html_lore</code> 名前空間、<code>html-lore</code> CLI、<code>HTML_LORE_*</code> 設定名を <code>0.7.0</code> 安定版として昇格しました。</li><li>旧プロジェクト名から HTMlore へアップグレードするデプロイ向けに移行ガイドを追加しました。</li><li>HTMlore への名称変更後に残っていたサンプル内容と静的アセット内の旧プロジェクト名参照を整理しました。</li><li>公開ホームページ、Demo README ノート、アプリのアクセシビリティラベル、logo 説明を、HTMlore の現在のライブラリ/知識表現に更新しました。</li><li>公開ホームページとワークスペースの wordmark を調整し、両方で <code>HTM</code> + アクセント付き <code>lore</code> の同じスタイルを使うようにしました。</li><li>従来の <code>html-vault</code> console script を互換 wrapper 経由にし、help 出力では旧コマンド名を保ちながら <code>html_lore</code> 実装を使うようにしました。</li><li>既定 Docker デプロイで使うローカルログイン/session とセルフホスト用マルチユーザーデータ設定を <code>.env.example</code> に追加しました。</li><li>バックエンド API Docker イメージにヘルスチェックを追加しました。</li><li>pytest、Playwright Demo チェック、Docker Compose 検証を実行する GitHub Actions CI を追加しました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.7.0</code> に更新しました。</li></ul>
+<ul>
+<li>HTMlore への名称変更、リポジトリ移行、主要実装の <code>html_lore</code></li>
+<p>名前空間、<code>html-lore</code> CLI、<code>HTML_LORE_*</code> 設定名を <code>0.7.0</code> 安定版として昇格しました。</p>
+<li>旧プロジェクト名から HTMlore へアップグレードするデプロイ向けに移行ガイドを追加しました。</li>
+<li>HTMlore への名称変更後に残っていたサンプル内容と静的アセット内の旧プロジェクト名参照を整理しました。</li>
+<li>公開ホームページ、Demo README ノート、アプリのアクセシビリティラベル、logo 説明を、HTMlore の現在のライブラリ/知識表現に更新しました。</li>
+<li>公開ホームページとワークスペースの wordmark を調整し、両方で <code>HTM</code> +</li>
+<p>アクセント付き <code>lore</code> の同じスタイルを使うようにしました。</p>
+<li>従来の <code>html-vault</code> console script を互換 wrapper 経由にし、help 出力では旧コマンド名を保ちながら <code>html_lore</code> 実装を使うようにしました。</li>
+<li>既定 Docker デプロイで使うローカルログイン/session とセルフホスト用マルチユーザーデータ設定を <code>.env.example</code> に追加しました。</li>
+<li>バックエンド API Docker イメージにヘルスチェックを追加しました。</li>
+<li>pytest、Playwright Demo チェック、Docker Compose 検証を実行する GitHub Actions CI を追加しました。</li>
+<li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.7.0</code> に更新しました。</li>
+</ul>
 <h2>[0.6.8] - 2026-06-04</h2>
 <h3>Changed</h3>
-<ul><li>主要な Python 実装パッケージを <code>html_lore</code> に移動しました。</li><li>パッケージ entry point、テスト、API サーバー起動パス、Docker パッケージングを、新しい <code>html_lore</code> 名前空間を既定で使うよう更新しました。</li><li>既存 import と旧 <code>uvicorn html_vault.server.app:app</code> 起動パス向けに、従来の <code>html_vault</code> パッケージを薄い互換 shim として残しました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.8</code> に更新しました。</li></ul>
+<ul>
+<li>主要な Python 実装パッケージを <code>html_lore</code> に移動しました。</li>
+<li>パッケージ entry point、テスト、API サーバー起動パス、Docker パッケージングを、新しい <code>html_lore</code> 名前空間を既定で使うよう更新しました。</li>
+<li>既存 import と旧 <code>uvicorn html_vault.server.app:app</code> 起動パス向けに、従来の <code>html_vault</code> パッケージを薄い互換 shim として残しました。</li>
+<li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.8</code> に更新しました。</li>
+</ul>
 <h3>Compatibility</h3>
-<ul><li>0.x 互換期間中は、既存の <code>html_vault</code> import と旧 <code>html-vault</code> CLI を引き続きサポートします。</li></ul>
+<ul>
+<li>0.x 互換期間中は、既存の <code>html_vault</code> import と旧 <code>html-vault</code> CLI を引き続きサポートします。</li>
+</ul>
+<h2>[0.6.7] - 2026-06-04</h2>
+<h3>Added</h3>
+<ul>
+<li>新しい <code>html-lore</code> CLI エントリを追加し、0.x 互換期間中は従来の</li>
+<p><code>html-vault</code> コマンドも引き続き利用できるようにしました。</p>
+<li>既存実装パッケージを指す互換入口として、<code>html_lore</code> Python 公開名前空間を追加しました。</li>
+<li><code>HTML_LORE_*</code> 実行時設定名を追加し、従来の <code>HTML_VAULT_*</code> 環境変数も fallback として読み取ります。</li>
+<li>ブラウザ設定を <code>html-vault-*</code> localStorage キーから <code>html-lore-*</code> キーへコピーする移行処理を追加しました。旧キーは削除しません。</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>公開プロダクトブランドを <code>HTMlore</code> に統一し、アプリシェル、ログイン画面、PWA manifest、Pages サイト、静的 demo、README、デプロイ文書、バージョンメタデータへ反映しました。</li>
+<li>既定のリポジトリとリリース確認 URL を <code>JMoCoder/html_lore</code> に更新しました。</li>
+<li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.7</code> に更新しました。</li>
+</ul>
+<h3>Compatibility</h3>
+<ul>
+<li>既存の <code>html_vault</code> Python import、<code>html-vault</code> CLI、<code>HTML_VAULT_*</code> 環境変数、<code>html-vault-*</code> ブラウザ設定、<code>html-vault-backup</code> インポートは引き続きサポートします。</li>
+</ul>
+<h2>[0.6.6] - 2026-06-03</h2>
+<h3>Changed</h3>
+<ul>
+<li>サイドバー下部のユーザー領域を調整し、アバタークリックでアバター、ユーザー名、ID、サブスクリプション状態、AI クレジット残高を表示するコンパクトな状態ポップオーバーを開くようにしました。</li>
+<li>プロフィール管理は Settings &gt; User profile に集約し、アバター自体をアップロード入口にして、サインアウトボタンを同じプロフィール行の右側に配置しました。</li>
+<li>メインワークスペース、リーダー、設定ページでサイドバーの折りたたみ/展開トランジションを滑らかにしました。</li>
+<li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.6</code> に更新しました。</li>
+</ul>
 <h2>[0.6.5] - 2026-06-03</h2>
 <h3>Added</h3>
-<ul><li><code>data/users.json</code> によるセルフホスト向けマルチユーザーログインを追加しました。</li><li>ユーザーごとの永続化ノートブック領域 <code>data/users/&lt;data_id&gt;/</code> を追加し、各ユーザーのインポート/生成 HTML、メタデータ、実行時設定、ジョブ記録、生成済み public 出力を分離して保存します。</li><li>平文パスワードを保存せずにセルフホストユーザーを作成または置換できる <code>html-lore user-add</code> コマンドを追加しました。</li><li>env による初期管理者作成、大文字小文字を区別しないマルチユーザーログイン、ユーザー間アップロード分離を検証するバックエンド統合テストを追加しました。</li></ul>
+<ul>
+<li><code>data/users.json</code> によるセルフホスト向けマルチユーザーログインを追加しました。</li>
+<li>ユーザーごとの永続化ノートブック領域 <code>data/users/&lt;data_id&gt;/</code> を追加し、各ユーザーのインポート/生成 HTML、メタデータ、実行時設定、ジョブ記録、生成済み public 出力を分離して保存します。</li>
+<li>平文パスワードを保存せずにセルフホストユーザーを作成または置換できる <code>html-lore user-add</code> コマンドを追加しました。</li>
+<li>env による初期管理者作成、大文字小文字を区別しないマルチユーザーログイン、ユーザー間アップロード分離を検証するバックエンド統合テストを追加しました。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>既定 env 認証情報は最初の管理者を <code>users.json</code> に作成します。既存デプロイとの互換性のため、この初期管理者は従来のルートノートブックデータを引き続き使用します。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.5</code> に更新しました。</li></ul>
+<ul>
+<li>既定 env 認証情報は最初の管理者を <code>users.json</code> に作成します。既存デプロイとの互換性のため、この初期管理者は従来のルートノートブックデータを引き続き使用します。</li>
+<li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.5</code> に更新しました。</li>
+</ul>
 <h2>[0.6.4] - 2026-06-03</h2>
 <h3>Changed</h3>
-<ul><li>ログインユーザー名は大文字小文字を区別せずに照合し、パスワードは引き続き大文字小文字を区別します。</li><li>ログイン session は、バックエンドで設定された正規のユーザー名を保存して返すようになりました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.4</code> に更新しました。</li></ul>
+<ul>
+<li>ログインユーザー名は大文字小文字を区別せずに照合し、パスワードは引き続き大文字小文字を区別します。</li>
+<li>ログイン session は、バックエンドで設定された正規のユーザー名を保存して返すようになりました。</li>
+<li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.4</code> に更新しました。</li>
+</ul>
 <h2>[0.6.3] - 2026-06-03</h2>
 <h3>Changed</h3>
-<ul><li>インポート/作成フィードバック行の上余白と行高を調整し、<code>{title} をインポートしました</code> などのメッセージが操作フォームに近すぎないようにしました。</li><li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.6.3</code> に更新しました。</li></ul>
+<ul>
+<li>インポート/作成フィードバック行の上余白と行高を調整し、<code>{title} をインポートしました</code> などのメッセージが操作フォームに近すぎないようにしました。</li>
+<li>パッケージ、アプリ、PWA、Demo のキャッシュバージョンを <code>0.6.3</code> に更新しました。</li>
+</ul>
 <h2>[0.6.2] - 2026-06-03</h2>
 <h3>Changed</h3>
-<ul><li>内蔵ログインフローを <code>0.6.2</code> 安定版として昇格しました。</li><li>既定 Docker は <code>admin</code> / <code>test-password</code> と開発用 session secret によるローカル/テストログインを有効化し、新規デプロイでログイン画面を表示します。</li><li>README とデプロイドキュメントで、公開アクセス前に既定のユーザー名、パスワード、session secret を変更する必要があることを明記しました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.2</code> に更新しました。</li></ul>
+<ul>
+<li>内蔵ログインフローを <code>0.6.2</code> 安定版として昇格しました。</li>
+<li>既定 Docker は <code>admin</code> / <code>test-password</code> と開発用 session secret によるローカル/テストログインを有効化し、新規デプロイでログイン画面を表示します。</li>
+<li>README とデプロイドキュメントで、公開アクセス前に既定のユーザー名、パスワード、session secret を変更する必要があることを明記しました。</li>
+<li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.2</code> に更新しました。</li>
+</ul>
 <h2>[0.6.0] - 2026-06-03</h2>
 <h3>Added</h3>
-<ul><li>サーバー側認証が設定されている場合、ワークスペースの最初の画面として標準ログイン画面を追加しました。</li><li>HttpOnly 署名付き session Cookie による <code>/api/auth/status</code>、<code>/api/auth/login</code>、<code>/api/auth/logout</code> を追加しました。</li><li>バックエンド API、<code>manifest.json</code>、ノート本文ファイルは、有効な API token またはブラウザーログイン session で保護されるようになりました。</li></ul>
+<ul>
+<li>サーバー側認証が設定されている場合、ワークスペースの最初の画面として標準ログイン画面を追加しました。</li>
+<li>HttpOnly 署名付き session Cookie を使う <code>/api/auth/status</code>、<code>/api/auth/login</code>、<code>/api/auth/logout</code> を追加しました。</li>
+<li><code>HTML_LORE_AUTH_USERNAME</code>、<code>HTML_LORE_AUTH_PASSWORD</code>、<code>HTML_LORE_SESSION_SECRET</code> によるテストユーザー認証情報の環境変数設定を追加しました。</li>
+<li>バックエンド API、<code>manifest.json</code>、ノート本文ファイルは、有効な API token またはブラウザーログイン session で保護されるようになりました。</li>
+<li>ログイン、失敗ログイン、API 保護、静的コンテンツ保護のバックエンド統合テストを追加しました。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.0</code> に更新しました。</li></ul>
+<ul>
+<li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.6.0</code> に更新しました。</li>
+</ul>
 <h2>[0.5.3] - 2026-06-03</h2>
 <h3>Changed</h3>
-<ul><li>初回デプロイまたは言語設定が保存されていない場合、実ワークスペースと静的 Demo の既定言語を英語へ変更しました。保存済みのユーザー設定とホームページから Demo への言語引き継ぎは維持されます。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.5.3</code> に更新しました。</li></ul>
+<ul>
+<li>初回デプロイまたは言語設定が保存されていない場合、実ワークスペースと静的 Demo の既定言語を英語へ変更しました。保存済みのユーザー設定とホームページから Demo への言語引き継ぎは維持されます。</li>
+<li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.5.3</code> に更新しました。</li>
+</ul>
 <h2>[0.5.2] - 2026-06-03</h2>
 <h3>Added</h3>
-<ul><li>静的 Demo のレイアウトとワークスペースロゴのナビゲーションを検証する Playwright E2E カバレッジを追加しました。</li><li>実アプリのブランド領域から公開 GitHub Pages ホームページを開けるよう、設定可能な <code>HTML_LORE_PAGES_URL</code> を追加しました。</li></ul>
+<ul>
+<li>静的 Demo のレイアウトとワークスペースロゴのナビゲーションを検証する Playwright E2E カバレッジを追加しました。</li>
+<li>実アプリのブランド領域から公開 GitHub Pages ホームページを開けるよう、設定可能な <code>HTML_LORE_PAGES_URL</code> を追加しました。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>Demo ワークスペースのブランド領域は、Demo 内に留まるのではなく静的 Pages ホームページへ戻るようになりました。</li><li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.5.2</code> に更新しました。</li></ul>
+<ul>
+<li>Demo ワークスペースのブランド領域は、Demo 内に留まるのではなく静的 Pages ホームページへ戻るようになりました。</li>
+<li>パッケージ、アプリ、PWA、Demo、ホームページのキャッシュバージョンを <code>0.5.2</code> に更新しました。</li>
+</ul>
 <h2>[0.5.1] - 2026-06-02</h2>
 <h3>Added</h3>
-<ul><li>GitHub Pages 用 <code>docs/</code> 静的ホームページと読み取り専用 Demo を追加しました。</li><li>公開ホームページに英語、中国語、日本語の直接切り替えボタンを追加しました。</li><li>ホームページから Demo へ言語を引き継ぐため、<code>demo/?lang=zh-CN</code>、<code>demo/?lang=en</code>、<code>demo/?lang=ja</code> をサポートしました。</li><li>言語別 Demo manifest と、各言語の完全な README/CHANGELOG HTML デモノートを追加しました。</li></ul>
+<ul>
+<li>GitHub Pages 用 <code>docs/</code> 静的ホームページと読み取り専用 Demo を追加しました。</li>
+<li>公開ホームページに英語、中国語、日本語の直接切り替えボタンを追加しました。</li>
+<li>ホームページから Demo へ言語を引き継ぐため、<code>demo/?lang=zh-CN</code>、<code>demo/?lang=en</code>、<code>demo/?lang=ja</code> をサポートしました。</li>
+<li>言語別 Demo manifest と、各言語の完全な README/CHANGELOG HTML デモノートを追加しました。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>Demo は明示的に静的モードのままとし、バックエンド自動検出を無効化しました。</li><li>古い Demo シェルが期限切れのコントロールを表示しないよう、Demo のキャッシュバスターと Service Worker キャッシュ名を更新しました。</li><li>パッケージ、アプリ、PWA キャッシュバージョンを <code>0.5.1</code> に更新しました。</li></ul>
+<ul>
+<li>Demo は明示的に静的モードのままとし、バックエンド自動検出を無効化しました。</li>
+<li>古い Demo シェルが期限切れのコントロールを表示しないよう、Demo のキャッシュバスターと Service Worker キャッシュ名を更新しました。</li>
+<li>パッケージ、アプリ、PWA キャッシュバージョンを <code>0.5.1</code> に更新しました。</li>
+</ul>
 <h2>[0.5.0] - 2026-06-02</h2>
 <h3>Changed</h3>
-<ul><li>プロジェクトを最初の安定したセルフホストノートブックリリースへ昇格しました。</li><li>英語、中国語、日本語の README を、プロジェクト全体のビジョン、0.5.0 の実装範囲、現在の制限、デプロイ経路、セキュリティモデル、ロードマップを中心に再構成しました。</li><li>パッケージ、アプリ、PWA キャッシュバージョンを <code>0.5.0</code> に更新しました。</li></ul>
+<ul>
+<li>プロジェクトを最初の安定したセルフホストノートブックリリースへ昇格しました。</li>
+<li>英語、中国語、日本語の README を、プロジェクト全体のビジョン、0.5.0 の実装範囲、現在の制限、デプロイ経路、セキュリティモデル、ロードマップを中心に再構成しました。</li>
+<li>パッケージ、アプリ、PWA キャッシュバージョンを <code>0.5.0</code> に更新しました。</li>
+</ul>
 <h2>[0.4.14] - 2026-06-02</h2>
 <h3>Changed</h3>
-<ul><li>既定の Docker Compose パスを、フロントエンドと <code>/api/*</code> の両方を提供する単一コンテナのセルフホストノートブックデプロイへ変更しました。</li><li>Caddy Basic Auth は既定起動の必須要件ではなく、任意の公開デプロイ例へ移動しました。</li><li>既定の Docker 環境変数を簡素化し、ローカルと LAN デプロイでは <code>.env</code> を生成せずに起動できるようにしました。</li></ul>
+<ul>
+<li>既定の Docker Compose パスを、フロントエンドと <code>/api/*</code> の両方を提供する単一コンテナのセルフホストノートブックデプロイへ変更しました。</li>
+<li>Caddy Basic Auth は既定起動の必須要件ではなく、任意の公開デプロイ例へ移動しました。</li>
+<li>既定の Docker 環境変数を簡素化し、ローカルと LAN デプロイでは <code>.env</code> を生成せずに起動できるようにしました。</li>
+</ul>
 <h2>[0.4.13] - 2026-06-02</h2>
 <h3>Added</h3>
-<ul><li>再利用可能なセルフホスト Docker デプロイ資産として、<code>Dockerfile.api</code>、<code>compose.prod.yml</code>、<code>deploy/Caddyfile</code>、バックエンドコンテナ entrypoint を追加しました。</li><li>デプロイ済みサイトがブラウザーコードにバックエンド token を埋め込まず、同一 origin API を使えるようにするランタイム <code>config.js</code> サポートを追加しました。</li><li><code>.dockerignore</code> を追加し、セルフホスト Docker の起動、更新、バックアップ、ロールバックのデプロイドキュメントを拡張しました。</li></ul>
+<ul>
+<li>再利用可能なセルフホスト Docker デプロイ資産として、<code>Dockerfile.api</code>、<code>compose.prod.yml</code>、<code>deploy/Caddyfile</code>、バックエンドコンテナ entrypoint を追加しました。</li>
+<li>デプロイ済みサイトがブラウザーコードにバックエンド token を埋め込まず、同一 origin API を使えるようにするランタイム <code>config.js</code> サポートを追加しました。</li>
+<li><code>.dockerignore</code> を追加し、セルフホスト Docker の起動、更新、バックアップ、ロールバックのデプロイドキュメントを拡張しました。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>初期の本番 compose パスは <code>compose.prod.yml</code> を使用しました。既定 compose パスは <code>0.4.14</code> で簡素化されました。</li></ul>
+<ul>
+<li>初期の本番 compose パスは <code>compose.prod.yml</code> を使用しました。既定 compose パスは <code>0.4.14</code> で簡素化されました。</li>
+</ul>
 <h2>[0.4.12] - 2026-06-02</h2>
 <h3>Added</h3>
-<ul><li>バックエンドのバージョンとリポジトリ情報を返す <code>GET /api/version</code> を追加しました。</li><li>設定 &gt; プロジェクト情報 で実行中バージョンを表示し、GitHub releases/tags から更新有無を確認するようにしました。</li><li>更新確認はヒント表示のみで、サーバーの自動更新は行いません。</li></ul>
+<ul>
+<li>バックエンドのバージョンとリポジトリ情報を返す <code>GET /api/version</code> を追加しました。</li>
+<li>設定 &gt; プロジェクト情報 で実行中バージョンを表示し、GitHub releases/tags から更新有無を確認するようにしました。</li>
+<li>更新確認はヒント表示のみで、サーバーの自動更新は行いません。</li>
+</ul>
 <h2>[0.4.11] - 2026-06-02</h2>
 <h3>Added</h3>
-<ul><li><code>meta/config/jobs.json</code> に保存する軽量バックエンド Job レコードを追加しました。</li><li>明示的な再ビルド実行と状態照会のために <code>POST /api/rebuild</code> と <code>GET /api/rebuild/{job_id}</code> を追加しました。</li><li>HTML インポート完了後に照会できるよう、<code>GET /api/uploads/{upload_id}</code> とアップロードレスポンスの <code>job_id</code> を追加しました。</li><li>アップロード、一覧、メタデータ編集、検索、本文取得、お気に入り、アーカイブ、アーカイブ解除、完全削除をカバーするコア API smoke テストを追加しました。</li><li>localhost のフロントエンドはバックエンド API として <code>http://127.0.0.1:8787</code> を既定で使うようになり、インラインスクリプト設定なしでローカルノートブックモードを利用できます。</li><li>README に <code>data/content</code>、<code>data/meta</code>、API サーバー、静的 Web サーバーを使った実際のローカルノートブック起動手順を追加しました。</li><li>セルフホスト本番準備として、再利用可能なデプロイ安全基線ドキュメントとバックエンド API Token/CORS 設定を追加しました。</li></ul>
+<ul>
+<li><code>meta/config/jobs.json</code> に保存する軽量バックエンド Job レコードを追加しました。</li>
+<li>明示的な再ビルド実行と状態照会のために <code>POST /api/rebuild</code> と <code>GET /api/rebuild/{job_id}</code> を追加しました。</li>
+<li>HTML インポート完了後に照会できるよう、<code>GET /api/uploads/{upload_id}</code> とアップロードレスポンスの <code>job_id</code> を追加しました。</li>
+<li>アップロード、一覧、メタデータ編集、検索、本文取得、お気に入り、アーカイブ、アーカイブ解除、完全削除をカバーするコア API smoke テストを追加しました。</li>
+<li>localhost のフロントエンドはバックエンド API として <code>http://127.0.0.1:8787</code> を既定で使うようになり、インラインスクリプト設定なしでローカルノートブックモードを利用できます。</li>
+<li>README に <code>data/content</code>、<code>data/meta</code>、API サーバー、静的 Web サーバーを使った実際のローカルノートブック起動手順を追加しました。</li>
+<li>セルフホスト本番準備として、再利用可能なデプロイ安全基線ドキュメントとバックエンド API Token/CORS 設定を追加しました。</li>
+</ul>
 <h2>[0.4.10] - 2026-06-02</h2>
 <h3>Fixed</h3>
-<ul><li>古いキャッシュ済み HTML シェルが新しいインポートボタン用スクリプトを読み込み、隠しファイル入力がまだ存在しない場合に起動が失敗する問題を修正しました。</li><li>PWA Service Worker は、ナビゲーションと GET 静的アセットでネットワークを優先し、オフライン時のみキャッシュを fallback として使うようになりました。</li><li>アプリと PWA キャッシュバージョンを <code>0.4.10</code> に更新し、ブラウザーが古い <code>0.4.9</code> アセットではなく修正済みのシェルとスクリプトを取得するようにしました。</li></ul>
+<ul>
+<li>古いキャッシュ済み HTML シェルが新しいインポートボタン用スクリプトを読み込み、隠しファイル入力がまだ存在しない場合に起動が失敗する問題を修正しました。</li>
+<li>PWA Service Worker は、ナビゲーションと GET 静的アセットでネットワークを優先し、オフライン時のみキャッシュを fallback として使うようになりました。</li>
+<li>アプリと PWA キャッシュバージョンを <code>0.4.10</code> に更新し、ブラウザーが古い <code>0.4.9</code> アセットではなく修正済みのシェルとスクリプトを取得するようにしました。</li>
+</ul>
 <h2>[0.4.9] - 2026-06-02</h2>
 <h3>Changed</h3>
-<ul><li>アーカイブ済み項目のカードとリーダーページでは、メタデータ編集アクションを表示しないようにしました。</li><li><code>PATCH /api/items/{id}/metadata</code> は、アーカイブ解除されるまでアーカイブ済み項目を拒否します。</li><li>アーカイブ済み項目では、お気に入り切り替え、アーカイブ解除、完全削除は引き続き利用できます。</li></ul>
+<ul>
+<li>アーカイブ済み項目のカードとリーダーページでは、メタデータ編集アクションを表示しないようにしました。</li>
+<li><code>PATCH /api/items/{id}/metadata</code> は、アーカイブ解除されるまでアーカイブ済み項目を拒否します。</li>
+<li>アーカイブ済み項目では、お気に入り切り替え、アーカイブ解除、完全削除は引き続き利用できます。</li>
+</ul>
 <h2>[0.4.8] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li><code>GET /api/items</code> と同じフィルター、並び替えパラメータを持つ <code>GET /api/search</code> を追加しました。</li><li>検索レスポンスは命中した項目、スコア、命中フィールド、スニペットを含み、将来の Pagefind、SQLite FTS、クラウド検索バックエンド向けの安定したインターフェースを提供します。</li><li>検索 query、タグ OR/AND、お気に入りフィルター、中国語検索、結果メタデータをカバーするサービス層テストと実 HTTP 統合テストを追加しました。</li></ul>
+<ul>
+<li><code>GET /api/items</code> と同じフィルター、並び替えパラメータを持つ <code>GET /api/search</code> を追加しました。</li>
+<li>検索レスポンスは命中した項目、スコア、命中フィールド、スニペットを含み、将来の Pagefind、SQLite FTS、クラウド検索バックエンド向けの安定したインターフェースを提供します。</li>
+<li>検索 query、タグ OR/AND、お気に入りフィルター、中国語検索、結果メタデータをカバーするサービス層テストと実 HTTP 統合テストを追加しました。</li>
+</ul>
 <h2>[0.4.7] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>ライブラリ表示、コレクション、タグのサイドバー表示設定を永続化する <code>GET /api/navigation</code> と <code>PUT /api/navigation</code> を追加しました。</li><li>ナビゲーション表示設定は <code>meta/config/navigation.json</code> に保存します。</li><li>Agent Server URL が設定されている場合、フロントエンドの設定管理ページはバックエンド経由でナビゲーション表示設定を読み書きします。静的モードでは localStorage fallback を維持します。</li><li>ナビゲーション設定のサービス層テストと実 HTTP 統合テストを追加しました。</li></ul>
+<ul>
+<li>ライブラリ表示、コレクション、タグのサイドバー表示設定を永続化する <code>GET /api/navigation</code> と <code>PUT /api/navigation</code> を追加しました。</li>
+<li>ナビゲーション表示設定は <code>meta/config/navigation.json</code> に保存します。</li>
+<li>Agent Server URL が設定されている場合、フロントエンドの設定管理ページはバックエンド経由でナビゲーション表示設定を読み書きします。静的モードでは localStorage fallback を維持します。</li>
+<li>ナビゲーション設定のサービス層テストと実 HTTP 統合テストを追加しました。</li>
+</ul>
 <h2>[0.4.6] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li><code>favorite</code> と <code>archived</code> の状態を YAML sidecar metadata に永続化する <code>PATCH /api/items/{id}/state</code> を追加しました。</li><li>Agent Server URL が設定されている場合、お気に入りボタンとアーカイブボタンはバックエンドへ書き込みます。静的モードではローカル上書き fallback を維持します。</li><li>お気に入り/アーカイブ状態の永続化とアーカイブ表示フィルターのサービス層テスト、実 HTTP 統合テストを追加しました。</li></ul>
+<ul>
+<li><code>favorite</code> と <code>archived</code> の状態を YAML sidecar metadata に永続化する <code>PATCH /api/items/{id}/state</code> を追加しました。</li>
+<li>Agent Server URL が設定されている場合、お気に入りボタンとアーカイブボタンはバックエンドへ書き込みます。静的モードではローカル上書き fallback を維持します。</li>
+<li>お気に入り/アーカイブ状態の永続化とアーカイブ表示フィルターのサービス層テスト、実 HTTP 統合テストを追加しました。</li>
+</ul>
 <h2>[0.4.5] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>ノートのタイトル、概要、コレクション、タグを YAML sidecar metadata に永続化する <code>PATCH /api/items/{id}/metadata</code> を追加しました。</li><li>メタデータ編集の保存後に <code>public/</code> を再ビルドし、再インデックス済みの項目を返します。</li><li>Agent Server URL が設定されている場合、フロントエンドのメタデータエディターはバックエンドへ書き込みます。静的モードではローカル上書き fallback を維持します。</li><li>メタデータ永続化のサービス層テストと実 HTTP 統合テストを追加しました。</li></ul>
+<ul>
+<li>ノートのタイトル、概要、コレクション、タグを YAML sidecar metadata に永続化する <code>PATCH /api/items/{id}/metadata</code> を追加しました。</li>
+<li>メタデータ編集の保存後に <code>public/</code> を再ビルドし、再インデックス済みの項目を返します。</li>
+<li>Agent Server URL が設定されている場合、フロントエンドのメタデータエディターはバックエンドへ書き込みます。静的モードではローカル上書き fallback を維持します。</li>
+<li>メタデータ永続化のサービス層テストと実 HTTP 統合テストを追加しました。</li>
+</ul>
 <h2>[0.4.4] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>バックエンドのコンテンツ取得 API として <code>GET /api/items/{id}/content</code> と <code>GET /api/items/{id}/raw</code> を追加しました。</li><li>Agent Server URL が設定されている場合、リーダー iframe と原文リンクはバックエンドのコンテンツ API を使用します。静的モードでは従来どおりローカル content パスを使用します。</li><li>項目コンテンツと raw HTML アクセスの実 HTTP 統合テストを追加しました。</li></ul>
+<ul>
+<li>バックエンドのコンテンツ取得 API として <code>GET /api/items/{id}/content</code> と <code>GET /api/items/{id}/raw</code> を追加しました。</li>
+<li>Agent Server URL が設定されている場合、リーダー iframe と原文リンクはバックエンドのコンテンツ API を使用します。静的モードでは従来どおりローカル content パスを使用します。</li>
+<li>項目コンテンツと raw HTML アクセスの実 HTTP 統合テストを追加しました。</li>
+</ul>
 <h2>[0.4.3] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>アーカイブ済み項目カードでは、AI コンテキストボタンを完全削除アクションに置き換えました。</li><li>アーカイブ済み項目のリーダーページでは、右側の AI ボタンを完全削除アクションに置き換えました。</li><li><code>content/</code> と <code>meta/</code> からアーカイブ済みノートを完全削除し、削除後に rebuild する <code>DELETE /api/items/{id}</code> を追加しました。</li></ul>
+<ul>
+<li>アーカイブ済み項目カードでは、AI コンテキストボタンを完全削除アクションに置き換えました。</li>
+<li>アーカイブ済み項目のリーダーページでは、右側の AI ボタンを完全削除アクションに置き換えました。</li>
+<li><code>content/</code> と <code>meta/</code> からアーカイブ済みノートを完全削除し、削除後に rebuild する <code>DELETE /api/items/{id}</code> を追加しました。</li>
+</ul>
 <h2>[0.4.2] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>HTML インポート用バックエンド機能として <code>POST /api/uploads/html</code> を追加しました。</li><li>インポートされた HTML は <code>content/imported/YYYY/MM/</code> に保存され、sidecar metadata は <code>meta/items/</code> に書き込まれます。成功後に静的サイトを自動再ビルドします。</li><li>HTML インポート、メタデータ生成、rebuild、不正ファイル拒否をカバーするアップロードサービステストを追加しました。</li></ul>
+<ul>
+<li>HTML インポート用バックエンド機能として <code>POST /api/uploads/html</code> を追加しました。</li>
+<li>インポートされた HTML は <code>content/imported/YYYY/MM/</code> に保存され、sidecar metadata は <code>meta/items/</code> に書き込まれます。成功後に静的サイトを自動再ビルドします。</li>
+<li>HTML インポート、メタデータ生成、rebuild、不正ファイル拒否をカバーするアップロードサービステストを追加しました。</li>
+</ul>
 <h2>[0.4.1] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>最初のバックエンド開発スライスとして、任意の Agent Server API スケルトン、<code>GET /api/health</code>、<code>GET /api/manifest</code>、<code>GET /api/items</code>、<code>GET /api/items/{id}</code> を追加しました。</li><li><code>GET /api/items</code> は現在のフロントエンド一覧ロジックに合わせ、ライブラリ、コレクション、タグ OR/AND、お気に入り/アーカイブ、検索、並び替え、limit をサポートします。</li><li><code>html-lore serve-api</code> と、項目クエリ層のサービス/API テストを追加しました。</li></ul>
+<ul>
+<li>最初のバックエンド開発スライスとして、任意の Agent Server API スケルトン、<code>GET /api/health</code>、<code>GET /api/manifest</code>、<code>GET /api/items</code>、<code>GET /api/items/{id}</code> を追加しました。</li>
+<li><code>GET /api/items</code> は現在のフロントエンド一覧ロジックに合わせ、ライブラリ、コレクション、タグ OR/AND、お気に入り/アーカイブ、検索、並び替え、limit をサポートします。</li>
+<li><code>html-lore serve-api</code> と、項目クエリ層のサービス/API テストを追加しました。</li>
+</ul>
 <h3>Fixed</h3>
-<ul><li>現在の 4 件のサンプル fixture に合わせて builder テストの期待値を更新しました。</li></ul>
+<ul>
+<li>現在の 4 件のサンプル fixture に合わせて builder テストの期待値を更新しました。</li>
+</ul>
 <h2>[0.4.0] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>現在の UI を最初の正式フロントエンド版としてリリースしました。</li><li>フロントエンドには、カード型ワークスペース、PWA アプリシェル、3 言語 UI、ライト/ダークテーマ切り替え、幅調整可能なサイドバー、グローバル AI パネルのスキャフォールド、設定モジュール、ローカルバックアップ/エクスポートのスキャフォールド、項目のお気に入り/アーカイブ操作、ローカルノートメタデータ編集が含まれます。</li></ul>
+<ul>
+<li>現在の UI を最初の正式フロントエンド版としてリリースしました。</li>
+<li>フロントエンドには、カード型ワークスペース、PWA アプリシェル、3 言語 UI、ライト/ダークテーマ切り替え、幅調整可能なサイドバー、グローバル AI パネルのスキャフォールド、設定モジュール、ローカルバックアップ/エクスポートのスキャフォールド、項目のお気に入り/アーカイブ操作、ローカルノートメタデータ編集が含まれます。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>ライトモード時のテーマ切り替え月アイコンを、より分かりやすい塗りつぶしの「月 + 星」アイコンに変更し、フロントエンドバンドルにキャッシュ回避用のバージョン URL を追加しました。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.4.0</code> に更新。</li></ul>
+<ul>
+<li>ライトモード時のテーマ切り替え月アイコンを、より分かりやすい塗りつぶしの「月 + 星」アイコンに変更し、フロントエンドバンドルにキャッシュ回避用のバージョン URL を追加しました。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.4.0</code> に更新。</li>
+</ul>
 <h2>[0.3.21] - 2026-05-30</h2>
 <h3>Added</h3>
-<ul><li>項目カードとリーダーで、お気に入りボタンの左にメタデータ編集ボタンを追加しました。</li><li>ローカルメタデータエディターでノートのタイトル、概要、コレクション、タグを編集でき、保存/キャンセル操作に対応しました。上書き内容はブラウザー状態に保存され、カード、リーダーヘッダー、検索、フィルター、件数、並び替え、AI コンテキスト表示に反映されます。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.21</code> に更新。</li></ul>
+<ul>
+<li>項目カードとリーダーで、お気に入りボタンの左にメタデータ編集ボタンを追加しました。</li>
+<li>ローカルメタデータエディターでノートのタイトル、概要、コレクション、タグを編集でき、保存/キャンセル操作に対応しました。上書き内容はブラウザー状態に保存され、カード、リーダーヘッダー、検索、フィルター、件数、並び替え、AI コンテキスト表示に反映されます。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.21</code> に更新。</li>
+</ul>
 <h2>[0.3.20] - 2026-05-30</h2>
 <h3>Fixed</h3>
-<ul><li>リーダーページで AI パネルのリサイズがポインターに安定して追従するよう修正しました。ドラッグ中は reader iframe を無視し、実際のパネル境界から幅を計算します。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.20</code> に更新。</li></ul>
+<ul>
+<li>リーダーページで AI パネルのリサイズがポインターに安定して追従するよう修正しました。ドラッグ中は reader iframe を無視し、実際のパネル境界から幅を計算します。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.20</code> に更新。</li>
+</ul>
 <h2>[0.3.19] - 2026-05-30</h2>
 <h3>Changed</h3>
-<ul><li>折りたたみ時のサイドバー幅を狭くし、Logo マークを小さくしました。</li><li>上部フィルターはタグのみを対象にしました。コレクション絞り込みは左ナビゲーションの単一選択として残します。</li><li>ライト/ダーク切り替えをサイドバーの設定ボタン右側に戻し、アイコンのみのワンクリック切り替えにしました。</li><li>基本設定内のインターフェーステーマを「テーマ設定」に改名し、将来のテーマカラー切り替え用にしました。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.19</code> に更新。</li></ul>
+<ul>
+<li>折りたたみ時のサイドバー幅を狭くし、Logo マークを小さくしました。</li>
+<li>上部フィルターはタグのみを対象にしました。コレクション絞り込みは左ナビゲーションの単一選択として残します。</li>
+<li>ライト/ダーク切り替えをサイドバーの設定ボタン右側に戻し、アイコンのみのワンクリック切り替えにしました。</li>
+<li>基本設定内のインターフェーステーマを「テーマ設定」に改名し、将来のテーマカラー切り替え用にしました。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.19</code> に更新。</li>
+</ul>
 <h2>[0.3.18] - 2026-05-30</h2>
 <h3>Changed</h3>
-<ul><li>サイドバーのブランド表示を常に <code>HTMlore</code> にし、件数のサブテキストを削除しました。</li><li>左右のリサイズレールはホバー/ドラッグ時のハイライト線を表示しないようにしました。</li><li>リーダーの「原文 / リンクをコピー」をアイコンボタンにし、AI ボタンを右端に固定して、再クリックで右パネルを閉じられるようにしました。</li><li>リーダーヘッダーのタイトル、概要、タグをクランプし、AI パネル幅変更時にヘッダーが伸び続けないようにしました。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.18</code> に更新。</li></ul>
+<ul>
+<li>サイドバーのブランド表示を常に <code>HTMlore</code> にし、件数のサブテキストを削除しました。</li>
+<li>左右のリサイズレールはホバー/ドラッグ時のハイライト線を表示しないようにしました。</li>
+<li>リーダーの「原文 / リンクをコピー」をアイコンボタンにし、AI ボタンを右端に固定して、再クリックで右パネルを閉じられるようにしました。</li>
+<li>リーダーヘッダーのタイトル、概要、タグをクランプし、AI パネル幅変更時にヘッダーが伸び続けないようにしました。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.18</code> に更新。</li>
+</ul>
 <h2>[0.3.17] - 2026-05-30</h2>
 <h3>Changed</h3>
-<ul><li>サイドバーのスクロール表示をリサイズ用レールと統一し、フォーカス時にナビ数字がずれないようにしました。</li><li>アーカイブは確認後に実行し、コレクション/タグからは既定で非表示、アーカイブ済みライブラリだけで集計します。元のコレクション/タグ/お気に入り情報は保持します。</li><li>上部のフィルター/ソート群はお気に入りのみ残し、読書ページ右上は「共有 + AI パネル起動」にしました。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.17</code> に更新。</li></ul>
+<ul>
+<li>サイドバーのスクロール表示をリサイズ用レールと統一し、フォーカス時にナビ数字がずれないようにしました。</li>
+<li>アーカイブは確認後に実行し、コレクション/タグからは既定で非表示、アーカイブ済みライブラリだけで集計します。元のコレクション/タグ/お気に入り情報は保持します。</li>
+<li>上部のフィルター/ソート群はお気に入りのみ残し、読書ページ右上は「共有 + AI パネル起動」にしました。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.17</code> に更新。</li>
+</ul>
 <h2>[0.3.16] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>上部ツールバー左端に独立した色付きの <code>+</code> インポートボタンを追加し、HTML インポートのツールチップを設定しました。旧サイドバーのインポートボタンは削除しました。</li><li>サイドバーのライブラリ、コレクション、タグを折りたたみ/展開できるようにしました。</li><li>リーダー右上に AI Q&amp;A コンテキストへの追加/削除ボタンと共有ボタンを追加しました。</li></ul>
+<ul>
+<li>上部ツールバー左端に独立した色付きの <code>+</code> インポートボタンを追加し、HTML インポートのツールチップを設定しました。旧サイドバーのインポートボタンは削除しました。</li>
+<li>サイドバーのライブラリ、コレクション、タグを折りたたみ/展開できるようにしました。</li>
+<li>リーダー右上に AI Q&amp;A コンテキストへの追加/削除ボタンと共有ボタンを追加しました。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>サイドバーのブランドマークを再設計版 HTMlore アイコンに更新し、ライト/ダークテーマでのブランド領域と折りたたみボタンの整列を改善しました。</li><li>サイドバーとページのスクロールバーは、ホバーまたはキーボードフォーカス時のみ表示されます。</li><li>AI 作成フォームの入力タイプ選択で、右端に寄りすぎていた矢印を内側のカスタム矢印に変更しました。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.16</code> に更新。</li></ul>
+<ul>
+<li>サイドバーのブランドマークを再設計版 HTMlore アイコンに更新し、ライト/ダークテーマでのブランド領域と折りたたみボタンの整列を改善しました。</li>
+<li>サイドバーとページのスクロールバーは、ホバーまたはキーボードフォーカス時のみ表示されます。</li>
+<li>AI 作成フォームの入力タイプ選択で、右端に寄りすぎていた矢印を内側のカスタム矢印に変更しました。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.16</code> に更新。</li>
+</ul>
 <h2>[0.3.15] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>左右パネル表示時の小さい画面で折り返されないよう、上部ツールバーのワークスペースタイトルを削除しました。</li><li>表示切り替えを削除し、ワークスペースをカード表示に固定しました。</li><li>上部ツールバーは 5 つの操作ボタンと「検索 + AI」グループを分離し、狭い幅では検索と AI が一緒に折り返されます。</li><li>AI パネルの生成アクション名を「ノートを生成」に変更しました。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.15</code> に更新。</li></ul>
+<ul>
+<li>左右パネル表示時の小さい画面で折り返されないよう、上部ツールバーのワークスペースタイトルを削除しました。</li>
+<li>表示切り替えを削除し、ワークスペースをカード表示に固定しました。</li>
+<li>上部ツールバーは 5 つの操作ボタンと「検索 + AI」グループを分離し、狭い幅では検索と AI が一緒に折り返されます。</li>
+<li>AI パネルの生成アクション名を「ノートを生成」に変更しました。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.15</code> に更新。</li>
+</ul>
 <h2>[0.3.14] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>サイドバーの GitHub リポジトリリンクに GitHub mark を追加しました。</li><li>基本設定のテーマ操作を System、Light、Dark の 3 ボタンにしました。</li></ul>
+<ul>
+<li>サイドバーの GitHub リポジトリリンクに GitHub mark を追加しました。</li>
+<li>基本設定のテーマ操作を System、Light、Dark の 3 ボタンにしました。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>テーマ設定は選択モードを保存し、System の場合はブラウザーの配色設定から実際のテーマを解決します。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.14</code> に更新。</li></ul>
+<ul>
+<li>テーマ設定は選択モードを保存し、System の場合はブラウザーの配色設定から実際のテーマを解決します。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.14</code> に更新。</li>
+</ul>
 <h2>[0.3.13] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>サイドバーフッター右側に GitHub リポジトリリンクを追加しました。</li><li>インターフェーステーマと言語設定用の基本設定セクションを追加しました。</li></ul>
+<ul>
+<li>サイドバーフッター右側に GitHub リポジトリリンクを追加しました。</li>
+<li>インターフェーステーマと言語設定用の基本設定セクションを追加しました。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>サイドバーフッターは左側に設定ボタンを残し、常駐していたテーマ/言語コントロールを移動しました。</li><li>ユーザー関連設定を先頭に移動しました: 基本設定、ユーザープロフィール、アカウントとセキュリティ。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.13</code> に更新。</li></ul>
+<ul>
+<li>サイドバーフッターは左側に設定ボタンを残し、常駐していたテーマ/言語コントロールを移動しました。</li>
+<li>ユーザー関連設定を先頭に移動しました: 基本設定、ユーザープロフィール、アカウントとセキュリティ。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.13</code> に更新。</li>
+</ul>
 <h2>[0.3.12] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>上部ツールバーのグループを「フィルター + 並び替え」と「お気に入り + アーカイブ」に調整しました。</li><li>MCP と Docker のサンプルノートで OR/AND タグフィルターを検証しました。OR はいずれかのタグ一致、AND は選択タグすべての一致です。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.12</code> に更新。</li></ul>
+<ul>
+<li>上部ツールバーのグループを「フィルター + 並び替え」と「お気に入り + アーカイブ」に調整しました。</li>
+<li>MCP と Docker のサンプルノートで OR/AND タグフィルターを検証しました。OR はいずれかのタグ一致、AND は選択タグすべての一致です。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.12</code> に更新。</li>
+</ul>
 <h2>[0.3.11] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>AI パネルを開いても、上部ツールバーが複数行に折り返されないようにしました。</li><li>パネル表示中もグローバル AI ボタンを検索欄の右側に表示し、検索欄と AI ボタンの位置関係を維持します。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.11</code> に更新。</li></ul>
+<ul>
+<li>AI パネルを開いても、上部ツールバーが複数行に折り返されないようにしました。</li>
+<li>パネル表示中もグローバル AI ボタンを検索欄の右側に表示し、検索欄と AI ボタンの位置関係を維持します。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.11</code> に更新。</li>
+</ul>
 <h2>[0.3.10] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>手動 AI コンテキストのカード操作は、選択時にプラスからマイナスへ変わり、アクティブ色を維持します。</li><li>上部のフィルターと並び替えボタンを再び独立したグループに分離しました。</li><li>タグ一致コントロールを OR/AND 表記に変更し、内部の any/all タグフィルターロジックと揃えました。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.10</code> に更新。</li></ul>
+<ul>
+<li>手動 AI コンテキストのカード操作は、選択時にプラスからマイナスへ変わり、アクティブ色を維持します。</li>
+<li>上部のフィルターと並び替えボタンを再び独立したグループに分離しました。</li>
+<li>タグ一致コントロールを OR/AND 表記に変更し、内部の any/all タグフィルターロジックと揃えました。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.10</code> に更新。</li>
+</ul>
 <h2>[0.3.9] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>カードのコレクション/ソース情報を左上のトップ行に固定し、操作アイコンと同じ行に配置。タイトルは次の行から始まるようにしました。</li><li>リスト表示で操作アイコン、読む/原文ボタン、日付を分離し、重なりを防ぎました。</li><li>AI 右サイドパネルを右端からスライド表示する方式にし、左サイドバーと同じリサイズ時のハイライト線を追加しました。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.9</code> に更新。</li></ul>
+<ul>
+<li>カードのコレクション/ソース情報を左上のトップ行に固定し、操作アイコンと同じ行に配置。タイトルは次の行から始まるようにしました。</li>
+<li>リスト表示で操作アイコン、読む/原文ボタン、日付を分離し、重なりを防ぎました。</li>
+<li>AI 右サイドパネルを右端からスライド表示する方式にし、左サイドバーと同じリサイズ時のハイライト線を追加しました。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.9</code> に更新。</li>
+</ul>
 <h2>[0.3.8] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>カード操作に Q&amp;A コンテキスト追加ボタンを追加し、複数ファイルを手動で AI コンテキストに選べるようにしました。</li></ul>
+<ul>
+<li>カード操作に Q&amp;A コンテキスト追加ボタンを追加し、複数ファイルを手動で AI コンテキストに選べるようにしました。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>手動で選択した AI コンテキストは、ページ、リーダー、フィルターから推定される既定コンテキストを上書きします。</li><li>AI パネルを開いている間は上部の AI ボタンを非表示にし、パネル内の閉じるボタンに統一しました。</li><li>上部のフィルターと並び替えボタンを同じツールグループに統合しました。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.8</code> に更新。</li></ul>
+<ul>
+<li>手動で選択した AI コンテキストは、ページ、リーダー、フィルターから推定される既定コンテキストを上書きします。</li>
+<li>AI パネルを開いている間は上部の AI ボタンを非表示にし、パネル内の閉じるボタンに統一しました。</li>
+<li>上部のフィルターと並び替えボタンを同じツールグループに統合しました。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.8</code> に更新。</li>
+</ul>
 <h2>[0.3.7] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>左サイドバーのリサイズハンドルが横スクロールバーを発生させないように変更。</li><li>複数選択フィルターのポップオーバー上部に「いずれか/すべて」のタグ一致コントロールを配置。</li><li>カード操作ボタンが上部レイアウト行を占有しないようにし、コレクション、ソース、日付を左下エリアに固定。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.7</code> に更新。</li></ul>
+<ul>
+<li>左サイドバーのリサイズハンドルが横スクロールバーを発生させないように変更。</li>
+<li>複数選択フィルターのポップオーバー上部に「いずれか/すべて」のタグ一致コントロールを配置。</li>
+<li>カード操作ボタンが上部レイアウト行を占有しないようにし、コレクション、ソース、日付を左下エリアに固定。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.7</code> に更新。</li>
+</ul>
 <h2>[0.3.6] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>設定ページにユーザープロフィールとアカウント/セキュリティのプレースホルダーセクションを追加。</li></ul>
+<ul>
+<li>設定ページにユーザープロフィールとアカウント/セキュリティのプレースホルダーセクションを追加。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>上部のフィルターと並び替えコントロールを別グループに分離。</li><li>カードのメタ情報を左下に「コレクション/ソース」と日付として表示し、お気に入り/アーカイブ操作は右上に配置。</li><li>ソースラベルを生成/インポートのシステム文言に統一。</li><li>要確認ライブラリビューを削除し、ノートはソースに応じて生成またはインポート分類へ入るように変更。</li><li>設定ページタイトルをシンプルに「設定」とし、データ設定を AI 設定より前に配置。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.6</code> に更新。</li></ul>
+<ul>
+<li>上部のフィルターと並び替えコントロールを別グループに分離。</li>
+<li>カードのメタ情報を左下に「コレクション/ソース」と日付として表示し、お気に入り/アーカイブ操作は右上に配置。</li>
+<li>ソースラベルを生成/インポートのシステム文言に統一。</li>
+<li>要確認ライブラリビューを削除し、ノートはソースに応じて生成またはインポート分類へ入るように変更。</li>
+<li>設定ページタイトルをシンプルに「設定」とし、データ設定を AI 設定より前に配置。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.6</code> に更新。</li>
+</ul>
 <h2>[0.3.5] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>タグの複数選択フィルターに「いずれか/すべて」の一致モードを追加。</li><li>MCP と Docker の両方のタグを持つサンプルノートを追加し、組み合わせタグフィルターを検証しやすくしました。</li></ul>
+<ul>
+<li>タグの複数選択フィルターに「いずれか/すべて」の一致モードを追加。</li>
+<li>MCP と Docker の両方のタグを持つサンプルノートを追加し、組み合わせタグフィルターを検証しやすくしました。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>ライブラリナビゲーションをクリックするとコレクション/タグの複数選択制限を解除し、そのライブラリ内の全コレクション/全タグを対象にします。</li><li>複数選択フィルターの「全選択」はコレクション/タグ制限をリセットします。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.5</code> に更新。</li></ul>
+<ul>
+<li>ライブラリナビゲーションをクリックするとコレクション/タグの複数選択制限を解除し、そのライブラリ内の全コレクション/全タグを対象にします。</li>
+<li>複数選択フィルターの「全選択」はコレクション/タグ制限をリセットします。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.5</code> に更新。</li>
+</ul>
 <h2>[0.3.4] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>結果フィルターグループに並び替えメニューを追加し、現在のビューを新しい順、古い順、タイトル A-Z、タイトル Z-A で並べ替え可能にしました。</li></ul>
+<ul>
+<li>結果フィルターグループに並び替えメニューを追加し、現在のビューを新しい順、古い順、タイトル A-Z、タイトル Z-A で並べ替え可能にしました。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.4</code> に更新。</li></ul>
+<ul>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.4</code> に更新。</li>
+</ul>
 <h2>[0.3.3] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>左サイドバー幅をドラッグ調整し、ローカルに保存できるように追加。</li><li>上部ツールバーにコレクションとタグの複数選択フィルターポップオーバーを追加し、一括クリアに対応。</li><li>AI コンテキスト表示にライブラリビュー、お気に入りのみ状態、アーカイブ表示状態、複数選択フィルター状態を追加。</li></ul>
+<ul>
+<li>左サイドバー幅をドラッグ調整し、ローカルに保存できるように追加。</li>
+<li>上部ツールバーにコレクションとタグの複数選択フィルターポップオーバーを追加し、一括クリアに対応。</li>
+<li>AI コンテキスト表示にライブラリビュー、お気に入りのみ状態、アーカイブ表示状態、複数選択フィルター状態を追加。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>複数選択フィルターが有効な状態で左側のコレクションまたはタグをクリックすると、対応する複数選択グループと同期します。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.3</code> に更新。</li></ul>
+<ul>
+<li>複数選択フィルターが有効な状態で左側のコレクションまたはタグをクリックすると、対応する複数選択グループと同期します。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.3</code> に更新。</li>
+</ul>
 <h2>[0.3.2] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>検索欄の右にグローバル AI アシスタントボタンを追加。</li><li>全ノート、コレクション、タグ、検索結果、リーダー状態に応じた文脈を表示する、幅調整可能な右 AI サイドバーを追加。</li><li>将来の Agent Server 向けに、AI チャットと HTML ノート生成のプレースホルダー操作を追加。</li></ul>
+<ul>
+<li>検索欄の右にグローバル AI アシスタントボタンを追加。</li>
+<li>全ノート、コレクション、タグ、検索結果、リーダー状態に応じた文脈を表示する、幅調整可能な右 AI サイドバーを追加。</li>
+<li>将来の Agent Server 向けに、AI チャットと HTML ノート生成のプレースホルダー操作を追加。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>ナレッジベースに基づく複数ターン会話の計画を設定ページからグローバル AI サイドバーへ移動。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.2</code> に更新。</li></ul>
+<ul>
+<li>ナレッジベースに基づく複数ターン会話の計画を設定ページからグローバル AI サイドバーへ移動。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.2</code> に更新。</li>
+</ul>
 <h2>[0.3.1] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>横長リスト表示で「読む/原文」操作をタグ行の下端に揃えるよう上へ移動し、行の高さをよりコンパクトに変更。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.1</code> に更新。</li></ul>
+<ul>
+<li>横長リスト表示で「読む/原文」操作をタグ行の下端に揃えるよう上へ移動し、行の高さをよりコンパクトに変更。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.1</code> に更新。</li>
+</ul>
 <h2>[0.3.0] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>アーカイブフィルターの左に「お気に入りのみ」ツールバーフィルターを追加。</li><li>アーカイブフィルターをデフォルトで有効化し、アーカイブ済み項目を初期表示から除外。</li></ul>
+<ul>
+<li>アーカイブフィルターの左に「お気に入りのみ」ツールバーフィルターを追加。</li>
+<li>アーカイブフィルターをデフォルトで有効化し、アーカイブ済み項目を初期表示から除外。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>アーカイブフィルター有効時のツールチップを、クリック後の動作を示す「アーカイブ済みを表示」に変更。</li><li>ツールバーフィルターの状態表示を枠ではなくアイコン色で表現。</li><li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.0</code> に更新。</li></ul>
+<ul>
+<li>アーカイブフィルター有効時のツールチップを、クリック後の動作を示す「アーカイブ済みを表示」に変更。</li>
+<li>ツールバーフィルターの状態表示を枠ではなくアイコン色で表現。</li>
+<li>パッケージ、アプリ、PWA キャッシュのバージョンを <code>0.3.0</code> に更新。</li>
+</ul>
 <h2>[0.1.0] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>初期の静的優先 HTMlore MVP。</li><li>Manifest v2 ナレッジ項目モデル。</li><li>サイドカー YAML メタデータ対応。</li><li>Karakeep 風カードワークスペースとサイドバー絞り込み。</li><li>iframe リーダーと原文を開く操作。</li><li>新規ナレッジ入口と任意 Agent API の形。</li><li>サンプルコンテンツ、テスト、Docker 静的イメージ、README、MIT ライセンス。</li></ul>
+<ul>
+<li>初期の静的優先 HTMlore MVP。</li>
+<li>Manifest v2 ナレッジ項目モデル。</li>
+<li>サイドカー YAML メタデータ対応。</li>
+<li>Karakeep 風カードワークスペースとサイドバー絞り込み。</li>
+<li>iframe リーダーと原文を開く操作。</li>
+<li>新規ナレッジ入口と任意 Agent API の形。</li>
+<li>サンプルコンテンツ、テスト、Docker 静的イメージ、README、MIT ライセンス。</li>
+</ul>
 <h2>[0.2.0] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>拡張可能なフロントエンド i18n 辞書。</li><li>中国語、英語、日本語のシステム UI 切り替え。</li><li><code>localStorage</code> による言語設定保存。</li><li>ダーク/ライトモード切り替え。</li><li>AI プロバイダー設定、利用規約、プロジェクト情報、更新ドキュメントを含む設定ページ。</li><li>コレクション/タグ管理セクション。サイドバー表示制御と将来のメタデータ書き込み操作を用意。</li><li>固定システムビューの表示を制御するライブラリ管理セクション。</li><li>AI ナレッジアシスタントのプレースホルダー。操作選択、プロンプト入力、将来のデータベース影響ジョブ前の二重確認を含む。</li><li>ナレッジベースファイルに基づく複数ターン会話向けのグローバル AI サイドバープレースホルダー。</li><li>現在のビューからランダムな項目を開く魔法の杖アクション。</li><li>将来のアーカイブワークフロー向けのアーカイブ済みライブラリビュー。</li><li>項目カードとリーダーのお気に入り/アーカイブアイコン操作。</li><li>ワークスペースのカード表示/横長リスト表示切り替え。</li><li>ローカルバックアップ/復元、自動バックアップスナップショット、WebDAV 設定、JSON エクスポート用の独立したデータ設定グループ。</li><li>ブラウザーインストールとアプリシェルキャッシュ用の PWA manifest と Service Worker。</li><li>現在の結果ビューからアーカイブ済み項目を除外するツールバーのアーカイブフィルター。</li></ul>
+<ul>
+<li>拡張可能なフロントエンド i18n 辞書。</li>
+<li>中国語、英語、日本語のシステム UI 切り替え。</li>
+<li><code>localStorage</code> による言語設定保存。</li>
+<li>ダーク/ライトモード切り替え。</li>
+<li>AI プロバイダー設定、利用規約、プロジェクト情報、更新ドキュメントを含む設定ページ。</li>
+<li>コレクション/タグ管理セクション。サイドバー表示制御と将来のメタデータ書き込み操作を用意。</li>
+<li>固定システムビューの表示を制御するライブラリ管理セクション。</li>
+<li>AI ナレッジアシスタントのプレースホルダー。操作選択、プロンプト入力、将来のデータベース影響ジョブ前の二重確認を含む。</li>
+<li>ナレッジベースファイルに基づく複数ターン会話向けのグローバル AI サイドバープレースホルダー。</li>
+<li>現在のビューからランダムな項目を開く魔法の杖アクション。</li>
+<li>将来のアーカイブワークフロー向けのアーカイブ済みライブラリビュー。</li>
+<li>項目カードとリーダーのお気に入り/アーカイブアイコン操作。</li>
+<li>ワークスペースのカード表示/横長リスト表示切り替え。</li>
+<li>ローカルバックアップ/復元、自動バックアップスナップショット、WebDAV 設定、JSON エクスポート用の独立したデータ設定グループ。</li>
+<li>ブラウザーインストールとアプリシェルキャッシュ用の PWA manifest と Service Worker。</li>
+<li>現在の結果ビューからアーカイブ済み項目を除外するツールバーのアーカイブフィルター。</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>システム UI は翻訳キーから描画し、ユーザー作成のタイトル、コレクション、タグは変更しません。</li><li>言語選択はサイドバー下部に配置。</li><li>API Key はブラウザー保存から明示的に除外し、静的モードでは非機密のモデル設定のみ保存。</li><li>設定ページのアイコンボタンを視覚的に中央揃え。</li><li>AI プロバイダー設定をサイドバー管理とプロジェクト情報から視覚的に分離。</li><li>左側のインポート入口と右側の AI 作成入口を分離。</li><li>Logo とサイドバーナビゲーションが、設定ページやリーダーから主ワークスペースへ戻るように統一。</li><li>Manifest 項目に <code>archived</code> メタデータフラグを追加。</li><li>カード表示と横長リスト表示でタイトル、概要、タグ、操作エリアを安定して確保し、長い概要は省略表示して機能部品を隠さないように変更。</li></ul>
+<ul>
+<li>システム UI は翻訳キーから描画し、ユーザー作成のタイトル、コレクション、タグは変更しません。</li>
+<li>言語選択はサイドバー下部に配置。</li>
+<li>API Key はブラウザー保存から明示的に除外し、静的モードでは非機密のモデル設定のみ保存。</li>
+<li>設定ページのアイコンボタンを視覚的に中央揃え。</li>
+<li>AI プロバイダー設定をサイドバー管理とプロジェクト情報から視覚的に分離。</li>
+<li>左側のインポート入口と右側の AI 作成入口を分離。</li>
+<li>Logo とサイドバーナビゲーションが、設定ページやリーダーから主ワークスペースへ戻るように統一。</li>
+<li>Manifest 項目に <code>archived</code> メタデータフラグを追加。</li>
+<li>カード表示と横長リスト表示でタイトル、概要、タグ、操作エリアを安定して確保し、長い概要は省略表示して機能部品を隠さないように変更。</li>
+</ul>
 </section>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,202 +12,752 @@
 <main class="wrap">
 <section class="hero">
 <article class="intro">
-<p class="eyebrow">发布记录</p>
+<p class="eyebrow">发布历史</p>
 <h1>HTMlore 更新日志</h1>
 </article>
-<aside class="stat"><span class="badge">0.7.0</span></aside>
+<aside class="stat"><span class="badge">0.9.0</span></aside>
 </section>
 <section class="timeline doc">
 <h1>更新日志</h1>
 <p>语言：<a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
+<h2>[Unreleased]</h2>
+<h2>[0.9.0] - 2026-06-08</h2>
+<h3>新增</h3>
+<ul>
+<li>新增服务端 AI 服务商配置，支持 OpenAI-compatible 接口，API key 只从后端环境变量读取。</li>
+<li>新增知识库问答 beta 流程，包含上下文解析、关键词检索、严格/内容拓展模式、Markdown 回复渲染、来源引用和限流。</li>
+<li>新增 AI 会话持久化、按上下文恢复最近会话、AI 侧栏内当前上下文历史，以及设置页全局会话管理。</li>
+<li>新增轻量 AI 任务队列、运行记录、队列弹窗，以及 job/run API。</li>
+<li>新增从已有 AI 对话生成 HTML 笔记的 beta 能力，采用 PM/UX/Coder/QA/Reviewer 分阶段图结构。</li>
+<li>新增从上传 HTML、Markdown 或纯文本资料生成 HTML 笔记的 beta 能力。</li>
+<li>新增 vector/hybrid 检索脚手架，在向量库未配置时自动回退到关键词检索。</li>
+<li>新增 AI 护栏，覆盖提示词预算、异常请求、疑似密钥输出和面向分享目标的 HTML 安全检查。</li>
+<li>优化 AI 面板前端：紧凑上下文头部、可调整输入区高度、回复状态、上下文重置、会话历史、队列/更多菜单行为，以及会话管理图标按钮。</li>
+</ul>
+<h3>变更</h3>
+<ul>
+<li>更新英文、中文、日文 README，记录当前 AI 能力、服务端 AI 配置方式和 beta 限制。</li>
+<li>根据最新文档重新生成静态 Demo 的 README 与 CHANGELOG 示例笔记。</li>
+<li>包版本、应用版本、PWA、Demo 缓存版本和 provider user-agent 更新为 <code>0.9.0</code>。</li>
+</ul>
+<h3>安全</h3>
+<ul>
+<li>确认 AI 服务商公开状态只返回 <code>has_api_key</code> 等公开字段；浏览器设置 API 不接受也不返回原始 API key。</li>
+<li>新增测试，确认 AI 服务商密钥不会通过状态、配置或生成运行记录泄漏。</li>
+</ul>
+<h3>修复</h3>
+<ul>
+<li>优化全局上下文问答检索，使概览类问题可以使用完整选中上下文，而不是过度聚焦单篇笔记。</li>
+<li>修复静态构建复制逻辑，避免 <code>app_static</code> 被复制到自身内部。</li>
+<li>修复 AI 侧栏菜单状态、会话历史按上下文过滤、打开设置页时关闭右侧栏等细节，并补充 Playwright 覆盖。</li>
+</ul>
+<h2>[0.8.4] - 2026-06-06</h2>
+<h3>修复</h3>
+<ul>
+<li>提高桌面阅读页头部的高度预算，修复笔记本宽度下同时打开左右侧边栏时，</li>
+<p>两行标题与三行摘要会截断标签的问题。</p>
+</ul>
+<h3>新增</h3>
+<ul>
+<li>新增 Playwright 覆盖笔记本宽度、左右侧边栏同时打开时的阅读页布局。</li>
+</ul>
+<h3>变更</h3>
+<ul>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.8.4</code>。</li>
+</ul>
+<h2>[0.8.3] - 2026-06-06</h2>
+<h3>修复</h3>
+<ul>
+<li>将手机端设置页导航改为紧凑的横向滑动标签栏，避免较长设置栏目名在手机视口中</li>
+<p>渲染成过大的块状标签或横向溢出。</p>
+<li>桌面端设置页继续保留原有左侧导航布局，不受移动端规则影响。</li>
+</ul>
+<h3>新增</h3>
+<ul>
+<li>新增 Playwright 覆盖手机端设置标签滑动条和桌面端设置导航布局。</li>
+</ul>
+<h3>变更</h3>
+<ul>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.8.3</code>。</li>
+</ul>
+<h2>[0.8.2] - 2026-06-05</h2>
+<h3>修复</h3>
+<ul>
+<li>优化标签筛选计数位置：当前筛选结果数以内联主题色文字显示在“标签筛选”</li>
+<p>标题后面，并移除下方重复的“标签”小标题。</p>
+<li>卡片日期优先使用稳定的条目创建日期，归档/取消归档等状态更新不再改变卡片</li>
+<p>左下角显示日期。</p>
+</ul>
+<h3>变更</h3>
+<ul>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.8.2</code>。</li>
+</ul>
+<h2>[0.8.1] - 2026-06-05</h2>
+<h3>新增</h3>
+<ul>
+<li>标签筛选弹窗新增动态结果数量。标题显示当前筛选后的条目数；或模式下各标签</li>
+<p>数字保持独立统计；且模式下各标签数字显示当前交集内的共现数量。</p>
+<li>分享弹窗与分享链接管理新增分享有效期和当前状态展示。</li>
+</ul>
+<h3>修复</h3>
+<ul>
+<li>公开分享 HTML 页面中的锚点链接会限定在分享文档内跳转，不再跳回工作台空白</li>
+<p>shell。</p>
+<li>增加阅读页头部间距，避免三行摘要时标签行过于贴近头部边界。</li>
+</ul>
+<h3>变更</h3>
+<ul>
+<li>缩小筛选弹窗中的“或/且”标签匹配按钮。</li>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.8.1</code>。</li>
+</ul>
+<h2>[0.8.0] - 2026-06-05</h2>
+<h3>移除</h3>
+<ul>
+<li>移除旧 <code>html_vault</code> Python 兼容包、旧 <code>html-vault</code> CLI 入口，以及</li>
+<p><code>HTML_VAULT_*</code> 运行时环境变量 fallback。当前运行配置仅使用 <code>html_lore</code>、<code>html-lore</code> 和 <code>HTML_LORE_*</code>。</p>
+</ul>
+<h3>变更</h3>
+<ul>
+<li>Docker、部署示例、迁移说明和 Python 包发现逻辑统一使用更名后的 HTMlore</li>
+<p>运行链路。</p>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.8.0</code>。</li>
+</ul>
+<h2>[0.7.9] - 2026-06-05</h2>
+<h3>新增</h3>
+<ul>
+<li>左侧栏底部新增 HTMlore 官网入口，与 GitHub 入口并列。</li>
+<li>新增静态分享入口修复逻辑，已有有效分享在路由或缓存异常后也可恢复安全的</li>
+<p><code>/share/{token}</code> 入口页。</p>
+</ul>
+<h3>变更</h3>
+<ul>
+<li>工作台左上角品牌 LOGO 点击后返回工作台主页，不再打开项目展示主页。</li>
+<li>Agent Server 连接状态移动到“设置 &gt; 用户资料”中展示。</li>
+<li>移除左侧栏底部用户状态按钮；账户信息统一留在设置中。</li>
+<li>移动端阅读页中，阅读元信息和操作区会随笔记内容一起滚动隐藏，仅保留全局顶部栏。</li>
+</ul>
+<h3>修复</h3>
+<ul>
+<li>归档笔记后隐藏计数为 0 的标签，取消归档后自动恢复显示。</li>
+<li>修复 <code>/share/{token}/</code> 路由，使其与 <code>/share/{token}</code> 保持一致。</li>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.9</code>。</li>
+</ul>
+<h2>[0.7.8] - 2026-06-05</h2>
+<h3>修复</h3>
+<ul>
+<li>移除 <code>0.7.7</code> 中新增的阅读器“适配宽度 / 原文宽屏”按钮；移动端阅读体验后续</li>
+<p>将在不增加未经确认操作入口的前提下重新设计。</p>
+<li>移动端侧栏从隐藏或窄左侧栏改为顶部上下折叠栏，保留导航可用性，同时不再</li>
+<p>横向挤压工作区。</p>
+<li>新增静态分享兜底：当部署路由误将 <code>/share/{token}</code> 返回为工作台外壳时，</li>
+<p>前端会从 <code>/api/public/shares/{token}</code> 拉取公开内容并渲染分享页。</p>
+<li>创建分享时生成 <code>public/share/&lt;token&gt;/index.html</code> 静态入口；撤销或替换分享时</li>
+<p>自动删除旧入口。</p>
+<li>新增 Playwright 测试，覆盖移动端侧栏折叠和静态分享兜底渲染。</li>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.8</code>。</li>
+</ul>
+<h2>[0.7.7] - 2026-06-05</h2>
+<h3>新增</h3>
+<ul>
+<li>新增了一个阅读器宽度模式的初步实验入口。</li>
+</ul>
+<h3>修复</h3>
+<ul>
+<li>优化移动端阅读布局：窄屏下左侧导航不再占用阅读区宽度。</li>
+<li>移动端阅读器操作按钮保持在 iframe 正文上方，不再被笔记内容视觉遮挡。</li>
+<li>新增 Playwright 测试，覆盖移动端阅读器视口。</li>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.7</code>。</li>
+</ul>
+<h2>[0.7.6] - 2026-06-04</h2>
+<h3>安全</h3>
+<ul>
+<li>最小化公开分享 JSON 响应：分享访问者不再获得内部条目 ID、集合/标签元数据、</li>
+<p>分享管理 ID、访问计数或可复制管理链接字段。</p>
+<li>禁止通过分享更新 API 重新激活或延长已撤销、已过期的分享。</li>
+<li>加强分享 HTML 净化：资源 <code>src</code> 不能再指向私有 <code>/api/</code>、<code>/content/</code> 路径，</li>
+<p>也不能指向外部追踪资源；仅保留通过检查的内联 SVG data 图片。</p>
+<li>新增分享安全测试，覆盖私有 API 隔离、公开响应最小化、失效分享拒绝更新和</li>
+<p>资源来源剥离。</p>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.6</code>。</li>
+</ul>
+<h2>[0.7.5] - 2026-06-04</h2>
+<h3>修复</h3>
+<ul>
+<li>修复 Caddy 部署中的公开分享页路由：<code>/share/*</code> 现在会反代到后端 API，</li>
+<p>不再被静态应用 fallback 返回工作台外壳。</p>
+<li>更新可选 Basic Auth Caddy 示例：<code>/share/*</code> 和 <code>/api/public/shares/*</code></li>
+<p>保持公开可访问，同时工作台和私有 API 路由继续受保护。</p>
+<li>新增部署配置测试，覆盖公开分享路由。</li>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.5</code>。</li>
+</ul>
+<h2>[0.7.4] - 2026-06-04</h2>
+<h3>修复</h3>
+<ul>
+<li>分享页中的笔记 HTML 改为在隔离 iframe 中渲染，避免源页面全局样式破坏</li>
+<p>HTMlore 分享外壳，或出现被异常放大的图标内容。</p>
+<li>持久化分享 <code>url_path</code>，已分享笔记再次打开分享弹窗时可继续复制现有公开链接，</li>
+<p>不再只在创建瞬间显示。</p>
+<li>将取消分享按钮移动到分享弹窗和分享链接管理行的左侧。</li>
+<li>PWA service worker 不再拦截 <code>/share/</code>、<code>/api/</code>、<code>/content/</code> 路由，避免公开</li>
+<p>分享页或原文内容被工作台缓存回退污染。</p>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.4</code>。</li>
+</ul>
+<h2>[0.7.3] - 2026-06-04</h2>
+<h3>新增</h3>
+<ul>
+<li>公开分享页现在会保留安全的内联 CSS 和同页 <code>#anchor</code> 锚点链接，同时继续阻止外部</li>
+<p>CSS 资源和危险 CSS 特性。</p>
+<li>针对 Chart.js/canvas 类笔记新增 <code>requires-static-export:chart</code> 分享安全反馈，明确这类</li>
+<p>笔记需要静态图表导出，而不是执行脚本。</p>
+</ul>
+<h3>修复</h3>
+<ul>
+<li>修复公开分享页错误嵌套完整 HTML 文档的问题：现在会把安全 head 样式放入分享页 head，</li>
+<p>并只把正文片段放入分享内容区。</p>
+<li>增加导入反馈文字间距和卡片摘要区域余量，避免上传提示过近以及摘要/标签轻微贴边。</li>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.3</code>。</li>
+</ul>
+<h2>[0.7.2] - 2026-06-04</h2>
+<h3>新增</h3>
+<ul>
+<li>新增基于后端的公开笔记分享能力，支持带有效期的 token 链接、分享管理 API、</li>
+<p>公开净化分享页和取消分享。</p>
+<li>新增分享安全检查：公开分享前会阻止可执行 HTML、表单/嵌入内容、危险 URL</li>
+<p>协议、本地/私有引用和疑似密钥。</p>
+<li>新增受限的安全分享转换：本地 <code>toggleGroup(&#x27;id&#x27;)</code> 折叠交互会转换为平台内置交互，</li>
+<p>同时公开分享页仍会移除原始脚本和外部字体/资源链接。</p>
+<li>新增阅读页分享入口、设置页分享链接管理，并移除阅读页内部复制链接动作。</li>
+<li>将工作台 Agent 连接状态移动到侧栏用户资料弹窗，并支持在该弹窗中点击大头像上传头像。</li>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.2</code>。</li>
+</ul>
+<h2>[0.7.1] - 2026-06-04</h2>
+<h3>修复</h3>
+<ul>
+<li>修复部署环境中卡片层级“原文”链接错误走静态 <code>content/...</code> 路径的问题，现在会使用带登录会话的 raw item API，避免被 SPA fallback 路由拦截成工作台页面。</li>
+<li>为自托管 HTTP/HTTPS 部署增加同源 API 自动识别，同时保持 GitHub Pages 和静态 Demo 不接入后端。</li>
+<li>Playwright 检查中屏蔽 service worker，并新增 API 模式与静态 Demo 模式下卡片“原文”链接的覆盖。</li>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.7.1</code>。</li>
+</ul>
 <h2>[0.7.0] - 2026-06-04</h2>
 <h3>变更</h3>
-<ul><li>将 HTMlore 更名、仓库迁移、主实现 <code>html_lore</code> 命名空间、<code>html-lore</code> CLI 和 <code>HTML_LORE_*</code> 配置名提升为 <code>0.7.0</code> 稳定发布。</li><li>新增更名迁移指南，用于从旧项目名称升级到 HTMlore。</li><li>在 HTMlore 更名后，清理示例内容和静态资源中残留的旧项目名称引用。</li><li>更新官网、Demo README 笔记、应用无障碍标签和 logo 描述，统一使用 HTMlore 当前的资料库/知识表达。</li><li>优化官网与工作台 wordmark，使两边统一使用 <code>HTM</code> + 着色 <code>lore</code> 的样式。</li><li>将旧 <code>html-vault</code> 控制台命令接入兼容 wrapper，使其 help 输出保留旧命令名，同时继续使用 <code>html_lore</code> 实现。</li><li>扩展 <code>.env.example</code>，补齐默认 Docker 部署使用的本地登录/session 和自托管多用户数据设置。</li><li>为后端 API Docker 镜像新增健康检查。</li><li>新增 GitHub Actions CI，覆盖 pytest、Playwright Demo 检查和 Docker Compose 配置验证。</li><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.7.0</code>。</li></ul>
+<ul>
+<li>将 HTMlore 更名、仓库迁移、主实现 <code>html_lore</code> 命名空间、<code>html-lore</code></li>
+<p>CLI 和 <code>HTML_LORE_*</code> 配置名提升为 <code>0.7.0</code> 稳定发布。</p>
+<li>新增更名迁移指南，用于从旧项目名称升级到 HTMlore。</li>
+<li>在 HTMlore 更名后，清理示例内容和静态资源中残留的旧项目名称引用。</li>
+<li>更新官网、Demo README 笔记、应用无障碍标签和 logo 描述，统一使用</li>
+<p>HTMlore 当前的资料库/知识表达。</p>
+<li>优化官网与工作台 wordmark，使两边统一使用 <code>HTM</code> + 着色 <code>lore</code> 的样式。</li>
+<li>将旧 <code>html-vault</code> 控制台命令接入兼容 wrapper，使其 help 输出保留旧命令名，</li>
+<p>同时继续使用 <code>html_lore</code> 实现。</p>
+<li>扩展 <code>.env.example</code>，补齐默认 Docker 部署使用的本地登录/session 和</li>
+<p>自托管多用户数据设置。</p>
+<li>为后端 API Docker 镜像新增健康检查。</li>
+<li>新增 GitHub Actions CI，覆盖 pytest、Playwright Demo 检查和 Docker</li>
+<p>Compose 配置验证。</p>
+<li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.7.0</code>。</li>
+</ul>
 <h2>[0.6.8] - 2026-06-04</h2>
 <h3>变更</h3>
-<ul><li>将主要 Python 实现包迁移到 <code>html_lore</code>。</li><li>更新打包入口、测试、API 服务启动路径和 Docker 打包，默认使用新的 <code>html_lore</code> 命名空间。</li><li>保留旧 <code>html_vault</code> 包作为薄兼容 shim，用于现有 import 和旧的 <code>uvicorn html_vault.server.app:app</code> 启动路径。</li><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.8</code>。</li></ul>
+<ul>
+<li>将主要 Python 实现包迁移到 <code>html_lore</code>。</li>
+<li>更新打包入口、测试、API 服务启动路径和 Docker 打包，默认使用新的 <code>html_lore</code> 命名空间。</li>
+<li>保留旧 <code>html_vault</code> 包作为薄兼容 shim，用于现有 import 和旧的 <code>uvicorn html_vault.server.app:app</code> 启动路径。</li>
+<li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.8</code>。</li>
+</ul>
 <h3>兼容</h3>
-<ul><li>0.x 兼容期内继续支持现有 <code>html_vault</code> import 和旧 <code>html-vault</code> CLI。</li></ul>
+<ul>
+<li>0.x 兼容期内继续支持现有 <code>html_vault</code> import 和旧 <code>html-vault</code> CLI。</li>
+</ul>
+<h2>[0.6.7] - 2026-06-04</h2>
+<h3>新增</h3>
+<ul>
+<li>新增 <code>html-lore</code> CLI 入口，同时在 0.x 兼容期内保留旧的 <code>html-vault</code> 命令。</li>
+<li>新增 <code>html_lore</code> Python 公共命名空间，作为指向现有实现包的兼容入口。</li>
+<li>新增 <code>HTML_LORE_*</code> 运行时配置名，并兼容读取旧的 <code>HTML_VAULT_*</code> 环境变量。</li>
+<li>新增浏览器偏好迁移：启动时将 <code>html-vault-*</code> localStorage 键复制到新的 <code>html-lore-*</code>，且不删除旧键。</li>
+</ul>
+<h3>变更</h3>
+<ul>
+<li>将公开产品品牌统一更名为 <code>HTMlore</code>，覆盖应用外壳、登录页、PWA manifest、Pages 官网、静态 demo、README、部署文档和版本元数据。</li>
+<li>默认仓库与版本检查地址更新为 <code>JMoCoder/html_lore</code>。</li>
+<li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.7</code>。</li>
+</ul>
+<h3>兼容</h3>
+<ul>
+<li>继续支持现有 <code>html_vault</code> Python import、<code>html-vault</code> CLI、<code>HTML_VAULT_*</code> 环境变量、<code>html-vault-*</code> 浏览器偏好以及 <code>html-vault-backup</code> 导入。</li>
+</ul>
+<h2>[0.6.6] - 2026-06-03</h2>
+<h3>变更</h3>
+<ul>
+<li>优化左侧边栏用户区域：底部头像现在弹出紧凑的用户状态浮层，展示头像、用户名、ID、订阅状态和 AI 点数余额，不再跳转页面。</li>
+<li>用户资料管理入口收拢到“设置 &gt; 用户资料”，头像本身作为上传入口，退出登录按钮与头像信息保持同一行。</li>
+<li>优化主工作台、阅读页和设置页的左侧边栏收起/展开过渡效果。</li>
+<li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.6</code>。</li>
+</ul>
 <h2>[0.6.5] - 2026-06-03</h2>
 <h3>新增</h3>
-<ul><li>新增基于 <code>data/users.json</code> 的自托管多用户登录支持。</li><li>新增按用户隔离的持久化资料库分区：<code>data/users/&lt;data_id&gt;/</code>，用于保存该用户上传/生成的 HTML、元数据、运行配置、任务记录和生成后的 public 输出。</li><li>新增 <code>html-lore user-add</code> 命令，可在不保存明文密码的情况下创建或替换自托管用户。</li><li>新增后端集成测试，覆盖 env 引导管理员、大小写不敏感的多用户登录，以及不同用户上传内容的隔离。</li></ul>
+<ul>
+<li>新增基于 <code>data/users.json</code> 的自托管多用户登录支持。</li>
+<li>新增按用户隔离的持久化资料库分区：<code>data/users/&lt;data_id&gt;/</code>，用于保存该用户上传/生成的 HTML、元数据、运行配置、任务记录和生成后的 public 输出。</li>
+<li>新增 <code>html-lore user-add</code> 命令，可在不保存明文密码的情况下创建或替换自托管用户。</li>
+<li>新增后端集成测试，覆盖 env 引导管理员、大小写不敏感的多用户登录，以及不同用户上传内容的隔离。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>默认 env 账号现在会引导写入第一个管理员到 <code>users.json</code>；为了兼容旧部署，这个引导管理员继续使用原根资料库数据。</li><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.5</code>。</li></ul>
+<ul>
+<li>默认 env 账号现在会引导写入第一个管理员到 <code>users.json</code>；为了兼容旧部署，这个引导管理员继续使用原根资料库数据。</li>
+<li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.5</code>。</li>
+</ul>
 <h2>[0.6.4] - 2026-06-03</h2>
 <h3>变更</h3>
-<ul><li>登录用户名现在忽略大小写，密码仍保持大小写敏感。</li><li>登录 session 会保存并返回后台配置中的规范用户名。</li><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.4</code>。</li></ul>
+<ul>
+<li>登录用户名现在忽略大小写，密码仍保持大小写敏感。</li>
+<li>登录 session 会保存并返回后台配置中的规范用户名。</li>
+<li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.4</code>。</li>
+</ul>
 <h2>[0.6.3] - 2026-06-03</h2>
 <h3>变更</h3>
-<ul><li>调整导入/创建反馈行的上边距和行高，避免“已导入 {title}”等提示文字距离上方交互窗过近。</li><li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.6.3</code>。</li></ul>
+<ul>
+<li>调整导入/创建反馈行的上边距和行高，避免“已导入 {title}”等提示文字距离上方交互窗过近。</li>
+<li>包版本、应用版本、PWA 与 Demo 缓存版本更新为 <code>0.6.3</code>。</li>
+</ul>
 <h2>[0.6.2] - 2026-06-03</h2>
 <h3>变更</h3>
-<ul><li>将内置登录流程提升为 <code>0.6.2</code> 稳定版。</li><li>默认 Docker 现在启用本地/测试登录账号 <code>admin</code> / <code>test-password</code> 和开发 session secret，新部署会直接进入登录页。</li><li>README 与部署文档明确提示：公网访问前必须修改默认用户名、密码和 session secret。</li><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.2</code>。</li></ul>
+<ul>
+<li>将内置登录流程提升为 <code>0.6.2</code> 稳定版。</li>
+<li>默认 Docker 现在启用本地/测试登录账号 <code>admin</code> / <code>test-password</code> 和开发 session secret，新部署会直接进入登录页。</li>
+<li>README 与部署文档明确提示：公网访问前必须修改默认用户名、密码和 session secret。</li>
+<li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.2</code>。</li>
+</ul>
 <h2>[0.6.0] - 2026-06-03</h2>
 <h3>新增</h3>
-<ul><li>服务端配置登录认证后，工作台首先显示标准登录页面。</li><li>新增基于 HttpOnly 签名 session Cookie 的 <code>/api/auth/status</code>、<code>/api/auth/login</code> 与 <code>/api/auth/logout</code>。</li><li>后端 API、<code>manifest.json</code> 与笔记正文文件现在可由有效 API token 或浏览器登录 session 保护。</li></ul>
+<ul>
+<li>当服务端配置登录认证后，访问工作台首先进入标准登录页面。</li>
+<li>新增 <code>/api/auth/status</code>、<code>/api/auth/login</code> 和 <code>/api/auth/logout</code>，使用 HttpOnly 签名 session Cookie。</li>
+<li>新增通过环境变量配置测试用户账户：<code>HTML_LORE_AUTH_USERNAME</code>、<code>HTML_LORE_AUTH_PASSWORD</code> 和 <code>HTML_LORE_SESSION_SECRET</code>。</li>
+<li>后端 API、<code>manifest.json</code> 与笔记正文文件现在可由有效 API token 或浏览器登录 session 保护。</li>
+<li>新增登录、错误登录、API 保护和静态内容保护的后端集成测试。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.0</code>。</li></ul>
+<ul>
+<li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.6.0</code>。</li>
+</ul>
 <h2>[0.5.3] - 2026-06-03</h2>
 <h3>变更</h3>
-<ul><li>首次部署或无语言偏好时，真实工作台与静态 Demo 默认回落为英文；已保存的用户语言偏好和官网进入 Demo 的语言传递保持不变。</li><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.5.3</code>。</li></ul>
+<ul>
+<li>首次部署或无语言偏好时，真实工作台与静态 Demo 默认回落为英文；已保存的用户语言偏好和官网进入 Demo 的语言传递保持不变。</li>
+<li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.5.3</code>。</li>
+</ul>
 <h2>[0.5.2] - 2026-06-03</h2>
 <h3>新增</h3>
-<ul><li>新增 Playwright E2E 覆盖，用于验证静态 Demo 布局与工作台 Logo 导航。</li><li>新增可配置的 <code>HTML_LORE_PAGES_URL</code>，真实工作台的品牌区可跳转到公开 GitHub Pages 主页。</li></ul>
+<ul>
+<li>新增 Playwright E2E 覆盖，用于验证静态 Demo 布局与工作台 Logo 导航。</li>
+<li>新增可配置的 <code>HTML_LORE_PAGES_URL</code>，真实工作台的品牌区可跳转到公开 GitHub Pages 主页。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>Demo 工作台品牌区现在返回静态 Pages 主页，而不是停留在 Demo 工作台内部。</li><li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.5.2</code>。</li></ul>
+<ul>
+<li>Demo 工作台品牌区现在返回静态 Pages 主页，而不是停留在 Demo 工作台内部。</li>
+<li>包版本、应用版本、PWA、Demo 与官网缓存版本更新为 <code>0.5.2</code>。</li>
+</ul>
 <h2>[0.5.1] - 2026-06-02</h2>
 <h3>新增</h3>
-<ul><li>新增 GitHub Pages <code>docs/</code> 静态官网与只读 Demo。</li><li>官网新增英文、中文、日语直接切换按钮。</li><li>新增从官网语言进入 Demo 的传递逻辑，支持 <code>demo/?lang=zh-CN</code>、<code>demo/?lang=en</code> 和 <code>demo/?lang=ja</code>。</li><li>新增按语言区分的 Demo manifest，并为每种语言生成完整 README/CHANGELOG HTML 示例笔记。</li></ul>
+<ul>
+<li>新增 GitHub Pages <code>docs/</code> 静态官网与只读 Demo。</li>
+<li>官网新增英文、中文、日语直接切换按钮。</li>
+<li>新增从官网语言进入 Demo 的传递逻辑，支持 <code>demo/?lang=zh-CN</code>、<code>demo/?lang=en</code> 和 <code>demo/?lang=ja</code>。</li>
+<li>新增按语言区分的 Demo manifest，并为每种语言生成完整 README/CHANGELOG HTML 示例笔记。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>Demo 明确保持静态模式，禁用后端自动探测。</li><li>更新 Demo 缓存参数和 Service Worker 缓存名，避免旧 Demo 页面壳渲染过期控件。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.5.1</code>。</li></ul>
+<ul>
+<li>Demo 明确保持静态模式，禁用后端自动探测。</li>
+<li>更新 Demo 缓存参数和 Service Worker 缓存名，避免旧 Demo 页面壳渲染过期控件。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.5.1</code>。</li>
+</ul>
 <h2>[0.5.0] - 2026-06-02</h2>
 <h3>变更</h3>
-<ul><li>将项目提升为第一个稳定自托管笔记本版本。</li><li>重构英文、中文、日文 README，围绕完整项目愿景、0.5.0 已实现范围、当前限制、部署路径、安全模型和路线图重新组织。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.5.0</code>。</li></ul>
+<ul>
+<li>将项目提升为第一个稳定自托管笔记本版本。</li>
+<li>重构英文、中文、日文 README，围绕完整项目愿景、0.5.0 已实现范围、当前限制、部署路径、安全模型和路线图重新组织。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.5.0</code>。</li>
+</ul>
 <h2>[0.4.14] - 2026-06-02</h2>
 <h3>变更</h3>
-<ul><li>将默认 Docker Compose 路径改为单容器自托管笔记本部署，同时提供前端和 <code>/api/*</code>。</li><li>将 Caddy Basic Auth 下沉为可选公网部署示例，不再作为默认启动依赖。</li><li>简化默认 Docker 环境变量，本地与局域网部署无需生成 <code>.env</code> 也能启动。</li></ul>
+<ul>
+<li>将默认 Docker Compose 路径改为单容器自托管笔记本部署，同时提供前端和 <code>/api/*</code>。</li>
+<li>将 Caddy Basic Auth 下沉为可选公网部署示例，不再作为默认启动依赖。</li>
+<li>简化默认 Docker 环境变量，本地与局域网部署无需生成 <code>.env</code> 也能启动。</li>
+</ul>
 <h2>[0.4.13] - 2026-06-02</h2>
 <h3>新增</h3>
-<ul><li>新增可复用自托管 Docker 部署资产：<code>Dockerfile.api</code>、<code>compose.prod.yml</code>、<code>deploy/Caddyfile</code> 和后端容器入口脚本。</li><li>新增前端运行时 <code>config.js</code> 支持，让部署站点可以同源访问 API，同时不把后端 token 写入浏览器代码。</li><li>新增 <code>.dockerignore</code>，并扩展自托管 Docker 启动、更新、备份、回滚部署文档。</li></ul>
+<ul>
+<li>新增可复用自托管 Docker 部署资产：<code>Dockerfile.api</code>、<code>compose.prod.yml</code>、<code>deploy/Caddyfile</code> 和后端容器入口脚本。</li>
+<li>新增前端运行时 <code>config.js</code> 支持，让部署站点可以同源访问 API，同时不把后端 token 写入浏览器代码。</li>
+<li>新增 <code>.dockerignore</code>，并扩展自托管 Docker 启动、更新、备份、回滚部署文档。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>初始生产 compose 路径使用 <code>compose.prod.yml</code>；默认 compose 路径已在 <code>0.4.14</code> 简化。</li></ul>
+<ul>
+<li>初始生产 compose 路径使用 <code>compose.prod.yml</code>；默认 compose 路径已在 <code>0.4.14</code> 简化。</li>
+</ul>
 <h2>[0.4.12] - 2026-06-02</h2>
 <h3>新增</h3>
-<ul><li>新增 <code>GET /api/version</code>，返回后端版本和仓库元数据。</li><li>“设置 &gt; 关于项目”现在会显示运行版本，并检查 GitHub releases/tags 是否有可更新版本。</li><li>更新检查只显示提示，不会自动更新服务端。</li></ul>
+<ul>
+<li>新增 <code>GET /api/version</code>，返回后端版本和仓库元数据。</li>
+<li>“设置 &gt; 关于项目”现在会显示运行版本，并检查 GitHub releases/tags 是否有可更新版本。</li>
+<li>更新检查只显示提示，不会自动更新服务端。</li>
+</ul>
 <h2>[0.4.11] - 2026-06-02</h2>
 <h3>新增</h3>
-<ul><li>新增轻量后端任务记录，持久化保存到 <code>meta/config/jobs.json</code>。</li><li>新增 <code>POST /api/rebuild</code> 与 <code>GET /api/rebuild/{job_id}</code>，用于显式触发重建并查询状态。</li><li>新增 <code>GET /api/uploads/{upload_id}</code>，上传 HTML 时也会返回 <code>job_id</code>，便于导入完成后继续查询。</li><li>新增完整核心 API smoke 测试，覆盖上传、列表查询、元信息编辑、搜索、内容读取、收藏、归档、取消归档和永久删除。</li><li>localhost 前端现在默认使用 <code>http://127.0.0.1:8787</code> 作为后端 API，无需内联脚本配置即可进入本地笔记本模式。</li><li>README 新增真实本地笔记本启动说明，覆盖 <code>data/content</code>、<code>data/meta</code>、API 服务和静态 Web 服务。</li><li>新增可复用部署安全基线文档，并加入后端 API Token 与 CORS 配置，为自托管生产环境做准备。</li></ul>
+<ul>
+<li>新增轻量后端任务记录，持久化保存到 <code>meta/config/jobs.json</code>。</li>
+<li>新增 <code>POST /api/rebuild</code> 与 <code>GET /api/rebuild/{job_id}</code>，用于显式触发重建并查询状态。</li>
+<li>新增 <code>GET /api/uploads/{upload_id}</code>，上传 HTML 时也会返回 <code>job_id</code>，便于导入完成后继续查询。</li>
+<li>新增完整核心 API smoke 测试，覆盖上传、列表查询、元信息编辑、搜索、内容读取、收藏、归档、取消归档和永久删除。</li>
+<li>localhost 前端现在默认使用 <code>http://127.0.0.1:8787</code> 作为后端 API，无需内联脚本配置即可进入本地笔记本模式。</li>
+<li>README 新增真实本地笔记本启动说明，覆盖 <code>data/content</code>、<code>data/meta</code>、API 服务和静态 Web 服务。</li>
+<li>新增可复用部署安全基线文档，并加入后端 API Token 与 CORS 配置，为自托管生产环境做准备。</li>
+</ul>
 <h2>[0.4.10] - 2026-06-02</h2>
 <h3>修复</h3>
-<ul><li>修复旧缓存 HTML 壳加载新版导入按钮脚本时，隐藏导入文件输入框尚不存在导致的启动崩溃。</li><li>PWA Service Worker 对页面导航和 GET 静态资源改为优先请求网络，离线时再使用缓存兜底。</li><li>应用与 PWA 缓存版本更新到 <code>0.4.10</code>，促使浏览器请求修复后的页面壳与脚本，不再继续复用旧的 <code>0.4.9</code> 资源。</li></ul>
+<ul>
+<li>修复旧缓存 HTML 壳加载新版导入按钮脚本时，隐藏导入文件输入框尚不存在导致的启动崩溃。</li>
+<li>PWA Service Worker 对页面导航和 GET 静态资源改为优先请求网络，离线时再使用缓存兜底。</li>
+<li>应用与 PWA 缓存版本更新到 <code>0.4.10</code>，促使浏览器请求修复后的页面壳与脚本，不再继续复用旧的 <code>0.4.9</code> 资源。</li>
+</ul>
 <h2>[0.4.9] - 2026-06-02</h2>
 <h3>变更</h3>
-<ul><li>已归档条目的摘要卡片和阅读页不再显示元信息编辑入口。</li><li><code>PATCH /api/items/{id}/metadata</code> 现在会拒绝已归档条目，取消归档后才可再次编辑。</li><li>已归档条目仍允许收藏/取消收藏、取消归档和永久删除。</li></ul>
+<ul>
+<li>已归档条目的摘要卡片和阅读页不再显示元信息编辑入口。</li>
+<li><code>PATCH /api/items/{id}/metadata</code> 现在会拒绝已归档条目，取消归档后才可再次编辑。</li>
+<li>已归档条目仍允许收藏/取消收藏、取消归档和永久删除。</li>
+</ul>
 <h2>[0.4.8] - 2026-06-01</h2>
 <h3>新增</h3>
-<ul><li>新增 <code>GET /api/search</code>，参数与 <code>GET /api/items</code> 的筛选、排序参数保持一致。</li><li>搜索响应包含命中的条目、分数、命中字段和摘要片段，为后续 Pagefind、SQLite FTS 或云端搜索后端保留稳定接口。</li><li>新增搜索 query、标签 OR/AND、收藏筛选、中文搜索和结果元数据的服务层测试与真实 HTTP 集成测试。</li></ul>
+<ul>
+<li>新增 <code>GET /api/search</code>，参数与 <code>GET /api/items</code> 的筛选、排序参数保持一致。</li>
+<li>搜索响应包含命中的条目、分数、命中字段和摘要片段，为后续 Pagefind、SQLite FTS 或云端搜索后端保留稳定接口。</li>
+<li>新增搜索 query、标签 OR/AND、收藏筛选、中文搜索和结果元数据的服务层测试与真实 HTTP 集成测试。</li>
+</ul>
 <h2>[0.4.7] - 2026-06-01</h2>
 <h3>新增</h3>
-<ul><li>新增 <code>GET /api/navigation</code> 与 <code>PUT /api/navigation</code>，用于持久化资料库视图、集合和标签的侧栏显隐偏好。</li><li>导航显隐设置保存到 <code>meta/config/navigation.json</code>。</li><li>前端设置管理页在配置 Agent Server URL 时会通过后端读取和保存导航显隐；静态模式继续使用 localStorage fallback。</li><li>新增导航配置的服务层测试和真实 HTTP 集成测试。</li></ul>
+<ul>
+<li>新增 <code>GET /api/navigation</code> 与 <code>PUT /api/navigation</code>，用于持久化资料库视图、集合和标签的侧栏显隐偏好。</li>
+<li>导航显隐设置保存到 <code>meta/config/navigation.json</code>。</li>
+<li>前端设置管理页在配置 Agent Server URL 时会通过后端读取和保存导航显隐；静态模式继续使用 localStorage fallback。</li>
+<li>新增导航配置的服务层测试和真实 HTTP 集成测试。</li>
+</ul>
 <h2>[0.4.6] - 2026-06-01</h2>
 <h3>新增</h3>
-<ul><li>新增 <code>PATCH /api/items/{id}/state</code>，用于将 <code>favorite</code> 与 <code>archived</code> 状态持久化写入 YAML sidecar metadata。</li><li>收藏与归档按钮在配置 Agent Server URL 时会写入后端，静态模式继续保留本地覆盖 fallback。</li><li>新增收藏/归档状态持久化与归档视图筛选的服务层测试和真实 HTTP 集成测试。</li></ul>
+<ul>
+<li>新增 <code>PATCH /api/items/{id}/state</code>，用于将 <code>favorite</code> 与 <code>archived</code> 状态持久化写入 YAML sidecar metadata。</li>
+<li>收藏与归档按钮在配置 Agent Server URL 时会写入后端，静态模式继续保留本地覆盖 fallback。</li>
+<li>新增收藏/归档状态持久化与归档视图筛选的服务层测试和真实 HTTP 集成测试。</li>
+</ul>
 <h2>[0.4.5] - 2026-06-01</h2>
 <h3>新增</h3>
-<ul><li>新增 <code>PATCH /api/items/{id}/metadata</code>，用于将笔记标题、摘要、集合和标签持久化写入 YAML sidecar metadata。</li><li>元信息编辑保存后会重新构建 <code>public/</code>，并返回重新索引后的条目。</li><li>前端元信息编辑器在配置 Agent Server URL 时会写入后端，静态模式继续保留本地覆盖 fallback。</li><li>新增元信息持久化的服务层测试和真实 HTTP 集成测试。</li></ul>
+<ul>
+<li>新增 <code>PATCH /api/items/{id}/metadata</code>，用于将笔记标题、摘要、集合和标签持久化写入 YAML sidecar metadata。</li>
+<li>元信息编辑保存后会重新构建 <code>public/</code>，并返回重新索引后的条目。</li>
+<li>前端元信息编辑器在配置 Agent Server URL 时会写入后端，静态模式继续保留本地覆盖 fallback。</li>
+<li>新增元信息持久化的服务层测试和真实 HTTP 集成测试。</li>
+</ul>
 <h2>[0.4.4] - 2026-06-01</h2>
 <h3>新增</h3>
-<ul><li>新增后端内容访问接口：<code>GET /api/items/{id}/content</code> 和 <code>GET /api/items/{id}/raw</code>。</li><li>配置 Agent Server URL 时，阅读页 iframe 与原文链接会优先使用后端内容 API；静态模式继续使用本地内容路径。</li><li>新增条目内容与原文 HTML 访问的真实 HTTP 集成测试。</li></ul>
+<ul>
+<li>新增后端内容访问接口：<code>GET /api/items/{id}/content</code> 和 <code>GET /api/items/{id}/raw</code>。</li>
+<li>配置 Agent Server URL 时，阅读页 iframe 与原文链接会优先使用后端内容 API；静态模式继续使用本地内容路径。</li>
+<li>新增条目内容与原文 HTML 访问的真实 HTTP 集成测试。</li>
+</ul>
 <h2>[0.4.3] - 2026-06-01</h2>
 <h3>新增</h3>
-<ul><li>已归档条目卡片将 AI 上下文按钮替换为永久删除入口。</li><li>已归档条目阅读页将右侧 AI 按钮替换为永久删除入口。</li><li>新增 <code>DELETE /api/items/{id}</code>，用于从 <code>content/</code> 和 <code>meta/</code> 永久删除已归档笔记，并在删除后 rebuild。</li></ul>
+<ul>
+<li>已归档条目卡片将 AI 上下文按钮替换为永久删除入口。</li>
+<li>已归档条目阅读页将右侧 AI 按钮替换为永久删除入口。</li>
+<li>新增 <code>DELETE /api/items/{id}</code>，用于从 <code>content/</code> 和 <code>meta/</code> 永久删除已归档笔记，并在删除后 rebuild。</li>
+</ul>
 <h2>[0.4.2] - 2026-06-01</h2>
 <h3>新增</h3>
-<ul><li>新增 HTML 导入后端能力：<code>POST /api/uploads/html</code>。</li><li>导入的 HTML 会保存到 <code>content/imported/YYYY/MM/</code>，sidecar metadata 写入 <code>meta/items/</code>，成功导入后自动重新构建静态站。</li><li>新增上传服务测试，覆盖 HTML 导入、元数据生成、rebuild 与非法文件拒绝。</li></ul>
+<ul>
+<li>新增 HTML 导入后端能力：<code>POST /api/uploads/html</code>。</li>
+<li>导入的 HTML 会保存到 <code>content/imported/YYYY/MM/</code>，sidecar metadata 写入 <code>meta/items/</code>，成功导入后自动重新构建静态站。</li>
+<li>新增上传服务测试，覆盖 HTML 导入、元数据生成、rebuild 与非法文件拒绝。</li>
+</ul>
 <h2>[0.4.1] - 2026-06-01</h2>
 <h3>新增</h3>
-<ul><li>新增第一段后端开发切片：可选 Agent Server API 骨架、<code>GET /api/health</code>、<code>GET /api/manifest</code>、<code>GET /api/items</code>、<code>GET /api/items/{id}</code>。</li><li><code>GET /api/items</code> 支持当前前端列表逻辑：资料库、集合、标签 OR/AND、收藏/归档、搜索、排序和 limit。</li><li>新增 <code>html-lore serve-api</code>，并补充条目查询服务/API 测试。</li></ul>
+<ul>
+<li>新增第一段后端开发切片：可选 Agent Server API 骨架、<code>GET /api/health</code>、<code>GET /api/manifest</code>、<code>GET /api/items</code>、<code>GET /api/items/{id}</code>。</li>
+<li><code>GET /api/items</code> 支持当前前端列表逻辑：资料库、集合、标签 OR/AND、收藏/归档、搜索、排序和 limit。</li>
+<li>新增 <code>html-lore serve-api</code>，并补充条目查询服务/API 测试。</li>
+</ul>
 <h3>修复</h3>
-<ul><li>更新 builder 测试断言，使其匹配当前 4 条示例内容。</li></ul>
+<ul>
+<li>更新 builder 测试断言，使其匹配当前 4 条示例内容。</li>
+</ul>
 <h2>[0.4.0] - 2026-06-01</h2>
 <h3>新增</h3>
-<ul><li>将当前界面收口为第一个正式前端版本。</li><li>前端现已包含卡片式工作台、PWA 应用外壳、三语界面、亮色/暗色主题切换、可调宽左右侧栏、全局 AI 面板占位、设置模块、本地备份/导出占位、条目收藏/归档操作，以及本地笔记元信息编辑。</li></ul>
+<ul>
+<li>将当前界面收口为第一个正式前端版本。</li>
+<li>前端现已包含卡片式工作台、PWA 应用外壳、三语界面、亮色/暗色主题切换、可调宽左右侧栏、全局 AI 面板占位、设置模块、本地备份/导出占位、条目收藏/归档操作，以及本地笔记元信息编辑。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>将亮色模式下的主题切换月亮图标替换为更直观的实心“月亮 + 星点”图标，并为前端资源加入缓存绕过版本参数。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.4.0</code>。</li></ul>
+<ul>
+<li>将亮色模式下的主题切换月亮图标替换为更直观的实心“月亮 + 星点”图标，并为前端资源加入缓存绕过版本参数。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.4.0</code>。</li>
+</ul>
 <h2>[0.3.21] - 2026-05-30</h2>
 <h3>新增</h3>
-<ul><li>条目卡片和阅读页在收藏按钮左侧新增元信息编辑按钮。</li><li>新增本地元信息编辑器，可编辑笔记标题、摘要、集合和标签，并提供保存、取消按钮。修改作为浏览器本地覆盖状态保存，并同步影响卡片、阅读页标题区、搜索、筛选、统计、排序和 AI 上下文标签。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.21</code>。</li></ul>
+<ul>
+<li>条目卡片和阅读页在收藏按钮左侧新增元信息编辑按钮。</li>
+<li>新增本地元信息编辑器，可编辑笔记标题、摘要、集合和标签，并提供保存、取消按钮。修改作为浏览器本地覆盖状态保存，并同步影响卡片、阅读页标题区、搜索、筛选、统计、排序和 AI 上下文标签。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.21</code>。</li>
+</ul>
 <h2>[0.3.20] - 2026-05-30</h2>
 <h3>修复</h3>
-<ul><li>阅读页右侧 AI 面板拖动现在会稳定跟随鼠标：拖动期间忽略 reader iframe，并基于面板实际边界计算宽度。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.20</code>。</li></ul>
+<ul>
+<li>阅读页右侧 AI 面板拖动现在会稳定跟随鼠标：拖动期间忽略 reader iframe，并基于面板实际边界计算宽度。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.20</code>。</li>
+</ul>
 <h2>[0.3.19] - 2026-05-30</h2>
 <h3>变更</h3>
-<ul><li>左侧导航收起宽度变窄，收起状态下 Logo 图标缩小。</li><li>顶部筛选弹层改为仅筛选标签；集合筛选保留为左侧导航单选。</li><li>亮色/暗色切换回到左侧设置按钮右侧，改为图标式一键切换。</li><li>基本设置中的界面设置改为“主题设置”，预留后续主题色切换功能。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.19</code>。</li></ul>
+<ul>
+<li>左侧导航收起宽度变窄，收起状态下 Logo 图标缩小。</li>
+<li>顶部筛选弹层改为仅筛选标签；集合筛选保留为左侧导航单选。</li>
+<li>亮色/暗色切换回到左侧设置按钮右侧，改为图标式一键切换。</li>
+<li>基本设置中的界面设置改为“主题设置”，预留后续主题色切换功能。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.19</code>。</li>
+</ul>
 <h2>[0.3.18] - 2026-05-30</h2>
 <h3>变更</h3>
-<ul><li>左侧品牌区固定显示 <code>HTMlore</code>，移除条目数量小字。</li><li>左侧与右侧拖动轨道不再显示悬停/拖动高亮线。</li><li>阅读页“原文 / 复制链接”改为图标按钮，AI 按钮固定在最右侧，并支持二次点击关闭右侧栏。</li><li>阅读页标题栏限制标题、摘要与标签高度，右侧栏变宽时不会无限换行撑高。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.18</code>。</li></ul>
+<ul>
+<li>左侧品牌区固定显示 <code>HTMlore</code>，移除条目数量小字。</li>
+<li>左侧与右侧拖动轨道不再显示悬停/拖动高亮线。</li>
+<li>阅读页“原文 / 复制链接”改为图标按钮，AI 按钮固定在最右侧，并支持二次点击关闭右侧栏。</li>
+<li>阅读页标题栏限制标题、摘要与标签高度，右侧栏变宽时不会无限换行撑高。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.18</code>。</li>
+</ul>
 <h2>[0.3.17] - 2026-05-30</h2>
 <h3>变更</h3>
-<ul><li>左侧导航的滚动提示线与拖动高亮轨道统一，聚焦时不再挤动导航数字位置。</li><li>归档改为先确认、默认从集合/标签中隐藏，并且只在“已归档”栏目统计，同时保留原集合/标签/收藏元数据。</li><li>顶部导航的筛选/排序组仅保留收藏筛选，阅读页右上角改为“分享 + 直达 AI 面板”。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.17</code>。</li></ul>
+<ul>
+<li>左侧导航的滚动提示线与拖动高亮轨道统一，聚焦时不再挤动导航数字位置。</li>
+<li>归档改为先确认、默认从集合/标签中隐藏，并且只在“已归档”栏目统计，同时保留原集合/标签/收藏元数据。</li>
+<li>顶部导航的筛选/排序组仅保留收藏筛选，阅读页右上角改为“分享 + 直达 AI 面板”。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.17</code>。</li>
+</ul>
 <h2>[0.3.16] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>顶部工具栏最左侧新增独立着色 <code>+</code> 导入按钮，悬浮提示“导入HTML文件”，并移除左侧原导入按钮。</li><li>左侧“资料库 / 集合 / 标签”分组支持折叠与展开。</li><li>阅读页右上角新增加入/移出 AI 问答上下文按钮，并在复制链接右侧新增分享按钮。</li></ul>
+<ul>
+<li>顶部工具栏最左侧新增独立着色 <code>+</code> 导入按钮，悬浮提示“导入HTML文件”，并移除左侧原导入按钮。</li>
+<li>左侧“资料库 / 集合 / 标签”分组支持折叠与展开。</li>
+<li>阅读页右上角新增加入/移出 AI 问答上下文按钮，并在复制链接右侧新增分享按钮。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>将侧栏品牌图标更新为重新设计的 HTMlore 图标，并优化深浅色下的品牌区与收起按钮对齐。</li><li>左侧导航栏与页面滚动条默认隐藏，悬停或键盘聚焦时显示。</li><li>AI 创建区来源选择框改为内嵌自定义箭头，避免箭头贴近右边框。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.16</code>。</li></ul>
+<ul>
+<li>将侧栏品牌图标更新为重新设计的 HTMlore 图标，并优化深浅色下的品牌区与收起按钮对齐。</li>
+<li>左侧导航栏与页面滚动条默认隐藏，悬停或键盘聚焦时显示。</li>
+<li>AI 创建区来源选择框改为内嵌自定义箭头，避免箭头贴近右边框。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.16</code>。</li>
+</ul>
 <h2>[0.3.15] - 2026-05-29</h2>
 <h3>变更</h3>
-<ul><li>移除顶部工具栏中的工作区标题，避免左右侧栏打开时小屏换行。</li><li>移除视图切换功能，工作区固定为卡片视图。</li><li>顶部工具栏将五个控制按钮与“搜索 + AI”分成两组，窄屏时搜索和 AI 会一起换行。</li><li>AI 面板生成动作改名为“生成笔记”。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.15</code>。</li></ul>
+<ul>
+<li>移除顶部工具栏中的工作区标题，避免左右侧栏打开时小屏换行。</li>
+<li>移除视图切换功能，工作区固定为卡片视图。</li>
+<li>顶部工具栏将五个控制按钮与“搜索 + AI”分成两组，窄屏时搜索和 AI 会一起换行。</li>
+<li>AI 面板生成动作改名为“生成笔记”。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.15</code>。</li>
+</ul>
 <h2>[0.3.14] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>左侧 GitHub 仓库链接加入 GitHub mark。</li><li>基本设置中的主题控制改为“跟随系统 / 亮色模式 / 暗色模式”三按钮。</li></ul>
+<ul>
+<li>左侧 GitHub 仓库链接加入 GitHub mark。</li>
+<li>基本设置中的主题控制改为“跟随系统 / 亮色模式 / 暗色模式”三按钮。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>主题偏好现在保存所选模式，跟随系统时根据浏览器系统配色偏好解析实际主题。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.14</code>。</li></ul>
+<ul>
+<li>主题偏好现在保存所选模式，跟随系统时根据浏览器系统配色偏好解析实际主题。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.14</code>。</li>
+</ul>
 <h2>[0.3.13] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>左侧导航栏底部右侧新增 GitHub 仓库链接。</li><li>新增“基本设置”，用于放置界面主题与语言偏好。</li></ul>
+<ul>
+<li>左侧导航栏底部右侧新增 GitHub 仓库链接。</li>
+<li>新增“基本设置”，用于放置界面主题与语言偏好。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>左侧底部功能区保留左侧设置按钮，并移除常驻的主题/语言控件。</li><li>用户相关设置置于设置导航最前：基本设置、用户资料、账户与安全。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.13</code>。</li></ul>
+<ul>
+<li>左侧底部功能区保留左侧设置按钮，并移除常驻的主题/语言控件。</li>
+<li>用户相关设置置于设置导航最前：基本设置、用户资料、账户与安全。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.13</code>。</li>
+</ul>
 <h2>[0.3.12] - 2026-05-29</h2>
 <h3>变更</h3>
-<ul><li>顶部工具栏分组调整为“筛选 + 排序”一组，“收藏 + 归档”一组。</li><li>已基于 MCP 与 Docker 示例笔记验证“或/且”标签筛选：或为任一标签命中，且为全部选中标签同时命中。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.12</code>。</li></ul>
+<ul>
+<li>顶部工具栏分组调整为“筛选 + 排序”一组，“收藏 + 归档”一组。</li>
+<li>已基于 MCP 与 Docker 示例笔记验证“或/且”标签筛选：或为任一标签命中，且为全部选中标签同时命中。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.12</code>。</li>
+</ul>
 <h2>[0.3.11] - 2026-05-29</h2>
 <h3>变更</h3>
-<ul><li>打开 AI 面板后，顶部工具栏不再变成多行换行布局。</li><li>全局 AI 按钮在面板打开时仍保留在搜索框右侧，保持搜索框与 AI 按钮的相对位置。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.11</code>。</li></ul>
+<ul>
+<li>打开 AI 面板后，顶部工具栏不再变成多行换行布局。</li>
+<li>全局 AI 按钮在面板打开时仍保留在搜索框右侧，保持搜索框与 AI 按钮的相对位置。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.11</code>。</li>
+</ul>
 <h2>[0.3.10] - 2026-05-29</h2>
 <h3>变更</h3>
-<ul><li>手动加入 AI 上下文的卡片按钮选中后由加号变为减号，并保留激活图标颜色。</li><li>顶部筛选与排序按钮重新拆成独立分组。</li><li>标签匹配控制改为“或/且”文案，与底层任一/全部标签筛选逻辑一致。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.10</code>。</li></ul>
+<ul>
+<li>手动加入 AI 上下文的卡片按钮选中后由加号变为减号，并保留激活图标颜色。</li>
+<li>顶部筛选与排序按钮重新拆成独立分组。</li>
+<li>标签匹配控制改为“或/且”文案，与底层任一/全部标签筛选逻辑一致。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.10</code>。</li>
+</ul>
 <h2>[0.3.9] - 2026-05-29</h2>
 <h3>变更</h3>
-<ul><li>卡片集合/来源固定在左上顶部行，与卡片操作图标同排，标题从下一行开始。</li><li>横向视图拆分操作图标、阅读/原文按钮与日期位置，避免互相覆盖。</li><li>AI 右侧栏改为从右侧边缘滑出，并与左侧栏一样在拖拽时显示高亮线。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.9</code>。</li></ul>
+<ul>
+<li>卡片集合/来源固定在左上顶部行，与卡片操作图标同排，标题从下一行开始。</li>
+<li>横向视图拆分操作图标、阅读/原文按钮与日期位置，避免互相覆盖。</li>
+<li>AI 右侧栏改为从右侧边缘滑出，并与左侧栏一样在拖拽时显示高亮线。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.9</code>。</li>
+</ul>
 <h2>[0.3.8] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>卡片操作区新增加入知识库问答上下文按钮，可手动选择多个文件作为 AI 上下文。</li></ul>
+<ul>
+<li>卡片操作区新增加入知识库问答上下文按钮，可手动选择多个文件作为 AI 上下文。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>手动选择的 AI 上下文会覆盖页面、阅读器与筛选状态推导出的默认上下文。</li><li>AI 面板打开后隐藏顶部 AI 按钮，仅保留面板内关闭按钮。</li><li>顶部筛选与排序按钮合并到同一工具组。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.8</code>。</li></ul>
+<ul>
+<li>手动选择的 AI 上下文会覆盖页面、阅读器与筛选状态推导出的默认上下文。</li>
+<li>AI 面板打开后隐藏顶部 AI 按钮，仅保留面板内关闭按钮。</li>
+<li>顶部筛选与排序按钮合并到同一工具组。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.8</code>。</li>
+</ul>
 <h2>[0.3.7] - 2026-05-29</h2>
 <h3>变更</h3>
-<ul><li>左侧边栏拖拽手柄不再造成横向滚动条。</li><li>复选筛选弹层顶部改为放置“任一/全部”标签匹配控制。</li><li>卡片操作按钮不再占用顶部布局行，集合、来源和日期视觉上固定在左下区域。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.7</code>。</li></ul>
+<ul>
+<li>左侧边栏拖拽手柄不再造成横向滚动条。</li>
+<li>复选筛选弹层顶部改为放置“任一/全部”标签匹配控制。</li>
+<li>卡片操作按钮不再占用顶部布局行，集合、来源和日期视觉上固定在左下区域。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.7</code>。</li>
+</ul>
 <h2>[0.3.6] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>设置页新增“用户资料”和“账户与安全”占位分区。</li></ul>
+<ul>
+<li>设置页新增“用户资料”和“账户与安全”占位分区。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>顶部筛选与排序控件拆成独立分组。</li><li>卡片元信息调整为左下显示“集合/来源”和日期，收藏/归档操作保留在右上。</li><li>来源标签统一为“生成/导入”系统文案。</li><li>移除“待审核”资料库视图；笔记按来源自动进入生成或导入分类。</li><li>设置页标题简化为“设置”，并将数据设置排在 AI 设置之前。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.6</code>。</li></ul>
+<ul>
+<li>顶部筛选与排序控件拆成独立分组。</li>
+<li>卡片元信息调整为左下显示“集合/来源”和日期，收藏/归档操作保留在右上。</li>
+<li>来源标签统一为“生成/导入”系统文案。</li>
+<li>移除“待审核”资料库视图；笔记按来源自动进入生成或导入分类。</li>
+<li>设置页标题简化为“设置”，并将数据设置排在 AI 设置之前。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.6</code>。</li>
+</ul>
 <h2>[0.3.5] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>标签复选筛选新增“任一/全部”匹配模式。</li><li>示例内容新增同时带有 MCP 和 Docker 标签的笔记，用于组合标签筛选验证。</li></ul>
+<ul>
+<li>标签复选筛选新增“任一/全部”匹配模式。</li>
+<li>示例内容新增同时带有 MCP 和 Docker 标签的笔记，用于组合标签筛选验证。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>点击资料库导航会清空集合/标签复选限制，使资料库视图表示该资料库内的全部集合与全部标签。</li><li>复选筛选中的“全选”会重置集合/标签限制。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.5</code>。</li></ul>
+<ul>
+<li>点击资料库导航会清空集合/标签复选限制，使资料库视图表示该资料库内的全部集合与全部标签。</li>
+<li>复选筛选中的“全选”会重置集合/标签限制。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.5</code>。</li>
+</ul>
 <h2>[0.3.4] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>结果筛选组新增排序菜单，支持按时间新到旧、旧到新、标题 A-Z、标题 Z-A 排序当前视图。</li></ul>
+<ul>
+<li>结果筛选组新增排序菜单，支持按时间新到旧、旧到新、标题 A-Z、标题 Z-A 排序当前视图。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.4</code>。</li></ul>
+<ul>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.4</code>。</li>
+</ul>
 <h2>[0.3.3] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>左侧边栏支持拖动调整宽度，并保存到本地。</li><li>顶部工具栏新增集合与标签复选筛选弹层，并提供一键清空。</li><li>AI 上下文新增资料库视图、仅收藏状态、归档显示状态和复选筛选状态。</li></ul>
+<ul>
+<li>左侧边栏支持拖动调整宽度，并保存到本地。</li>
+<li>顶部工具栏新增集合与标签复选筛选弹层，并提供一键清空。</li>
+<li>AI 上下文新增资料库视图、仅收藏状态、归档显示状态和复选筛选状态。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>复选筛选开启时，点击左侧集合或标签会同步对应复选组。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.3</code>。</li></ul>
+<ul>
+<li>复选筛选开启时，点击左侧集合或标签会同步对应复选组。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.3</code>。</li>
+</ul>
 <h2>[0.3.2] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>搜索框右侧新增全局 AI 助理按钮。</li><li>新增可拖动调宽的右侧 AI 侧栏，并根据全部笔记、集合、标签、搜索结果、阅读页显示不同上下文。</li><li>预留 AI 对话和生成 HTML 笔记操作，用于后续 Agent Server 接入。</li></ul>
+<ul>
+<li>搜索框右侧新增全局 AI 助理按钮。</li>
+<li>新增可拖动调宽的右侧 AI 侧栏，并根据全部笔记、集合、标签、搜索结果、阅读页显示不同上下文。</li>
+<li>预留 AI 对话和生成 HTML 笔记操作，用于后续 Agent Server 接入。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>基于知识库的多轮对话规划从设置页迁移到全局 AI 侧栏。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.2</code>。</li></ul>
+<ul>
+<li>基于知识库的多轮对话规划从设置页迁移到全局 AI 侧栏。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.2</code>。</li>
+</ul>
 <h2>[0.3.1] - 2026-05-29</h2>
 <h3>变更</h3>
-<ul><li>横向条目视图中将“阅读/原文”操作上移，与标签行底部对齐，整体行高更紧凑。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.1</code>。</li></ul>
+<ul>
+<li>横向条目视图中将“阅读/原文”操作上移，与标签行底部对齐，整体行高更紧凑。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.1</code>。</li>
+</ul>
 <h2>[0.3.0] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>归档筛选左侧新增“仅显示收藏”工具栏筛选按钮。</li><li>归档筛选默认开启，默认排除已归档条目。</li></ul>
+<ul>
+<li>归档筛选左侧新增“仅显示收藏”工具栏筛选按钮。</li>
+<li>归档筛选默认开启，默认排除已归档条目。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>归档筛选开启时悬浮提示改为“显示已归档”，表达点击后的动作。</li><li>工具栏筛选按钮只用图标颜色表达状态，不再增加高亮框。</li><li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.0</code>。</li></ul>
+<ul>
+<li>归档筛选开启时悬浮提示改为“显示已归档”，表达点击后的动作。</li>
+<li>工具栏筛选按钮只用图标颜色表达状态，不再增加高亮框。</li>
+<li>包版本、应用版本与 PWA 缓存版本更新为 <code>0.3.0</code>。</li>
+</ul>
 <h2>[0.1.0] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>初始静态优先 HTMlore MVP。</li><li>Manifest v2 知识条目模型。</li><li>旁车 YAML 元数据支持。</li><li>类 Karakeep 卡片工作台与侧栏筛选。</li><li>iframe 阅读页、原文打开。</li><li>新知识入口与可选 Agent API 形状。</li><li>示例内容、测试、Docker 静态镜像、README、MIT 许可。</li></ul>
+<ul>
+<li>初始静态优先 HTMlore MVP。</li>
+<li>Manifest v2 知识条目模型。</li>
+<li>旁车 YAML 元数据支持。</li>
+<li>类 Karakeep 卡片工作台与侧栏筛选。</li>
+<li>iframe 阅读页、原文打开。</li>
+<li>新知识入口与可选 Agent API 形状。</li>
+<li>示例内容、测试、Docker 静态镜像、README、MIT 许可。</li>
+</ul>
 <h2>[0.2.0] - 2026-05-29</h2>
 <h3>新增</h3>
-<ul><li>可扩展前端 i18n 字典。</li><li>中文、英文、日语系统 UI 切换。</li><li>语言偏好保存到 <code>localStorage</code>。</li><li>暗色/亮色模式切换。</li><li>设置页：AI 服务商配置、用户协议、关于项目、更新文档。</li><li>集合/标签管理区，支持侧栏显示控制，并预留未来元数据写入动作。</li><li>资料库管理区，用于控制固定系统视图是否显示在侧栏。</li><li>AI 知识库助理占位模块，包含任务类型、提示词输入，以及未来影响数据库前的二次确认逻辑。</li><li>全局 AI 侧栏占位模块，用于未来基于知识库文件的多轮对话。</li><li>“手气不错”魔法棒入口，可随机打开当前视图中的条目。</li><li>资料库新增“已归档”视图，用于后续归档工作流。</li><li>条目卡片和阅读页新增收藏、归档图标操作。</li><li>主工作区支持方块卡片与横向条目视图切换。</li><li>设置页新增独立数据设置区：本地备份与恢复、自动备份快照、WebDAV 设置、JSON 导出。</li><li>新增 PWA manifest 和 Service Worker，用于浏览器安装和应用外壳缓存。</li><li>工具栏新增归档筛选按钮，可从当前结果视图排除已归档内容。</li></ul>
+<ul>
+<li>可扩展前端 i18n 字典。</li>
+<li>中文、英文、日语系统 UI 切换。</li>
+<li>语言偏好保存到 <code>localStorage</code>。</li>
+<li>暗色/亮色模式切换。</li>
+<li>设置页：AI 服务商配置、用户协议、关于项目、更新文档。</li>
+<li>集合/标签管理区，支持侧栏显示控制，并预留未来元数据写入动作。</li>
+<li>资料库管理区，用于控制固定系统视图是否显示在侧栏。</li>
+<li>AI 知识库助理占位模块，包含任务类型、提示词输入，以及未来影响数据库前的二次确认逻辑。</li>
+<li>全局 AI 侧栏占位模块，用于未来基于知识库文件的多轮对话。</li>
+<li>“手气不错”魔法棒入口，可随机打开当前视图中的条目。</li>
+<li>资料库新增“已归档”视图，用于后续归档工作流。</li>
+<li>条目卡片和阅读页新增收藏、归档图标操作。</li>
+<li>主工作区支持方块卡片与横向条目视图切换。</li>
+<li>设置页新增独立数据设置区：本地备份与恢复、自动备份快照、WebDAV 设置、JSON 导出。</li>
+<li>新增 PWA manifest 和 Service Worker，用于浏览器安装和应用外壳缓存。</li>
+<li>工具栏新增归档筛选按钮，可从当前结果视图排除已归档内容。</li>
+</ul>
 <h3>变更</h3>
-<ul><li>系统 UI 文案由翻译 key 渲染；用户创建的标题、集合、标签保持原样。</li><li>语言选择位于侧栏底部。</li><li>API Key 明确不进入浏览器存储；静态模式只保存非敏感模型偏好。</li><li>设置页图标按钮统一视觉居中。</li><li>AI 服务商设置与侧栏管理、项目信息之间有视觉分隔。</li><li>左侧导入入口与右侧 AI 创建入口分离。</li><li>点击 Logo 和侧栏导航会从设置页或阅读页回到主工作区。</li><li>Manifest 条目新增 <code>archived</code> 元数据字段。</li><li>方块卡片与横向条目视图为标题、摘要、标签、操作区预留稳定区域，长摘要以省略截断，不再挤掉功能模块。</li></ul>
+<ul>
+<li>系统 UI 文案由翻译 key 渲染；用户创建的标题、集合、标签保持原样。</li>
+<li>语言选择位于侧栏底部。</li>
+<li>API Key 明确不进入浏览器存储；静态模式只保存非敏感模型偏好。</li>
+<li>设置页图标按钮统一视觉居中。</li>
+<li>AI 服务商设置与侧栏管理、项目信息之间有视觉分隔。</li>
+<li>左侧导入入口与右侧 AI 创建入口分离。</li>
+<li>点击 Logo 和侧栏导航会从设置页或阅读页回到主工作区。</li>
+<li>Manifest 条目新增 <code>archived</code> 元数据字段。</li>
+<li>方块卡片与横向条目视图为标题、摘要、标签、操作区预留稳定区域，长摘要以省略截断，不再挤掉功能模块。</li>
+</ul>
 </section>
 </main>
 </body>

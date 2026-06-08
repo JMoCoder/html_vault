@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-06-03T02:30:00.000000+00:00",
+  "generated_at": "2026-06-08T06:00:00.000000+00:00",
   "site": {
     "title": "HTMlore Demo",
     "layout": "cards"
@@ -9,7 +9,7 @@
     {
       "id": "demo-notes/readme.zh-CN.html",
       "title": "HTMlore README 完整说明",
-      "summary": "完整中文 README 转换为 HTML，覆盖项目愿景、功能范围、Docker 部署、数据模型、后端 API、安全模型和路线图。",
+      "summary": "完整中文 README 转换为 HTML，覆盖项目愿景、笔记本流程、AI beta 功能、Docker 部署、后端 API、安全模型和路线图。",
       "path": "content/demo-notes/readme.zh-CN.html",
       "source_type": "html",
       "source_url": null,
@@ -25,7 +25,7 @@
       "archived": false,
       "pinned": true,
       "created": "2026-06-02T08:00:00.000000+00:00",
-      "updated": "2026-06-02T08:00:00.000000+00:00",
+      "updated": "2026-06-08T06:00:00.000000+00:00",
       "cover": null,
       "open_mode": "iframe",
       "agent": {
@@ -35,7 +35,7 @@
     {
       "id": "demo-notes/changelog.zh-CN.html",
       "title": "HTMlore 更新日志",
-      "summary": "完整中文 CHANGELOG 转换为 HTML，以发布轨迹风格展示 0.7.0 和早期版本变更。",
+      "summary": "完整中文 CHANGELOG 转换为 HTML，以发布轨迹风格展示 0.9.0 AI beta 版本和早期版本变更。",
       "path": "content/demo-notes/changelog.zh-CN.html",
       "source_type": "html",
       "source_url": null,
@@ -51,7 +51,7 @@
       "archived": false,
       "pinned": false,
       "created": "2026-06-02T08:01:00.000000+00:00",
-      "updated": "2026-06-02T08:01:00.000000+00:00",
+      "updated": "2026-06-08T06:01:00.000000+00:00",
       "cover": null,
       "open_mode": "iframe",
       "agent": {

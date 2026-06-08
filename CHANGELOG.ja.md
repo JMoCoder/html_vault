@@ -4,6 +4,45 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-06-08
+
+### Added
+
+- OpenAI-compatible エンドポイント向けのサーバー側 AI provider 設定を追加し、
+  API key はバックエンド環境変数からのみ読み取るようにしました。
+- ナレッジベース Q&A beta を追加しました。コンテキスト解決、キーワード検索、
+  strict/content expansion モード、Markdown 回答表示、ソース表示、rate limit を含みます。
+- AI 会話の永続化、コンテキスト別の最新会話復元、AI サイドバー内のコンテキスト別履歴、
+  Settings のグローバル会話管理を追加しました。
+- 軽量 AI ジョブキュー、実行履歴、キューポップオーバー、job/run API を追加しました。
+- 既存の AI 会話から HTML ノートを生成する beta 機能を追加しました。PM/UX/Coder/QA/Reviewer
+  の段階的グラフを使います。
+- HTML、Markdown、プレーンテキスト資料アップロードから HTML ノートを生成する beta 機能を追加しました。
+- vector/hybrid 検索スキャフォールドを追加し、vector store 未設定時はキーワード検索へフォールバックします。
+- プロンプト予算、未対応リクエスト、秘密情報らしき出力、共有向け HTML 安全確認の AI ガードレールを追加しました。
+- AI パネル UI を改善しました。コンパクトなコンテキスト header、入力エリア resize、返信状態、
+  コンテキストリセット、会話履歴、キュー/More メニュー、会話管理のアイコンボタンを含みます。
+
+### Changed
+
+- 英語、中国語、日本語 README を更新し、現在の AI 機能、サーバー側 AI 設定、beta 制限を記載しました。
+- 最新ドキュメントから静的 Demo の README / CHANGELOG ノートを再生成しました。
+- パッケージ、アプリ、PWA、Demo cache、provider user-agent のバージョンを `0.9.0` に更新しました。
+
+### Security
+
+- AI provider の公開 status が `has_api_key` などの公開フィールドだけを返すことを確認しました。
+  ブラウザー設定 API は生の API key を受け付けず、返しません。
+- AI provider secret が status、provider config、生成 run payload から漏れないことを確認するテストを追加しました。
+
+### Fixed
+
+- 全体コンテキスト Q&A 検索を改善し、overview 系の質問で単一ノートに寄りすぎず、
+  選択済みコンテキスト全体を使えるようにしました。
+- static build で `app_static` が自身の内部へコピーされる問題を修正しました。
+- AI サイドバーのメニュー状態、会話履歴のコンテキスト絞り込み、Settings 表示時に右サイドバーを閉じる挙動を修正し、
+  Playwright カバレッジを追加しました。
+
 ## [0.8.4] - 2026-06-06
 
 ### Fixed

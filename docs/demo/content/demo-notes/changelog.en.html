@@ -15,201 +15,920 @@
 <p class="eyebrow">Release history</p>
 <h1>HTMlore Changelog</h1>
 </article>
-<aside class="stat"><span class="badge">0.7.0</span></aside>
+<aside class="stat"><span class="badge">0.9.0</span></aside>
 </section>
 <section class="timeline doc">
 <h1>Changelog</h1>
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
 <p>All notable changes to HTMlore will be documented in this file.</p>
 <p>The format is based on Keep a Changelog, and this project uses semantic versioning after the initial public release.</p>
+<h2>[Unreleased]</h2>
+<h2>[0.9.0] - 2026-06-08</h2>
+<h3>Added</h3>
+<ul>
+<li>Added server-side AI provider configuration for OpenAI-compatible endpoints,</li>
+<p>with API keys read only from backend environment variables.</p>
+<li>Added a knowledge-base Q&amp;A beta flow with context resolution, keyword</li>
+<p>retrieval, strict/content-expansion modes, Markdown-rendered assistant messages, source pills, and rate limiting.</p>
+<li>Added persistent AI conversations, latest conversation restore per context,</li>
+<p>per-context history in the AI sidebar, and global conversation management in Settings.</p>
+<li>Added a lightweight AI job queue, run history, queue popover, and job/run API</li>
+<p>endpoints.</p>
+<li>Added beta HTML note generation from existing conversations using a staged</li>
+<p>PM/UX/Coder/QA/Reviewer graph.</p>
+<li>Added beta material-to-HTML generation from uploaded HTML, Markdown, or plain</li>
+<p>text files.</p>
+<li>Added vector/hybrid retrieval scaffolding with keyword fallback while the</li>
+<p>pluggable vector store is not yet configured.</p>
+<li>Added AI guardrails for prompt budget, unsupported requests, secret-like</li>
+<p>output, and share-target HTML safety checks.</p>
+<li>Added frontend AI panel refinements: compact context header, resizable</li>
+<p>composer area, reply status, context reset, conversation history, queue/more menu behavior, and icon-only conversation management actions.</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Updated README files in English, Chinese, and Japanese to document current AI</li>
+<p>capabilities, server-side AI configuration, and beta limitations.</p>
+<li>Regenerated the static demo README and CHANGELOG notes from the current</li>
+<p>documentation.</p>
+<li>Updated package, app, PWA, demo, and provider user-agent versions to <code>0.9.0</code>.</li>
+</ul>
+<h3>Security</h3>
+<ul>
+<li>Confirmed AI public provider responses expose only public status fields such</li>
+<p>as <code>has_api_key</code>; raw API keys are not accepted by the browser settings API and are not returned to the frontend.</p>
+<li>Added tests that assert AI provider secrets are not leaked through status,</li>
+<p>provider config, or generated run payloads.</p>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Improved global-context Q&amp;A retrieval so overview-style questions can use the</li>
+<p>full selected context instead of over-focusing on a single note.</p>
+<li>Fixed static build copying so <code>app_static</code> is not copied into itself.</li>
+<li>Fixed AI sidebar menu state, conversation-history filtering, settings</li>
+<p>sidebar closing behavior, and related Playwright coverage.</p>
+</ul>
+<h2>[0.8.4] - 2026-06-06</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Increased the desktop reader header height budget so tags remain visible when</li>
+<p>a two-line title and three-line summary are shown with both sidebars open on laptop-width screens.</p>
+</ul>
+<h3>Added</h3>
+<ul>
+<li>Added Playwright coverage for the laptop-width reader layout with both</li>
+<p>sidebars open.</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.8.4</code>.</li>
+</ul>
+<h2>[0.8.3] - 2026-06-06</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Changed the mobile Settings page navigation into a compact horizontal</li>
+<p>scrolling tab bar so long setting section names no longer render as oversized blocks or overflow the phone viewport.</p>
+<li>Kept the desktop Settings page on the existing left-navigation layout.</li>
+</ul>
+<h3>Added</h3>
+<ul>
+<li>Added Playwright coverage for the mobile Settings tab scroller and the</li>
+<p>desktop Settings navigation layout.</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.8.3</code>.</li>
+</ul>
+<h2>[0.8.2] - 2026-06-05</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Refined the tag filter count placement so the selected result count appears</li>
+<p>inline beside the &quot;Tag filters&quot; title in accent text, while the redundant lower &quot;Tags&quot; label is removed.</p>
+<li>Card dates now prefer the stable item creation date, so archive/unarchive</li>
+<p>and other state updates no longer change the date shown on cards.</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.8.2</code>.</li>
+</ul>
+<h2>[0.8.1] - 2026-06-05</h2>
+<h3>Added</h3>
+<ul>
+<li>Added dynamic result counts to the tag filter popover. The title now shows</li>
+<p>the current filtered item count, OR mode keeps per-tag counts independent, and AND mode shows co-occurring tag counts within the current intersection.</p>
+<li>Added share expiry/status metadata to the share dialog and share management</li>
+<p>list.</p>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Kept fragment links inside public shared HTML pages scoped to the shared</li>
+<p>document instead of navigating back to the workspace shell.</p>
+<li>Increased reader header spacing so three-line summaries do not crowd the tag</li>
+<p>row against the header boundary.</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Reduced the OR/AND tag match buttons in the filter popover.</li>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.8.1</code>.</li>
+</ul>
+<h2>[0.8.0] - 2026-06-05</h2>
+<h3>Removed</h3>
+<ul>
+<li>Removed legacy <code>html_vault</code> Python compatibility package, the old</li>
+<p><code>html-vault</code> CLI entry point, and <code>HTML_VAULT_*</code> runtime environment fallback paths. Current runtime configuration now uses <code>html_lore</code>, <code>html-lore</code>, and <code>HTML_LORE_*</code> only.</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Updated Docker, deployment examples, migration notes, and package discovery</li>
+<p>to use the renamed HTMlore runtime path only.</p>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.8.0</code>.</li>
+</ul>
+<h2>[0.7.9] - 2026-06-05</h2>
+<h3>Added</h3>
+<ul>
+<li>Added an HTMlore homepage shortcut to the sidebar footer beside the GitHub</li>
+<p>shortcut.</p>
+<li>Added static share shell repair so existing active share entries can regain</li>
+<p>a safe <code>/share/{token}</code> entry page after route or cache issues.</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>The workspace brand logo now returns to the workspace home instead of opening</li>
+<p>the public project homepage.</p>
+<li>Moved the Agent Server connection status into Settings &gt; User profile.</li>
+<li>Removed the sidebar footer user status button; account details stay inside</li>
+<p>settings.</p>
+<li>On mobile reader pages, the reader metadata and action header now scrolls away</li>
+<p>with the note content while the global top bar remains available.</p>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Hidden zero-count tags after archiving notes, while restoring them when notes</li>
+<p>are unarchived.</p>
+<li>Fixed <code>/share/{token}/</code> routing to match <code>/share/{token}</code>.</li>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.7.9</code>.</li>
+</ul>
+<h2>[0.7.8] - 2026-06-05</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Removed the reader Fit width / Original width button introduced in <code>0.7.7</code>;</li>
+<p>mobile reader behavior will be redesigned without adding unconfirmed controls.</p>
+<li>Changed the mobile sidebar from a hidden or narrow left rail into a top</li>
+<p>vertical-collapse bar, keeping navigation usable without squeezing the workspace.</p>
+<li>Added a static share fallback that renders <code>/share/{token}</code> from</li>
+<p><code>/api/public/shares/{token}</code> when deployment routing accidentally returns the workspace shell.</p>
+<li>Added per-token static share shells under <code>public/share/&lt;token&gt;/index.html</code></li>
+<p>and removes them when shares are revoked or replaced.</p>
+<li>Added Playwright coverage for mobile sidebar collapse and static share</li>
+<p>fallback rendering.</p>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.7.8</code>.</li>
+</ul>
+<h2>[0.7.7] - 2026-06-05</h2>
+<h3>Added</h3>
+<ul>
+<li>Added an initial reader-level width-mode experiment for HTML notes.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Improved mobile reader layout so the left sidebar no longer consumes reading</li>
+<p>width on narrow screens.</p>
+<li>Kept reader action buttons above the iframe content on mobile instead of</li>
+<p>letting note content visually cover them.</p>
+<li>Added Playwright coverage for the mobile reader viewport.</li>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.7.7</code>.</li>
+</ul>
+<h2>[0.7.6] - 2026-06-04</h2>
+<h3>Security</h3>
+<ul>
+<li>Minimized the public share JSON response so share readers no longer receive</li>
+<p>internal item IDs, collection/tag metadata, share management IDs, access counters, or copyable management URL fields.</p>
+<li>Prevented revoked or expired shares from being reactivated or extended through</li>
+<p>the share update API.</p>
+<li>Hardened shared HTML sanitization so resource <code>src</code> attributes cannot point</li>
+<p>back to private <code>/api/</code> or <code>/content/</code> paths, nor to external tracking resources; only vetted inline SVG data images remain allowed.</p>
+<li>Added share security tests for private API isolation, public response</li>
+<p>minimization, inactive-share update rejection, and resource-source stripping.</p>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.7.6</code>.</li>
+</ul>
+<h2>[0.7.5] - 2026-06-04</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed the Caddy deployment route for public share pages by proxying</li>
+<p><code>/share/*</code> to the backend API instead of letting the static app fallback return the workspace shell.</p>
+<li>Updated the optional Basic Auth Caddy example so <code>/share/*</code> and</li>
+<p><code>/api/public/shares/*</code> remain publicly reachable while the workspace and private API routes stay protected.</p>
+<li>Added deployment-config tests covering public share routing.</li>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.7.5</code>.</li>
+</ul>
+<h2>[0.7.4] - 2026-06-04</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed public share pages so shared note HTML is rendered inside an isolated</li>
+<p>iframe, preventing source-page global styles from breaking the HTMlore share shell or showing oversized icon artwork.</p>
+<li>Persisted share <code>url_path</code> values so active shared notes can reopen the share</li>
+<p>dialog and copy the existing public link instead of only seeing it at creation time.</p>
+<li>Moved revoke-share controls to the left side of the share dialog and share</li>
+<p>management rows.</p>
+<li>Updated the PWA service worker so <code>/share/</code>, <code>/api/</code>, and <code>/content/</code> routes</li>
+<p>are not intercepted by the workspace app-shell cache.</p>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.7.4</code>.</li>
+</ul>
+<h2>[0.7.3] - 2026-06-04</h2>
+<h3>Added</h3>
+<ul>
+<li>Preserved safe inline CSS and same-page <code>#anchor</code> links on public share pages</li>
+<p>while still blocking external CSS resources and dangerous CSS features.</p>
+<li>Added explicit <code>requires-static-export:chart</code> share safety feedback for</li>
+<p>Chart.js/canvas notes that need static chart export instead of script execution.</p>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed public share pages so sanitized full HTML documents render as body</li>
+<p>content plus safe head styles instead of nesting <code>&lt;html&gt;/&lt;head&gt;/&lt;body&gt;</code> inside the share wrapper.</p>
+<li>Increased import feedback spacing and card-summary breathing room to avoid</li>
+<p>cramped upload messages and slight summary/tag overlap.</p>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.7.3</code>.</li>
+</ul>
+<h2>[0.7.2] - 2026-06-04</h2>
+<h3>Added</h3>
+<ul>
+<li>Added backend-backed public note sharing with expiring token links, share</li>
+<p>management APIs, public sanitized share pages, and revoke support.</p>
+<li>Added share safety checks that block executable HTML, form/embed content,</li>
+<p>dangerous URL schemes, local/private references, and likely secrets before a public share can be created.</p>
+<li>Added a narrow safe-share conversion for local <code>toggleGroup(&#x27;id&#x27;)</code></li>
+<p>collapsible note interactions while stripping source scripts and external font/resource links from the public share page.</p>
+<li>Added workspace share UI on reader pages, share-link management in Settings,</li>
+<p>and removed the internal copy-link reader action.</p>
+<li>Moved the workspace Agent connection status into the sidebar profile popover</li>
+<p>and made the large profile avatar uploadable from that popover.</p>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.7.2</code>.</li>
+</ul>
+<h2>[0.7.1] - 2026-06-04</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed card-level Original links in deployed workspaces so they use the authenticated raw item API instead of static <code>content/...</code> paths that can be intercepted by SPA fallback routing.</li>
+<li>Added same-origin API detection for self-hosted HTTP/HTTPS deployments while keeping GitHub Pages and static demo mode backend-free.</li>
+<li>Blocked service workers during Playwright checks and added coverage for card Original links in API-backed and static demo modes.</li>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.7.1</code>.</li>
+</ul>
 <h2>[0.7.0] - 2026-06-04</h2>
 <h3>Changed</h3>
-<ul><li>Promoted the HTMlore rename, repository migration, primary <code>html_lore</code> package namespace, <code>html-lore</code> CLI, and <code>HTML_LORE_*</code> configuration names to the <code>0.7.0</code> stable release.</li><li>Added a migration guide for deployments upgrading from the former project name to HTMlore.</li><li>Cleaned up remaining sample and static asset references from the former project name after the HTMlore rename.</li><li>Updated public homepage, demo README notes, app accessibility labels, and logo descriptions to use HTMlore's current library/lore wording.</li><li>Routed the legacy <code>html-vault</code> console script through the compatibility wrapper so its help output keeps the legacy command name while using the <code>html_lore</code> implementation.</li><li>Expanded <code>.env.example</code> with the local login/session and self-hosted multi-user data settings used by the default Docker deployment.</li><li>Added a Docker image health check for the backend API.</li><li>Added GitHub Actions CI for pytest, Playwright demo checks, and Docker Compose validation.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.7.0</code>.</li></ul>
+<ul>
+<li>Promoted the HTMlore rename, repository migration, primary <code>html_lore</code></li>
+<p>package namespace, <code>html-lore</code> CLI, and <code>HTML_LORE_*</code> configuration names to the <code>0.7.0</code> stable release.</p>
+<li>Added a migration guide for deployments upgrading from the former project</li>
+<p>name to HTMlore.</p>
+<li>Cleaned up remaining sample and static asset references from the former</li>
+<p>project name after the HTMlore rename.</p>
+<li>Updated public homepage, demo README notes, app accessibility labels, and</li>
+<p>logo descriptions to use HTMlore&#x27;s current library/lore wording.</p>
+<li>Refined the public homepage and workspace wordmark so both use the same</li>
+<p><code>HTM</code> + accented <code>lore</code> styling.</p>
+<li>Routed the legacy <code>html-vault</code> console script through the compatibility</li>
+<p>wrapper so its help output keeps the legacy command name while using the <code>html_lore</code> implementation.</p>
+<li>Expanded <code>.env.example</code> with the local login/session and self-hosted</li>
+<p>multi-user data settings used by the default Docker deployment.</p>
+<li>Added a Docker image health check for the backend API.</li>
+<li>Added GitHub Actions CI for pytest, Playwright demo checks, and Docker</li>
+<p>Compose validation.</p>
+<li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.7.0</code>.</li>
+</ul>
 <h2>[0.6.8] - 2026-06-04</h2>
 <h3>Changed</h3>
-<ul><li>Moved the primary Python implementation package to <code>html_lore</code>.</li><li>Updated package entry points, tests, API server launch paths, and Docker packaging to use the new <code>html_lore</code> namespace by default.</li><li>Kept the legacy <code>html_vault</code> package as a thin compatibility shim for existing imports and old <code>uvicorn html_vault.server.app:app</code> launch paths.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.8</code>.</li></ul>
+<ul>
+<li>Moved the primary Python implementation package to <code>html_lore</code>.</li>
+<li>Updated package entry points, tests, API server launch paths, and Docker</li>
+<p>packaging to use the new <code>html_lore</code> namespace by default.</p>
+<li>Kept the legacy <code>html_vault</code> package as a thin compatibility shim for</li>
+<p>existing imports and old <code>uvicorn html_vault.server.app:app</code> launch paths.</p>
+<li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.8</code>.</li>
+</ul>
 <h3>Compatibility</h3>
-<ul><li>Existing <code>html_vault</code> imports and the legacy <code>html-vault</code> CLI remain supported during the 0.x compatibility window.</li></ul>
+<ul>
+<li>Existing <code>html_vault</code> imports and the legacy <code>html-vault</code> CLI remain</li>
+<p>supported during the 0.x compatibility window.</p>
+</ul>
+<h2>[0.6.7] - 2026-06-04</h2>
+<h3>Added</h3>
+<ul>
+<li>Added the new <code>html-lore</code> CLI entry point while keeping the legacy</li>
+<p><code>html-vault</code> command available during the 0.x compatibility window.</p>
+<li>Added the <code>html_lore</code> public Python namespace as a compatibility entry that</li>
+<p>points to the existing implementation package.</p>
+<li>Added <code>HTML_LORE_*</code> runtime configuration names with fallback support for</li>
+<p>legacy <code>HTML_VAULT_*</code> environment variables.</p>
+<li>Added browser preference migration from <code>html-vault-*</code> localStorage keys to</li>
+<p><code>html-lore-*</code> keys, without deleting the legacy keys.</p>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Renamed the public product brand from HTMlore&#x27;s former name to <code>HTMlore</code></li>
+<p>across the app shell, login screen, PWA manifest, Pages site, static demo, README, deployment docs, and version metadata.</p>
+<li>Updated the default repository and release-check URLs to</li>
+<p><code>JMoCoder/html_lore</code>.</p>
+<li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.7</code>.</li>
+</ul>
+<h3>Compatibility</h3>
+<ul>
+<li>Existing <code>html_vault</code> Python imports, <code>html-vault</code> CLI commands,</li>
+<p><code>HTML_VAULT_*</code> env variables, <code>html-vault-*</code> browser preferences, and <code>html-vault-backup</code> imports remain supported.</p>
+</ul>
+<h2>[0.6.6] - 2026-06-03</h2>
+<h3>Changed</h3>
+<ul>
+<li>Refined the sidebar profile area: the footer avatar now opens a compact user</li>
+<p>status popover with avatar, username, ID, subscription status, and AI credit balance instead of navigating away.</p>
+<li>Moved profile management controls into Settings &gt; User profile, made the</li>
+<p>avatar itself the upload target, and aligned sign out on the same profile row.</p>
+<li>Smoothed collapsed sidebar behavior across the main workspace, reader, and</li>
+<p>settings overlays.</p>
+<li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.6</code>.</li>
+</ul>
 <h2>[0.6.5] - 2026-06-03</h2>
 <h3>Added</h3>
-<ul><li>Added file-backed self-hosted multi-user login support through <code>data/users.json</code>.</li><li>Added per-user persistent notebook partitions under <code>data/users/&lt;data_id&gt;/</code> for each user's imported/generated HTML, metadata, runtime config, jobs, and generated public output.</li><li>Added <code>html-lore user-add</code> for creating or replacing self-hosted users without storing plaintext passwords.</li><li>Added backend integration coverage for env bootstrap, case-insensitive multi-user login, and cross-user upload isolation.</li></ul>
+<ul>
+<li>Added file-backed self-hosted multi-user login support through</li>
+<p><code>data/users.json</code>.</p>
+<li>Added per-user persistent notebook partitions under <code>data/users/&lt;data_id&gt;/</code></li>
+<p>for each user&#x27;s imported/generated HTML, metadata, runtime config, jobs, and generated public output.</p>
+<li>Added <code>html-lore user-add</code> for creating or replacing self-hosted users</li>
+<p>without storing plaintext passwords.</p>
+<li>Added backend integration coverage for env bootstrap, case-insensitive</li>
+<p>multi-user login, and cross-user upload isolation.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>Default env credentials now bootstrap the first admin user into <code>users.json</code>; that bootstrap admin keeps the existing root notebook data for backwards compatibility.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.5</code>.</li></ul>
+<ul>
+<li>Default env credentials now bootstrap the first admin user into</li>
+<p><code>users.json</code>; that bootstrap admin keeps the existing root notebook data for backwards compatibility.</p>
+<li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.5</code>.</li>
+</ul>
 <h2>[0.6.4] - 2026-06-03</h2>
 <h3>Changed</h3>
-<ul><li>Login usernames are now matched case-insensitively while passwords remain case-sensitive.</li><li>Login sessions store and return the configured canonical username.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.4</code>.</li></ul>
+<ul>
+<li>Login usernames are now matched case-insensitively while passwords remain</li>
+<p>case-sensitive.</p>
+<li>Login sessions store and return the configured canonical username.</li>
+<li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.4</code>.</li>
+</ul>
 <h2>[0.6.3] - 2026-06-03</h2>
 <h3>Changed</h3>
-<ul><li>Increased the spacing and line stability of the import/create feedback row so messages such as <code>Imported {title}</code> no longer sit too close to the interaction form.</li><li>Updated package, app, PWA, and demo cache versions to <code>0.6.3</code>.</li></ul>
+<ul>
+<li>Increased the spacing and line stability of the import/create feedback row so</li>
+<p>messages such as <code>Imported {title}</code> no longer sit too close to the interaction form.</p>
+<li>Updated package, app, PWA, and demo cache versions to <code>0.6.3</code>.</li>
+</ul>
 <h2>[0.6.2] - 2026-06-03</h2>
 <h3>Changed</h3>
-<ul><li>Promoted the built-in login flow to the stable <code>0.6.2</code> release.</li><li>Default Docker now enables local/test login with <code>admin</code> / <code>test-password</code> and a development session secret so fresh deployments open the login screen.</li><li>README and deployment docs now clearly require changing the default username, password, and session secret before public access.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.2</code>.</li></ul>
+<ul>
+<li>Promoted the built-in login flow to the stable <code>0.6.2</code> release.</li>
+<li>Default Docker now enables local/test login with <code>admin</code> / <code>test-password</code></li>
+<p>and a development session secret so fresh deployments open the login screen.</p>
+<li>README and deployment docs now clearly require changing the default username,</li>
+<p>password, and session secret before public access.</p>
+<li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.2</code>.</li>
+</ul>
 <h2>[0.6.0] - 2026-06-03</h2>
 <h3>Added</h3>
-<ul><li>Added a standard login screen as the first workspace view when server-side authentication is configured.</li><li>Added HttpOnly signed session cookie authentication through <code>/api/auth/status</code>, <code>/api/auth/login</code>, and <code>/api/auth/logout</code>.</li><li>Protected backend APIs, <code>manifest.json</code>, and note content files with either a valid API token or browser login session.</li></ul>
+<ul>
+<li>Added a standard login screen as the first workspace view when server-side</li>
+<p>authentication is configured.</p>
+<li>Added <code>/api/auth/status</code>, <code>/api/auth/login</code>, and <code>/api/auth/logout</code> with</li>
+<p>HttpOnly signed session cookies.</p>
+<li>Added environment-configured test-user credentials via</li>
+<p><code>HTML_LORE_AUTH_USERNAME</code>, <code>HTML_LORE_AUTH_PASSWORD</code>, and <code>HTML_LORE_SESSION_SECRET</code>.</p>
+<li>Protected backend APIs, <code>manifest.json</code>, and note content files with either</li>
+<p>a valid API token or browser login session.</p>
+<li>Added backend integration tests for login, failed login, API protection, and</li>
+<p>static content protection.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.0</code>.</li></ul>
+<ul>
+<li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.6.0</code>.</li>
+</ul>
 <h2>[0.5.3] - 2026-06-03</h2>
 <h3>Changed</h3>
-<ul><li>Changed the default workspace and static demo language fallback to English for first-time deployments, while preserving saved user preferences and homepage-to-demo language handoff.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.5.3</code>.</li></ul>
+<ul>
+<li>Changed the default workspace and static demo language fallback to English</li>
+<p>for first-time deployments, while preserving saved user preferences and homepage-to-demo language handoff.</p>
+<li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.5.3</code>.</li>
+</ul>
 <h2>[0.5.2] - 2026-06-03</h2>
 <h3>Added</h3>
-<ul><li>Added Playwright E2E coverage for the static demo layout and workspace logo navigation.</li><li>Added configurable <code>HTML_LORE_PAGES_URL</code> support so workspace branding can open the public GitHub Pages homepage from the real app.</li></ul>
+<ul>
+<li>Added Playwright E2E coverage for the static demo layout and workspace logo</li>
+<p>navigation.</p>
+<li>Added configurable <code>HTML_LORE_PAGES_URL</code> support so workspace branding can</li>
+<p>open the public GitHub Pages homepage from the real app.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>Demo workspace branding now returns to the static Pages homepage instead of staying inside the demo workspace.</li><li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.5.2</code>.</li></ul>
+<ul>
+<li>Demo workspace branding now returns to the static Pages homepage instead of</li>
+<p>staying inside the demo workspace.</p>
+<li>Updated package, app, PWA, demo, and homepage cache versions to <code>0.5.2</code>.</li>
+</ul>
 <h2>[0.5.1] - 2026-06-02</h2>
 <h3>Added</h3>
-<ul><li>Added the GitHub Pages <code>docs/</code> static homepage and read-only demo.</li><li>Added direct English, Chinese, and Japanese language switching for the public homepage.</li><li>Added language handoff from the homepage to the demo with <code>demo/?lang=zh-CN</code>, <code>demo/?lang=en</code>, and <code>demo/?lang=ja</code>.</li><li>Added language-specific demo manifests and full README/CHANGELOG HTML demo notes for each supported language.</li></ul>
+<ul>
+<li>Added the GitHub Pages <code>docs/</code> static homepage and read-only demo.</li>
+<li>Added direct English, Chinese, and Japanese language switching for the public</li>
+<p>homepage.</p>
+<li>Added language handoff from the homepage to the demo with</li>
+<p><code>demo/?lang=zh-CN</code>, <code>demo/?lang=en</code>, and <code>demo/?lang=ja</code>.</p>
+<li>Added language-specific demo manifests and full README/CHANGELOG HTML demo</li>
+<p>notes for each supported language.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>Kept the demo explicitly static with backend auto-detection disabled.</li><li>Updated demo cache-busting and service worker cache names so stale demo shells do not render outdated controls.</li><li>Updated package, app, and PWA cache versions to <code>0.5.1</code>.</li></ul>
+<ul>
+<li>Kept the demo explicitly static with backend auto-detection disabled.</li>
+<li>Updated demo cache-busting and service worker cache names so stale demo shells</li>
+<p>do not render outdated controls.</p>
+<li>Updated package, app, and PWA cache versions to <code>0.5.1</code>.</li>
+</ul>
 <h2>[0.5.0] - 2026-06-02</h2>
 <h3>Changed</h3>
-<ul><li>Promoted the project to the first stable self-hosted notebook release.</li><li>Rebuilt the English, Chinese, and Japanese README files around the full project vision, implemented 0.5.0 scope, current limits, deployment paths, security model, and roadmap.</li><li>Updated package, app, and PWA cache versions to <code>0.5.0</code>.</li></ul>
+<ul>
+<li>Promoted the project to the first stable self-hosted notebook release.</li>
+<li>Rebuilt the English, Chinese, and Japanese README files around the full</li>
+<p>project vision, implemented 0.5.0 scope, current limits, deployment paths, security model, and roadmap.</p>
+<li>Updated package, app, and PWA cache versions to <code>0.5.0</code>.</li>
+</ul>
 <h2>[0.4.14] - 2026-06-02</h2>
 <h3>Changed</h3>
-<ul><li>Changed the default Docker Compose path to a single-container self-hosted notebook deployment that serves both the frontend and <code>/api/*</code>.</li><li>Moved Caddy Basic Auth into an optional public deployment example instead of requiring it for the default startup path.</li><li>Simplified default Docker environment variables so local and LAN deployments can run without a generated <code>.env</code> file.</li></ul>
+<ul>
+<li>Changed the default Docker Compose path to a single-container self-hosted</li>
+<p>notebook deployment that serves both the frontend and <code>/api/*</code>.</p>
+<li>Moved Caddy Basic Auth into an optional public deployment example instead of</li>
+<p>requiring it for the default startup path.</p>
+<li>Simplified default Docker environment variables so local and LAN deployments</li>
+<p>can run without a generated <code>.env</code> file.</p>
+</ul>
 <h2>[0.4.13] - 2026-06-02</h2>
 <h3>Added</h3>
-<ul><li>Added reusable self-hosted Docker deployment assets: <code>Dockerfile.api</code>, <code>compose.prod.yml</code>, <code>deploy/Caddyfile</code>, and a backend container entrypoint.</li><li>Added runtime frontend <code>config.js</code> support so deployed sites can use same-origin API access without embedding backend tokens in browser code.</li><li>Added <code>.dockerignore</code> and expanded deployment docs for self-hosted Docker startup, updates, backups, and rollback.</li></ul>
+<ul>
+<li>Added reusable self-hosted Docker deployment assets: <code>Dockerfile.api</code>,</li>
+<p><code>compose.prod.yml</code>, <code>deploy/Caddyfile</code>, and a backend container entrypoint.</p>
+<li>Added runtime frontend <code>config.js</code> support so deployed sites can use</li>
+<p>same-origin API access without embedding backend tokens in browser code.</p>
+<li>Added <code>.dockerignore</code> and expanded deployment docs for self-hosted Docker</li>
+<p>startup, updates, backups, and rollback.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>The initial production compose path used <code>compose.prod.yml</code>; the default compose path was later simplified in <code>0.4.14</code>.</li></ul>
+<ul>
+<li>The initial production compose path used <code>compose.prod.yml</code>; the default</li>
+<p>compose path was later simplified in <code>0.4.14</code>.</p>
+</ul>
 <h2>[0.4.12] - 2026-06-02</h2>
 <h3>Added</h3>
-<ul><li>Added <code>GET /api/version</code> for backend version and repository metadata.</li><li>Settings &gt; About now shows the running version and checks GitHub releases/tags for update availability.</li><li>Update checks only show a hint and never auto-update the server.</li></ul>
+<ul>
+<li>Added <code>GET /api/version</code> for backend version and repository metadata.</li>
+<li>Settings &gt; About now shows the running version and checks GitHub</li>
+<p>releases/tags for update availability.</p>
+<li>Update checks only show a hint and never auto-update the server.</li>
+</ul>
 <h2>[0.4.11] - 2026-06-02</h2>
 <h3>Added</h3>
-<ul><li>Added persistent lightweight backend job records stored in <code>meta/config/jobs.json</code>.</li><li>Added <code>POST /api/rebuild</code> and <code>GET /api/rebuild/{job_id}</code> for explicit rebuild execution and status lookup.</li><li>Added <code>GET /api/uploads/{upload_id}</code> and upload <code>job_id</code> responses so HTML imports can be queried after completion.</li><li>Added a full core API smoke test covering upload, list, metadata edit, search, content read, favorite, archive, unarchive, and permanent delete.</li><li>Localhost frontends now default to <code>http://127.0.0.1:8787</code> for the backend API, enabling local notebook mode without inline script configuration.</li><li>README now documents real local notebook startup with <code>data/content</code>, <code>data/meta</code>, the API server, and the static web server.</li><li>Added reusable deployment security baseline docs and backend API token/CORS configuration for self-hosted production preparation.</li></ul>
+<ul>
+<li>Added persistent lightweight backend job records stored in</li>
+<p><code>meta/config/jobs.json</code>.</p>
+<li>Added <code>POST /api/rebuild</code> and <code>GET /api/rebuild/{job_id}</code> for explicit</li>
+<p>rebuild execution and status lookup.</p>
+<li>Added <code>GET /api/uploads/{upload_id}</code> and upload <code>job_id</code> responses so HTML</li>
+<p>imports can be queried after completion.</p>
+<li>Added a full core API smoke test covering upload, list, metadata edit,</li>
+<p>search, content read, favorite, archive, unarchive, and permanent delete.</p>
+<li>Localhost frontends now default to <code>http://127.0.0.1:8787</code> for the backend</li>
+<p>API, enabling local notebook mode without inline script configuration.</p>
+<li>README now documents real local notebook startup with <code>data/content</code>,</li>
+<p><code>data/meta</code>, the API server, and the static web server.</p>
+<li>Added reusable deployment security baseline docs and backend API token/CORS</li>
+<p>configuration for self-hosted production preparation.</p>
+</ul>
 <h2>[0.4.10] - 2026-06-02</h2>
 <h3>Fixed</h3>
-<ul><li>Fixed a startup crash when a stale cached HTML shell loaded the newer import button script before the hidden import file input existed.</li><li>The PWA service worker now prefers the network for navigation and asset GET requests, while keeping cached fallbacks for offline use.</li><li>Updated app and PWA cache version to <code>0.4.10</code> so browsers request the fixed shell and script instead of reusing stale <code>0.4.9</code> assets.</li></ul>
+<ul>
+<li>Fixed a startup crash when a stale cached HTML shell loaded the newer import</li>
+<p>button script before the hidden import file input existed.</p>
+<li>The PWA service worker now prefers the network for navigation and asset GET</li>
+<p>requests, while keeping cached fallbacks for offline use.</p>
+<li>Updated app and PWA cache version to <code>0.4.10</code> so browsers request the fixed</li>
+<p>shell and script instead of reusing stale <code>0.4.9</code> assets.</p>
+</ul>
 <h2>[0.4.9] - 2026-06-02</h2>
 <h3>Changed</h3>
-<ul><li>Archived item cards and reader pages no longer show metadata edit actions.</li><li><code>PATCH /api/items/{id}/metadata</code> now rejects archived items until they are unarchived.</li><li>Archived items still allow favorite toggles, unarchive, and permanent delete.</li></ul>
+<ul>
+<li>Archived item cards and reader pages no longer show metadata edit actions.</li>
+<li><code>PATCH /api/items/{id}/metadata</code> now rejects archived items until they are</li>
+<p>unarchived.</p>
+<li>Archived items still allow favorite toggles, unarchive, and permanent delete.</li>
+</ul>
 <h2>[0.4.8] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>Added <code>GET /api/search</code> with the same filtering and sorting parameters as <code>GET /api/items</code>.</li><li>Search responses now include the matched item, score, matched fields, and a snippet, creating a stable interface for future Pagefind, SQLite FTS, or cloud search backends.</li><li>Added service and real HTTP integration tests for search query, tag OR/AND, favorite filtering, Chinese text search, and result metadata.</li></ul>
+<ul>
+<li>Added <code>GET /api/search</code> with the same filtering and sorting parameters as</li>
+<p><code>GET /api/items</code>.</p>
+<li>Search responses now include the matched item, score, matched fields, and a</li>
+<p>snippet, creating a stable interface for future Pagefind, SQLite FTS, or cloud search backends.</p>
+<li>Added service and real HTTP integration tests for search query, tag OR/AND,</li>
+<p>favorite filtering, Chinese text search, and result metadata.</p>
+</ul>
 <h2>[0.4.7] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>Added <code>GET /api/navigation</code> and <code>PUT /api/navigation</code> for persisting sidebar visibility preferences for library views, collections, and tags.</li><li>Navigation visibility settings are stored in <code>meta/config/navigation.json</code>.</li><li>The frontend settings management page loads and saves navigation visibility through the backend when an Agent Server URL is configured, with local storage fallback in static mode.</li><li>Added service and real HTTP integration tests for navigation configuration.</li></ul>
+<ul>
+<li>Added <code>GET /api/navigation</code> and <code>PUT /api/navigation</code> for persisting sidebar</li>
+<p>visibility preferences for library views, collections, and tags.</p>
+<li>Navigation visibility settings are stored in <code>meta/config/navigation.json</code>.</li>
+<li>The frontend settings management page loads and saves navigation visibility</li>
+<p>through the backend when an Agent Server URL is configured, with local storage fallback in static mode.</p>
+<li>Added service and real HTTP integration tests for navigation configuration.</li>
+</ul>
 <h2>[0.4.6] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>Added <code>PATCH /api/items/{id}/state</code> to persist <code>favorite</code> and <code>archived</code> state to YAML sidecar metadata.</li><li>Favorite and archive buttons now write through the backend when an Agent Server URL is configured, with static-mode local overrides kept as fallback.</li><li>Added service and real HTTP integration tests for archive/favorite state persistence and archive-view filtering.</li></ul>
+<ul>
+<li>Added <code>PATCH /api/items/{id}/state</code> to persist <code>favorite</code> and <code>archived</code></li>
+<p>state to YAML sidecar metadata.</p>
+<li>Favorite and archive buttons now write through the backend when an Agent</li>
+<p>Server URL is configured, with static-mode local overrides kept as fallback.</p>
+<li>Added service and real HTTP integration tests for archive/favorite state</li>
+<p>persistence and archive-view filtering.</p>
+</ul>
 <h2>[0.4.5] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>Added <code>PATCH /api/items/{id}/metadata</code> to persist note title, summary, collection, and tags to YAML sidecar metadata.</li><li>Metadata edits now rebuild <code>public/</code> and return the re-indexed item.</li><li>The frontend metadata editor writes through the backend when an Agent Server URL is configured, with static-mode local overrides kept as fallback.</li><li>Added service and real HTTP integration tests for metadata persistence.</li></ul>
+<ul>
+<li>Added <code>PATCH /api/items/{id}/metadata</code> to persist note title, summary,</li>
+<p>collection, and tags to YAML sidecar metadata.</p>
+<li>Metadata edits now rebuild <code>public/</code> and return the re-indexed item.</li>
+<li>The frontend metadata editor writes through the backend when an Agent Server</li>
+<p>URL is configured, with static-mode local overrides kept as fallback.</p>
+<li>Added service and real HTTP integration tests for metadata persistence.</li>
+</ul>
 <h2>[0.4.4] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>Added backend content access endpoints: <code>GET /api/items/{id}/content</code> and <code>GET /api/items/{id}/raw</code>.</li><li>Reader iframe and original-file links now use the backend content API when an Agent Server URL is configured, while static mode keeps using local content paths.</li><li>Added real HTTP integration tests for item content and raw HTML access.</li></ul>
+<ul>
+<li>Added backend content access endpoints: <code>GET /api/items/{id}/content</code> and</li>
+<p><code>GET /api/items/{id}/raw</code>.</p>
+<li>Reader iframe and original-file links now use the backend content API when an</li>
+<p>Agent Server URL is configured, while static mode keeps using local content paths.</p>
+<li>Added real HTTP integration tests for item content and raw HTML access.</li>
+</ul>
 <h2>[0.4.3] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>Archived item cards now replace the AI context button with a permanent delete action.</li><li>Archived reader pages now replace the right-side AI button with a permanent delete action.</li><li>Added <code>DELETE /api/items/{id}</code> for permanently deleting archived notes from <code>content/</code> and <code>meta/</code>, followed by a rebuild.</li></ul>
+<ul>
+<li>Archived item cards now replace the AI context button with a permanent</li>
+<p>delete action.</p>
+<li>Archived reader pages now replace the right-side AI button with a permanent</li>
+<p>delete action.</p>
+<li>Added <code>DELETE /api/items/{id}</code> for permanently deleting archived notes from</li>
+<p><code>content/</code> and <code>meta/</code>, followed by a rebuild.</p>
+</ul>
 <h2>[0.4.2] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>Added HTML import backend support with <code>POST /api/uploads/html</code>.</li><li>Imported HTML files are saved under <code>content/imported/YYYY/MM/</code>, sidecar metadata is written under <code>meta/items/</code>, and the static site is rebuilt after a successful import.</li><li>Added upload service tests covering HTML import, metadata generation, rebuild, and invalid file rejection.</li></ul>
+<ul>
+<li>Added HTML import backend support with <code>POST /api/uploads/html</code>.</li>
+<li>Imported HTML files are saved under <code>content/imported/YYYY/MM/</code>, sidecar</li>
+<p>metadata is written under <code>meta/items/</code>, and the static site is rebuilt after a successful import.</p>
+<li>Added upload service tests covering HTML import, metadata generation, rebuild,</li>
+<p>and invalid file rejection.</p>
+</ul>
 <h2>[0.4.1] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>Added the first backend development slice: optional Agent Server API skeleton, <code>GET /api/health</code>, <code>GET /api/manifest</code>, <code>GET /api/items</code>, and <code>GET /api/items/{id}</code>.</li><li><code>GET /api/items</code> supports current frontend list behavior for library, collection, tag OR/AND, favorite/archive, search, sort, and limit filters.</li><li>Added <code>html-lore serve-api</code> and service/API tests for the item query layer.</li></ul>
+<ul>
+<li>Added the first backend development slice: optional Agent Server API skeleton,</li>
+<p><code>GET /api/health</code>, <code>GET /api/manifest</code>, <code>GET /api/items</code>, and <code>GET /api/items/{id}</code>.</p>
+<li><code>GET /api/items</code> supports current frontend list behavior for library,</li>
+<p>collection, tag OR/AND, favorite/archive, search, sort, and limit filters.</p>
+<li>Added <code>html-lore serve-api</code> and service/API tests for the item query layer.</li>
+</ul>
 <h3>Fixed</h3>
-<ul><li>Updated the builder test expectation to match the current four-item example fixture.</li></ul>
+<ul>
+<li>Updated the builder test expectation to match the current four-item example</li>
+<p>fixture.</p>
+</ul>
 <h2>[0.4.0] - 2026-06-01</h2>
 <h3>Added</h3>
-<ul><li>Promoted the current UI to the first formal frontend release.</li><li>Frontend now includes the card workspace, PWA app shell, trilingual UI, light/dark theme switching, resizable sidebars, global AI panel scaffold, settings modules, local backup/export scaffolds, item favorite/archive actions, and local note metadata editing.</li></ul>
+<ul>
+<li>Promoted the current UI to the first formal frontend release.</li>
+<li>Frontend now includes the card workspace, PWA app shell, trilingual UI,</li>
+<p>light/dark theme switching, resizable sidebars, global AI panel scaffold, settings modules, local backup/export scaffolds, item favorite/archive actions, and local note metadata editing.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>Replaced the light-mode theme switch moon with a clearer filled moon-and-star icon and added cache-busting resource URLs for the frontend bundle.</li><li>Package, app, and PWA cache version updated to <code>0.4.0</code>.</li></ul>
+<ul>
+<li>Replaced the light-mode theme switch moon with a clearer filled moon-and-star</li>
+<p>icon and added cache-busting resource URLs for the frontend bundle.</p>
+<li>Package, app, and PWA cache version updated to <code>0.4.0</code>.</li>
+</ul>
 <h2>[0.3.21] - 2026-05-30</h2>
 <h3>Added</h3>
-<ul><li>Item cards and the reader now include an edit metadata button before the favorite action.</li><li>A local metadata editor can update note title, summary, collection, and tags with Save and Cancel controls. The overrides are stored in browser state and are reflected in cards, reader headers, search, filters, counts, sorting, and AI context labels.</li><li>Package, app, and PWA cache version updated to <code>0.3.21</code>.</li></ul>
+<ul>
+<li>Item cards and the reader now include an edit metadata button before the</li>
+<p>favorite action.</p>
+<li>A local metadata editor can update note title, summary, collection, and tags</li>
+<p>with Save and Cancel controls. The overrides are stored in browser state and are reflected in cards, reader headers, search, filters, counts, sorting, and AI context labels.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.21</code>.</li>
+</ul>
 <h2>[0.3.20] - 2026-05-30</h2>
 <h3>Fixed</h3>
-<ul><li>AI panel resizing on the reader page now follows the pointer consistently by ignoring the reader iframe during drag and calculating width from the actual panel boundary.</li><li>Package, app, and PWA cache version updated to <code>0.3.20</code>.</li></ul>
+<ul>
+<li>AI panel resizing on the reader page now follows the pointer consistently by</li>
+<p>ignoring the reader iframe during drag and calculating width from the actual panel boundary.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.20</code>.</li>
+</ul>
 <h2>[0.3.19] - 2026-05-30</h2>
 <h3>Changed</h3>
-<ul><li>Collapsed sidebar is narrower and uses a smaller logo mark.</li><li>Top filter popover now filters tags only; collection filtering remains a left-navigation action.</li><li>Light/dark theme toggle moved back beside the sidebar Settings button with icon-only switching.</li><li>Basic settings now labels the theme area as Theme settings and reserves it for future theme-color controls.</li><li>Package, app, and PWA cache version updated to <code>0.3.19</code>.</li></ul>
+<ul>
+<li>Collapsed sidebar is narrower and uses a smaller logo mark.</li>
+<li>Top filter popover now filters tags only; collection filtering remains a</li>
+<p>left-navigation action.</p>
+<li>Light/dark theme toggle moved back beside the sidebar Settings button with</li>
+<p>icon-only switching.</p>
+<li>Basic settings now labels the theme area as Theme settings and reserves it</li>
+<p>for future theme-color controls.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.19</code>.</li>
+</ul>
 <h2>[0.3.18] - 2026-05-30</h2>
 <h3>Changed</h3>
-<ul><li>Sidebar branding now always shows <code>HTMlore</code> and removes the item-count subtitle.</li><li>Sidebar and AI-panel resize rails no longer show hover/drag highlight lines.</li><li>Reader actions now use icon buttons for original/copy, keep the AI button on the far right, and let that button toggle the AI panel open/closed.</li><li>Reader headers now clamp title, summary, and tags to keep the header height stable as the AI panel width changes.</li><li>Package, app, and PWA cache version updated to <code>0.3.18</code>.</li></ul>
+<ul>
+<li>Sidebar branding now always shows <code>HTMlore</code> and removes the item-count</li>
+<p>subtitle.</p>
+<li>Sidebar and AI-panel resize rails no longer show hover/drag highlight lines.</li>
+<li>Reader actions now use icon buttons for original/copy, keep the AI button on</li>
+<p>the far right, and let that button toggle the AI panel open/closed.</p>
+<li>Reader headers now clamp title, summary, and tags to keep the header height</li>
+<p>stable as the AI panel width changes.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.18</code>.</li>
+</ul>
 <h2>[0.3.17] - 2026-05-30</h2>
 <h3>Changed</h3>
-<ul><li>Sidebar scroll indicator now shares the resize rail so the nav labels no longer shift when the sidebar is focused.</li><li>Archive is now confirm-first, hidden from collections/tags by default, and counted only inside the archived library view while preserving metadata.</li><li>The top toolbar keeps only favorites in the filter/sort group, and the reader action row now uses a share button plus a direct AI-panel entry.</li><li>Package, app, and PWA cache version updated to <code>0.3.17</code>.</li></ul>
+<ul>
+<li>Sidebar scroll indicator now shares the resize rail so the nav labels no</li>
+<p>longer shift when the sidebar is focused.</p>
+<li>Archive is now confirm-first, hidden from collections/tags by default, and</li>
+<p>counted only inside the archived library view while preserving metadata.</p>
+<li>The top toolbar keeps only favorites in the filter/sort group, and the reader</li>
+<p>action row now uses a share button plus a direct AI-panel entry.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.17</code>.</li>
+</ul>
 <h2>[0.3.16] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>Top toolbar now has a dedicated colored <code>+</code> import button with an HTML import tooltip, and the old sidebar import button was removed.</li><li>Library, Collections, and Tags sidebar sections can be collapsed and expanded.</li><li>Reader actions now include add/remove from AI Q&amp;A context and a share button.</li></ul>
+<ul>
+<li>Top toolbar now has a dedicated colored <code>+</code> import button with an HTML import</li>
+<p>tooltip, and the old sidebar import button was removed.</p>
+<li>Library, Collections, and Tags sidebar sections can be collapsed and expanded.</li>
+<li>Reader actions now include add/remove from AI Q&amp;A context and a share button.</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>Updated the sidebar brand mark to the redesigned HTMlore icon and refined brand/collapse-button alignment for light and dark themes.</li><li>Sidebar and page scrollbars now stay hidden until hover or keyboard focus.</li><li>AI-create source selector now uses an inset custom chevron so the arrow no longer touches the right border.</li><li>Package, app, and PWA cache version updated to <code>0.3.16</code>.</li></ul>
+<ul>
+<li>Updated the sidebar brand mark to the redesigned HTMlore icon and refined</li>
+<p>brand/collapse-button alignment for light and dark themes.</p>
+<li>Sidebar and page scrollbars now stay hidden until hover or keyboard focus.</li>
+<li>AI-create source selector now uses an inset custom chevron so the arrow no</li>
+<p>longer touches the right border.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.16</code>.</li>
+</ul>
 <h2>[0.3.15] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>Removed the workspace title from the top toolbar to avoid wrapping on smaller screens with side panels open.</li><li>Removed the view-mode toggle and forced the workspace to stay in card view.</li><li>Top toolbar now groups the five control buttons separately from the search/AI group, allowing the search/AI group to wrap together when narrow.</li><li>AI panel generation action now reads &quot;Generate note&quot;.</li><li>Package, app, and PWA cache version updated to <code>0.3.15</code>.</li></ul>
+<ul>
+<li>Removed the workspace title from the top toolbar to avoid wrapping on</li>
+<p>smaller screens with side panels open.</p>
+<li>Removed the view-mode toggle and forced the workspace to stay in card view.</li>
+<li>Top toolbar now groups the five control buttons separately from the</li>
+<p>search/AI group, allowing the search/AI group to wrap together when narrow.</p>
+<li>AI panel generation action now reads &quot;Generate note&quot;.</li>
+<li>Package, app, and PWA cache version updated to <code>0.3.15</code>.</li>
+</ul>
 <h2>[0.3.14] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>GitHub sidebar link now includes the GitHub mark.</li><li>Basic settings theme control now offers System, Light, and Dark modes.</li></ul>
+<ul>
+<li>GitHub sidebar link now includes the GitHub mark.</li>
+<li>Basic settings theme control now offers System, Light, and Dark modes.</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>Theme preference now stores the selected mode and resolves System from the browser color-scheme preference.</li><li>Package, app, and PWA cache version updated to <code>0.3.14</code>.</li></ul>
+<ul>
+<li>Theme preference now stores the selected mode and resolves System from the</li>
+<p>browser color-scheme preference.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.14</code>.</li>
+</ul>
 <h2>[0.3.13] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>GitHub repository link in the lower-right side of the sidebar footer.</li><li>Basic settings section for interface theme and language preferences.</li></ul>
+<ul>
+<li>GitHub repository link in the lower-right side of the sidebar footer.</li>
+<li>Basic settings section for interface theme and language preferences.</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>Sidebar footer now keeps Settings on the left and removes theme/language controls from the persistent navigation.</li><li>User-related settings now appear first: Basic settings, User profile, and Account &amp; security.</li><li>Package, app, and PWA cache version updated to <code>0.3.13</code>.</li></ul>
+<ul>
+<li>Sidebar footer now keeps Settings on the left and removes theme/language</li>
+<p>controls from the persistent navigation.</p>
+<li>User-related settings now appear first: Basic settings, User profile, and</li>
+<p>Account &amp; security.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.13</code>.</li>
+</ul>
 <h2>[0.3.12] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>Top toolbar grouping now pairs filter with sort, and favorite with archive.</li><li>Verified OR/AND tag filtering against MCP and Docker sample notes: OR returns any matching tag, while AND requires all selected tags.</li><li>Package, app, and PWA cache version updated to <code>0.3.12</code>.</li></ul>
+<ul>
+<li>Top toolbar grouping now pairs filter with sort, and favorite with archive.</li>
+<li>Verified OR/AND tag filtering against MCP and Docker sample notes: OR returns</li>
+<p>any matching tag, while AND requires all selected tags.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.12</code>.</li>
+</ul>
 <h2>[0.3.11] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>Opening the AI panel no longer changes the top toolbar into a wrapped multi-row layout.</li><li>The global AI button remains visible to the right of search while the panel is open, preserving the search/AI button relationship.</li><li>Package, app, and PWA cache version updated to <code>0.3.11</code>.</li></ul>
+<ul>
+<li>Opening the AI panel no longer changes the top toolbar into a wrapped</li>
+<p>multi-row layout.</p>
+<li>The global AI button remains visible to the right of search while the panel</li>
+<p>is open, preserving the search/AI button relationship.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.11</code>.</li>
+</ul>
 <h2>[0.3.10] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>Manual AI context card action now changes from plus to minus when selected while keeping the active icon color.</li><li>Filter and sort toolbar controls are separated into independent groups again.</li><li>Tag match controls now use OR/AND wording, matching the underlying any/all tag filter logic.</li><li>Package, app, and PWA cache version updated to <code>0.3.10</code>.</li></ul>
+<ul>
+<li>Manual AI context card action now changes from plus to minus when selected</li>
+<p>while keeping the active icon color.</p>
+<li>Filter and sort toolbar controls are separated into independent groups again.</li>
+<li>Tag match controls now use OR/AND wording, matching the underlying any/all</li>
+<p>tag filter logic.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.10</code>.</li>
+</ul>
 <h2>[0.3.9] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>Card metadata now stays in the upper-left top row beside the card action icons, while titles start on the next row.</li><li>List view layout separates action icons, read/original buttons, and date to prevent overlap.</li><li>The AI panel now slides out from the right edge and uses the same resize highlight behavior as the left sidebar.</li><li>Package, app, and PWA cache version updated to <code>0.3.9</code>.</li></ul>
+<ul>
+<li>Card metadata now stays in the upper-left top row beside the card action</li>
+<p>icons, while titles start on the next row.</p>
+<li>List view layout separates action icons, read/original buttons, and date to</li>
+<p>prevent overlap.</p>
+<li>The AI panel now slides out from the right edge and uses the same resize</li>
+<p>highlight behavior as the left sidebar.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.9</code>.</li>
+</ul>
 <h2>[0.3.8] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>Card actions now include an add-to-Q&amp;A-context button for manually selecting multiple files as the AI context.</li></ul>
+<ul>
+<li>Card actions now include an add-to-Q&amp;A-context button for manually selecting</li>
+<p>multiple files as the AI context.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>Manual AI context selections now override the default page, reader, and filter-derived context labels.</li><li>The top AI button hides while the AI panel is open, leaving the panel close button as the single close control.</li><li>Filter and sort buttons now share one toolbar group.</li><li>Package, app, and PWA cache version updated to <code>0.3.8</code>.</li></ul>
+<ul>
+<li>Manual AI context selections now override the default page, reader, and</li>
+<p>filter-derived context labels.</p>
+<li>The top AI button hides while the AI panel is open, leaving the panel close</li>
+<p>button as the single close control.</p>
+<li>Filter and sort buttons now share one toolbar group.</li>
+<li>Package, app, and PWA cache version updated to <code>0.3.8</code>.</li>
+</ul>
 <h2>[0.3.7] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>Sidebar resize handle no longer creates a horizontal scrollbar.</li><li>Multi-filter popover now uses the header area for Any/All tag match controls.</li><li>Card action buttons no longer reserve a top layout row, keeping collection, source, and date visually anchored in the lower-left area.</li><li>Package, app, and PWA cache version updated to <code>0.3.7</code>.</li></ul>
+<ul>
+<li>Sidebar resize handle no longer creates a horizontal scrollbar.</li>
+<li>Multi-filter popover now uses the header area for Any/All tag match controls.</li>
+<li>Card action buttons no longer reserve a top layout row, keeping collection,</li>
+<p>source, and date visually anchored in the lower-left area.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.7</code>.</li>
+</ul>
 <h2>[0.3.6] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>User profile and account/security placeholder sections in settings.</li></ul>
+<ul>
+<li>User profile and account/security placeholder sections in settings.</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>Filter and sort toolbar controls are now visually separated.</li><li>Card metadata now shows collection/source and date in the lower-left area, while favorite/archive actions stay in the upper-right.</li><li>Source labels are normalized to generated/imported system labels.</li><li>Removed the Needs Review library view; notes are categorized by source instead of a review queue.</li><li>Settings title now reads simply as Settings, and data settings appear before AI settings.</li><li>Package, app, and PWA cache version updated to <code>0.3.6</code>.</li></ul>
+<ul>
+<li>Filter and sort toolbar controls are now visually separated.</li>
+<li>Card metadata now shows collection/source and date in the lower-left area,</li>
+<p>while favorite/archive actions stay in the upper-right.</p>
+<li>Source labels are normalized to generated/imported system labels.</li>
+<li>Removed the Needs Review library view; notes are categorized by source</li>
+<p>instead of a review queue.</p>
+<li>Settings title now reads simply as Settings, and data settings appear before</li>
+<p>AI settings.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.6</code>.</li>
+</ul>
 <h2>[0.3.5] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>Tag multi-select filters now support Any and All match modes.</li><li>Added an example note with both MCP and Docker tags for combined-tag filtering coverage.</li></ul>
+<ul>
+<li>Tag multi-select filters now support Any and All match modes.</li>
+<li>Added an example note with both MCP and Docker tags for combined-tag</li>
+<p>filtering coverage.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>Library navigation clears collection/tag multi-select limits, treating library views as all collections and all tags within that library.</li><li>The multi-filter &quot;All&quot; action now resets collection/tag limits.</li><li>Package, app, and PWA cache version updated to <code>0.3.5</code>.</li></ul>
+<ul>
+<li>Library navigation clears collection/tag multi-select limits, treating</li>
+<p>library views as all collections and all tags within that library.</p>
+<li>The multi-filter &quot;All&quot; action now resets collection/tag limits.</li>
+<li>Package, app, and PWA cache version updated to <code>0.3.5</code>.</li>
+</ul>
 <h2>[0.3.4] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>Sort menu in the result filter group for newest, oldest, title A-Z, and title Z-A ordering of the current view.</li></ul>
+<ul>
+<li>Sort menu in the result filter group for newest, oldest, title A-Z, and</li>
+<p>title Z-A ordering of the current view.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>Package, app, and PWA cache version updated to <code>0.3.4</code>.</li></ul>
+<ul>
+<li>Package, app, and PWA cache version updated to <code>0.3.4</code>.</li>
+</ul>
 <h2>[0.3.3] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>Resizable left sidebar width with local persistence.</li><li>Multi-select collection and tag filter popover in the top toolbar, including a clear-all action.</li><li>AI context labels now include library views, favorite-only state, archive visibility state, and active multi-select filters.</li></ul>
+<ul>
+<li>Resizable left sidebar width with local persistence.</li>
+<li>Multi-select collection and tag filter popover in the top toolbar, including</li>
+<p>a clear-all action.</p>
+<li>AI context labels now include library views, favorite-only state, archive</li>
+<p>visibility state, and active multi-select filters.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>Clicking a collection or tag while multi-select filters are active now syncs the matching multi-select group.</li><li>Package, app, and PWA cache version updated to <code>0.3.3</code>.</li></ul>
+<ul>
+<li>Clicking a collection or tag while multi-select filters are active now syncs</li>
+<p>the matching multi-select group.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.3</code>.</li>
+</ul>
 <h2>[0.3.2] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>Global AI assistant button beside search.</li><li>Resizable right AI sidebar with context labels for all notes, collection, tag, search, and reader states.</li><li>Placeholder chat and HTML note generation actions for the future Agent Server.</li></ul>
+<ul>
+<li>Global AI assistant button beside search.</li>
+<li>Resizable right AI sidebar with context labels for all notes, collection,</li>
+<p>tag, search, and reader states.</p>
+<li>Placeholder chat and HTML note generation actions for the future Agent</li>
+<p>Server.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>Multi-turn knowledge conversation planning moved out of settings and into the global AI sidebar.</li><li>Package, app, and PWA cache version updated to <code>0.3.2</code>.</li></ul>
+<ul>
+<li>Multi-turn knowledge conversation planning moved out of settings and into</li>
+<p>the global AI sidebar.</p>
+<li>Package, app, and PWA cache version updated to <code>0.3.2</code>.</li>
+</ul>
 <h2>[0.3.1] - 2026-05-29</h2>
 <h3>Changed</h3>
-<ul><li>Compact list-view rows by moving the read/original actions up to align with the tag row.</li><li>Package, app, and PWA cache version updated to <code>0.3.1</code>.</li></ul>
+<ul>
+<li>Compact list-view rows by moving the read/original actions up to align with the tag row.</li>
+<li>Package, app, and PWA cache version updated to <code>0.3.1</code>.</li>
+</ul>
 <h2>[0.3.0] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>Favorite-only toolbar filter beside the archive filter.</li><li>Archive filter now starts enabled so archived items are excluded by default.</li></ul>
+<ul>
+<li>Favorite-only toolbar filter beside the archive filter.</li>
+<li>Archive filter now starts enabled so archived items are excluded by default.</li>
+</ul>
 <h3>Changed</h3>
-<ul><li>Archive filter tooltip now reads as an action to show archived items while the filter is active.</li><li>Toolbar filters use icon color for state instead of adding a highlighted frame.</li><li>Package, app, and PWA cache version updated to <code>0.3.0</code>.</li></ul>
+<ul>
+<li>Archive filter tooltip now reads as an action to show archived items while the filter is active.</li>
+<li>Toolbar filters use icon color for state instead of adding a highlighted frame.</li>
+<li>Package, app, and PWA cache version updated to <code>0.3.0</code>.</li>
+</ul>
 <h2>[0.1.0] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>Initial static-first HTMlore MVP.</li><li>Manifest v2 builder for HTML knowledge items.</li><li>Sidecar YAML metadata support.</li><li>Karakeep-style card workspace with sidebar filters.</li><li>Static reader pane with iframe and original-open actions.</li><li>New knowledge item entry card with optional Agent API handoff.</li><li>Example content, tests, Docker static image, README, MIT license.</li></ul>
+<ul>
+<li>Initial static-first HTMlore MVP.</li>
+<li>Manifest v2 builder for HTML knowledge items.</li>
+<li>Sidecar YAML metadata support.</li>
+<li>Karakeep-style card workspace with sidebar filters.</li>
+<li>Static reader pane with iframe and original-open actions.</li>
+<li>New knowledge item entry card with optional Agent API handoff.</li>
+<li>Example content, tests, Docker static image, README, MIT license.</li>
+</ul>
 <h2>[0.2.0] - 2026-05-29</h2>
 <h3>Added</h3>
-<ul><li>Extensible frontend i18n dictionary.</li><li>Language selector for Chinese, English, and Japanese system UI labels.</li><li>Persistent language preference via <code>localStorage</code>.</li><li>Dark and light theme toggle with a compact icon control.</li><li>Settings page with AI provider configuration, user agreement, about, and update documentation sections.</li><li>Collection and tag management sections with sidebar visibility controls and disabled structural actions for future metadata writing.</li><li>Library management section for fixed system view visibility.</li><li>AI knowledge assistant placeholder with operation selection, prompt input, and a second confirmation before future database-impacting jobs.</li><li>Global AI sidebar placeholder for future multi-turn conversations over knowledge base files.</li><li>Magic-wand &quot;I&#x27;m feeling lucky&quot; action for opening a random matching item.</li><li>Archived library view for future archive workflows.</li><li>Favorite and archive icon actions on cards and in the reader.</li><li>Card/list workspace view toggle.</li><li>Separate data settings group for local backup and restore, automatic backup snapshots, WebDAV settings, and JSON exports.</li><li>PWA manifest and service worker for browser installation and app-shell caching.</li><li>Toolbar archive filter for excluding archived items from the current result view.</li></ul>
+<ul>
+<li>Extensible frontend i18n dictionary.</li>
+<li>Language selector for Chinese, English, and Japanese system UI labels.</li>
+<li>Persistent language preference via <code>localStorage</code>.</li>
+<li>Dark and light theme toggle with a compact icon control.</li>
+<li>Settings page with AI provider configuration, user agreement, about, and</li>
+<p>update documentation sections.</p>
+<li>Collection and tag management sections with sidebar visibility controls and</li>
+<p>disabled structural actions for future metadata writing.</p>
+<li>Library management section for fixed system view visibility.</li>
+<li>AI knowledge assistant placeholder with operation selection, prompt input,</li>
+<p>and a second confirmation before future database-impacting jobs.</p>
+<li>Global AI sidebar placeholder for future multi-turn conversations over</li>
+<p>knowledge base files.</p>
+<li>Magic-wand &quot;I&#x27;m feeling lucky&quot; action for opening a random matching item.</li>
+<li>Archived library view for future archive workflows.</li>
+<li>Favorite and archive icon actions on cards and in the reader.</li>
+<li>Card/list workspace view toggle.</li>
+<li>Separate data settings group for local backup and restore, automatic backup</li>
+<p>snapshots, WebDAV settings, and JSON exports.</p>
+<li>PWA manifest and service worker for browser installation and app-shell</li>
+<p>caching.</p>
+<li>Toolbar archive filter for excluding archived items from the current result</li>
+<p>view.</p>
+</ul>
 <h3>Changed</h3>
-<ul><li>System UI copy is now rendered from translation keys while user-created content such as item titles, collections, and tags remains unchanged.</li><li>Language selection now lives at the bottom of the sidebar.</li><li>API keys are explicitly excluded from browser storage; static mode only saves non-sensitive AI model preferences.</li><li>Settings header icon buttons are grid-centered for consistent visual alignment.</li><li>AI provider settings are visually separated from sidebar management and project information sections.</li><li>Sidebar import entry is separated from the AI creation entry.</li><li>Logo and sidebar navigation now consistently return from settings or reader overlays to the main workspace.</li><li>Manifest items now include an <code>archived</code> metadata flag.</li><li>Card and list layouts now reserve stable areas for title, summary, tags, and actions so long summaries truncate instead of hiding controls.</li></ul>
+<ul>
+<li>System UI copy is now rendered from translation keys while user-created</li>
+<p>content such as item titles, collections, and tags remains unchanged.</p>
+<li>Language selection now lives at the bottom of the sidebar.</li>
+<li>API keys are explicitly excluded from browser storage; static mode only saves</li>
+<p>non-sensitive AI model preferences.</p>
+<li>Settings header icon buttons are grid-centered for consistent visual</li>
+<p>alignment.</p>
+<li>AI provider settings are visually separated from sidebar management and</li>
+<p>project information sections.</p>
+<li>Sidebar import entry is separated from the AI creation entry.</li>
+<li>Logo and sidebar navigation now consistently return from settings or reader</li>
+<p>overlays to the main workspace.</p>
+<li>Manifest items now include an <code>archived</code> metadata flag.</li>
+<li>Card and list layouts now reserve stable areas for title, summary, tags, and</li>
+<p>actions so long summaries truncate instead of hiding controls.</p>
+</ul>
 </section>
 </main>
 </body>

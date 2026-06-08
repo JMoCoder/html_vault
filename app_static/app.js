@@ -26,9 +26,11 @@ const i18n = {
     closeGlobalAi: "Close AI assistant",
     globalAiPanel: "Global AI assistant",
     resizeAiPanel: "Resize AI panel",
+    resizeAiComposer: "Resize AI input area",
     globalAiAssistant: "Global AI",
     aiConversation: "Knowledge Q&A",
     aiContext: "Context",
+    aiCurrentContext: "Current context",
     aiContextGlobal: "All notes",
     aiContextLibrary: "Library: {name}",
     aiContextCollection: "Collection: {name}",
@@ -38,6 +40,8 @@ const i18n = {
     aiContextCollections: "Collections: {names}",
     aiContextTags: "Tags ({mode}): {names}",
     aiContextManualItems: "Selected files: {titles}",
+    aiContextManualCount: "Selected {count} notes",
+    aiContextTagSummary: "{first} and {count} tags",
     tagMatchModeAnyLabel: "OR",
     tagMatchModeAllLabel: "AND",
     aiContextFavoritesOnly: "Favorites only",
@@ -49,6 +53,19 @@ const i18n = {
     aiReplying: "Replying...",
     aiContentExpansion: "Expand with external sources",
     aiPanelComingSoon: "Conversation and note generation are in development.",
+    aiMoreActions: "More AI actions",
+    aiNewConversation: "New conversation",
+    aiConversationHistory: "Conversation history",
+    aiConversationHistoryEmpty: "No conversation history yet.",
+    aiConversationHistoryFailed: "Conversation history could not be loaded.",
+    aiConversationHistoryAll: "AI conversations",
+    aiConversationHistoryAllIntro: "Review, reopen, and delete all AI knowledge-base conversations.",
+    aiConversationHistoryUnavailable: "Conversation management requires the backend server.",
+    refreshConversations: "Refresh conversations",
+    openConversationContext: "Open",
+    deleteConversation: "Delete",
+    deleteConversationConfirm: "Delete this AI conversation history?",
+    aiConversationDeleted: "Conversation deleted.",
     aiChatPlaceholder: "Ask about the current notes or request a new HTML note...",
     aiProviderUnavailable: "AI provider is not configured on the server.",
     aiMessageFailed: "AI request failed.",
@@ -383,9 +400,11 @@ const i18n = {
     closeGlobalAi: "关闭 AI 助理",
     globalAiPanel: "全局 AI 助理",
     resizeAiPanel: "调整 AI 面板宽度",
+    resizeAiComposer: "调整 AI 输入区域高度",
     globalAiAssistant: "全局 AI",
     aiConversation: "知识库问答",
     aiContext: "上下文",
+    aiCurrentContext: "当前上下文",
     aiContextGlobal: "全部笔记",
     aiContextLibrary: "资料库：{name}",
     aiContextCollection: "集合：{name}",
@@ -395,6 +414,8 @@ const i18n = {
     aiContextCollections: "集合：{names}",
     aiContextTags: "标签（{mode}）：{names}",
     aiContextManualItems: "指定文件：{titles}",
+    aiContextManualCount: "自选 {count} 篇笔记",
+    aiContextTagSummary: "{first} 等 {count} 个标签",
     tagMatchModeAnyLabel: "或",
     tagMatchModeAllLabel: "且",
     aiContextFavoritesOnly: "仅收藏",
@@ -406,6 +427,19 @@ const i18n = {
     aiReplying: "回复中...",
     aiContentExpansion: "内容拓展",
     aiPanelComingSoon: "对话与生成 HTML 笔记功能开发中。",
+    aiMoreActions: "更多 AI 功能",
+    aiNewConversation: "新建对话",
+    aiConversationHistory: "对话历史",
+    aiConversationHistoryEmpty: "暂无对话历史。",
+    aiConversationHistoryFailed: "对话历史加载失败。",
+    aiConversationHistoryAll: "AI 会话历史",
+    aiConversationHistoryAllIntro: "回顾、重新打开或删除所有知识库问答历史会话。",
+    aiConversationHistoryUnavailable: "会话管理需要连接后端服务。",
+    refreshConversations: "刷新会话",
+    openConversationContext: "打开",
+    deleteConversation: "删除",
+    deleteConversationConfirm: "确认删除这条 AI 会话历史？",
+    aiConversationDeleted: "会话已删除。",
     aiChatPlaceholder: "围绕当前笔记提问，或要求生成新的 HTML 笔记...",
     aiProviderUnavailable: "服务端尚未配置 AI 服务商。",
     aiMessageFailed: "AI 请求失败。",
@@ -740,9 +774,11 @@ const i18n = {
     closeGlobalAi: "AI アシスタントを閉じる",
     globalAiPanel: "グローバル AI アシスタント",
     resizeAiPanel: "AI パネル幅を調整",
+    resizeAiComposer: "AI 入力エリアの高さを調整",
     globalAiAssistant: "グローバル AI",
     aiConversation: "ナレッジ Q&A",
     aiContext: "コンテキスト",
+    aiCurrentContext: "現在のコンテキスト",
     aiContextGlobal: "すべてのノート",
     aiContextLibrary: "ライブラリ: {name}",
     aiContextCollection: "コレクション: {name}",
@@ -752,6 +788,8 @@ const i18n = {
     aiContextCollections: "コレクション: {names}",
     aiContextTags: "タグ（{mode}）: {names}",
     aiContextManualItems: "選択ファイル: {titles}",
+    aiContextManualCount: "{count} 件のノートを選択",
+    aiContextTagSummary: "{first} ほか {count} 件のタグ",
     tagMatchModeAnyLabel: "OR",
     tagMatchModeAllLabel: "AND",
     aiContextFavoritesOnly: "お気に入りのみ",
@@ -763,6 +801,19 @@ const i18n = {
     aiReplying: "返信中...",
     aiContentExpansion: "外部情報で拡張",
     aiPanelComingSoon: "会話と HTML ノート生成は開発中です。",
+    aiMoreActions: "その他の AI 操作",
+    aiNewConversation: "新規会話",
+    aiConversationHistory: "会話履歴",
+    aiConversationHistoryEmpty: "会話履歴はまだありません。",
+    aiConversationHistoryFailed: "会話履歴を読み込めませんでした。",
+    aiConversationHistoryAll: "AI 会話履歴",
+    aiConversationHistoryAllIntro: "すべてのナレッジ Q&A 会話を確認、再開、削除します。",
+    aiConversationHistoryUnavailable: "会話管理にはバックエンドサーバーが必要です。",
+    refreshConversations: "会話を更新",
+    openConversationContext: "開く",
+    deleteConversation: "削除",
+    deleteConversationConfirm: "この AI 会話履歴を削除しますか？",
+    aiConversationDeleted: "会話を削除しました。",
     aiChatPlaceholder: "現在のノートについて質問、または新しい HTML ノート生成を依頼...",
     aiProviderUnavailable: "サーバー側の AI プロバイダーが未設定です。",
     aiMessageFailed: "AI リクエストに失敗しました。",
@@ -1150,7 +1201,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.8.4",
+  currentVersion: "0.9.0",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -1165,6 +1216,13 @@ const state = {
   aiRuns: [],
   aiJobs: [],
   aiJobsOpen: false,
+  aiMoreOpen: false,
+  aiHistoryOpen: false,
+  aiHistory: [],
+  aiHistoryLoaded: false,
+  aiConversations: [],
+  aiConversationLoadingKey: "",
+  aiSuppressedContextKeys: new Set(),
   aiJobsLoaded: false,
   aiJobsPollTimer: 0,
   aiKnownCompletedJobIds: new Set(),
@@ -1174,6 +1232,7 @@ const state = {
   aiConversationId: "",
   aiConversationContextKey: "",
   aiContentExpansion: false,
+  aiConversationLoadedKey: "",
   dataConfig: loadDataConfig(),
   itemState: loadItemState(),
   navConfig: loadNavConfig(),
@@ -1183,6 +1242,7 @@ const state = {
   viewMode: getInitialViewMode(),
   aiPanelOpen: false,
   aiPanelWidth: getInitialAiPanelWidth(),
+  aiComposerHeight: getInitialAiComposerHeight(),
   multiFilterOpen: false,
   sortOpen: false,
   sortMode: getInitialSortMode(),
@@ -1261,6 +1321,9 @@ const elements = {
   aiRunRefresh: document.querySelector("#ai-run-refresh"),
   aiRunList: document.querySelector("#ai-run-list"),
   aiRunFeedback: document.querySelector("#ai-run-feedback"),
+  aiConversationRefresh: document.querySelector("#ai-conversation-refresh"),
+  aiConversationList: document.querySelector("#ai-conversation-list"),
+  aiConversationFeedback: document.querySelector("#ai-conversation-feedback"),
   versionStatus: document.querySelector("#version-status"),
   libraryNav: document.querySelector("#library-nav"),
   collectionNav: document.querySelector("#collection-nav"),
@@ -1278,13 +1341,23 @@ const elements = {
   aiPanel: document.querySelector("#ai-panel"),
   aiPanelClose: document.querySelector("#ai-panel-close"),
   aiPanelResize: document.querySelector("#ai-panel-resize"),
+  aiComposer: document.querySelector("#ai-composer"),
+  aiComposerResize: document.querySelector("#ai-composer-resize"),
   aiContextLabel: document.querySelector("#ai-context-label"),
+  aiContextCompact: document.querySelector("#ai-context-compact"),
+  aiContextCard: document.querySelector(".ai-context-card"),
   aiChatLog: document.querySelector("#ai-chat-log"),
   aiChatForm: document.querySelector("#ai-chat-form"),
   aiChatInput: document.querySelector("#ai-chat-input"),
+  aiSendButton: document.querySelector(".ai-send-button"),
   aiContentExpansion: document.querySelector("#ai-content-expansion"),
   aiGenerateNote: document.querySelector("#ai-generate-note"),
+  aiNewChat: document.querySelector("#ai-new-chat"),
+  aiHistoryToggle: document.querySelector("#ai-history-toggle"),
+  aiHistoryList: document.querySelector("#ai-history-list"),
   aiJobToggle: document.querySelector("#ai-job-toggle"),
+  aiMoreToggle: document.querySelector("#ai-more-toggle"),
+  aiMoreMenu: document.querySelector("#ai-more-menu"),
   aiJobList: document.querySelector("#ai-job-list"),
   luckyButton: document.querySelector("#lucky-button"),
   searchInput: document.querySelector("#search-input"),
@@ -2013,7 +2086,7 @@ function openReader(item) {
 
 function renderReaderMetadata(item) {
   elements.readerTitle.textContent = getItemTitle(item);
-  elements.readerSummary.textContent = getItemSummary(item) || "";
+  if (elements.readerSummary) elements.readerSummary.textContent = getItemSummary(item) || "";
   elements.readerSource.textContent = `${getItemCollection(item)} / ${getSourceLabel(item)}`;
   elements.readerOriginal.href = getReaderRawUrl(item);
   elements.readerTags.replaceChildren(...getItemTags(item).map((tag) => {
@@ -2144,9 +2217,11 @@ function syncSingleSelectionToMultiFilter(type, value) {
 
 function openSettings(tab = "basic", updateHash = true) {
   clearFeedback();
+  if (state.aiPanelOpen) closeAiPanel();
   setSettingsTab(tab, false);
   elements.settingsPage.hidden = false;
   maybeRefreshAiRuns();
+  maybeRefreshAiConversations();
   if (updateHash) {
     updateSettingsHash(state.activeSettingsTab);
   }
@@ -2185,6 +2260,7 @@ function setSettingsTab(tab, updateHash = true) {
   renderSettingsTabs();
   if (!elements.settingsPage.hidden) {
     maybeRefreshAiRuns();
+    maybeRefreshAiConversations();
   }
   if (updateHash) {
     updateSettingsHash(state.activeSettingsTab);
@@ -2979,6 +3055,12 @@ function getInitialAiPanelWidth() {
   return 420;
 }
 
+function getInitialAiComposerHeight() {
+  const saved = Number(getStored("ai-composer-height"));
+  if (Number.isFinite(saved) && saved >= 142 && saved <= 320) return saved;
+  return 172;
+}
+
 function getInitialSidebarWidth() {
   const saved = Number(getStored("sidebar-width"));
   if (Number.isFinite(saved) && saved >= 240 && saved <= 420) return saved;
@@ -2988,6 +3070,11 @@ function getInitialSidebarWidth() {
 function clampAiPanelWidth(width) {
   const viewportLimit = Math.max(320, window.innerWidth - 120);
   return Math.min(720, Math.max(320, Math.min(width, viewportLimit)));
+}
+
+function clampAiComposerHeight(height) {
+  const viewportLimit = Math.max(142, Math.min(320, Math.round(window.innerHeight * 0.42)));
+  return Math.min(viewportLimit, Math.max(142, height));
 }
 
 function clampSidebarWidth(width) {
@@ -3051,6 +3138,7 @@ function applySidebarWidth() {
 function startSidebarResize(event) {
   if (state.sidebarCollapsed) return;
   event.preventDefault();
+  if (event.pointerId !== undefined) event.currentTarget?.setPointerCapture?.(event.pointerId);
   elements.body.classList.add("sidebar-resizing");
   const startX = event.clientX;
   const startWidth = state.sidebarWidth;
@@ -3063,9 +3151,15 @@ function startSidebarResize(event) {
     setStored("sidebar-width", String(state.sidebarWidth));
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("pointerup", onUp);
+    window.removeEventListener("pointercancel", onUp);
+    window.removeEventListener("blur", onUp);
+    event.currentTarget?.removeEventListener?.("lostpointercapture", onUp);
   };
   window.addEventListener("pointermove", onMove);
   window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
+  window.addEventListener("blur", onUp);
+  event.currentTarget?.addEventListener?.("lostpointercapture", onUp, { once: true });
 }
 
 function getInitialFavoriteFilter() {
@@ -3085,12 +3179,16 @@ function openAiPanel() {
   applyAiPanelState();
   renderAiContext();
   renderInitialAiMessage();
+  restoreLatestAiConversationForCurrentContext();
   loadAiJobs();
   elements.aiChatInput.focus();
 }
 
 function closeAiPanel() {
   state.aiPanelOpen = false;
+  state.aiMoreOpen = false;
+  state.aiHistoryOpen = false;
+  resetAiConversationSession();
   applyAiPanelState();
 }
 
@@ -3111,17 +3209,69 @@ function applyAiPanelState() {
   elements.body.classList.toggle("ai-panel-open", state.aiPanelOpen);
   elements.aiPanelOpen.classList.toggle("active", state.aiPanelOpen);
   elements.readerAiPanelOpen.classList.toggle("active", state.aiPanelOpen);
+  if (elements.aiSendButton && !elements.aiSendButton.innerHTML.trim()) elements.aiSendButton.innerHTML = enterArrowIcon();
+  applyAiComposerHeight();
+  renderAiMoreMenu();
   applySidebarWidth();
 }
 
-function renderAiContext() {
-  if (!elements.aiContextLabel) return;
-  elements.aiContextLabel.textContent = getAiContextLabel();
+function applyAiComposerHeight() {
+  if (!elements.aiComposer) return;
+  state.aiComposerHeight = clampAiComposerHeight(state.aiComposerHeight);
+  elements.aiComposer.style.setProperty("--ai-composer-height", `${state.aiComposerHeight}px`);
 }
 
-function getAiContextLabel() {
+function renderAiContext() {
+  const detailed = getAiContextLabel({ compact: false });
+  if (elements.aiContextLabel) elements.aiContextLabel.textContent = detailed;
+  renderAiCompactContext();
+  updateAiPanelConversationState();
+  restoreLatestAiConversationForCurrentContext();
+}
+
+function renderAiCompactContext() {
+  if (!elements.aiContextCompact) return;
+  const parts = getAiCompactContextParts();
+  elements.aiContextCompact.replaceChildren();
+  if (parts.prefix) {
+    const prefix = document.createElement("span");
+    prefix.className = "ai-context-prefix";
+    prefix.textContent = parts.prefix;
+    elements.aiContextCompact.append(prefix);
+  }
+  const value = document.createElement("span");
+  value.className = "ai-context-value";
+  value.textContent = parts.value;
+  value.title = parts.title || parts.value;
+  elements.aiContextCompact.append(value);
+}
+
+function getAiCompactContextParts() {
   const manualItems = [...state.manualAiContextIds].map(getItemById).filter(Boolean);
   if (manualItems.length > 0) {
+    return { value: t("aiContextManualCount", { count: manualItems.length }) };
+  }
+  if (!elements.reader.hidden && state.currentReaderItemId) {
+    const item = getItemById(state.currentReaderItemId);
+    return {
+      prefix: aiContextPrefix("aiContextReader"),
+      value: item ? getItemTitle(item) : t("item"),
+    };
+  }
+  return { value: getAiContextLabel({ compact: true }) };
+}
+
+function aiContextPrefix(key) {
+  const marker = "__HTML_LORE_CONTEXT_VALUE__";
+  const translated = t(key, { title: marker, name: marker, query: marker });
+  return translated.includes(marker) ? translated.split(marker)[0] : "";
+}
+
+function getAiContextLabel(options = {}) {
+  const compact = Boolean(options.compact);
+  const manualItems = [...state.manualAiContextIds].map(getItemById).filter(Boolean);
+  if (manualItems.length > 0) {
+    if (compact) return t("aiContextManualCount", { count: manualItems.length });
     return t("aiContextManualItems", { titles: manualItems.map((item) => getItemTitle(item)).join(", ") });
   }
 
@@ -3148,8 +3298,12 @@ function getAiContextLabel() {
 
   const extraTags = [...state.selectedTags].filter((name) => name !== primaryTag);
   if (extraTags.length > 0) {
-    const mode = t(state.tagMatchMode === "all" ? "tagMatchModeAllLabel" : "tagMatchModeAnyLabel");
-    parts.push(t("aiContextTags", { mode, names: extraTags.map((tag) => `#${tag}`).join(", ") }));
+    if (compact && extraTags.length > 1) {
+      parts.push(t("aiContextTagSummary", { first: `#${extraTags[0]}`, count: extraTags.length }));
+    } else {
+      const mode = t(state.tagMatchMode === "all" ? "tagMatchModeAllLabel" : "tagMatchModeAnyLabel");
+      parts.push(t("aiContextTags", { mode, names: extraTags.map((tag) => `#${tag}`).join(", ") }));
+    }
   }
 
   if (state.onlyFavorites) {
@@ -3159,8 +3313,7 @@ function getAiContextLabel() {
 }
 
 function renderInitialAiMessage() {
-  if (elements.aiChatLog.children.length > 0) return;
-  appendAiMessage("assistant", t("aiWelcome"));
+  updateAiPanelConversationState();
 }
 
 function appendAiMessage(role, text, sources = [], options = {}) {
@@ -3168,6 +3321,7 @@ function appendAiMessage(role, text, sources = [], options = {}) {
   message.className = `ai-message ${role}${options.pending ? " pending" : ""}`;
   message.innerHTML = aiMessageMarkup(role, text, sources);
   elements.aiChatLog.append(message);
+  updateAiPanelConversationState();
   scrollAiChatToBottom();
   return message;
 }
@@ -3175,6 +3329,7 @@ function appendAiMessage(role, text, sources = [], options = {}) {
 function updateAiMessage(message, role, text, sources = []) {
   message.className = `ai-message ${role}`;
   message.innerHTML = aiMessageMarkup(role, text, sources);
+  updateAiPanelConversationState();
   scrollAiChatToBottom();
 }
 
@@ -3182,18 +3337,27 @@ function aiMessageMarkup(role, text, sources = []) {
   const sourceMarkup = role === "assistant" && sources.length > 0
     ? `<div class="ai-message-sources"><span>${escapeHtml(t("aiSources"))}</span>${sources.slice(0, 4).map(renderAiSourcePill).join("")}</div>`
     : "";
+  const bodyMarkup = role === "assistant"
+    ? renderMarkdown(text)
+    : `<p>${escapeHtml(text)}</p>`;
   return `
-    <strong>${escapeHtml(role === "user" ? t("aiUserPlaceholder") : t("globalAiAssistant"))}</strong>
-    <p>${escapeHtml(text)}</p>
+    <strong>${escapeHtml(role === "user" ? t("aiUserPlaceholder") : t("aiConversation"))}</strong>
+    <div class="ai-message-body">${bodyMarkup}</div>
     ${sourceMarkup}
   `;
+}
+
+function updateAiPanelConversationState() {
+  const hasMessages = Boolean(elements.aiChatLog?.children.length);
+  elements.aiPanel?.classList.toggle("has-ai-messages", hasMessages);
+  if (elements.aiContextCard) elements.aiContextCard.hidden = hasMessages;
 }
 
 function renderAiSourcePill(source) {
   const external = source?.kind === "external";
   const label = t(external ? "aiSourceExternal" : "aiSourceLocal");
   const title = sourceDisplayTitle(source);
-  return `<em class="${external ? "external" : "local"}"><span>${escapeHtml(label)}</span>${escapeHtml(title)}</em>`;
+  return `<em class="${external ? "external" : "local"}" title="${escapeHtml(title)}"><span>${escapeHtml(label)}</span><b>${escapeHtml(title)}</b></em>`;
 }
 
 function sourceDisplayTitle(source) {
@@ -3209,6 +3373,117 @@ function sourceDisplayTitle(source) {
   return source.title || source.item_id || "";
 }
 
+function renderMarkdown(value) {
+  const text = String(value ?? "").replace(/\r\n?/g, "\n");
+  if (!text.trim()) return "<p></p>";
+  const blocks = [];
+  const lines = text.split("\n");
+  let paragraph = [];
+  let list = null;
+  let quote = [];
+  let code = [];
+  let inCode = false;
+
+  const flushParagraph = () => {
+    if (paragraph.length === 0) return;
+    blocks.push(`<p>${renderInlineMarkdown(paragraph.join(" "))}</p>`);
+    paragraph = [];
+  };
+  const flushList = () => {
+    if (!list) return;
+    blocks.push(`<${list.type}>${list.items.map((item) => `<li>${renderInlineMarkdown(item)}</li>`).join("")}</${list.type}>`);
+    list = null;
+  };
+  const flushQuote = () => {
+    if (quote.length === 0) return;
+    blocks.push(`<blockquote>${renderInlineMarkdown(quote.join(" "))}</blockquote>`);
+    quote = [];
+  };
+  const flushCode = () => {
+    if (code.length === 0) return;
+    blocks.push(`<pre><code>${escapeHtml(code.join("\n"))}</code></pre>`);
+    code = [];
+  };
+  const flushTextBlocks = () => {
+    flushParagraph();
+    flushList();
+    flushQuote();
+  };
+
+  lines.forEach((line) => {
+    if (/^```/.test(line.trim())) {
+      if (inCode) {
+        flushCode();
+        inCode = false;
+      } else {
+        flushTextBlocks();
+        inCode = true;
+      }
+      return;
+    }
+    if (inCode) {
+      code.push(line);
+      return;
+    }
+
+    const trimmed = line.trim();
+    if (!trimmed) {
+      flushTextBlocks();
+      return;
+    }
+
+    const heading = trimmed.match(/^(#{1,3})\s+(.+)$/);
+    if (heading) {
+      flushTextBlocks();
+      const level = heading[1].length + 2;
+      blocks.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
+      return;
+    }
+
+    const unordered = trimmed.match(/^[-*]\s+(.+)$/);
+    const ordered = trimmed.match(/^\d+[.)]\s+(.+)$/);
+    if (unordered || ordered) {
+      flushParagraph();
+      flushQuote();
+      const type = unordered ? "ul" : "ol";
+      if (!list || list.type !== type) flushList();
+      if (!list) list = { type, items: [] };
+      list.items.push((unordered || ordered)[1]);
+      return;
+    }
+
+    const quoted = trimmed.match(/^>\s?(.+)$/);
+    if (quoted) {
+      flushParagraph();
+      flushList();
+      quote.push(quoted[1]);
+      return;
+    }
+
+    flushList();
+    flushQuote();
+    paragraph.push(trimmed);
+  });
+
+  if (inCode) flushCode();
+  flushTextBlocks();
+  return blocks.join("");
+}
+
+function renderInlineMarkdown(value) {
+  let html = escapeHtml(value);
+  html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|mailto:[^)\s]+)\)/g, (_match, label, href) => {
+    const safeHref = escapeHtml(href);
+    return `<a href="${safeHref}" target="_blank" rel="noreferrer">${label}</a>`;
+  });
+  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+  html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+  html = html.replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>");
+  html = html.replace(/(^|[\s(])_([^_\n]+)_/g, "$1<em>$2</em>");
+  return html;
+}
+
 function scrollAiChatToBottom() {
   elements.aiChatLog.scrollTop = elements.aiChatLog.scrollHeight;
 }
@@ -3219,8 +3494,14 @@ async function submitAiMessage(event) {
   if (!text) return;
   appendAiMessage("user", text);
   elements.aiChatInput.value = "";
+  autoGrowAiChatInput();
   const pendingMessage = appendAiMessage("assistant", t("aiReplying"), [], { pending: true });
   try {
+    if (hasRuntimeConfig("STATIC_DEMO")) {
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      updateAiMessage(pendingMessage, "assistant", t("aiAssistantPlaceholder"));
+      return;
+    }
     const conversationId = await ensureAiConversation();
     const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversationId)}/messages`, {
       method: "POST",
@@ -3238,6 +3519,12 @@ async function submitAiMessage(event) {
   }
 }
 
+function autoGrowAiChatInput() {
+  const input = elements.aiChatInput;
+  if (!input) return;
+  input.scrollTop = input.scrollHeight;
+}
+
 function handleAiChatInputKeydown(event) {
   if (event.key !== "Enter" || event.shiftKey || !state.aiPanelOpen) return;
   event.preventDefault();
@@ -3246,7 +3533,7 @@ function handleAiChatInputKeydown(event) {
 
 async function ensureAiConversation() {
   const payload = buildAiContextPayload();
-  const contextKey = JSON.stringify({ source_mode: payload.source_mode, context: payload.context });
+  const contextKey = getAiContextKey(payload);
   if (state.aiConversationId && state.aiConversationContextKey === contextKey) {
     return state.aiConversationId;
   }
@@ -3258,7 +3545,10 @@ async function ensureAiConversation() {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
   state.aiConversationId = data.conversation?.id || "";
-  state.aiConversationContextKey = contextKey;
+  state.aiConversationContextKey = data.conversation?.context_key || contextKey;
+  state.aiConversationLoadedKey = state.aiConversationContextKey;
+  state.aiSuppressedContextKeys.delete(contextKey);
+  state.aiHistoryLoaded = false;
   if (!state.aiConversationId) throw new Error(t("aiMessageFailed"));
   return state.aiConversationId;
 }
@@ -3296,10 +3586,120 @@ function buildAiContextPayload() {
   };
 }
 
-function setAiContentExpansion(enabled) {
-  state.aiContentExpansion = Boolean(enabled);
+function getAiContextKey(payload = buildAiContextPayload()) {
+  const context = payload.context || {};
+  const sourceMode = payload.source_mode || "local_only";
+  const tags = [...new Set(context.tags || [])].map(String).sort();
+  if (context.manual_item_ids?.length) {
+    return `${sourceMode}:manual:${compactJson({ item_ids: [...context.manual_item_ids].map(String).sort() })}`;
+  }
+  if (context.item_id) {
+    return `${sourceMode}:reader:${compactJson({ item_id: String(context.item_id) })}`;
+  }
+  const scope = context.scope || "global";
+  return `${sourceMode}:${scope}:${compactJson({
+    scope,
+    q: context.q || "",
+    library: context.library || "",
+    collection: context.collection || "",
+    tags,
+    tag_match: context.tag_match || "any",
+    favorite: context.favorite ?? null,
+    include_archived: Boolean(context.include_archived),
+    sort: context.sort || "newest",
+  })}`;
+}
+
+function compactJson(value) {
+  if (Array.isArray(value)) return `[${value.map((item) => compactJson(item)).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${compactJson(value[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function resetAiConversationSession(options = {}) {
+  const clearMessages = options.clearMessages !== false;
   state.aiConversationId = "";
   state.aiConversationContextKey = "";
+  state.aiConversationLoadedKey = "";
+  state.aiConversationLoadingKey = "";
+  if (clearMessages) {
+    elements.aiChatLog.replaceChildren();
+    updateAiPanelConversationState();
+  }
+}
+
+async function restoreLatestAiConversationForCurrentContext() {
+  if (!state.aiPanelOpen || !state.agentUrl) return;
+  const payload = buildAiContextPayload();
+  const contextKey = getAiContextKey(payload);
+  if (state.aiSuppressedContextKeys.has(contextKey)) {
+    resetAiConversationSession();
+    state.aiConversationLoadedKey = contextKey;
+    return;
+  }
+  if (state.aiConversationLoadedKey === contextKey || state.aiConversationLoadingKey === contextKey) return;
+  resetAiConversationSession();
+  state.aiConversationLoadingKey = contextKey;
+  try {
+    const response = await apiFetch(`/api/ai/conversations/latest?context_key=${encodeURIComponent(contextKey)}`, { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    if (state.aiConversationLoadingKey !== contextKey) return;
+    if (data.conversation?.id) {
+      await loadAiConversation(data.conversation);
+    } else {
+      resetAiConversationSession();
+      state.aiConversationLoadedKey = contextKey;
+    }
+  } catch (error) {
+    console.error(error);
+    if (state.aiConversationLoadingKey === contextKey) {
+      resetAiConversationSession();
+      state.aiConversationLoadedKey = contextKey;
+    }
+  } finally {
+    if (state.aiConversationLoadingKey === contextKey) state.aiConversationLoadingKey = "";
+  }
+}
+
+async function loadAiConversation(conversation) {
+  if (!conversation?.id || !state.agentUrl) return;
+  const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversation.id)}/messages`, { cache: "no-store" });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+  state.aiConversationId = conversation.id;
+  state.aiConversationContextKey = conversation.context_key || "";
+  state.aiConversationLoadedKey = state.aiConversationContextKey || getAiContextKey();
+  if (state.aiConversationContextKey) state.aiSuppressedContextKeys.delete(state.aiConversationContextKey);
+  renderAiConversationMessages(Array.isArray(data.messages) ? data.messages : []);
+}
+
+function renderAiConversationMessages(messages) {
+  elements.aiChatLog.replaceChildren();
+  messages.forEach((message) => {
+    appendAiMessage(message.role === "user" ? "user" : "assistant", message.content || "", message.sources || []);
+  });
+  updateAiPanelConversationState();
+  scrollAiChatToBottom();
+}
+
+function startNewAiConversation() {
+  const contextKey = getAiContextKey();
+  state.aiSuppressedContextKeys.add(contextKey);
+  resetAiConversationSession();
+  state.aiConversationLoadedKey = contextKey;
+  state.aiHistoryOpen = false;
+  state.aiMoreOpen = false;
+  renderAiHistory();
+  renderAiMoreMenu();
+}
+
+function setAiContentExpansion(enabled) {
+  state.aiContentExpansion = Boolean(enabled);
+  resetAiConversationSession();
+  restoreLatestAiConversationForCurrentContext();
 }
 
 function openGenerateNoteDialog() {
@@ -3523,6 +3923,7 @@ function clearMultiFilters(shouldRender = true) {
 
 function startAiPanelResize(event) {
   event.preventDefault();
+  if (event.pointerId !== undefined) event.currentTarget?.setPointerCapture?.(event.pointerId);
   elements.body.classList.add("ai-panel-resizing");
   const panelBox = elements.aiPanel.getBoundingClientRect();
   const pointerOffset = event.clientX - panelBox.left;
@@ -3536,9 +3937,43 @@ function startAiPanelResize(event) {
     setStored("ai-panel-width", String(state.aiPanelWidth));
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("pointerup", onUp);
+    window.removeEventListener("pointercancel", onUp);
+    window.removeEventListener("blur", onUp);
+    event.currentTarget?.removeEventListener?.("lostpointercapture", onUp);
   };
   window.addEventListener("pointermove", onMove);
   window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
+  window.addEventListener("blur", onUp);
+  event.currentTarget?.addEventListener?.("lostpointercapture", onUp, { once: true });
+}
+
+function startAiComposerResize(event) {
+  event.preventDefault();
+  if (event.pointerId !== undefined) event.currentTarget?.setPointerCapture?.(event.pointerId);
+  elements.body.classList.add("ai-composer-resizing");
+  const startY = event.clientY;
+  const startHeight = state.aiComposerHeight;
+  const moveEventName = event.type === "mousedown" ? "mousemove" : "pointermove";
+  const upEventName = event.type === "mousedown" ? "mouseup" : "pointerup";
+  const onMove = (moveEvent) => {
+    state.aiComposerHeight = clampAiComposerHeight(startHeight + startY - moveEvent.clientY);
+    applyAiComposerHeight();
+  };
+  const onUp = () => {
+    elements.body.classList.remove("ai-composer-resizing");
+    setStored("ai-composer-height", String(state.aiComposerHeight));
+    window.removeEventListener(moveEventName, onMove);
+    window.removeEventListener(upEventName, onUp);
+    if (event.type !== "mousedown") window.removeEventListener("pointercancel", onUp);
+    window.removeEventListener("blur", onUp);
+    event.currentTarget?.removeEventListener?.("lostpointercapture", onUp);
+  };
+  window.addEventListener(moveEventName, onMove);
+  window.addEventListener(upEventName, onUp);
+  if (event.type !== "mousedown") window.addEventListener("pointercancel", onUp);
+  window.addEventListener("blur", onUp);
+  event.currentTarget?.addEventListener?.("lostpointercapture", onUp, { once: true });
 }
 
 function toggleFavoriteFilter() {
@@ -3800,6 +4235,11 @@ function maybeRefreshAiRuns() {
   loadAiRuns();
 }
 
+function maybeRefreshAiConversations() {
+  if (state.activeSettingsTab !== "ai-conversations") return;
+  loadAiConversationManagement();
+}
+
 async function loadAiJobs() {
   if (!elements.aiJobList || !state.agentUrl) {
     state.aiJobs = [];
@@ -3840,22 +4280,297 @@ async function loadAiJobs() {
 
 function toggleAiJobs() {
   state.aiJobsOpen = !state.aiJobsOpen;
+  state.aiHistoryOpen = false;
+  state.aiMoreOpen = false;
+  renderAiHistory();
   renderAiJobs();
+  renderAiMoreMenu();
   if (state.aiJobsOpen) loadAiJobs();
+}
+
+function toggleAiHistory() {
+  state.aiHistoryOpen = !state.aiHistoryOpen;
+  state.aiJobsOpen = false;
+  state.aiMoreOpen = false;
+  renderAiJobs();
+  renderAiHistory();
+  renderAiMoreMenu();
+  if (state.aiHistoryOpen) loadAiHistory();
+}
+
+function toggleAiMoreMenu(event) {
+  event?.stopPropagation();
+  const shouldOpen = !state.aiMoreOpen || state.aiJobsOpen || state.aiHistoryOpen;
+  state.aiJobsOpen = false;
+  state.aiHistoryOpen = false;
+  state.aiMoreOpen = shouldOpen;
+  renderAiJobs();
+  renderAiHistory();
+  renderAiMoreMenu();
+}
+
+function closeAiMoreMenu() {
+  if (!state.aiMoreOpen) return;
+  state.aiMoreOpen = false;
+  renderAiMoreMenu();
+}
+
+function closeAiHistoryPanel() {
+  if (!state.aiHistoryOpen) return;
+  state.aiHistoryOpen = false;
+  renderAiHistory();
+  renderAiMoreMenu();
+}
+
+function closeAiJobsPanel() {
+  if (!state.aiJobsOpen) return;
+  state.aiJobsOpen = false;
+  renderAiJobs();
+  renderAiMoreMenu();
+}
+
+function handleAiMoreOutsideClick(event) {
+  if (!state.aiMoreOpen) return;
+  const target = event.target;
+  if (elements.aiMoreToggle?.contains(target) || elements.aiMoreMenu?.contains(target)) return;
+  closeAiMoreMenu();
+}
+
+function renderAiMoreMenu() {
+  if (!elements.aiMoreToggle || !elements.aiMoreMenu) return;
+  const activeCount = activeAiJobCount();
+  elements.aiMoreToggle.innerHTML = `${moreIcon()}${activeCount > 0 ? `<span>${activeCount}</span>` : ""}`;
+  elements.aiMoreToggle.classList.toggle("active", state.aiMoreOpen);
+  elements.aiMoreMenu.hidden = !state.aiMoreOpen;
+  if (elements.aiHistoryToggle) {
+    elements.aiHistoryToggle.innerHTML = `${historyIcon()}<span>${escapeHtml(t("aiConversationHistory"))}</span>`;
+    elements.aiHistoryToggle.classList.toggle("active", state.aiHistoryOpen);
+  }
+  if (elements.aiNewChat) {
+    elements.aiNewChat.innerHTML = `${plusIcon()}<span>${escapeHtml(t("aiNewConversation"))}</span>`;
+  }
+}
+
+async function loadAiHistory() {
+  if (!elements.aiHistoryList || !state.agentUrl) {
+    state.aiHistory = [];
+    renderAiHistory();
+    return;
+  }
+  try {
+    const contextKey = getAiContextKey();
+    const response = await apiFetch(`/api/ai/conversations?limit=20&context_key=${encodeURIComponent(contextKey)}`, { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    state.aiHistory = Array.isArray(data.conversations) ? data.conversations : [];
+    state.aiHistoryLoaded = true;
+    renderAiHistory();
+  } catch (error) {
+    console.error(error);
+    state.aiHistoryLoaded = true;
+    state.aiHistory = null;
+    renderAiHistory();
+  }
+}
+
+async function loadAiConversationManagement() {
+  if (!elements.aiConversationList) return;
+  if (elements.aiConversationRefresh) elements.aiConversationRefresh.disabled = true;
+  if (!state.agentUrl) {
+    state.aiConversations = [];
+    renderAiConversationManagement();
+    elements.aiConversationFeedback.textContent = t("aiConversationHistoryUnavailable");
+    if (elements.aiConversationRefresh) elements.aiConversationRefresh.disabled = false;
+    return;
+  }
+  try {
+    const response = await apiFetch("/api/ai/conversations?limit=100", { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    state.aiConversations = Array.isArray(data.conversations) ? data.conversations : [];
+    renderAiConversationManagement();
+    elements.aiConversationFeedback.textContent = "";
+  } catch (error) {
+    state.aiConversations = [];
+    renderAiConversationManagement();
+    elements.aiConversationFeedback.textContent = t("aiConversationHistoryFailed");
+    console.error(error);
+  } finally {
+    if (elements.aiConversationRefresh) elements.aiConversationRefresh.disabled = false;
+  }
+}
+
+function renderAiConversationManagement() {
+  if (!elements.aiConversationList) return;
+  if (state.aiConversations.length === 0) {
+    elements.aiConversationList.innerHTML = `<div class="empty-state">${escapeHtml(t("aiConversationHistoryEmpty"))}</div>`;
+    return;
+  }
+  elements.aiConversationList.replaceChildren(...state.aiConversations.map(renderAiConversationManagementRow));
+}
+
+function renderAiConversationManagementRow(conversation) {
+  const row = document.createElement("div");
+  row.className = "management-row ai-conversation-row";
+  const title = conversation.title || t("aiConversation");
+  const count = Number(conversation.message_count || 0);
+  const contextLabel = getConversationContextLabel(conversation);
+  row.innerHTML = `
+    <div class="management-name">
+      <strong>${escapeHtml(title)}</strong>
+      <span class="ai-run-meta">
+        <em>${escapeHtml(contextLabel)}</em>
+        <span>${escapeHtml(formatDateTime(conversation.updated_at || conversation.created_at))}</span>
+        <span>${escapeHtml(String(count))}</span>
+      </span>
+    </div>
+    <div class="ai-run-actions-inline">
+      <button type="button" class="ai-run-icon-button" data-ai-conversation-delete="${escapeHtml(conversation.id || "")}" aria-label="${escapeHtml(t("deleteConversation"))}" title="${escapeHtml(t("deleteConversation"))}">${trashIcon()}</button>
+      <button type="button" class="ai-run-icon-button primary-inline-button" data-ai-conversation-open="${escapeHtml(conversation.id || "")}" aria-label="${escapeHtml(t("openConversationContext"))}" title="${escapeHtml(t("openConversationContext"))}">${openContextIcon()}</button>
+    </div>
+  `;
+  row.querySelector("[data-ai-conversation-open]")?.addEventListener("click", () => openAiConversationContext(conversation));
+  row.querySelector("[data-ai-conversation-delete]")?.addEventListener("click", () => deleteAiConversation(conversation.id || ""));
+  return row;
+}
+
+function getConversationContextLabel(conversation) {
+  const snapshot = conversation.context_snapshot || {};
+  const scope = String(snapshot.scope || "");
+  const items = Array.isArray(snapshot.items) ? snapshot.items : [];
+  const requested = snapshot.requested || {};
+  if (scope === "reader" && items[0]?.title) return t("aiContextReader", { title: items[0].title });
+  if (scope === "manual") return t("aiContextManualCount", { count: items.length || (snapshot.item_ids || []).length || 0 });
+  if (requested.collection) return t("aiContextCollection", { name: requested.collection });
+  if (Array.isArray(requested.tags) && requested.tags.length > 0) return t("aiContextTags", { mode: t(requested.tag_match === "all" ? "tagMatchModeAllLabel" : "tagMatchModeAnyLabel"), names: requested.tags.map((tag) => `#${tag}`).join(", ") });
+  if (requested.q) return t("aiContextSearch", { query: requested.q });
+  if (requested.library && requested.library !== "all") return t("aiContextLibrary", { name: requested.library });
+  return t("aiContextGlobal");
+}
+
+function openAiConversationContext(conversation) {
+  const snapshot = conversation.context_snapshot || {};
+  const requested = snapshot.requested || {};
+  const itemIds = Array.isArray(snapshot.item_ids) ? snapshot.item_ids.map(String).filter(Boolean) : [];
+  closeSettings();
+  state.manualAiContextIds.clear();
+  if (snapshot.scope === "reader" && itemIds[0]) {
+    const item = getItemById(itemIds[0]);
+    if (item) openReader(item);
+  } else if (snapshot.scope === "manual" && itemIds.length > 0) {
+    itemIds.forEach((id) => {
+      if (getItemById(id)) state.manualAiContextIds.add(id);
+    });
+    returnToWorkspace();
+    renderGrid();
+  } else if (requested.collection) {
+    selectCollection(String(requested.collection));
+  } else if (Array.isArray(requested.tags) && requested.tags.length > 0) {
+    selectTag(String(requested.tags[0]));
+    state.selectedTags = new Set(requested.tags.map(String));
+    state.tagMatchMode = requested.tag_match === "all" ? "all" : "any";
+    renderApp();
+  } else {
+    selectLibraryFilter(String(requested.library || "all"));
+  }
+  if (!state.aiPanelOpen) openAiPanel();
+  loadAiConversation(conversation).catch((error) => console.error(error));
+}
+
+async function deleteAiConversation(conversationId) {
+  if (!conversationId || !state.agentUrl) return;
+  if (!window.confirm(t("deleteConversationConfirm"))) return;
+  try {
+    const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversationId)}`, { method: "DELETE" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    elements.aiConversationFeedback.textContent = t("aiConversationDeleted");
+    if (state.aiConversationId === conversationId) resetAiConversationSession();
+    await loadAiConversationManagement();
+  } catch (error) {
+    elements.aiConversationFeedback.textContent = error?.message || t("aiConversationHistoryFailed");
+    console.error(error);
+  }
+}
+
+function renderAiHistory() {
+  if (!elements.aiHistoryList) return;
+  elements.aiHistoryList.hidden = !state.aiHistoryOpen;
+  if (!state.aiHistoryOpen) return;
+  const header = renderAiPopoverHeader(t("aiConversationHistory"), closeAiHistoryPanel);
+  if (state.aiHistory === null) {
+    elements.aiHistoryList.replaceChildren(header, emptyState(t("aiConversationHistoryFailed")));
+    return;
+  }
+  if (!state.aiHistoryLoaded) {
+    elements.aiHistoryList.replaceChildren(header, emptyState(t("loading")));
+    return;
+  }
+  if (state.aiHistory.length === 0) {
+    elements.aiHistoryList.replaceChildren(header, emptyState(t("aiConversationHistoryEmpty")));
+    return;
+  }
+  elements.aiHistoryList.replaceChildren(header, ...state.aiHistory.map(renderAiHistoryRow));
+}
+
+function renderAiHistoryRow(conversation) {
+  const row = document.createElement("button");
+  row.type = "button";
+  row.className = "ai-history-row";
+  row.classList.toggle("active", conversation.id === state.aiConversationId);
+  row.innerHTML = `
+    <strong>${escapeHtml(conversation.title || t("aiConversation"))}</strong>
+    <span>${escapeHtml(formatDateTime(conversation.updated_at || conversation.created_at))} · ${escapeHtml(String(conversation.message_count || 0))}</span>
+  `;
+  row.addEventListener("click", async () => {
+    try {
+      await loadAiConversation(conversation);
+      state.aiHistoryOpen = false;
+      renderAiHistory();
+    } catch (error) {
+      console.error(error);
+    }
+  });
+  return row;
 }
 
 function renderAiJobs() {
   if (!elements.aiJobList || !elements.aiJobToggle) return;
-  const activeCount = state.aiJobs.filter((job) => ["pending", "running"].includes(job.status)).length;
-  elements.aiJobToggle.textContent = activeCount > 0 ? `${t("aiJobQueue")} ${activeCount}` : t("aiJobQueue");
+  const activeCount = activeAiJobCount();
+  elements.aiJobToggle.innerHTML = `${queueIcon()}<span>${escapeHtml(t("aiJobQueue"))}</span>${activeCount > 0 ? `<em>${activeCount}</em>` : ""}`;
   elements.aiJobToggle.classList.toggle("active", state.aiJobsOpen || activeCount > 0);
+  renderAiMoreMenu();
   elements.aiJobList.hidden = !state.aiJobsOpen;
   if (!state.aiJobsOpen) return;
+  const header = renderAiPopoverHeader(t("aiJobQueue"), closeAiJobsPanel);
   if (state.aiJobs.length === 0) {
-    elements.aiJobList.innerHTML = `<div class="empty-state">${escapeHtml(t("aiJobQueueEmpty"))}</div>`;
+    elements.aiJobList.replaceChildren(header, emptyState(t("aiJobQueueEmpty")));
     return;
   }
-  elements.aiJobList.replaceChildren(...state.aiJobs.map(renderAiJobRow));
+  elements.aiJobList.replaceChildren(header, ...state.aiJobs.map(renderAiJobRow));
+}
+
+function renderAiPopoverHeader(label, onClose) {
+  const header = document.createElement("div");
+  header.className = "ai-popover-head";
+  const title = document.createElement("span");
+  title.textContent = label;
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "ai-popover-close";
+  close.textContent = "×";
+  close.setAttribute("aria-label", t("close"));
+  close.setAttribute("title", t("close"));
+  close.addEventListener("click", onClose);
+  header.append(title, close);
+  return header;
+}
+
+function emptyState(message) {
+  const node = document.createElement("div");
+  node.className = "empty-state";
+  node.textContent = message;
+  return node;
 }
 
 function renderAiJobRow(job) {
@@ -3893,7 +4608,11 @@ async function cancelAiJob(jobId) {
 }
 
 function hasActiveAiJobs() {
-  return state.aiJobs.some((job) => ["pending", "running"].includes(job.status));
+  return activeAiJobCount() > 0;
+}
+
+function activeAiJobCount() {
+  return state.aiJobs.filter((job) => ["pending", "running"].includes(job.status)).length;
 }
 
 function startAiJobPolling() {
@@ -4358,6 +5077,54 @@ function contextToggleIcon(active) {
   `;
 }
 
+function queueIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 6h16"></path>
+      <path d="M4 12h16"></path>
+      <path d="M4 18h10"></path>
+    </svg>
+  `;
+}
+
+function moreIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="5" cy="12" r="1.5"></circle>
+      <circle cx="12" cy="12" r="1.5"></circle>
+      <circle cx="19" cy="12" r="1.5"></circle>
+    </svg>
+  `;
+}
+
+function plusIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 5v14"></path>
+      <path d="M5 12h14"></path>
+    </svg>
+  `;
+}
+
+function historyIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+      <path d="M3 4v5h5"></path>
+      <path d="M12 7v5l3 2"></path>
+    </svg>
+  `;
+}
+
+function enterArrowIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7 7v4a3 3 0 0 0 3 3h9"></path>
+      <path d="m15 10 4 4-4 4"></path>
+    </svg>
+  `;
+}
+
 function aiSparkIcon() {
   return `
     <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -4395,6 +5162,16 @@ function shareIcon() {
       <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"></path>
       <path d="m16 6-4-4-4 4"></path>
       <path d="M12 2v14"></path>
+    </svg>
+  `;
+}
+
+function openContextIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7 17 17 7"></path>
+      <path d="M9 7h8v8"></path>
+      <path d="M5 5v14h14"></path>
     </svg>
   `;
 }
@@ -4455,7 +5232,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.8.4-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.0-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });
@@ -4580,11 +5357,18 @@ elements.navSectionToggles.forEach((button) => {
 elements.aiPanelOpen.addEventListener("click", toggleAiPanel);
 elements.aiPanelClose.addEventListener("click", closeAiPanel);
 elements.aiPanelResize.addEventListener("pointerdown", startAiPanelResize);
+elements.aiComposerResize?.addEventListener("pointerdown", startAiComposerResize);
+elements.aiComposerResize?.addEventListener("mousedown", startAiComposerResize);
 elements.aiChatForm.addEventListener("submit", submitAiMessage);
 elements.aiChatInput.addEventListener("keydown", handleAiChatInputKeydown);
+elements.aiChatInput.addEventListener("input", autoGrowAiChatInput);
 elements.aiContentExpansion.addEventListener("change", (event) => setAiContentExpansion(event.target.checked));
 elements.aiGenerateNote.addEventListener("click", openGenerateNoteDialog);
+elements.aiNewChat?.addEventListener("click", startNewAiConversation);
+elements.aiHistoryToggle?.addEventListener("click", toggleAiHistory);
 elements.aiJobToggle?.addEventListener("click", toggleAiJobs);
+elements.aiMoreToggle?.addEventListener("click", toggleAiMoreMenu);
+document.addEventListener("click", handleAiMoreOutsideClick);
 elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.multiFilterToggle.addEventListener("click", toggleMultiFilterPopover);
 elements.tagMatchButtons.forEach((button) => {
@@ -4638,6 +5422,7 @@ elements.exportManifest.addEventListener("click", exportManifestData);
 elements.exportPreferences.addEventListener("click", exportPreferencesData);
 elements.testProvider.addEventListener("click", testProviderConfig);
 elements.aiRunRefresh?.addEventListener("click", loadAiRuns);
+elements.aiConversationRefresh?.addEventListener("click", loadAiConversationManagement);
 elements.newItemForm.addEventListener("submit", submitNewItem);
 elements.readerClose.addEventListener("click", closeReader);
 elements.readerEdit.addEventListener("click", () => {

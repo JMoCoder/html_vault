@@ -14,6 +14,7 @@ const i18n = {
     subscriptionSelfHosted: "Self-hosted",
     aiCreditsBalance: "AI credits",
     agentStatus: "Agent status",
+    aiReady: "AI ready",
     uploadAvatar: "Upload avatar",
     avatarOptions: "Avatar options",
     importHtmlFile: "Import HTML file",
@@ -25,9 +26,11 @@ const i18n = {
     closeGlobalAi: "Close AI assistant",
     globalAiPanel: "Global AI assistant",
     resizeAiPanel: "Resize AI panel",
+    resizeAiComposer: "Resize AI input area",
     globalAiAssistant: "Global AI",
     aiConversation: "Knowledge Q&A",
     aiContext: "Context",
+    aiCurrentContext: "Current context",
     aiContextGlobal: "All notes",
     aiContextLibrary: "Library: {name}",
     aiContextCollection: "Collection: {name}",
@@ -37,6 +40,8 @@ const i18n = {
     aiContextCollections: "Collections: {names}",
     aiContextTags: "Tags ({mode}): {names}",
     aiContextManualItems: "Selected files: {titles}",
+    aiContextManualCount: "Selected {count} notes",
+    aiContextTagSummary: "{first} and {count} tags",
     tagMatchModeAnyLabel: "OR",
     tagMatchModeAllLabel: "AND",
     aiContextFavoritesOnly: "Favorites only",
@@ -46,9 +51,50 @@ const i18n = {
     aiUserPlaceholder: "User question",
     aiAssistantPlaceholder: "AI response placeholder. No request was sent.",
     aiReplying: "Replying...",
+    aiContentExpansion: "Expand with external sources",
     aiPanelComingSoon: "Conversation and note generation are in development.",
+    aiMoreActions: "More AI actions",
+    aiNewConversation: "New conversation",
+    aiConversationHistory: "Conversation history",
+    aiConversationHistoryEmpty: "No conversation history yet.",
+    aiConversationHistoryFailed: "Conversation history could not be loaded.",
+    aiConversationHistoryAll: "AI conversations",
+    aiConversationHistoryAllIntro: "Review, reopen, and delete all AI knowledge-base conversations.",
+    aiConversationHistoryUnavailable: "Conversation management requires the backend server.",
+    refreshConversations: "Refresh conversations",
+    openConversationContext: "Open",
+    deleteConversation: "Delete",
+    deleteConversationConfirm: "Delete this AI conversation history?",
+    aiConversationDeleted: "Conversation deleted.",
     aiChatPlaceholder: "Ask about the current notes or request a new HTML note...",
+    aiProviderUnavailable: "AI provider is not configured on the server.",
+    aiMessageFailed: "AI request failed.",
+    aiSources: "Sources",
+    aiSourceLocal: "Local",
+    aiSourceExternal: "External",
     generateHtmlNote: "Generate note",
+    generateNoteDialog: "Generate note",
+    generateNoteIntro: "Create an HTML note from the current AI conversation and selected workspace context.",
+    generateTheme: "Theme",
+    generateTargetUse: "Target use",
+    generateStylePreference: "Style preference",
+    generateReferenceNote: "Reference style",
+    generateReferenceDefault: "Default",
+    generateReferenceImageComingSoon: "Screenshot style reference is reserved for a future vision adapter and is not available yet.",
+    generateShareSafetyHint: "Share-target notes are reviewed with the public share safety rules. Static, self-contained output is more likely to pass.",
+    generateDefault: "Default",
+    generateDark: "Dark",
+    generateLight: "Light",
+    generatePersonal: "Personal",
+    generateShare: "Share",
+    generateReport: "Report",
+    generateWebsite: "Website",
+    generatePpt: "PPT",
+    generateNoteSubmit: "Generate note",
+    generateNoteRunning: "Generating note...",
+    generateNoteCreated: "Generated note: {title}",
+    generateNoteNeedsAgent: "AI note generation requires the backend server.",
+    generateNoteFailed: "Note generation failed.",
     send: "Send",
     settings: "Settings",
     settingsTitle: "Settings",
@@ -77,6 +123,44 @@ const i18n = {
     requiresWriter: "Requires metadata writer",
     visible: "Visible",
     aiProviders: "AI providers",
+    aiRunHistory: "Recent AI runs",
+    aiRunHistoryIntro: "Review recent AI generation runs without exposing prompts, source text, or API keys.",
+    aiRunHistoryEmpty: "No AI runs yet.",
+    aiRunHistoryUnavailable: "AI run history requires the backend server.",
+    aiRunHistoryFailed: "AI run history could not be loaded.",
+    refreshAiRuns: "Refresh runs",
+    aiJobQueue: "Queue",
+    aiJobQueueEmpty: "No active AI jobs.",
+    aiJobQueued: "AI job queued: {jobId}",
+    aiJobCompleted: "AI job completed.",
+    aiJobFailed: "AI job failed: {message}",
+    aiRunHtmlGeneration: "Generated from conversation",
+    aiRunMaterialGeneration: "Generated from uploaded material",
+    aiRunKnowledgeQa: "Knowledge Q&A",
+    aiRunUnknownKind: "AI run",
+    aiRunStatusCompleted: "Completed",
+    aiRunStatusFailed: "Failed",
+    aiRunStatusRunning: "Running",
+    aiRunStatusPending: "Pending",
+    aiRunNodeCount: "{count} steps",
+    aiRunDuration: "{duration}",
+    aiRunCompletedAt: "Completed: {date}",
+    aiRunItem: "Item: {id}",
+    aiRunError: "Error: {message}",
+    aiRunRetryable: "Retryable",
+    aiRunNotCancellable: "Not cancellable",
+    aiRunDetails: "Details",
+    aiRunHideDetails: "Hide",
+    aiRunDetailsLoading: "Loading run details...",
+    aiRunDetailsFailed: "Run details could not be loaded.",
+    aiRunSpec: "Spec",
+    aiRunUsage: "Usage",
+    aiRunBudget: "Budget",
+    aiRunNodes: "Steps",
+    aiRunNoDetailData: "No detail data recorded.",
+    aiRunInputTokens: "Input tokens: {count}",
+    aiRunOutputTokens: "Output tokens: {count}",
+    aiRunTotalTokens: "Total tokens: {count}",
     aiKnowledgeAssistant: "AI knowledge assistant",
     aiKnowledgeAssistantIntro: "Prepare an AI job to reclassify, retag, or review all knowledge items in the library. This module is a placeholder until database write support is implemented.",
     assistantOperation: "Operation",
@@ -254,6 +338,9 @@ const i18n = {
     importingHtml: "Importing HTML file...",
     importHtmlDone: "Imported {title}",
     importHtmlFailed: "HTML import failed.",
+    generatingMaterialNote: "Generating note from uploaded material...",
+    materialNoteDone: "Generated note: {title}",
+    materialNoteFailed: "Material note generation failed.",
     noSummary: "No summary yet.",
     read: "Read",
     original: "Original",
@@ -301,6 +388,7 @@ const i18n = {
     subscriptionSelfHosted: "自托管",
     aiCreditsBalance: "AI 点数",
     agentStatus: "Agent 状态",
+    aiReady: "AI 已就绪",
     uploadAvatar: "上传头像",
     avatarOptions: "头像选项",
     importHtmlFile: "导入HTML文件",
@@ -312,9 +400,11 @@ const i18n = {
     closeGlobalAi: "关闭 AI 助理",
     globalAiPanel: "全局 AI 助理",
     resizeAiPanel: "调整 AI 面板宽度",
+    resizeAiComposer: "调整 AI 输入区域高度",
     globalAiAssistant: "全局 AI",
     aiConversation: "知识库问答",
     aiContext: "上下文",
+    aiCurrentContext: "当前上下文",
     aiContextGlobal: "全部笔记",
     aiContextLibrary: "资料库：{name}",
     aiContextCollection: "集合：{name}",
@@ -324,6 +414,8 @@ const i18n = {
     aiContextCollections: "集合：{names}",
     aiContextTags: "标签（{mode}）：{names}",
     aiContextManualItems: "指定文件：{titles}",
+    aiContextManualCount: "自选 {count} 篇笔记",
+    aiContextTagSummary: "{first} 等 {count} 个标签",
     tagMatchModeAnyLabel: "或",
     tagMatchModeAllLabel: "且",
     aiContextFavoritesOnly: "仅收藏",
@@ -333,9 +425,50 @@ const i18n = {
     aiUserPlaceholder: "用户问题",
     aiAssistantPlaceholder: "AI 回复占位。当前未发送任何请求。",
     aiReplying: "回复中...",
+    aiContentExpansion: "内容拓展",
     aiPanelComingSoon: "对话与生成 HTML 笔记功能开发中。",
+    aiMoreActions: "更多 AI 功能",
+    aiNewConversation: "新建对话",
+    aiConversationHistory: "对话历史",
+    aiConversationHistoryEmpty: "暂无对话历史。",
+    aiConversationHistoryFailed: "对话历史加载失败。",
+    aiConversationHistoryAll: "AI 会话历史",
+    aiConversationHistoryAllIntro: "回顾、重新打开或删除所有知识库问答历史会话。",
+    aiConversationHistoryUnavailable: "会话管理需要连接后端服务。",
+    refreshConversations: "刷新会话",
+    openConversationContext: "打开",
+    deleteConversation: "删除",
+    deleteConversationConfirm: "确认删除这条 AI 会话历史？",
+    aiConversationDeleted: "会话已删除。",
     aiChatPlaceholder: "围绕当前笔记提问，或要求生成新的 HTML 笔记...",
+    aiProviderUnavailable: "服务端尚未配置 AI 服务商。",
+    aiMessageFailed: "AI 请求失败。",
+    aiSources: "来源",
+    aiSourceLocal: "本地",
+    aiSourceExternal: "外部",
     generateHtmlNote: "生成笔记",
+    generateNoteDialog: "生成笔记",
+    generateNoteIntro: "根据当前 AI 对话和已选择的工作区上下文生成 HTML 笔记。",
+    generateTheme: "主题",
+    generateTargetUse: "目标用途",
+    generateStylePreference: "样式偏好",
+    generateReferenceNote: "参考样式",
+    generateReferenceDefault: "默认",
+    generateReferenceImageComingSoon: "截图参考样式已预留，需等视觉模型适配器完成后开放。",
+    generateShareSafetyHint: "分享用途会按公开分享安全规则预检。静态、无外部依赖的输出更容易通过。",
+    generateDefault: "默认",
+    generateDark: "暗色",
+    generateLight: "亮色",
+    generatePersonal: "自用",
+    generateShare: "分享",
+    generateReport: "报告",
+    generateWebsite: "网站",
+    generatePpt: "PPT",
+    generateNoteSubmit: "生成笔记",
+    generateNoteRunning: "正在生成笔记...",
+    generateNoteCreated: "已生成笔记：{title}",
+    generateNoteNeedsAgent: "生成 AI 笔记需要连接后端服务。",
+    generateNoteFailed: "笔记生成失败。",
     send: "发送",
     settings: "设置",
     settingsTitle: "设置",
@@ -364,6 +497,44 @@ const i18n = {
     requiresWriter: "需要元数据写入服务",
     visible: "显示",
     aiProviders: "AI 服务商配置",
+    aiRunHistory: "最近 AI 运行记录",
+    aiRunHistoryIntro: "查看最近的 AI 生成记录，不展示提示词、来源正文或 API Key。",
+    aiRunHistoryEmpty: "暂无 AI 运行记录。",
+    aiRunHistoryUnavailable: "AI 运行记录需要连接后端服务。",
+    aiRunHistoryFailed: "无法加载 AI 运行记录。",
+    refreshAiRuns: "刷新运行记录",
+    aiJobQueue: "队列",
+    aiJobQueueEmpty: "暂无活跃 AI 任务。",
+    aiJobQueued: "AI 任务已加入队列：{jobId}",
+    aiJobCompleted: "AI 任务已完成。",
+    aiJobFailed: "AI 任务失败：{message}",
+    aiRunHtmlGeneration: "根据对话生成",
+    aiRunMaterialGeneration: "根据上传资料生成",
+    aiRunKnowledgeQa: "知识库问答",
+    aiRunUnknownKind: "AI 运行",
+    aiRunStatusCompleted: "已完成",
+    aiRunStatusFailed: "失败",
+    aiRunStatusRunning: "运行中",
+    aiRunStatusPending: "等待中",
+    aiRunNodeCount: "{count} 个步骤",
+    aiRunDuration: "{duration}",
+    aiRunCompletedAt: "完成时间：{date}",
+    aiRunItem: "条目：{id}",
+    aiRunError: "错误：{message}",
+    aiRunRetryable: "可重试",
+    aiRunNotCancellable: "不可取消",
+    aiRunDetails: "详情",
+    aiRunHideDetails: "收起",
+    aiRunDetailsLoading: "正在加载运行详情...",
+    aiRunDetailsFailed: "无法加载运行详情。",
+    aiRunSpec: "配置",
+    aiRunUsage: "用量",
+    aiRunBudget: "预算",
+    aiRunNodes: "步骤",
+    aiRunNoDetailData: "暂无详情数据。",
+    aiRunInputTokens: "输入 Tokens：{count}",
+    aiRunOutputTokens: "输出 Tokens：{count}",
+    aiRunTotalTokens: "总 Tokens：{count}",
     aiKnowledgeAssistant: "AI 知识库助理",
     aiKnowledgeAssistantIntro: "预留 AI 批量任务入口，用于对资料库全部内容重新分类、重新打标签或审核整理。数据库写入能力完成前，这里先作为模块占位。",
     assistantOperation: "任务类型",
@@ -541,6 +712,9 @@ const i18n = {
     importingHtml: "正在导入 HTML 文件...",
     importHtmlDone: "已导入 {title}",
     importHtmlFailed: "HTML 导入失败。",
+    generatingMaterialNote: "正在根据上传资料生成笔记...",
+    materialNoteDone: "已生成笔记：{title}",
+    materialNoteFailed: "资料生成笔记失败。",
     noSummary: "暂无摘要。",
     read: "阅读",
     original: "原文",
@@ -588,6 +762,7 @@ const i18n = {
     subscriptionSelfHosted: "セルフホスト",
     aiCreditsBalance: "AI クレジット",
     agentStatus: "Agent 状態",
+    aiReady: "AI 準備完了",
     uploadAvatar: "アバターをアップロード",
     avatarOptions: "アバター選択",
     importHtmlFile: "HTML ファイルをインポート",
@@ -599,9 +774,11 @@ const i18n = {
     closeGlobalAi: "AI アシスタントを閉じる",
     globalAiPanel: "グローバル AI アシスタント",
     resizeAiPanel: "AI パネル幅を調整",
+    resizeAiComposer: "AI 入力エリアの高さを調整",
     globalAiAssistant: "グローバル AI",
     aiConversation: "ナレッジ Q&A",
     aiContext: "コンテキスト",
+    aiCurrentContext: "現在のコンテキスト",
     aiContextGlobal: "すべてのノート",
     aiContextLibrary: "ライブラリ: {name}",
     aiContextCollection: "コレクション: {name}",
@@ -611,6 +788,8 @@ const i18n = {
     aiContextCollections: "コレクション: {names}",
     aiContextTags: "タグ（{mode}）: {names}",
     aiContextManualItems: "選択ファイル: {titles}",
+    aiContextManualCount: "{count} 件のノートを選択",
+    aiContextTagSummary: "{first} ほか {count} 件のタグ",
     tagMatchModeAnyLabel: "OR",
     tagMatchModeAllLabel: "AND",
     aiContextFavoritesOnly: "お気に入りのみ",
@@ -620,9 +799,50 @@ const i18n = {
     aiUserPlaceholder: "ユーザーの質問",
     aiAssistantPlaceholder: "AI 応答のプレースホルダーです。リクエストは送信されていません。",
     aiReplying: "返信中...",
+    aiContentExpansion: "外部情報で拡張",
     aiPanelComingSoon: "会話と HTML ノート生成は開発中です。",
+    aiMoreActions: "その他の AI 操作",
+    aiNewConversation: "新規会話",
+    aiConversationHistory: "会話履歴",
+    aiConversationHistoryEmpty: "会話履歴はまだありません。",
+    aiConversationHistoryFailed: "会話履歴を読み込めませんでした。",
+    aiConversationHistoryAll: "AI 会話履歴",
+    aiConversationHistoryAllIntro: "すべてのナレッジ Q&A 会話を確認、再開、削除します。",
+    aiConversationHistoryUnavailable: "会話管理にはバックエンドサーバーが必要です。",
+    refreshConversations: "会話を更新",
+    openConversationContext: "開く",
+    deleteConversation: "削除",
+    deleteConversationConfirm: "この AI 会話履歴を削除しますか？",
+    aiConversationDeleted: "会話を削除しました。",
     aiChatPlaceholder: "現在のノートについて質問、または新しい HTML ノート生成を依頼...",
+    aiProviderUnavailable: "サーバー側の AI プロバイダーが未設定です。",
+    aiMessageFailed: "AI リクエストに失敗しました。",
+    aiSources: "出典",
+    aiSourceLocal: "ローカル",
+    aiSourceExternal: "外部",
     generateHtmlNote: "ノートを生成",
+    generateNoteDialog: "ノートを生成",
+    generateNoteIntro: "現在の AI 会話と選択中のワークスペース文脈から HTML ノートを生成します。",
+    generateTheme: "テーマ",
+    generateTargetUse: "用途",
+    generateStylePreference: "スタイル",
+    generateReferenceNote: "参照スタイル",
+    generateReferenceDefault: "デフォルト",
+    generateReferenceImageComingSoon: "スクリーンショット参照は将来の vision adapter 向けに予約されており、まだ利用できません。",
+    generateShareSafetyHint: "共有用途のノートは公開共有の安全ルールで事前確認されます。静的で自己完結した出力ほど通過しやすくなります。",
+    generateDefault: "デフォルト",
+    generateDark: "ダーク",
+    generateLight: "ライト",
+    generatePersonal: "自分用",
+    generateShare: "共有",
+    generateReport: "レポート",
+    generateWebsite: "Web サイト",
+    generatePpt: "PPT",
+    generateNoteSubmit: "ノートを生成",
+    generateNoteRunning: "ノートを生成中...",
+    generateNoteCreated: "生成済みノート: {title}",
+    generateNoteNeedsAgent: "AI ノート生成にはバックエンドサーバーが必要です。",
+    generateNoteFailed: "ノート生成に失敗しました。",
     send: "送信",
     settings: "設定",
     settingsTitle: "設定",
@@ -651,6 +871,44 @@ const i18n = {
     requiresWriter: "メタデータ書き込みサービスが必要",
     visible: "表示",
     aiProviders: "AI プロバイダー設定",
+    aiRunHistory: "最近の AI 実行",
+    aiRunHistoryIntro: "プロンプト、元テキスト、API Key を表示せず、最近の AI 生成実行を確認します。",
+    aiRunHistoryEmpty: "AI 実行はまだありません。",
+    aiRunHistoryUnavailable: "AI 実行履歴にはバックエンドサーバーが必要です。",
+    aiRunHistoryFailed: "AI 実行履歴を読み込めませんでした。",
+    refreshAiRuns: "実行履歴を更新",
+    aiJobQueue: "キュー",
+    aiJobQueueEmpty: "アクティブな AI ジョブはありません。",
+    aiJobQueued: "AI ジョブをキューに追加しました: {jobId}",
+    aiJobCompleted: "AI ジョブが完了しました。",
+    aiJobFailed: "AI ジョブに失敗しました: {message}",
+    aiRunHtmlGeneration: "会話から生成",
+    aiRunMaterialGeneration: "アップロード資料から生成",
+    aiRunKnowledgeQa: "ナレッジ Q&A",
+    aiRunUnknownKind: "AI 実行",
+    aiRunStatusCompleted: "完了",
+    aiRunStatusFailed: "失敗",
+    aiRunStatusRunning: "実行中",
+    aiRunStatusPending: "待機中",
+    aiRunNodeCount: "{count} ステップ",
+    aiRunDuration: "{duration}",
+    aiRunCompletedAt: "完了時刻: {date}",
+    aiRunItem: "項目: {id}",
+    aiRunError: "エラー: {message}",
+    aiRunRetryable: "再試行可能",
+    aiRunNotCancellable: "キャンセル不可",
+    aiRunDetails: "詳細",
+    aiRunHideDetails: "閉じる",
+    aiRunDetailsLoading: "実行詳細を読み込み中...",
+    aiRunDetailsFailed: "実行詳細を読み込めませんでした。",
+    aiRunSpec: "設定",
+    aiRunUsage: "使用量",
+    aiRunBudget: "予算",
+    aiRunNodes: "ステップ",
+    aiRunNoDetailData: "詳細データはありません。",
+    aiRunInputTokens: "入力トークン: {count}",
+    aiRunOutputTokens: "出力トークン: {count}",
+    aiRunTotalTokens: "合計トークン: {count}",
     aiKnowledgeAssistant: "AI ナレッジアシスタント",
     aiKnowledgeAssistantIntro: "ライブラリ全体を再分類、再タグ付け、レビュー整理する AI ジョブの入口です。データベース書き込み対応まではプレースホルダーです。",
     assistantOperation: "操作",
@@ -828,6 +1086,9 @@ const i18n = {
     importingHtml: "HTML ファイルをインポート中...",
     importHtmlDone: "{title} をインポートしました",
     importHtmlFailed: "HTML インポートに失敗しました。",
+    generatingMaterialNote: "アップロード資料からノートを生成中...",
+    materialNoteDone: "生成済みノート: {title}",
+    materialNoteFailed: "資料からのノート生成に失敗しました。",
     noSummary: "概要はまだありません。",
     read: "読む",
     original: "原文",
@@ -940,7 +1201,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.8.4",
+  currentVersion: "0.9.0",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -951,6 +1212,27 @@ const state = {
   feedbackTimer: 0,
   activeSettingsTab: "basic",
   aiConfig: loadAiConfig(),
+  aiStatus: null,
+  aiRuns: [],
+  aiJobs: [],
+  aiJobsOpen: false,
+  aiMoreOpen: false,
+  aiHistoryOpen: false,
+  aiHistory: [],
+  aiHistoryLoaded: false,
+  aiConversations: [],
+  aiConversationLoadingKey: "",
+  aiSuppressedContextKeys: new Set(),
+  aiJobsLoaded: false,
+  aiJobsPollTimer: 0,
+  aiKnownCompletedJobIds: new Set(),
+  aiSubmittedJobIds: new Set(),
+  selectedAiRunId: "",
+  aiRunDetails: {},
+  aiConversationId: "",
+  aiConversationContextKey: "",
+  aiContentExpansion: false,
+  aiConversationLoadedKey: "",
   dataConfig: loadDataConfig(),
   itemState: loadItemState(),
   navConfig: loadNavConfig(),
@@ -960,6 +1242,7 @@ const state = {
   viewMode: getInitialViewMode(),
   aiPanelOpen: false,
   aiPanelWidth: getInitialAiPanelWidth(),
+  aiComposerHeight: getInitialAiComposerHeight(),
   multiFilterOpen: false,
   sortOpen: false,
   sortMode: getInitialSortMode(),
@@ -995,6 +1278,7 @@ const elements = {
   navSections: document.querySelectorAll("[data-nav-section]"),
   importEntries: document.querySelectorAll("[data-import-entry]"),
   htmlImportFile: ensureHtmlImportInput(),
+  materialGenerateFile: document.querySelector("#material-generate-file"),
   siteTitle: document.querySelector("#site-title"),
   languageSelect: document.querySelector("#language-select"),
   themeModeButtons: document.querySelectorAll("[data-theme-mode]"),
@@ -1034,6 +1318,12 @@ const elements = {
   modelMaxTokens: document.querySelector("#model-max-tokens"),
   testProvider: document.querySelector("#test-provider"),
   settingsFeedback: document.querySelector("#settings-feedback"),
+  aiRunRefresh: document.querySelector("#ai-run-refresh"),
+  aiRunList: document.querySelector("#ai-run-list"),
+  aiRunFeedback: document.querySelector("#ai-run-feedback"),
+  aiConversationRefresh: document.querySelector("#ai-conversation-refresh"),
+  aiConversationList: document.querySelector("#ai-conversation-list"),
+  aiConversationFeedback: document.querySelector("#ai-conversation-feedback"),
   versionStatus: document.querySelector("#version-status"),
   libraryNav: document.querySelector("#library-nav"),
   collectionNav: document.querySelector("#collection-nav"),
@@ -1051,11 +1341,24 @@ const elements = {
   aiPanel: document.querySelector("#ai-panel"),
   aiPanelClose: document.querySelector("#ai-panel-close"),
   aiPanelResize: document.querySelector("#ai-panel-resize"),
+  aiComposer: document.querySelector("#ai-composer"),
+  aiComposerResize: document.querySelector("#ai-composer-resize"),
   aiContextLabel: document.querySelector("#ai-context-label"),
+  aiContextCompact: document.querySelector("#ai-context-compact"),
+  aiContextCard: document.querySelector(".ai-context-card"),
   aiChatLog: document.querySelector("#ai-chat-log"),
   aiChatForm: document.querySelector("#ai-chat-form"),
   aiChatInput: document.querySelector("#ai-chat-input"),
+  aiSendButton: document.querySelector(".ai-send-button"),
+  aiContentExpansion: document.querySelector("#ai-content-expansion"),
   aiGenerateNote: document.querySelector("#ai-generate-note"),
+  aiNewChat: document.querySelector("#ai-new-chat"),
+  aiHistoryToggle: document.querySelector("#ai-history-toggle"),
+  aiHistoryList: document.querySelector("#ai-history-list"),
+  aiJobToggle: document.querySelector("#ai-job-toggle"),
+  aiMoreToggle: document.querySelector("#ai-more-toggle"),
+  aiMoreMenu: document.querySelector("#ai-more-menu"),
+  aiJobList: document.querySelector("#ai-job-list"),
   luckyButton: document.querySelector("#lucky-button"),
   searchInput: document.querySelector("#search-input"),
   contentGrid: document.querySelector("#content-grid"),
@@ -1091,6 +1394,17 @@ const elements = {
   shareRevoke: document.querySelector("#share-revoke"),
   shareCancel: document.querySelector("#share-cancel"),
   shareCancelIcon: document.querySelector("#share-cancel-icon"),
+  generateNoteDialog: document.querySelector("#generate-note-dialog"),
+  generateNoteForm: document.querySelector("#generate-note-form"),
+  generateTheme: document.querySelector("#generate-theme"),
+  generateTargetUse: document.querySelector("#generate-target-use"),
+  generateShareHint: document.querySelector("#generate-share-hint"),
+  generateStylePreference: document.querySelector("#generate-style-preference"),
+  generateReferenceNote: document.querySelector("#generate-reference-note"),
+  generateNoteFeedback: document.querySelector("#generate-note-feedback"),
+  generateNoteSubmit: document.querySelector("#generate-note-submit"),
+  generateNoteCancel: document.querySelector("#generate-note-cancel"),
+  generateNoteCancelIcon: document.querySelector("#generate-note-cancel-icon"),
   metadataEditor: document.querySelector("#metadata-editor"),
   metadataForm: document.querySelector("#metadata-form"),
   metadataTitle: document.querySelector("#metadata-title"),
@@ -1132,6 +1446,7 @@ async function boot() {
     state.manifest = await loadManifest();
     state.items = Array.isArray(state.manifest.items) ? state.manifest.items : [];
     renderApp();
+    refreshAiStatus();
     checkVersionStatus();
     openFromHash();
   } catch (error) {
@@ -1361,6 +1676,19 @@ async function loadManifest() {
   const response = await fetch("manifest.json", { cache: "no-store" });
   if (!response.ok) throw new Error(`Unable to load manifest: ${response.status}`);
   return response.json();
+}
+
+async function refreshManifestAndWorkspace() {
+  state.manifest = await loadManifest();
+  state.items = Array.isArray(state.manifest.items) ? state.manifest.items : [];
+  normalizeVisibleTagFilters();
+  renderLibraryNav();
+  renderCollectionNav();
+  renderTagNav();
+  renderMultiFilterOptions();
+  renderManagementLists();
+  renderGrid();
+  renderAiContext();
 }
 
 function buildApiUrl(path) {
@@ -1758,7 +2086,7 @@ function openReader(item) {
 
 function renderReaderMetadata(item) {
   elements.readerTitle.textContent = getItemTitle(item);
-  elements.readerSummary.textContent = getItemSummary(item) || "";
+  if (elements.readerSummary) elements.readerSummary.textContent = getItemSummary(item) || "";
   elements.readerSource.textContent = `${getItemCollection(item)} / ${getSourceLabel(item)}`;
   elements.readerOriginal.href = getReaderRawUrl(item);
   elements.readerTags.replaceChildren(...getItemTags(item).map((tag) => {
@@ -1889,8 +2217,11 @@ function syncSingleSelectionToMultiFilter(type, value) {
 
 function openSettings(tab = "basic", updateHash = true) {
   clearFeedback();
+  if (state.aiPanelOpen) closeAiPanel();
   setSettingsTab(tab, false);
   elements.settingsPage.hidden = false;
+  maybeRefreshAiRuns();
+  maybeRefreshAiConversations();
   if (updateHash) {
     updateSettingsHash(state.activeSettingsTab);
   }
@@ -1927,6 +2258,10 @@ function setSettingsTab(tab, updateHash = true) {
   const validTabs = new Set([...elements.settingsTabs].map((item) => item.dataset.settingsTab));
   state.activeSettingsTab = validTabs.has(tab) ? tab : "basic";
   renderSettingsTabs();
+  if (!elements.settingsPage.hidden) {
+    maybeRefreshAiRuns();
+    maybeRefreshAiConversations();
+  }
   if (updateHash) {
     updateSettingsHash(state.activeSettingsTab);
   }
@@ -1953,6 +2288,11 @@ function openFromHash() {
 
 async function submitNewItem(event) {
   event.preventDefault();
+  if (elements.inputType.value === "file") {
+    openMaterialGeneratePicker();
+    return;
+  }
+
   const input = elements.newItemInput.value.trim();
   if (!input) {
     setFeedback("emptyInput");
@@ -1987,6 +2327,49 @@ async function submitNewItem(event) {
 function openHtmlImportPicker() {
   elements.htmlImportFile.value = "";
   elements.htmlImportFile.click();
+}
+
+function openMaterialGeneratePicker() {
+  if (!state.agentUrl) {
+    setFeedback("agentNotConfigured");
+    return;
+  }
+  elements.materialGenerateFile.value = "";
+  elements.materialGenerateFile.click();
+}
+
+async function generateNoteFromMaterialFile(file) {
+  if (!file) return;
+  if (!state.agentUrl) {
+    setFeedback("agentNotConfigured");
+    return;
+  }
+  setFeedback("generatingMaterialNote");
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("instruction", elements.newItemInput.value.trim());
+  formData.append("theme", "default");
+  formData.append("target_use", "default");
+  formData.append("style_preference", "default");
+  formData.append("reference_style", "default");
+
+  try {
+    const response = await apiFetch("/api/ai/material-jobs", {
+      method: "POST",
+      body: formData,
+    });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    const result = await response.json();
+    trackSubmittedAiJob(result.job_id || "");
+    await loadAiJobs();
+    startAiJobPolling();
+    elements.newItemInput.value = "";
+    setFeedback("queuedJob", { jobId: result.job_id || "" });
+  } catch (error) {
+    await loadAiRuns();
+    setFeedback("materialNoteFailed");
+    console.error(error);
+  }
 }
 
 async function importHtmlFile(file) {
@@ -2026,8 +2409,23 @@ async function importHtmlFile(file) {
 
 function updateAgentStatus() {
   if (!elements.agentStatus) return;
-  elements.agentStatus.textContent = t(state.agentUrl ? "agentConnected" : "staticMode");
-  elements.agentStatus.classList.toggle("connected", Boolean(state.agentUrl));
+  const connected = Boolean(state.agentUrl);
+  const aiReady = Boolean(state.aiStatus?.available);
+  elements.agentStatus.textContent = aiReady ? t("aiReady") : t(connected ? "agentConnected" : "staticMode");
+  elements.agentStatus.classList.toggle("connected", connected || aiReady);
+}
+
+async function refreshAiStatus() {
+  try {
+    const response = await apiFetch("/api/ai/status", { cache: "no-store" });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    state.aiStatus = await response.json();
+    syncAiConfigFromServer(state.aiStatus.provider);
+  } catch (error) {
+    state.aiStatus = null;
+  }
+  renderAiConfig();
+  updateAgentStatus();
 }
 
 function openReaderAiPanel() {
@@ -2657,6 +3055,12 @@ function getInitialAiPanelWidth() {
   return 420;
 }
 
+function getInitialAiComposerHeight() {
+  const saved = Number(getStored("ai-composer-height"));
+  if (Number.isFinite(saved) && saved >= 142 && saved <= 320) return saved;
+  return 172;
+}
+
 function getInitialSidebarWidth() {
   const saved = Number(getStored("sidebar-width"));
   if (Number.isFinite(saved) && saved >= 240 && saved <= 420) return saved;
@@ -2666,6 +3070,11 @@ function getInitialSidebarWidth() {
 function clampAiPanelWidth(width) {
   const viewportLimit = Math.max(320, window.innerWidth - 120);
   return Math.min(720, Math.max(320, Math.min(width, viewportLimit)));
+}
+
+function clampAiComposerHeight(height) {
+  const viewportLimit = Math.max(142, Math.min(320, Math.round(window.innerHeight * 0.42)));
+  return Math.min(viewportLimit, Math.max(142, height));
 }
 
 function clampSidebarWidth(width) {
@@ -2729,6 +3138,7 @@ function applySidebarWidth() {
 function startSidebarResize(event) {
   if (state.sidebarCollapsed) return;
   event.preventDefault();
+  if (event.pointerId !== undefined) event.currentTarget?.setPointerCapture?.(event.pointerId);
   elements.body.classList.add("sidebar-resizing");
   const startX = event.clientX;
   const startWidth = state.sidebarWidth;
@@ -2741,9 +3151,15 @@ function startSidebarResize(event) {
     setStored("sidebar-width", String(state.sidebarWidth));
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("pointerup", onUp);
+    window.removeEventListener("pointercancel", onUp);
+    window.removeEventListener("blur", onUp);
+    event.currentTarget?.removeEventListener?.("lostpointercapture", onUp);
   };
   window.addEventListener("pointermove", onMove);
   window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
+  window.addEventListener("blur", onUp);
+  event.currentTarget?.addEventListener?.("lostpointercapture", onUp, { once: true });
 }
 
 function getInitialFavoriteFilter() {
@@ -2763,11 +3179,16 @@ function openAiPanel() {
   applyAiPanelState();
   renderAiContext();
   renderInitialAiMessage();
+  restoreLatestAiConversationForCurrentContext();
+  loadAiJobs();
   elements.aiChatInput.focus();
 }
 
 function closeAiPanel() {
   state.aiPanelOpen = false;
+  state.aiMoreOpen = false;
+  state.aiHistoryOpen = false;
+  resetAiConversationSession();
   applyAiPanelState();
 }
 
@@ -2788,17 +3209,69 @@ function applyAiPanelState() {
   elements.body.classList.toggle("ai-panel-open", state.aiPanelOpen);
   elements.aiPanelOpen.classList.toggle("active", state.aiPanelOpen);
   elements.readerAiPanelOpen.classList.toggle("active", state.aiPanelOpen);
+  if (elements.aiSendButton && !elements.aiSendButton.innerHTML.trim()) elements.aiSendButton.innerHTML = enterArrowIcon();
+  applyAiComposerHeight();
+  renderAiMoreMenu();
   applySidebarWidth();
 }
 
-function renderAiContext() {
-  if (!elements.aiContextLabel) return;
-  elements.aiContextLabel.textContent = getAiContextLabel();
+function applyAiComposerHeight() {
+  if (!elements.aiComposer) return;
+  state.aiComposerHeight = clampAiComposerHeight(state.aiComposerHeight);
+  elements.aiComposer.style.setProperty("--ai-composer-height", `${state.aiComposerHeight}px`);
 }
 
-function getAiContextLabel() {
+function renderAiContext() {
+  const detailed = getAiContextLabel({ compact: false });
+  if (elements.aiContextLabel) elements.aiContextLabel.textContent = detailed;
+  renderAiCompactContext();
+  updateAiPanelConversationState();
+  restoreLatestAiConversationForCurrentContext();
+}
+
+function renderAiCompactContext() {
+  if (!elements.aiContextCompact) return;
+  const parts = getAiCompactContextParts();
+  elements.aiContextCompact.replaceChildren();
+  if (parts.prefix) {
+    const prefix = document.createElement("span");
+    prefix.className = "ai-context-prefix";
+    prefix.textContent = parts.prefix;
+    elements.aiContextCompact.append(prefix);
+  }
+  const value = document.createElement("span");
+  value.className = "ai-context-value";
+  value.textContent = parts.value;
+  value.title = parts.title || parts.value;
+  elements.aiContextCompact.append(value);
+}
+
+function getAiCompactContextParts() {
   const manualItems = [...state.manualAiContextIds].map(getItemById).filter(Boolean);
   if (manualItems.length > 0) {
+    return { value: t("aiContextManualCount", { count: manualItems.length }) };
+  }
+  if (!elements.reader.hidden && state.currentReaderItemId) {
+    const item = getItemById(state.currentReaderItemId);
+    return {
+      prefix: aiContextPrefix("aiContextReader"),
+      value: item ? getItemTitle(item) : t("item"),
+    };
+  }
+  return { value: getAiContextLabel({ compact: true }) };
+}
+
+function aiContextPrefix(key) {
+  const marker = "__HTML_LORE_CONTEXT_VALUE__";
+  const translated = t(key, { title: marker, name: marker, query: marker });
+  return translated.includes(marker) ? translated.split(marker)[0] : "";
+}
+
+function getAiContextLabel(options = {}) {
+  const compact = Boolean(options.compact);
+  const manualItems = [...state.manualAiContextIds].map(getItemById).filter(Boolean);
+  if (manualItems.length > 0) {
+    if (compact) return t("aiContextManualCount", { count: manualItems.length });
     return t("aiContextManualItems", { titles: manualItems.map((item) => getItemTitle(item)).join(", ") });
   }
 
@@ -2825,8 +3298,12 @@ function getAiContextLabel() {
 
   const extraTags = [...state.selectedTags].filter((name) => name !== primaryTag);
   if (extraTags.length > 0) {
-    const mode = t(state.tagMatchMode === "all" ? "tagMatchModeAllLabel" : "tagMatchModeAnyLabel");
-    parts.push(t("aiContextTags", { mode, names: extraTags.map((tag) => `#${tag}`).join(", ") }));
+    if (compact && extraTags.length > 1) {
+      parts.push(t("aiContextTagSummary", { first: `#${extraTags[0]}`, count: extraTags.length }));
+    } else {
+      const mode = t(state.tagMatchMode === "all" ? "tagMatchModeAllLabel" : "tagMatchModeAnyLabel");
+      parts.push(t("aiContextTags", { mode, names: extraTags.map((tag) => `#${tag}`).join(", ") }));
+    }
   }
 
   if (state.onlyFavorites) {
@@ -2836,46 +3313,216 @@ function getAiContextLabel() {
 }
 
 function renderInitialAiMessage() {
-  if (elements.aiChatLog.children.length > 0) return;
-  appendAiMessage("assistant", t("aiWelcome"));
+  updateAiPanelConversationState();
 }
 
 function appendAiMessage(role, text, sources = [], options = {}) {
   const message = document.createElement("article");
   message.className = `ai-message ${role}${options.pending ? " pending" : ""}`;
-  message.innerHTML = aiMessageMarkup(role, text);
+  message.innerHTML = aiMessageMarkup(role, text, sources);
   elements.aiChatLog.append(message);
+  updateAiPanelConversationState();
   scrollAiChatToBottom();
   return message;
 }
 
-function updateAiMessage(message, role, text) {
+function updateAiMessage(message, role, text, sources = []) {
   message.className = `ai-message ${role}`;
-  message.innerHTML = aiMessageMarkup(role, text);
+  message.innerHTML = aiMessageMarkup(role, text, sources);
+  updateAiPanelConversationState();
   scrollAiChatToBottom();
 }
 
-function aiMessageMarkup(role, text) {
+function aiMessageMarkup(role, text, sources = []) {
+  const sourceMarkup = role === "assistant" && sources.length > 0
+    ? `<div class="ai-message-sources"><span>${escapeHtml(t("aiSources"))}</span>${sources.slice(0, 4).map(renderAiSourcePill).join("")}</div>`
+    : "";
+  const bodyMarkup = role === "assistant"
+    ? renderMarkdown(text)
+    : `<p>${escapeHtml(text)}</p>`;
   return `
-    <strong>${escapeHtml(role === "user" ? t("aiUserPlaceholder") : t("globalAiAssistant"))}</strong>
-    <p>${escapeHtml(text)}</p>
+    <strong>${escapeHtml(role === "user" ? t("aiUserPlaceholder") : t("aiConversation"))}</strong>
+    <div class="ai-message-body">${bodyMarkup}</div>
+    ${sourceMarkup}
   `;
+}
+
+function updateAiPanelConversationState() {
+  const hasMessages = Boolean(elements.aiChatLog?.children.length);
+  elements.aiPanel?.classList.toggle("has-ai-messages", hasMessages);
+  if (elements.aiContextCard) elements.aiContextCard.hidden = hasMessages;
+}
+
+function renderAiSourcePill(source) {
+  const external = source?.kind === "external";
+  const label = t(external ? "aiSourceExternal" : "aiSourceLocal");
+  const title = sourceDisplayTitle(source);
+  return `<em class="${external ? "external" : "local"}" title="${escapeHtml(title)}"><span>${escapeHtml(label)}</span><b>${escapeHtml(title)}</b></em>`;
+}
+
+function sourceDisplayTitle(source) {
+  if (!source) return "";
+  if (source.kind === "external" && source.url) {
+    try {
+      const host = new URL(source.url).hostname;
+      return `${source.title || host} · ${host}`;
+    } catch {
+      return source.title || source.url || "";
+    }
+  }
+  return source.title || source.item_id || "";
+}
+
+function renderMarkdown(value) {
+  const text = String(value ?? "").replace(/\r\n?/g, "\n");
+  if (!text.trim()) return "<p></p>";
+  const blocks = [];
+  const lines = text.split("\n");
+  let paragraph = [];
+  let list = null;
+  let quote = [];
+  let code = [];
+  let inCode = false;
+
+  const flushParagraph = () => {
+    if (paragraph.length === 0) return;
+    blocks.push(`<p>${renderInlineMarkdown(paragraph.join(" "))}</p>`);
+    paragraph = [];
+  };
+  const flushList = () => {
+    if (!list) return;
+    blocks.push(`<${list.type}>${list.items.map((item) => `<li>${renderInlineMarkdown(item)}</li>`).join("")}</${list.type}>`);
+    list = null;
+  };
+  const flushQuote = () => {
+    if (quote.length === 0) return;
+    blocks.push(`<blockquote>${renderInlineMarkdown(quote.join(" "))}</blockquote>`);
+    quote = [];
+  };
+  const flushCode = () => {
+    if (code.length === 0) return;
+    blocks.push(`<pre><code>${escapeHtml(code.join("\n"))}</code></pre>`);
+    code = [];
+  };
+  const flushTextBlocks = () => {
+    flushParagraph();
+    flushList();
+    flushQuote();
+  };
+
+  lines.forEach((line) => {
+    if (/^```/.test(line.trim())) {
+      if (inCode) {
+        flushCode();
+        inCode = false;
+      } else {
+        flushTextBlocks();
+        inCode = true;
+      }
+      return;
+    }
+    if (inCode) {
+      code.push(line);
+      return;
+    }
+
+    const trimmed = line.trim();
+    if (!trimmed) {
+      flushTextBlocks();
+      return;
+    }
+
+    const heading = trimmed.match(/^(#{1,3})\s+(.+)$/);
+    if (heading) {
+      flushTextBlocks();
+      const level = heading[1].length + 2;
+      blocks.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
+      return;
+    }
+
+    const unordered = trimmed.match(/^[-*]\s+(.+)$/);
+    const ordered = trimmed.match(/^\d+[.)]\s+(.+)$/);
+    if (unordered || ordered) {
+      flushParagraph();
+      flushQuote();
+      const type = unordered ? "ul" : "ol";
+      if (!list || list.type !== type) flushList();
+      if (!list) list = { type, items: [] };
+      list.items.push((unordered || ordered)[1]);
+      return;
+    }
+
+    const quoted = trimmed.match(/^>\s?(.+)$/);
+    if (quoted) {
+      flushParagraph();
+      flushList();
+      quote.push(quoted[1]);
+      return;
+    }
+
+    flushList();
+    flushQuote();
+    paragraph.push(trimmed);
+  });
+
+  if (inCode) flushCode();
+  flushTextBlocks();
+  return blocks.join("");
+}
+
+function renderInlineMarkdown(value) {
+  let html = escapeHtml(value);
+  html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|mailto:[^)\s]+)\)/g, (_match, label, href) => {
+    const safeHref = escapeHtml(href);
+    return `<a href="${safeHref}" target="_blank" rel="noreferrer">${label}</a>`;
+  });
+  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+  html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+  html = html.replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>");
+  html = html.replace(/(^|[\s(])_([^_\n]+)_/g, "$1<em>$2</em>");
+  return html;
 }
 
 function scrollAiChatToBottom() {
   elements.aiChatLog.scrollTop = elements.aiChatLog.scrollHeight;
 }
 
-function submitAiMessage(event) {
+async function submitAiMessage(event) {
   event.preventDefault();
   const text = elements.aiChatInput.value.trim();
   if (!text) return;
   appendAiMessage("user", text);
   elements.aiChatInput.value = "";
+  autoGrowAiChatInput();
   const pendingMessage = appendAiMessage("assistant", t("aiReplying"), [], { pending: true });
-  window.setTimeout(() => {
-    updateAiMessage(pendingMessage, "assistant", `${t("aiAssistantPlaceholder")} ${getAiContextLabel()}`);
-  }, 450);
+  try {
+    if (hasRuntimeConfig("STATIC_DEMO")) {
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      updateAiMessage(pendingMessage, "assistant", t("aiAssistantPlaceholder"));
+      return;
+    }
+    const conversationId = await ensureAiConversation();
+    const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversationId)}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: text }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    updateAiMessage(pendingMessage, "assistant", data.message?.content || t("aiAssistantPlaceholder"), data.sources || []);
+    await loadAiRuns();
+  } catch (error) {
+    updateAiMessage(pendingMessage, "assistant", error?.message || t("aiMessageFailed"));
+    await loadAiRuns();
+    console.error(error);
+  }
+}
+
+function autoGrowAiChatInput() {
+  const input = elements.aiChatInput;
+  if (!input) return;
+  input.scrollTop = input.scrollHeight;
 }
 
 function handleAiChatInputKeydown(event) {
@@ -2884,8 +3531,254 @@ function handleAiChatInputKeydown(event) {
   elements.aiChatForm.requestSubmit();
 }
 
-function markAiGeneratePlaceholder() {
-  appendAiMessage("assistant", `${t("generateHtmlNote")}: ${t("aiPanelComingSoon")}`);
+async function ensureAiConversation() {
+  const payload = buildAiContextPayload();
+  const contextKey = getAiContextKey(payload);
+  if (state.aiConversationId && state.aiConversationContextKey === contextKey) {
+    return state.aiConversationId;
+  }
+  const response = await apiFetch("/api/ai/conversations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+  state.aiConversationId = data.conversation?.id || "";
+  state.aiConversationContextKey = data.conversation?.context_key || contextKey;
+  state.aiConversationLoadedKey = state.aiConversationContextKey;
+  state.aiSuppressedContextKeys.delete(contextKey);
+  state.aiHistoryLoaded = false;
+  if (!state.aiConversationId) throw new Error(t("aiMessageFailed"));
+  return state.aiConversationId;
+}
+
+function buildAiContextPayload() {
+  const manualItemIds = [...state.manualAiContextIds];
+  const context = {
+    include_archived: false,
+    favorite: state.onlyFavorites ? true : null,
+    tags: [...state.selectedTags],
+    tag_match: state.tagMatchMode,
+    q: state.query.trim(),
+    sort: state.sortMode,
+  };
+  if (manualItemIds.length > 0) {
+    context.manual_item_ids = manualItemIds;
+  } else if (!elements.reader.hidden && state.currentReaderItemId) {
+    context.item_id = state.currentReaderItemId;
+  } else if (state.filter.type === "library") {
+    context.scope = state.filter.value === "all" ? "global" : "library";
+    context.library = state.filter.value;
+  } else if (state.filter.type === "collection") {
+    context.scope = "collection";
+    context.collection = state.filter.value;
+  } else if (state.filter.type === "tag") {
+    context.scope = "tag";
+    context.tags = [...new Set([state.filter.value, ...context.tags])];
+  } else {
+    context.scope = "global";
+    context.library = "all";
+  }
+  return {
+    source_mode: state.aiContentExpansion ? "local_plus_external" : "local_only",
+    context,
+  };
+}
+
+function getAiContextKey(payload = buildAiContextPayload()) {
+  const context = payload.context || {};
+  const sourceMode = payload.source_mode || "local_only";
+  const tags = [...new Set(context.tags || [])].map(String).sort();
+  if (context.manual_item_ids?.length) {
+    return `${sourceMode}:manual:${compactJson({ item_ids: [...context.manual_item_ids].map(String).sort() })}`;
+  }
+  if (context.item_id) {
+    return `${sourceMode}:reader:${compactJson({ item_id: String(context.item_id) })}`;
+  }
+  const scope = context.scope || "global";
+  return `${sourceMode}:${scope}:${compactJson({
+    scope,
+    q: context.q || "",
+    library: context.library || "",
+    collection: context.collection || "",
+    tags,
+    tag_match: context.tag_match || "any",
+    favorite: context.favorite ?? null,
+    include_archived: Boolean(context.include_archived),
+    sort: context.sort || "newest",
+  })}`;
+}
+
+function compactJson(value) {
+  if (Array.isArray(value)) return `[${value.map((item) => compactJson(item)).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${compactJson(value[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function resetAiConversationSession(options = {}) {
+  const clearMessages = options.clearMessages !== false;
+  state.aiConversationId = "";
+  state.aiConversationContextKey = "";
+  state.aiConversationLoadedKey = "";
+  state.aiConversationLoadingKey = "";
+  if (clearMessages) {
+    elements.aiChatLog.replaceChildren();
+    updateAiPanelConversationState();
+  }
+}
+
+async function restoreLatestAiConversationForCurrentContext() {
+  if (!state.aiPanelOpen || !state.agentUrl) return;
+  const payload = buildAiContextPayload();
+  const contextKey = getAiContextKey(payload);
+  if (state.aiSuppressedContextKeys.has(contextKey)) {
+    resetAiConversationSession();
+    state.aiConversationLoadedKey = contextKey;
+    return;
+  }
+  if (state.aiConversationLoadedKey === contextKey || state.aiConversationLoadingKey === contextKey) return;
+  resetAiConversationSession();
+  state.aiConversationLoadingKey = contextKey;
+  try {
+    const response = await apiFetch(`/api/ai/conversations/latest?context_key=${encodeURIComponent(contextKey)}`, { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    if (state.aiConversationLoadingKey !== contextKey) return;
+    if (data.conversation?.id) {
+      await loadAiConversation(data.conversation);
+    } else {
+      resetAiConversationSession();
+      state.aiConversationLoadedKey = contextKey;
+    }
+  } catch (error) {
+    console.error(error);
+    if (state.aiConversationLoadingKey === contextKey) {
+      resetAiConversationSession();
+      state.aiConversationLoadedKey = contextKey;
+    }
+  } finally {
+    if (state.aiConversationLoadingKey === contextKey) state.aiConversationLoadingKey = "";
+  }
+}
+
+async function loadAiConversation(conversation) {
+  if (!conversation?.id || !state.agentUrl) return;
+  const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversation.id)}/messages`, { cache: "no-store" });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+  state.aiConversationId = conversation.id;
+  state.aiConversationContextKey = conversation.context_key || "";
+  state.aiConversationLoadedKey = state.aiConversationContextKey || getAiContextKey();
+  if (state.aiConversationContextKey) state.aiSuppressedContextKeys.delete(state.aiConversationContextKey);
+  renderAiConversationMessages(Array.isArray(data.messages) ? data.messages : []);
+}
+
+function renderAiConversationMessages(messages) {
+  elements.aiChatLog.replaceChildren();
+  messages.forEach((message) => {
+    appendAiMessage(message.role === "user" ? "user" : "assistant", message.content || "", message.sources || []);
+  });
+  updateAiPanelConversationState();
+  scrollAiChatToBottom();
+}
+
+function startNewAiConversation() {
+  const contextKey = getAiContextKey();
+  state.aiSuppressedContextKeys.add(contextKey);
+  resetAiConversationSession();
+  state.aiConversationLoadedKey = contextKey;
+  state.aiHistoryOpen = false;
+  state.aiMoreOpen = false;
+  renderAiHistory();
+  renderAiMoreMenu();
+}
+
+function setAiContentExpansion(enabled) {
+  state.aiContentExpansion = Boolean(enabled);
+  resetAiConversationSession();
+  restoreLatestAiConversationForCurrentContext();
+}
+
+function openGenerateNoteDialog() {
+  elements.generateTheme.value = "default";
+  elements.generateTargetUse.value = "default";
+  elements.generateStylePreference.value = "default";
+  renderGenerateReferenceOptions();
+  syncGenerateTargetUseHint();
+  elements.generateNoteFeedback.textContent = state.agentUrl ? "" : t("generateNoteNeedsAgent");
+  elements.generateNoteDialog.hidden = false;
+  elements.generateTheme.focus();
+}
+
+function syncGenerateTargetUseHint() {
+  if (!elements.generateShareHint) return;
+  elements.generateShareHint.hidden = elements.generateTargetUse.value !== "share";
+}
+
+function renderGenerateReferenceOptions() {
+  if (!elements.generateReferenceNote) return;
+  elements.generateReferenceNote.replaceChildren();
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = t("generateReferenceDefault");
+  elements.generateReferenceNote.append(defaultOption);
+  state.items
+    .filter((item) => item?.id && !isArchived(item))
+    .slice()
+    .sort((a, b) => getItemTitle(a).localeCompare(getItemTitle(b)))
+    .forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item.id;
+      option.textContent = getItemTitle(item);
+      elements.generateReferenceNote.append(option);
+    });
+  elements.generateReferenceNote.value = "";
+}
+
+function closeGenerateNoteDialog() {
+  elements.generateNoteDialog.hidden = true;
+  elements.generateNoteFeedback.textContent = "";
+  elements.generateNoteSubmit.disabled = false;
+}
+
+async function submitGenerateNoteDialog(event) {
+  event.preventDefault();
+  if (!state.agentUrl) {
+    elements.generateNoteFeedback.textContent = t("generateNoteNeedsAgent");
+    return;
+  }
+  elements.generateNoteSubmit.disabled = true;
+  elements.generateNoteFeedback.textContent = t("generateNoteRunning");
+  try {
+    const conversationId = await ensureAiConversation();
+    const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversationId)}/generate-note/jobs`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        theme: elements.generateTheme.value,
+        target_use: elements.generateTargetUse.value,
+        style_preference: elements.generateStylePreference.value,
+        reference_style: elements.generateReferenceNote.value ? "note" : "default",
+        reference_note_id: elements.generateReferenceNote.value,
+      }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    trackSubmittedAiJob(data.job_id || "");
+    await loadAiJobs();
+    startAiJobPolling();
+    elements.generateNoteFeedback.textContent = t("aiJobQueued", { jobId: data.job_id || "" });
+    appendAiMessage("assistant", t("aiJobQueued", { jobId: data.job_id || "" }));
+  } catch (error) {
+    await loadAiRuns();
+    elements.generateNoteFeedback.textContent = error?.message || t("generateNoteFailed");
+    console.error(error);
+  } finally {
+    elements.generateNoteSubmit.disabled = false;
+  }
 }
 
 function toggleMultiFilterPopover() {
@@ -3030,6 +3923,7 @@ function clearMultiFilters(shouldRender = true) {
 
 function startAiPanelResize(event) {
   event.preventDefault();
+  if (event.pointerId !== undefined) event.currentTarget?.setPointerCapture?.(event.pointerId);
   elements.body.classList.add("ai-panel-resizing");
   const panelBox = elements.aiPanel.getBoundingClientRect();
   const pointerOffset = event.clientX - panelBox.left;
@@ -3043,9 +3937,43 @@ function startAiPanelResize(event) {
     setStored("ai-panel-width", String(state.aiPanelWidth));
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("pointerup", onUp);
+    window.removeEventListener("pointercancel", onUp);
+    window.removeEventListener("blur", onUp);
+    event.currentTarget?.removeEventListener?.("lostpointercapture", onUp);
   };
   window.addEventListener("pointermove", onMove);
   window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
+  window.addEventListener("blur", onUp);
+  event.currentTarget?.addEventListener?.("lostpointercapture", onUp, { once: true });
+}
+
+function startAiComposerResize(event) {
+  event.preventDefault();
+  if (event.pointerId !== undefined) event.currentTarget?.setPointerCapture?.(event.pointerId);
+  elements.body.classList.add("ai-composer-resizing");
+  const startY = event.clientY;
+  const startHeight = state.aiComposerHeight;
+  const moveEventName = event.type === "mousedown" ? "mousemove" : "pointermove";
+  const upEventName = event.type === "mousedown" ? "mouseup" : "pointerup";
+  const onMove = (moveEvent) => {
+    state.aiComposerHeight = clampAiComposerHeight(startHeight + startY - moveEvent.clientY);
+    applyAiComposerHeight();
+  };
+  const onUp = () => {
+    elements.body.classList.remove("ai-composer-resizing");
+    setStored("ai-composer-height", String(state.aiComposerHeight));
+    window.removeEventListener(moveEventName, onMove);
+    window.removeEventListener(upEventName, onUp);
+    if (event.type !== "mousedown") window.removeEventListener("pointercancel", onUp);
+    window.removeEventListener("blur", onUp);
+    event.currentTarget?.removeEventListener?.("lostpointercapture", onUp);
+  };
+  window.addEventListener(moveEventName, onMove);
+  window.addEventListener(upEventName, onUp);
+  if (event.type !== "mousedown") window.addEventListener("pointercancel", onUp);
+  window.addEventListener("blur", onUp);
+  event.currentTarget?.addEventListener?.("lostpointercapture", onUp, { once: true });
 }
 
 function toggleFavoriteFilter() {
@@ -3302,6 +4230,599 @@ function renderAiConfig() {
   elements.apiKey.value = "";
 }
 
+function maybeRefreshAiRuns() {
+  if (state.activeSettingsTab !== "ai") return;
+  loadAiRuns();
+}
+
+function maybeRefreshAiConversations() {
+  if (state.activeSettingsTab !== "ai-conversations") return;
+  loadAiConversationManagement();
+}
+
+async function loadAiJobs() {
+  if (!elements.aiJobList || !state.agentUrl) {
+    state.aiJobs = [];
+    renderAiJobs();
+    return;
+  }
+  try {
+    const response = await apiFetch("/api/ai/jobs?limit=8", { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    const previous = new Set(state.aiJobs.map((job) => `${job.job_id}:${job.status}`));
+    const wasLoaded = state.aiJobsLoaded;
+    state.aiJobs = Array.isArray(data.jobs) ? data.jobs : [];
+    renderAiJobs();
+    if (!wasLoaded) {
+      state.aiJobs.filter((job) => job.status === "completed").forEach((job) => state.aiKnownCompletedJobIds.add(job.job_id));
+    }
+    const completedNow = state.aiJobs.filter((job) => {
+      if (job.status !== "completed" || state.aiKnownCompletedJobIds.has(job.job_id)) return false;
+      return wasLoaded || state.aiSubmittedJobIds.has(job.job_id);
+    });
+    const failedNow = wasLoaded ? state.aiJobs.filter((job) => job.status === "failed" && !previous.has(`${job.job_id}:failed`)) : [];
+    state.aiJobsLoaded = true;
+    completedNow.forEach((job) => state.aiKnownCompletedJobIds.add(job.job_id));
+    completedNow.forEach((job) => state.aiSubmittedJobIds.delete(job.job_id));
+    if (completedNow.length > 0) {
+      await refreshManifestAndWorkspace();
+      await loadAiRuns();
+      appendAiMessage("assistant", t("aiJobCompleted"));
+    }
+    failedNow.forEach((job) => appendAiMessage("assistant", t("aiJobFailed", { message: job.error?.message || job.message || job.job_id })));
+    if (hasActiveAiJobs()) startAiJobPolling();
+    else stopAiJobPolling();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function toggleAiJobs() {
+  state.aiJobsOpen = !state.aiJobsOpen;
+  state.aiHistoryOpen = false;
+  state.aiMoreOpen = false;
+  renderAiHistory();
+  renderAiJobs();
+  renderAiMoreMenu();
+  if (state.aiJobsOpen) loadAiJobs();
+}
+
+function toggleAiHistory() {
+  state.aiHistoryOpen = !state.aiHistoryOpen;
+  state.aiJobsOpen = false;
+  state.aiMoreOpen = false;
+  renderAiJobs();
+  renderAiHistory();
+  renderAiMoreMenu();
+  if (state.aiHistoryOpen) loadAiHistory();
+}
+
+function toggleAiMoreMenu(event) {
+  event?.stopPropagation();
+  const shouldOpen = !state.aiMoreOpen || state.aiJobsOpen || state.aiHistoryOpen;
+  state.aiJobsOpen = false;
+  state.aiHistoryOpen = false;
+  state.aiMoreOpen = shouldOpen;
+  renderAiJobs();
+  renderAiHistory();
+  renderAiMoreMenu();
+}
+
+function closeAiMoreMenu() {
+  if (!state.aiMoreOpen) return;
+  state.aiMoreOpen = false;
+  renderAiMoreMenu();
+}
+
+function closeAiHistoryPanel() {
+  if (!state.aiHistoryOpen) return;
+  state.aiHistoryOpen = false;
+  renderAiHistory();
+  renderAiMoreMenu();
+}
+
+function closeAiJobsPanel() {
+  if (!state.aiJobsOpen) return;
+  state.aiJobsOpen = false;
+  renderAiJobs();
+  renderAiMoreMenu();
+}
+
+function handleAiMoreOutsideClick(event) {
+  if (!state.aiMoreOpen) return;
+  const target = event.target;
+  if (elements.aiMoreToggle?.contains(target) || elements.aiMoreMenu?.contains(target)) return;
+  closeAiMoreMenu();
+}
+
+function renderAiMoreMenu() {
+  if (!elements.aiMoreToggle || !elements.aiMoreMenu) return;
+  const activeCount = activeAiJobCount();
+  elements.aiMoreToggle.innerHTML = `${moreIcon()}${activeCount > 0 ? `<span>${activeCount}</span>` : ""}`;
+  elements.aiMoreToggle.classList.toggle("active", state.aiMoreOpen);
+  elements.aiMoreMenu.hidden = !state.aiMoreOpen;
+  if (elements.aiHistoryToggle) {
+    elements.aiHistoryToggle.innerHTML = `${historyIcon()}<span>${escapeHtml(t("aiConversationHistory"))}</span>`;
+    elements.aiHistoryToggle.classList.toggle("active", state.aiHistoryOpen);
+  }
+  if (elements.aiNewChat) {
+    elements.aiNewChat.innerHTML = `${plusIcon()}<span>${escapeHtml(t("aiNewConversation"))}</span>`;
+  }
+}
+
+async function loadAiHistory() {
+  if (!elements.aiHistoryList || !state.agentUrl) {
+    state.aiHistory = [];
+    renderAiHistory();
+    return;
+  }
+  try {
+    const contextKey = getAiContextKey();
+    const response = await apiFetch(`/api/ai/conversations?limit=20&context_key=${encodeURIComponent(contextKey)}`, { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    state.aiHistory = Array.isArray(data.conversations) ? data.conversations : [];
+    state.aiHistoryLoaded = true;
+    renderAiHistory();
+  } catch (error) {
+    console.error(error);
+    state.aiHistoryLoaded = true;
+    state.aiHistory = null;
+    renderAiHistory();
+  }
+}
+
+async function loadAiConversationManagement() {
+  if (!elements.aiConversationList) return;
+  if (elements.aiConversationRefresh) elements.aiConversationRefresh.disabled = true;
+  if (!state.agentUrl) {
+    state.aiConversations = [];
+    renderAiConversationManagement();
+    elements.aiConversationFeedback.textContent = t("aiConversationHistoryUnavailable");
+    if (elements.aiConversationRefresh) elements.aiConversationRefresh.disabled = false;
+    return;
+  }
+  try {
+    const response = await apiFetch("/api/ai/conversations?limit=100", { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    state.aiConversations = Array.isArray(data.conversations) ? data.conversations : [];
+    renderAiConversationManagement();
+    elements.aiConversationFeedback.textContent = "";
+  } catch (error) {
+    state.aiConversations = [];
+    renderAiConversationManagement();
+    elements.aiConversationFeedback.textContent = t("aiConversationHistoryFailed");
+    console.error(error);
+  } finally {
+    if (elements.aiConversationRefresh) elements.aiConversationRefresh.disabled = false;
+  }
+}
+
+function renderAiConversationManagement() {
+  if (!elements.aiConversationList) return;
+  if (state.aiConversations.length === 0) {
+    elements.aiConversationList.innerHTML = `<div class="empty-state">${escapeHtml(t("aiConversationHistoryEmpty"))}</div>`;
+    return;
+  }
+  elements.aiConversationList.replaceChildren(...state.aiConversations.map(renderAiConversationManagementRow));
+}
+
+function renderAiConversationManagementRow(conversation) {
+  const row = document.createElement("div");
+  row.className = "management-row ai-conversation-row";
+  const title = conversation.title || t("aiConversation");
+  const count = Number(conversation.message_count || 0);
+  const contextLabel = getConversationContextLabel(conversation);
+  row.innerHTML = `
+    <div class="management-name">
+      <strong>${escapeHtml(title)}</strong>
+      <span class="ai-run-meta">
+        <em>${escapeHtml(contextLabel)}</em>
+        <span>${escapeHtml(formatDateTime(conversation.updated_at || conversation.created_at))}</span>
+        <span>${escapeHtml(String(count))}</span>
+      </span>
+    </div>
+    <div class="ai-run-actions-inline">
+      <button type="button" class="ai-run-icon-button" data-ai-conversation-delete="${escapeHtml(conversation.id || "")}" aria-label="${escapeHtml(t("deleteConversation"))}" title="${escapeHtml(t("deleteConversation"))}">${trashIcon()}</button>
+      <button type="button" class="ai-run-icon-button primary-inline-button" data-ai-conversation-open="${escapeHtml(conversation.id || "")}" aria-label="${escapeHtml(t("openConversationContext"))}" title="${escapeHtml(t("openConversationContext"))}">${openContextIcon()}</button>
+    </div>
+  `;
+  row.querySelector("[data-ai-conversation-open]")?.addEventListener("click", () => openAiConversationContext(conversation));
+  row.querySelector("[data-ai-conversation-delete]")?.addEventListener("click", () => deleteAiConversation(conversation.id || ""));
+  return row;
+}
+
+function getConversationContextLabel(conversation) {
+  const snapshot = conversation.context_snapshot || {};
+  const scope = String(snapshot.scope || "");
+  const items = Array.isArray(snapshot.items) ? snapshot.items : [];
+  const requested = snapshot.requested || {};
+  if (scope === "reader" && items[0]?.title) return t("aiContextReader", { title: items[0].title });
+  if (scope === "manual") return t("aiContextManualCount", { count: items.length || (snapshot.item_ids || []).length || 0 });
+  if (requested.collection) return t("aiContextCollection", { name: requested.collection });
+  if (Array.isArray(requested.tags) && requested.tags.length > 0) return t("aiContextTags", { mode: t(requested.tag_match === "all" ? "tagMatchModeAllLabel" : "tagMatchModeAnyLabel"), names: requested.tags.map((tag) => `#${tag}`).join(", ") });
+  if (requested.q) return t("aiContextSearch", { query: requested.q });
+  if (requested.library && requested.library !== "all") return t("aiContextLibrary", { name: requested.library });
+  return t("aiContextGlobal");
+}
+
+function openAiConversationContext(conversation) {
+  const snapshot = conversation.context_snapshot || {};
+  const requested = snapshot.requested || {};
+  const itemIds = Array.isArray(snapshot.item_ids) ? snapshot.item_ids.map(String).filter(Boolean) : [];
+  closeSettings();
+  state.manualAiContextIds.clear();
+  if (snapshot.scope === "reader" && itemIds[0]) {
+    const item = getItemById(itemIds[0]);
+    if (item) openReader(item);
+  } else if (snapshot.scope === "manual" && itemIds.length > 0) {
+    itemIds.forEach((id) => {
+      if (getItemById(id)) state.manualAiContextIds.add(id);
+    });
+    returnToWorkspace();
+    renderGrid();
+  } else if (requested.collection) {
+    selectCollection(String(requested.collection));
+  } else if (Array.isArray(requested.tags) && requested.tags.length > 0) {
+    selectTag(String(requested.tags[0]));
+    state.selectedTags = new Set(requested.tags.map(String));
+    state.tagMatchMode = requested.tag_match === "all" ? "all" : "any";
+    renderApp();
+  } else {
+    selectLibraryFilter(String(requested.library || "all"));
+  }
+  if (!state.aiPanelOpen) openAiPanel();
+  loadAiConversation(conversation).catch((error) => console.error(error));
+}
+
+async function deleteAiConversation(conversationId) {
+  if (!conversationId || !state.agentUrl) return;
+  if (!window.confirm(t("deleteConversationConfirm"))) return;
+  try {
+    const response = await apiFetch(`/api/ai/conversations/${encodeURIComponent(conversationId)}`, { method: "DELETE" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    elements.aiConversationFeedback.textContent = t("aiConversationDeleted");
+    if (state.aiConversationId === conversationId) resetAiConversationSession();
+    await loadAiConversationManagement();
+  } catch (error) {
+    elements.aiConversationFeedback.textContent = error?.message || t("aiConversationHistoryFailed");
+    console.error(error);
+  }
+}
+
+function renderAiHistory() {
+  if (!elements.aiHistoryList) return;
+  elements.aiHistoryList.hidden = !state.aiHistoryOpen;
+  if (!state.aiHistoryOpen) return;
+  const header = renderAiPopoverHeader(t("aiConversationHistory"), closeAiHistoryPanel);
+  if (state.aiHistory === null) {
+    elements.aiHistoryList.replaceChildren(header, emptyState(t("aiConversationHistoryFailed")));
+    return;
+  }
+  if (!state.aiHistoryLoaded) {
+    elements.aiHistoryList.replaceChildren(header, emptyState(t("loading")));
+    return;
+  }
+  if (state.aiHistory.length === 0) {
+    elements.aiHistoryList.replaceChildren(header, emptyState(t("aiConversationHistoryEmpty")));
+    return;
+  }
+  elements.aiHistoryList.replaceChildren(header, ...state.aiHistory.map(renderAiHistoryRow));
+}
+
+function renderAiHistoryRow(conversation) {
+  const row = document.createElement("button");
+  row.type = "button";
+  row.className = "ai-history-row";
+  row.classList.toggle("active", conversation.id === state.aiConversationId);
+  row.innerHTML = `
+    <strong>${escapeHtml(conversation.title || t("aiConversation"))}</strong>
+    <span>${escapeHtml(formatDateTime(conversation.updated_at || conversation.created_at))} · ${escapeHtml(String(conversation.message_count || 0))}</span>
+  `;
+  row.addEventListener("click", async () => {
+    try {
+      await loadAiConversation(conversation);
+      state.aiHistoryOpen = false;
+      renderAiHistory();
+    } catch (error) {
+      console.error(error);
+    }
+  });
+  return row;
+}
+
+function renderAiJobs() {
+  if (!elements.aiJobList || !elements.aiJobToggle) return;
+  const activeCount = activeAiJobCount();
+  elements.aiJobToggle.innerHTML = `${queueIcon()}<span>${escapeHtml(t("aiJobQueue"))}</span>${activeCount > 0 ? `<em>${activeCount}</em>` : ""}`;
+  elements.aiJobToggle.classList.toggle("active", state.aiJobsOpen || activeCount > 0);
+  renderAiMoreMenu();
+  elements.aiJobList.hidden = !state.aiJobsOpen;
+  if (!state.aiJobsOpen) return;
+  const header = renderAiPopoverHeader(t("aiJobQueue"), closeAiJobsPanel);
+  if (state.aiJobs.length === 0) {
+    elements.aiJobList.replaceChildren(header, emptyState(t("aiJobQueueEmpty")));
+    return;
+  }
+  elements.aiJobList.replaceChildren(header, ...state.aiJobs.map(renderAiJobRow));
+}
+
+function renderAiPopoverHeader(label, onClose) {
+  const header = document.createElement("div");
+  header.className = "ai-popover-head";
+  const title = document.createElement("span");
+  title.textContent = label;
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "ai-popover-close";
+  close.textContent = "×";
+  close.setAttribute("aria-label", t("close"));
+  close.setAttribute("title", t("close"));
+  close.addEventListener("click", onClose);
+  header.append(title, close);
+  return header;
+}
+
+function emptyState(message) {
+  const node = document.createElement("div");
+  node.className = "empty-state";
+  node.textContent = message;
+  return node;
+}
+
+function renderAiJobRow(job) {
+  const row = document.createElement("div");
+  row.className = "ai-job-row";
+  const statusClass = `status-${String(job.status || "pending").toLowerCase().replace(/[^a-z0-9-]/g, "") || "pending"}`;
+  const label = job.label || getAiRunKindLabel(job);
+  const itemMeta = job.item_id ? `<span>${escapeHtml(t("aiRunItem", { id: job.item_id }))}</span>` : "";
+  const message = job.message ? `<span>${escapeHtml(job.message)}</span>` : "";
+  row.innerHTML = `
+    <div>
+      <strong>${escapeHtml(label)}</strong>
+      <span class="ai-run-meta">
+        <em class="ai-run-status ${statusClass}">${escapeHtml(getAiRunStatusLabel(job.status))}</em>
+        ${itemMeta}
+        ${message}
+      </span>
+    </div>
+    ${job.cancellable ? `<button type="button" class="icon-button" data-ai-job-cancel="${escapeHtml(job.job_id)}" aria-label="${escapeHtml(t("cancel"))}" title="${escapeHtml(t("cancel"))}">×</button>` : ""}
+  `;
+  row.querySelector("[data-ai-job-cancel]")?.addEventListener("click", () => cancelAiJob(job.job_id));
+  return row;
+}
+
+async function cancelAiJob(jobId) {
+  if (!jobId || !state.agentUrl) return;
+  try {
+    const response = await apiFetch(`/api/ai/jobs/${encodeURIComponent(jobId)}`, { method: "DELETE" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    await loadAiJobs();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function hasActiveAiJobs() {
+  return activeAiJobCount() > 0;
+}
+
+function activeAiJobCount() {
+  return state.aiJobs.filter((job) => ["pending", "running"].includes(job.status)).length;
+}
+
+function startAiJobPolling() {
+  if (state.aiJobsPollTimer) return;
+  state.aiJobsPollTimer = window.setInterval(loadAiJobs, 1600);
+}
+
+function trackSubmittedAiJob(jobId) {
+  if (!jobId) return;
+  state.aiSubmittedJobIds.add(jobId);
+}
+
+function stopAiJobPolling() {
+  if (!state.aiJobsPollTimer) return;
+  window.clearInterval(state.aiJobsPollTimer);
+  state.aiJobsPollTimer = 0;
+}
+
+async function loadAiRuns() {
+  if (!elements.aiRunList) return;
+  if (elements.aiRunRefresh) elements.aiRunRefresh.disabled = true;
+  if (!state.agentUrl) {
+    state.aiRuns = [];
+    renderAiRuns();
+    elements.aiRunFeedback.textContent = t("aiRunHistoryUnavailable");
+    if (elements.aiRunRefresh) elements.aiRunRefresh.disabled = false;
+    return;
+  }
+  try {
+    const response = await apiFetch("/api/ai/runs?limit=20", { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    state.aiRuns = Array.isArray(data.runs) ? data.runs : [];
+    renderAiRuns();
+    elements.aiRunFeedback.textContent = "";
+  } catch (error) {
+    state.aiRuns = [];
+    renderAiRuns();
+    elements.aiRunFeedback.textContent = t("aiRunHistoryFailed");
+    console.error(error);
+  } finally {
+    if (elements.aiRunRefresh) elements.aiRunRefresh.disabled = false;
+  }
+}
+
+function renderAiRuns() {
+  if (!elements.aiRunList) return;
+  if (state.aiRuns.length === 0) {
+    elements.aiRunList.innerHTML = `<div class="empty-state">${escapeHtml(t("aiRunHistoryEmpty"))}</div>`;
+    return;
+  }
+  elements.aiRunList.replaceChildren(...state.aiRuns.map(renderAiRunRow));
+}
+
+function renderAiRunRow(run) {
+  const row = document.createElement("div");
+  row.className = "management-row ai-run-row";
+  const runId = String(run.id || "");
+  const selected = runId && state.selectedAiRunId === runId;
+  const details = selected ? state.aiRunDetails[runId] : null;
+  const kindLabel = getAiRunKindLabel(run);
+  const statusLabel = getAiRunStatusLabel(run.status);
+  const statusClass = `status-${String(run.status || "pending").toLowerCase().replace(/[^a-z0-9-]/g, "") || "pending"}`;
+  const nodeCount = Array.isArray(run.node_trace) ? run.node_trace.length : 0;
+  const itemMeta = run.item_id ? `<span>${escapeHtml(t("aiRunItem", { id: run.item_id }))}</span>` : "";
+  const duration = formatDuration(run.duration_ms);
+  const durationMeta = duration ? `<span>${escapeHtml(t("aiRunDuration", { duration }))}</span>` : "";
+  const completedMeta = run.completed_at ? `<span>${escapeHtml(t("aiRunCompletedAt", { date: formatDateTime(run.completed_at) }))}</span>` : "";
+  const errorMessage = run.error?.message ? `<span class="ai-run-error">${escapeHtml(t("aiRunError", { message: run.error.message }))}</span>` : "";
+  const capabilityMeta = [
+    run.retryable ? `<span class="ai-run-capability">${escapeHtml(t("aiRunRetryable"))}</span>` : "",
+    run.cancellable ? "" : `<span class="ai-run-capability muted">${escapeHtml(t("aiRunNotCancellable"))}</span>`,
+  ].join("");
+  row.innerHTML = `
+    <div class="management-name">
+      <strong>${escapeHtml(kindLabel)}</strong>
+      <span class="ai-run-meta">
+        <em class="ai-run-status ${statusClass}">${escapeHtml(statusLabel)}</em>
+        ${itemMeta}
+        ${durationMeta}
+        ${completedMeta}
+        <span>${escapeHtml(t("aiRunNodeCount", { count: nodeCount }))}</span>
+        ${errorMessage}
+        ${capabilityMeta}
+      </span>
+    </div>
+    <div class="ai-run-actions-inline">
+      <button type="button" class="secondary-button" data-ai-run-details="${escapeHtml(runId)}">${escapeHtml(t(selected ? "aiRunHideDetails" : "aiRunDetails"))}</button>
+      <code>${escapeHtml(runId.slice(0, 12))}</code>
+    </div>
+    ${selected ? renderAiRunDetails(details) : ""}
+  `;
+  row.querySelector("[data-ai-run-details]")?.addEventListener("click", () => toggleAiRunDetails(runId));
+  return row;
+}
+
+function renderAiRunDetails(run) {
+  if (!run) {
+    return `<div class="ai-run-detail-panel">${escapeHtml(t("aiRunDetailsLoading"))}</div>`;
+  }
+  if (run.error_loading) {
+    return `<div class="ai-run-detail-panel ai-run-error">${escapeHtml(t("aiRunDetailsFailed"))}</div>`;
+  }
+  const specItems = renderKeyValueList(run.spec || {});
+  const usageItems = renderAiRunUsage(run.usage || {});
+  const budgetItems = renderKeyValueList(run.budget || {});
+  const nodeItems = Array.isArray(run.node_trace) && run.node_trace.length > 0
+    ? `<ol>${run.node_trace.map((node) => `<li>${escapeHtml(node.node || node.name || t("aiRunNodes"))} <em>${escapeHtml(node.status || "")}</em></li>`).join("")}</ol>`
+    : `<p>${escapeHtml(t("aiRunNodeCount", { count: 0 }))}</p>`;
+  const errorMessage = run.error?.message ? `<p class="ai-run-error">${escapeHtml(t("aiRunError", { message: run.error.message }))}</p>` : "";
+  return `
+    <div class="ai-run-detail-panel">
+      <section>
+        <h4>${escapeHtml(t("aiRunSpec"))}</h4>
+        ${specItems || `<p>${escapeHtml(t("aiRunNoDetailData"))}</p>`}
+      </section>
+      <section>
+        <h4>${escapeHtml(t("aiRunUsage"))}</h4>
+        ${usageItems || `<p>${escapeHtml(t("aiRunNoDetailData"))}</p>`}
+      </section>
+      <section>
+        <h4>${escapeHtml(t("aiRunBudget"))}</h4>
+        ${budgetItems || `<p>${escapeHtml(t("aiRunNoDetailData"))}</p>`}
+      </section>
+      <section>
+        <h4>${escapeHtml(t("aiRunNodes"))}</h4>
+        ${nodeItems}
+      </section>
+      ${errorMessage}
+    </div>
+  `;
+}
+
+function renderKeyValueList(values) {
+  const entries = Object.entries(values || {}).filter(([, value]) => value !== "" && value !== null && value !== undefined);
+  if (entries.length === 0) return "";
+  return `<dl>${entries.map(([key, value]) => `<div><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(formatAiRunValue(value))}</dd></div>`).join("")}</dl>`;
+}
+
+function renderAiRunUsage(usage) {
+  const rows = [];
+  if (usage.input_tokens) rows.push(t("aiRunInputTokens", { count: usage.input_tokens }));
+  if (usage.output_tokens) rows.push(t("aiRunOutputTokens", { count: usage.output_tokens }));
+  if (usage.total_tokens) rows.push(t("aiRunTotalTokens", { count: usage.total_tokens }));
+  return rows.length > 0 ? `<ul>${rows.map((row) => `<li>${escapeHtml(row)}</li>`).join("")}</ul>` : "";
+}
+
+function formatAiRunValue(value) {
+  if (Array.isArray(value)) return value.join(", ");
+  if (typeof value === "object" && value !== null) return JSON.stringify(value);
+  return String(value);
+}
+
+async function toggleAiRunDetails(runId) {
+  if (!runId) return;
+  if (state.selectedAiRunId === runId) {
+    state.selectedAiRunId = "";
+    renderAiRuns();
+    return;
+  }
+  state.selectedAiRunId = runId;
+  renderAiRuns();
+  if (!state.aiRunDetails[runId]) {
+    await loadAiRunDetails(runId);
+  }
+}
+
+async function loadAiRunDetails(runId) {
+  if (!state.agentUrl) return;
+  try {
+    const response = await apiFetch(`/api/ai/runs/${encodeURIComponent(runId)}`, { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
+    state.aiRunDetails[runId] = data.run || {};
+  } catch (error) {
+    state.aiRunDetails[runId] = { error_loading: true };
+    console.error(error);
+  }
+  renderAiRuns();
+}
+
+function getAiRunKindLabel(run) {
+  const kind = String(run?.kind || "");
+  if (kind === "html_generation") return t("aiRunHtmlGeneration");
+  if (kind === "material_html_generation") return t("aiRunMaterialGeneration");
+  if (kind === "knowledge_qa") return t("aiRunKnowledgeQa");
+  return t("aiRunUnknownKind");
+}
+
+function getAiRunStatusLabel(status) {
+  const key = {
+    completed: "aiRunStatusCompleted",
+    failed: "aiRunStatusFailed",
+    running: "aiRunStatusRunning",
+    pending: "aiRunStatusPending",
+  }[String(status || "").toLowerCase()];
+  return key ? t(key) : String(status || t("aiRunStatusPending"));
+}
+
+function syncAiConfigFromServer(provider) {
+  if (!provider) return;
+  state.aiConfig = {
+    ...state.aiConfig,
+    provider: provider.provider || state.aiConfig?.provider || "openai-compatible",
+    currentModel: provider.model || state.aiConfig?.currentModel || "gpt-5.5",
+    apiBaseUrl: provider.base_url || state.aiConfig?.apiBaseUrl || "",
+  };
+  setStored("ai-config", JSON.stringify(state.aiConfig));
+}
+
 async function saveAiConfig(event) {
   event.preventDefault();
   const apiKey = elements.apiKey.value.trim();
@@ -3323,8 +4844,28 @@ async function saveAiConfig(event) {
     return;
   }
 
-  elements.settingsFeedback.textContent = t("settingsSavedStatic");
-  elements.apiKey.value = "";
+  try {
+    const response = await apiFetch("/api/ai/providers", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        provider: config.provider,
+        base_url: config.apiBaseUrl,
+        model: config.currentModel || "gpt-5.5",
+        enabled: true,
+      }),
+    });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    const data = await response.json();
+    syncAiConfigFromServer(data.provider);
+    await refreshAiStatus();
+    elements.settingsFeedback.textContent = t("settingsSavedAgent");
+  } catch (error) {
+    elements.settingsFeedback.textContent = t("settingsAgentFailed");
+    console.error(error);
+  } finally {
+    elements.apiKey.value = "";
+  }
 }
 
 function renderDataConfig() {
@@ -3481,8 +5022,17 @@ function dateStamp() {
   return new Date().toISOString().replace(/[:.]/g, "-");
 }
 
-function testProviderConfig() {
-  elements.settingsFeedback.textContent = t("settingsNeedsAgent");
+async function testProviderConfig() {
+  try {
+    const response = await apiFetch("/api/ai/test-provider", { method: "POST" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) throw new Error(data.message || data.detail || `Agent returned ${response.status}`);
+    elements.settingsFeedback.textContent = t("settingsSavedAgent");
+    await refreshAiStatus();
+  } catch (error) {
+    elements.settingsFeedback.textContent = t("settingsAgentFailed");
+    console.error(error);
+  }
 }
 
 function openLuckyItem() {
@@ -3527,6 +5077,54 @@ function contextToggleIcon(active) {
   `;
 }
 
+function queueIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 6h16"></path>
+      <path d="M4 12h16"></path>
+      <path d="M4 18h10"></path>
+    </svg>
+  `;
+}
+
+function moreIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="5" cy="12" r="1.5"></circle>
+      <circle cx="12" cy="12" r="1.5"></circle>
+      <circle cx="19" cy="12" r="1.5"></circle>
+    </svg>
+  `;
+}
+
+function plusIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 5v14"></path>
+      <path d="M5 12h14"></path>
+    </svg>
+  `;
+}
+
+function historyIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+      <path d="M3 4v5h5"></path>
+      <path d="M12 7v5l3 2"></path>
+    </svg>
+  `;
+}
+
+function enterArrowIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7 7v4a3 3 0 0 0 3 3h9"></path>
+      <path d="m15 10 4 4-4 4"></path>
+    </svg>
+  `;
+}
+
 function aiSparkIcon() {
   return `
     <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -3564,6 +5162,16 @@ function shareIcon() {
       <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"></path>
       <path d="m16 6-4-4-4 4"></path>
       <path d="M12 2v14"></path>
+    </svg>
+  `;
+}
+
+function openContextIcon() {
+  return `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7 17 17 7"></path>
+      <path d="M9 7h8v8"></path>
+      <path d="M5 5v14h14"></path>
     </svg>
   `;
 }
@@ -3624,7 +5232,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.8.4-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.0-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });
@@ -3720,6 +5328,13 @@ function formatDateTime(value) {
   return formatter.format(date);
 }
 
+function formatDuration(value) {
+  const milliseconds = Number(value || 0);
+  if (!Number.isFinite(milliseconds) || milliseconds <= 0) return "";
+  if (milliseconds < 1000) return `${Math.round(milliseconds)}ms`;
+  return `${(milliseconds / 1000).toFixed(milliseconds < 10_000 ? 1 : 0)}s`;
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -3742,9 +5357,18 @@ elements.navSectionToggles.forEach((button) => {
 elements.aiPanelOpen.addEventListener("click", toggleAiPanel);
 elements.aiPanelClose.addEventListener("click", closeAiPanel);
 elements.aiPanelResize.addEventListener("pointerdown", startAiPanelResize);
+elements.aiComposerResize?.addEventListener("pointerdown", startAiComposerResize);
+elements.aiComposerResize?.addEventListener("mousedown", startAiComposerResize);
 elements.aiChatForm.addEventListener("submit", submitAiMessage);
 elements.aiChatInput.addEventListener("keydown", handleAiChatInputKeydown);
-elements.aiGenerateNote.addEventListener("click", markAiGeneratePlaceholder);
+elements.aiChatInput.addEventListener("input", autoGrowAiChatInput);
+elements.aiContentExpansion.addEventListener("change", (event) => setAiContentExpansion(event.target.checked));
+elements.aiGenerateNote.addEventListener("click", openGenerateNoteDialog);
+elements.aiNewChat?.addEventListener("click", startNewAiConversation);
+elements.aiHistoryToggle?.addEventListener("click", toggleAiHistory);
+elements.aiJobToggle?.addEventListener("click", toggleAiJobs);
+elements.aiMoreToggle?.addEventListener("click", toggleAiMoreMenu);
+document.addEventListener("click", handleAiMoreOutsideClick);
 elements.luckyButton.addEventListener("click", openLuckyItem);
 elements.multiFilterToggle.addEventListener("click", toggleMultiFilterPopover);
 elements.tagMatchButtons.forEach((button) => {
@@ -3797,6 +5421,8 @@ elements.testWebdav.addEventListener("click", testWebdavSettings);
 elements.exportManifest.addEventListener("click", exportManifestData);
 elements.exportPreferences.addEventListener("click", exportPreferencesData);
 elements.testProvider.addEventListener("click", testProviderConfig);
+elements.aiRunRefresh?.addEventListener("click", loadAiRuns);
+elements.aiConversationRefresh?.addEventListener("click", loadAiConversationManagement);
 elements.newItemForm.addEventListener("submit", submitNewItem);
 elements.readerClose.addEventListener("click", closeReader);
 elements.readerEdit.addEventListener("click", () => {
@@ -3824,6 +5450,13 @@ elements.shareCancelIcon.addEventListener("click", closeShareDialog);
 elements.shareDialog.addEventListener("click", (event) => {
   if (event.target === elements.shareDialog) closeShareDialog();
 });
+elements.generateNoteForm.addEventListener("submit", submitGenerateNoteDialog);
+elements.generateTargetUse.addEventListener("change", syncGenerateTargetUseHint);
+elements.generateNoteCancel.addEventListener("click", closeGenerateNoteDialog);
+elements.generateNoteCancelIcon.addEventListener("click", closeGenerateNoteDialog);
+elements.generateNoteDialog.addEventListener("click", (event) => {
+  if (event.target === elements.generateNoteDialog) closeGenerateNoteDialog();
+});
 elements.metadataForm.addEventListener("submit", saveMetadataEditor);
 elements.metadataCancel.addEventListener("click", closeMetadataEditor);
 elements.metadataCancelIcon.addEventListener("click", closeMetadataEditor);
@@ -3837,6 +5470,7 @@ elements.importEntries.forEach((button) => {
   button.addEventListener("click", openHtmlImportPicker);
 });
 elements.htmlImportFile.addEventListener("change", (event) => importHtmlFile(event.target.files?.[0]));
+elements.materialGenerateFile.addEventListener("change", (event) => generateNoteFromMaterialFile(event.target.files?.[0]));
 window.addEventListener("hashchange", openFromHash);
 window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener("change", () => {
   if (state.themeMode === "system") applyTheme();

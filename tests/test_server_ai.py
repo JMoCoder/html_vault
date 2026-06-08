@@ -1,6 +1,7 @@
 import json
 import time
 import urllib.error
+import urllib.parse
 from pathlib import Path
 
 from html_lore.builder import build_site
@@ -412,6 +413,51 @@ def test_ai_conversation_crud_persists_context_snapshot(tmp_path: Path) -> None:
         server.close()
 
 
+def test_ai_conversation_latest_returns_recent_context_match(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "a.html", title="Alpha MCP", collection="AI", tags=["MCP"])
+    make_note(content_dir, meta_dir, "b.html", title="Beta Docker", collection="AI", tags=["Docker"])
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir)
+    try:
+        first = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "a.html"}})["conversation"]
+        second = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "b.html"}})["conversation"]
+        third = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "a.html"}})["conversation"]
+
+        assert first["context_key"] == third["context_key"]
+        assert second["context_key"] != third["context_key"]
+
+        latest = server.request(
+            "GET",
+            f"/api/ai/conversations/latest?context_key={urllib.parse.quote(third['context_key'])}",
+        )["conversation"]
+        assert latest["id"] == third["id"]
+        assert latest["context_snapshot"]["item_ids"] == ["a.html"]
+    finally:
+        server.close()
+
+
+def test_ai_conversation_list_can_filter_by_context_key(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "a.html", title="Alpha MCP", collection="AI", tags=["MCP"])
+    make_note(content_dir, meta_dir, "b.html", title="Beta Docker", collection="AI", tags=["Docker"])
+    server = run_api_server(content_dir=content_dir, meta_dir=meta_dir, public_dir=public_dir)
+    try:
+        first = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "a.html"}})["conversation"]
+        second = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "b.html"}})["conversation"]
+
+        filtered = server.request(
+            "GET",
+            f"/api/ai/conversations?context_key={urllib.parse.quote(first['context_key'])}",
+        )
+        assert filtered["count"] == 1
+        assert filtered["conversations"][0]["id"] == first["id"]
+
+        all_conversations = server.request("GET", "/api/ai/conversations")
+        assert {item["id"] for item in all_conversations["conversations"]} == {first["id"], second["id"]}
+    finally:
+        server.close()
+
+
 def test_ai_conversations_are_partitioned_by_login_user(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = make_dirs(tmp_path)
     users_file = tmp_path / "users.json"
@@ -754,6 +800,32 @@ def test_retrieval_status_normalizes_unknown_mode_to_keyword(tmp_path: Path) -> 
         "source_count": 1,
     }
     assert result.evidence[0]["item_id"] == "mcp.html"
+
+
+def test_global_overview_question_uses_all_context_notes_as_evidence(tmp_path: Path) -> None:
+    from html_lore.server.items import ItemService
+
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    make_note(content_dir, meta_dir, "docker.html", title="Docker Network", collection="Ops", tags=["Docker"])
+    make_note(content_dir, meta_dir, "energy.html", title="Energy Storage", collection="Energy", tags=["Storage"])
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Retrieval Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    service = ItemService(settings)
+    context = {
+        "scope": "global",
+        "item_ids": ["mcp.html", "docker.html", "energy.html"],
+    }
+
+    result = retrieve_evidence_with_status(service, context, "所有笔记有哪些主题", mode="keyword", max_results=5)
+
+    assert result.status["source_count"] == 3
+    assert {item["item_id"] for item in result.evidence} == {"mcp.html", "docker.html", "energy.html"}
 
 
 def test_ai_write_requests_are_rate_limited_while_run_reads_remain_available(tmp_path: Path) -> None:

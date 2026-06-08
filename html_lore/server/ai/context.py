@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+import json
 from typing import Any
 
 from html_lore.server.items import ItemService, normalize_query
@@ -24,7 +25,7 @@ class ResolvedContext:
     created_at: str
 
     def as_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "source_mode": self.source_mode,
             "scope": self.scope,
             "requested": self.requested,
@@ -33,6 +34,8 @@ class ResolvedContext:
             "items": [context_item(item) for item in self.items],
             "created_at": self.created_at,
         }
+        payload["context_key"] = context_key(payload)
+        return payload
 
 
 class ContextResolver:
@@ -183,6 +186,31 @@ def context_item(item: dict[str, Any]) -> dict[str, Any]:
         "archived": bool(item.get("archived")),
         "updated": str(item.get("updated") or ""),
     }
+
+
+def context_key(snapshot: dict[str, Any]) -> str:
+    source_mode = normalize_source_mode(snapshot.get("source_mode", "local_only"))
+    scope = str(snapshot.get("scope") or "global").strip() or "global"
+    item_ids = [str(item_id) for item_id in snapshot.get("item_ids") or [] if str(item_id)]
+    requested = snapshot.get("requested") if isinstance(snapshot.get("requested"), dict) else {}
+
+    if scope == "manual":
+        parts = {"item_ids": sorted(item_ids)}
+    elif scope == "reader":
+        parts = {"item_id": item_ids[0] if item_ids else str(requested.get("item_id") or "")}
+    else:
+        parts = {
+            "scope": scope,
+            "q": str(requested.get("q") or ""),
+            "library": str(requested.get("library") or ""),
+            "collection": str(requested.get("collection") or ""),
+            "tags": sorted(str(tag) for tag in requested.get("tags") or []),
+            "tag_match": str(requested.get("tag_match") or "any"),
+            "favorite": requested.get("favorite"),
+            "include_archived": bool(requested.get("include_archived", False)),
+            "sort": str(requested.get("sort") or "newest"),
+        }
+    return f"{source_mode}:{scope}:{json.dumps(parts, ensure_ascii=False, sort_keys=True, separators=(',', ':'))}"
 
 
 def utc_now() -> str:

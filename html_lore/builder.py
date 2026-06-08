@@ -32,6 +32,14 @@ def build_site(
 
 
 def copy_static_app(output_dir: Path) -> None:
+    if output_dir.resolve() == APP_STATIC_DIR.resolve():
+        share_dir = output_dir / "share"
+        share_dir.mkdir(parents=True, exist_ok=True)
+        index_path = output_dir / "index.html"
+        share_index_path = share_dir / "index.html"
+        if index_path.exists() and index_path.resolve() != share_index_path.resolve():
+            shutil.copy2(index_path, share_index_path)
+        return
     for source in APP_STATIC_DIR.iterdir():
         target = output_dir / source.name
         if source.is_dir():

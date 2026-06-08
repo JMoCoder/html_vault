@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-06-03T02:30:00.000000+00:00",
+  "generated_at": "2026-06-08T06:00:00.000000+00:00",
   "site": {
     "title": "HTMlore Demo",
     "layout": "cards"
@@ -9,7 +9,7 @@
     {
       "id": "demo-notes/readme.ja.html",
       "title": "HTMlore README 完全版",
-      "summary": "日本語 README 全文を HTML 化し、プロジェクトの方向性、実装範囲、Docker デプロイ、データモデル、API、セキュリティ、ロードマップをまとめています。",
+      "summary": "日本語 README 全文を HTML 化し、プロジェクトの方向性、ノートブックフロー、AI beta 機能、Docker デプロイ、API、セキュリティ、ロードマップをまとめています。",
       "path": "content/demo-notes/readme.ja.html",
       "source_type": "html",
       "source_url": null,
@@ -25,7 +25,7 @@
       "archived": false,
       "pinned": true,
       "created": "2026-06-02T08:00:00.000000+00:00",
-      "updated": "2026-06-02T08:00:00.000000+00:00",
+      "updated": "2026-06-08T06:00:00.000000+00:00",
       "cover": null,
       "open_mode": "iframe",
       "agent": {
@@ -35,7 +35,7 @@
     {
       "id": "demo-notes/changelog.ja.html",
       "title": "HTMlore 変更履歴",
-      "summary": "日本語 CHANGELOG 全文を HTML 化し、0.7.0 と過去の開発マイルストーンをリリーストラック形式で表示します。",
+      "summary": "日本語 CHANGELOG 全文を HTML 化し、0.9.0 AI beta リリースと過去の開発マイルストーンを表示します。",
       "path": "content/demo-notes/changelog.ja.html",
       "source_type": "html",
       "source_url": null,
@@ -51,7 +51,7 @@
       "archived": false,
       "pinned": false,
       "created": "2026-06-02T08:01:00.000000+00:00",
-      "updated": "2026-06-02T08:01:00.000000+00:00",
+      "updated": "2026-06-08T06:01:00.000000+00:00",
       "cover": null,
       "open_mode": "iframe",
       "agent": {

@@ -142,7 +142,10 @@ def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[
     manifest_items = {str(item.get("id") or ""): item for item in item_service.manifest().get("items", [])}
     evidences: list[Evidence] = []
     fallback_candidates: list[Evidence] = []
-    allow_generic_fallback = context_snapshot.get("scope") in {"reader", "manual"} and is_generic_context_question(query)
+    scope = str(context_snapshot.get("scope") or "")
+    generic_question = is_generic_context_question(query)
+    allow_generic_fallback = scope in {"reader", "manual"} and generic_question
+    overview_scope = scope not in {"reader", "manual"} and is_context_overview_question(query)
     for item_id in item_ids:
         item = manifest_items.get(item_id)
         if not item or bool(item.get("archived")):
@@ -153,6 +156,16 @@ def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[
             continue
         text = evidence_text(item, html)
         score = score_text(query, text)
+        if overview_scope:
+            fallback_candidates.append(
+                Evidence(
+                    item_id=item_id,
+                    title=str(item.get("title") or item_id),
+                    snippet=overview_snippet(item, text),
+                    score=max(score, 1),
+                ),
+            )
+            continue
         if score <= 0:
             if allow_generic_fallback:
                 fallback_candidates.append(
@@ -172,6 +185,11 @@ def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[
                 score=score,
             ),
         )
+    if overview_scope and fallback_candidates:
+        return [
+            evidence.as_dict()
+            for evidence in sorted(fallback_candidates, key=lambda item: (-item.score, item.title))[:max_results]
+        ]
     if not evidences and fallback_candidates:
         return [evidence.as_dict() for evidence in fallback_candidates[:max_results]]
     return [evidence.as_dict() for evidence in sorted(evidences, key=lambda item: (-item.score, item.title))[:max_results]]
@@ -241,6 +259,15 @@ def snippet_for_query(text: str, query: str) -> str:
     return snippet.strip()
 
 
+def overview_snippet(item: dict[str, Any], text: str) -> str:
+    summary = str(item.get("summary") or "").strip()
+    title = str(item.get("title") or item.get("id") or "").strip()
+    prefix = f"{title}. {summary}".strip()
+    if summary:
+        return normalize_space(prefix)[:MAX_CHUNK_CHARS]
+    return normalize_space(text)[:MAX_CHUNK_CHARS]
+
+
 def query_tokens(query: str) -> list[str]:
     ascii_tokens = re.findall(r"[a-z0-9][a-z0-9._-]{1,}", query.lower())
     cjk_tokens: list[str] = []
@@ -273,6 +300,28 @@ def is_generic_context_question(query: str) -> bool:
         r"この(.{0,8})(文章|文書|ノート|ファイル).{0,12}(何|内容)",
     ]
     return any(re.search(pattern, normalized) for pattern in generic_patterns)
+
+
+def is_context_overview_question(query: str) -> bool:
+    normalized = normalize_space(query).lower()
+    if not normalized:
+        return False
+    overview_patterns = [
+        r"\ball notes\b",
+        r"\ball documents\b",
+        r"\ball files\b",
+        r"\bknowledge base\b",
+        r"\bworkspace\b",
+        r"\boverview\b",
+        r"\bsummarize.{0,24}(all|workspace|knowledge base)",
+        r"所有.{0,8}(笔记|文档|文件|内容)",
+        r"(笔记|文档|文件|知识库).{0,12}(总览|概览|梳理|总结|主题)",
+        r"(梳理|总结|概括).{0,12}(知识库|全部|所有)",
+        r"有哪些.{0,6}(主题|内容)",
+        r"すべて.{0,8}(ノート|文書|ファイル)",
+        r"(ナレッジ|ワークスペース).{0,12}(概要|要約|整理)",
+    ]
+    return any(re.search(pattern, normalized) for pattern in overview_patterns)
 
 
 def strip_cjk_stopwords(value: str) -> str:
