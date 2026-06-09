@@ -4,6 +4,13 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ## [Unreleased]
 
+## [0.9.3] - 2026-06-09
+
+### Fixed
+
+- ビジュアルファイルエディターの背景色コントロールを改善し、インラインテキスト選択時に最も近い非透明の親背景色を反映するようにしました。
+- パッケージ、アプリ、PWA、Demo cache、provider user-agent のバージョンを `0.9.3` に更新しました。
+
 ## [0.9.2] - 2026-06-09
 
 ### Added

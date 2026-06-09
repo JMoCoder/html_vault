@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-06-09T06:00:00.000000+00:00",
+  "generated_at": "2026-06-09T07:00:00.000000+00:00",
   "site": {
     "title": "HTMlore Demo",
     "layout": "cards"
@@ -25,7 +25,7 @@
       "archived": false,
       "pinned": true,
       "created": "2026-06-02T08:00:00.000000+00:00",
-      "updated": "2026-06-09T06:00:00.000000+00:00",
+      "updated": "2026-06-09T07:00:00.000000+00:00",
       "cover": null,
       "open_mode": "iframe",
       "agent": {
@@ -35,7 +35,7 @@
     {
       "id": "demo-notes/changelog.en.html",
       "title": "HTMlore Changelog",
-      "summary": "The complete English CHANGELOG rendered as HTML with the 0.9.2 editor release and earlier development milestones.",
+      "summary": "The complete English CHANGELOG rendered as HTML with the 0.9.3 visual editor polish release and earlier development milestones.",
       "path": "content/demo-notes/changelog.en.html",
       "source_type": "html",
       "source_url": null,
@@ -51,7 +51,7 @@
       "archived": false,
       "pinned": false,
       "created": "2026-06-02T08:01:00.000000+00:00",
-      "updated": "2026-06-09T06:00:00.000000+00:00",
+      "updated": "2026-06-09T07:00:00.000000+00:00",
       "cover": null,
       "open_mode": "iframe",
       "agent": {

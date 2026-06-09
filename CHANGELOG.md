@@ -9,6 +9,14 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.9.3] - 2026-06-09
+
+### Fixed
+
+- Improved the visual file editor background color picker so selected inline
+  text follows the nearest non-transparent parent background.
+- Updated package, app, PWA, demo, and provider user-agent versions to `0.9.3`.
+
 ## [0.9.2] - 2026-06-09
 
 ### Added

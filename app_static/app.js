@@ -1363,7 +1363,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.9.2",
+  currentVersion: "0.9.3",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -3472,7 +3472,7 @@ function injectFileEditorRuntime(source) {
       text: element.textContent || "",
       style: {
         color: element.style.color || rgbToHex(computed.color, "#000000"),
-        backgroundColor: element.style.backgroundColor || rgbToHex(computed.backgroundColor, "#ffffff"),
+        backgroundColor: element.style.backgroundColor || inheritedBackgroundColor(element),
         fontSize: parseFloat(computed.fontSize) || "",
         lineHeight: computed.lineHeight === "normal" ? "" : parseFloat(computed.lineHeight) / (parseFloat(computed.fontSize) || 16),
         fontWeight: element.style.fontWeight || computed.fontWeight || "",
@@ -3514,6 +3514,16 @@ function injectFileEditorRuntime(source) {
     if (!match) return fallback;
     if (match[4] !== undefined && Number(match[4]) === 0) return fallback;
     return "#" + [match[1], match[2], match[3]].map((part) => Number(part).toString(16).padStart(2, "0")).join("");
+  }
+  function inheritedBackgroundColor(element) {
+    let node = element;
+    while (node && node.nodeType === Node.ELEMENT_NODE) {
+      const value = getComputedStyle(node).backgroundColor;
+      const hex = rgbToHex(value, "");
+      if (hex) return hex;
+      node = node.parentElement;
+    }
+    return "#ffffff";
   }
   function serialize() {
     const clone = document.documentElement.cloneNode(true);
@@ -6306,7 +6316,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.2-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.3-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });

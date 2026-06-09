@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-06-09T06:00:00.000000+00:00",
+  "generated_at": "2026-06-09T07:00:00.000000+00:00",
   "site": {
     "title": "HTMlore Demo",
     "layout": "cards"
@@ -25,7 +25,7 @@
       "archived": false,
       "pinned": true,
       "created": "2026-06-02T08:00:00.000000+00:00",
-      "updated": "2026-06-09T06:00:00.000000+00:00",
+      "updated": "2026-06-09T07:00:00.000000+00:00",
       "cover": null,
       "open_mode": "iframe",
       "agent": {
@@ -35,7 +35,7 @@
     {
       "id": "demo-notes/changelog.zh-CN.html",
       "title": "HTMlore 更新日志",
-      "summary": "完整中文 CHANGELOG 转换为 HTML，以发布轨迹风格展示 0.9.2 编辑器版本和早期版本变更。",
+      "summary": "完整中文 CHANGELOG 转换为 HTML，以发布轨迹风格展示 0.9.3 可视化编辑器优化版本和早期版本变更。",
       "path": "content/demo-notes/changelog.zh-CN.html",
       "source_type": "html",
       "source_url": null,
@@ -51,7 +51,7 @@
       "archived": false,
       "pinned": false,
       "created": "2026-06-02T08:01:00.000000+00:00",
-      "updated": "2026-06-09T06:00:00.000000+00:00",
+      "updated": "2026-06-09T07:00:00.000000+00:00",
       "cover": null,
       "open_mode": "iframe",
       "agent": {
