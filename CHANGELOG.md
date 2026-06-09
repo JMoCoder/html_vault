@@ -9,6 +9,31 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-06-09
+
+### Added
+
+- Added manual HTML source editing for non-archived notes with save, save and
+  close, fullscreen, line wrapping, cursor position, and share-safety precheck.
+- Added a conservative visual file editor for non-archived notes with text
+  editing, color/background controls, inline text styles, undo/redo, element
+  reset, resizable/collapsible editor panel, and direct preview editing.
+
+### Changed
+
+- Improved left navigation section headers for Library, Collections, and Tags
+  with clearer default accent styling.
+- Updated package, app, PWA, demo, and provider user-agent versions to `0.9.2`.
+
+### Fixed
+
+- Fixed visual editor text-area cursor jumps while typing in the side panel.
+- Fixed visual editor selection so blank canvas clicks no longer select the
+  whole document, while composite text blocks can still be selected as a unit.
+- Fixed visual editor color pickers so selected text/background colors stay in
+  sync with rendered styles.
+- Fixed visual editor undo/redo disabled states and panel collapse behavior.
+
 ## [0.9.1] - 2026-06-08
 
 ### Changed

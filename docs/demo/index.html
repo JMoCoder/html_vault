@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Noto+Serif+SC:wght@600;900&family=Noto+Serif+JP:wght@600;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.9.1">
+  <link rel="stylesheet" href="style.css?v=0.9.2">
 </head>
 <body>
   <a class="demo-home-link" href="../" aria-label="HTMlore homepage" title="HTMlore homepage">
@@ -663,30 +663,176 @@
           <h2 data-i18n="metadataEditor"></h2>
           <button class="icon-button" type="button" id="metadata-cancel-icon" aria-label="Cancel" title="Cancel" data-i18n-attr="aria-label:cancel,title:cancel">×</button>
         </div>
-        <label>
-          <span data-i18n="metadataTitle"></span>
-          <input id="metadata-title" type="text" autocomplete="off">
-        </label>
+        <div class="metadata-title-row">
+          <label>
+            <span data-i18n="metadataTitle"></span>
+            <input id="metadata-title" type="text" autocomplete="off">
+          </label>
+          <label class="metadata-collection-field">
+            <span data-i18n="metadataCollection"></span>
+            <select id="metadata-collection"></select>
+          </label>
+        </div>
         <label>
           <span data-i18n="metadataSummary"></span>
           <textarea id="metadata-summary" rows="4"></textarea>
         </label>
-        <div class="form-grid">
-          <label>
-            <span data-i18n="metadataCollection"></span>
-            <select id="metadata-collection"></select>
-          </label>
-          <label>
-            <span data-i18n="metadataTags"></span>
-            <div class="metadata-tag-picker" id="metadata-tag-picker"></div>
-          </label>
+        <div class="metadata-tags-row">
+          <span class="metadata-field-label" data-i18n="metadataTags"></span>
+          <div class="metadata-tag-picker" id="metadata-tag-picker"></div>
         </div>
-        <p class="security-note" data-i18n="metadataStorageNote"></p>
         <div class="metadata-actions">
-          <button type="submit" data-i18n="save"></button>
-          <button type="button" class="secondary-button" id="metadata-cancel" data-i18n="cancel"></button>
+          <div class="metadata-tool-actions">
+            <button type="button" class="secondary-button" id="metadata-edit-code" data-i18n="editCode"></button>
+            <button type="button" class="secondary-button" id="metadata-edit-file" data-i18n="editFile"></button>
+          </div>
+          <div class="metadata-submit-actions">
+            <button type="submit" data-i18n="save"></button>
+            <button type="button" class="secondary-button" id="metadata-cancel" data-i18n="cancel"></button>
+          </div>
         </div>
       </form>
+    </section>
+
+    <section class="code-editor" id="code-editor" aria-label="Edit HTML code" data-i18n-attr="aria-label:codeEditor" hidden>
+      <div class="code-editor-dialog">
+        <div class="code-editor-toolbar">
+          <div class="code-editor-title">
+            <strong data-i18n="codeEditor"></strong>
+            <span id="code-editor-item-title"></span>
+          </div>
+          <div class="code-editor-actions">
+            <button type="button" class="secondary-button" id="code-editor-save" data-i18n="save"></button>
+            <button type="button" id="code-editor-save-close" data-i18n="saveAndClose"></button>
+            <button type="button" class="icon-button" id="code-editor-close" aria-label="Cancel" title="Cancel" data-i18n-attr="aria-label:cancel,title:cancel">×</button>
+          </div>
+        </div>
+        <div class="code-editor-body">
+          <textarea id="code-editor-textarea" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+          <div class="code-editor-floating-actions">
+            <button type="button" class="code-editor-floating-button" id="code-editor-wrap" aria-pressed="true" aria-label="Wrap lines" title="Wrap lines" data-i18n-attr="aria-label:codeWrap,title:codeWrap">
+              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 7h11a4 4 0 0 1 0 8H7"></path>
+                <path d="m10 12-3 3 3 3"></path>
+                <path d="M4 11h5"></path>
+              </svg>
+            </button>
+            <button type="button" class="code-editor-floating-button" id="code-editor-fullscreen" aria-label="Fullscreen" title="Fullscreen" data-i18n-attr="aria-label:codeFullscreen,title:codeFullscreen">
+              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 3H3v5"></path>
+                <path d="M3 3l6 6"></path>
+                <path d="M16 3h5v5"></path>
+                <path d="M21 3l-6 6"></path>
+                <path d="M8 21H3v-5"></path>
+                <path d="M3 21l6-6"></path>
+                <path d="M16 21h5v-5"></path>
+                <path d="M21 21l-6-6"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="code-editor-status">
+          <span id="code-editor-feedback"></span>
+          <span id="code-editor-position"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="file-editor" id="file-editor" aria-label="Visual file editor" data-i18n-attr="aria-label:fileEditor" hidden>
+      <div class="file-editor-shell">
+        <div class="file-editor-toolbar">
+          <div class="code-editor-title">
+            <strong data-i18n="fileEditor"></strong>
+            <span id="file-editor-item-title"></span>
+          </div>
+          <div class="file-editor-actions">
+            <button type="button" class="secondary-button" id="file-editor-mode-text" data-file-editor-mode="text" data-i18n="fileEditTextMode"></button>
+            <button type="button" class="secondary-button" id="file-editor-mode-element" data-file-editor-mode="element" data-i18n="fileEditElementMode"></button>
+            <button type="button" class="secondary-button icon-only-button" id="file-editor-undo" aria-label="Undo" title="Undo" data-i18n-attr="aria-label:undo,title:undo">
+              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 14 4 9l5-5"></path>
+                <path d="M4 9h10a6 6 0 0 1 0 12h-2"></path>
+              </svg>
+            </button>
+            <button type="button" class="secondary-button icon-only-button" id="file-editor-redo" aria-label="Redo" title="Redo" data-i18n-attr="aria-label:redo,title:redo">
+              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m15 14 5-5-5-5"></path>
+                <path d="M20 9H10a6 6 0 0 0 0 12h2"></path>
+              </svg>
+            </button>
+            <button type="button" class="secondary-button" id="file-editor-reset" data-i18n="fileResetElement"></button>
+            <button type="button" class="secondary-button" id="file-editor-save" data-i18n="save"></button>
+            <button type="button" id="file-editor-save-close" data-i18n="saveAndClose"></button>
+            <button type="button" class="icon-button" id="file-editor-close" aria-label="Cancel" title="Cancel" data-i18n-attr="aria-label:cancel,title:cancel">×</button>
+          </div>
+        </div>
+        <div class="file-editor-stage">
+          <iframe id="file-editor-frame" title="Visual file editor" data-i18n-attr="title:fileEditor"></iframe>
+          <button type="button" class="code-editor-floating-button file-editor-panel-floating-toggle" id="file-editor-panel-toggle" aria-label="Collapse editor panel" title="Collapse editor panel" data-i18n-attr="aria-label:collapseEditorPanel,title:collapseEditorPanel">
+            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </button>
+          <div class="file-editor-panel-resize" id="file-editor-panel-resize" role="separator" aria-orientation="vertical" aria-label="Resize editor panel" data-i18n-attr="aria-label:resizeEditorPanel"></div>
+          <aside class="file-editor-panel" id="file-editor-panel">
+            <div class="file-editor-panel-header">
+              <div>
+                <strong data-i18n="fileSelectedElement"></strong>
+                <span id="file-editor-selected-name"></span>
+              </div>
+            </div>
+            <label>
+              <span data-i18n="fileTextContent"></span>
+              <textarea id="file-editor-text" rows="4"></textarea>
+            </label>
+            <div class="file-editor-color-row">
+              <label>
+                <span data-i18n="fileTextColor"></span>
+                <input id="file-editor-color" type="color">
+              </label>
+              <label>
+                <span data-i18n="fileBackgroundColor"></span>
+                <input id="file-editor-background" type="color">
+              </label>
+              <div class="file-editor-inline-style" aria-label="Text style" data-i18n-attr="aria-label:fileTextStyle">
+                <button type="button" id="file-editor-bold" aria-pressed="false" aria-label="Bold" title="Bold" data-i18n-attr="aria-label:bold,title:bold">B</button>
+                <button type="button" id="file-editor-italic" aria-pressed="false" aria-label="Italic" title="Italic" data-i18n-attr="aria-label:italic,title:italic"><em>I</em></button>
+                <button type="button" id="file-editor-underline" aria-pressed="false" aria-label="Underline" title="Underline" data-i18n-attr="aria-label:underline,title:underline"><span class="underline-sample">U</span></button>
+                <button type="button" id="file-editor-strike" aria-pressed="false" aria-label="Strikethrough" title="Strikethrough" data-i18n-attr="aria-label:strikethrough,title:strikethrough"><span class="strike-sample">S</span></button>
+              </div>
+            </div>
+            <div class="file-editor-control-grid">
+              <label>
+                <span data-i18n="fileFontSize"></span>
+                <input id="file-editor-font-size" type="number" min="10" max="48" step="1">
+              </label>
+              <label>
+                <span data-i18n="fileLineHeight"></span>
+                <input id="file-editor-line-height" type="number" min="1" max="2.4" step="0.1">
+              </label>
+              <label>
+                <span data-i18n="fileFontWeight"></span>
+                <select id="file-editor-font-weight">
+                  <option value="" data-i18n="fileStyleInherit"></option>
+                  <option value="400">400</option>
+                  <option value="600">600</option>
+                  <option value="700">700</option>
+                </select>
+              </label>
+              <label>
+                <span data-i18n="fileTextAlign"></span>
+                <select id="file-editor-text-align">
+                  <option value="" data-i18n="fileStyleInherit"></option>
+                  <option value="left" data-i18n="alignLeft"></option>
+                  <option value="center" data-i18n="alignCenter"></option>
+                  <option value="right" data-i18n="alignRight"></option>
+                </select>
+              </label>
+            </div>
+            <p id="file-editor-feedback"></p>
+          </aside>
+        </div>
+      </div>
     </section>
 
     <section class="metadata-editor" id="share-dialog" aria-label="Share note" data-i18n-attr="aria-label:shareDialog" hidden>
@@ -771,6 +917,6 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="app.js?v=0.9.1" type="module"></script>
+  <script src="app.js?v=0.9.2" type="module"></script>
 </body>
 </html>

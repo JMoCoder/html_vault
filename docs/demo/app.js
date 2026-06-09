@@ -348,6 +348,43 @@ const i18n = {
     original: "Original",
     shareAction: "Share",
     editMetadata: "Edit metadata",
+    editCode: "Edit code",
+    editFile: "Edit file",
+    editFileComingSoon: "File editor is planned for a later version.",
+    fileEditor: "Visual file editor",
+    fileEditTextMode: "Text",
+    fileEditElementMode: "Element",
+    fileResetElement: "Reset element",
+    fileSelectedElement: "Selected element",
+    fileNoSelection: "Select text or an element in the preview.",
+    fileTextContent: "Text content",
+    fileTextColor: "Text color",
+    fileBackgroundColor: "Background",
+    fileTextStyle: "Text style",
+    fileFontSize: "Font size",
+    fileLineHeight: "Line height",
+    fileFontWeight: "Weight",
+    fileTextAlign: "Align",
+    fileStyleInherit: "Inherit",
+    alignLeft: "Left",
+    alignCenter: "Center",
+    alignRight: "Right",
+    undo: "Undo",
+    redo: "Redo",
+    bold: "Bold",
+    italic: "Italic",
+    underline: "Underline",
+    strikethrough: "Strikethrough",
+    resizeEditorPanel: "Resize editor panel",
+    collapseEditorPanel: "Collapse editor panel",
+    expandEditorPanel: "Expand editor panel",
+    fileEditorLoading: "Loading visual editor...",
+    fileEditorLoaded: "Select an editable element.",
+    fileEditorUnsaved: "Unsaved visual edits",
+    fileEditorSaved: "Visual edits saved.",
+    fileEditorSaveFailed: "Visual edits failed to save.",
+    fileEditorUnsupported: "This element is not editable in visual mode.",
+    fileEditorConfirmClose: "Discard unsaved visual edits?",
     metadataEditor: "Edit note metadata",
     metadataTitle: "Title",
     metadataSummary: "Summary",
@@ -360,6 +397,21 @@ const i18n = {
     cancel: "Cancel",
     metadataSaved: "Metadata saved.",
     metadataSaveFailed: "Metadata save failed.",
+    codeEditor: "HTML code editor",
+    codeFullscreen: "Fullscreen",
+    codeExitFullscreen: "Exit fullscreen",
+    codeWrap: "Wrap lines",
+    saveAndClose: "Save & close",
+    codeLoading: "Loading source...",
+    codeLoaded: "Source loaded.",
+    codeUnsaved: "Unsaved changes",
+    codeSaved: "HTML source saved.",
+    codeSaveFailed: "HTML source save failed.",
+    codeNeedsAgent: "Agent Server is required to save HTML source.",
+    codeShareSafetyConfirm: "This HTML can be saved locally, but it may not pass public share safety checks.\n\nReasons: {reasons}\n\nSave anyway?",
+    codeShareSafetyFailed: "Share safety precheck failed.",
+    codeConfirmClose: "Discard unsaved source changes?",
+    codePosition: "Line {line}, column {column}",
     stateSaveFailed: "State save failed.",
     navigationSaveFailed: "Navigation settings save failed.",
     favoriteAction: "Favorite",
@@ -724,6 +776,43 @@ const i18n = {
     original: "原文",
     shareAction: "分享",
     editMetadata: "编辑元信息",
+    editCode: "编辑代码",
+    editFile: "编辑文件",
+    editFileComingSoon: "文件编辑器将在后续版本实现。",
+    fileEditor: "可视化文件编辑器",
+    fileEditTextMode: "文本",
+    fileEditElementMode: "元素",
+    fileResetElement: "重置元素",
+    fileSelectedElement: "选中元素",
+    fileNoSelection: "请在预览中选择文本或元素。",
+    fileTextContent: "文本内容",
+    fileTextColor: "文字颜色",
+    fileBackgroundColor: "背景色",
+    fileTextStyle: "文字样式",
+    fileFontSize: "字号",
+    fileLineHeight: "行高",
+    fileFontWeight: "字重",
+    fileTextAlign: "对齐",
+    fileStyleInherit: "继承",
+    alignLeft: "左对齐",
+    alignCenter: "居中",
+    alignRight: "右对齐",
+    undo: "撤销",
+    redo: "重做",
+    bold: "加粗",
+    italic: "倾斜",
+    underline: "下划线",
+    strikethrough: "删除线",
+    resizeEditorPanel: "调整编辑面板宽度",
+    collapseEditorPanel: "收起编辑面板",
+    expandEditorPanel: "展开编辑面板",
+    fileEditorLoading: "正在加载可视化编辑器...",
+    fileEditorLoaded: "请选择可编辑元素。",
+    fileEditorUnsaved: "有未保存的可视化修改",
+    fileEditorSaved: "可视化修改已保存。",
+    fileEditorSaveFailed: "可视化修改保存失败。",
+    fileEditorUnsupported: "该元素不支持可视化编辑。",
+    fileEditorConfirmClose: "放弃未保存的可视化修改？",
     metadataEditor: "编辑笔记元信息",
     metadataTitle: "标题",
     metadataSummary: "摘要",
@@ -736,6 +825,21 @@ const i18n = {
     cancel: "取消",
     metadataSaved: "元信息已保存。",
     metadataSaveFailed: "元信息保存失败。",
+    codeEditor: "HTML 代码编辑器",
+    codeFullscreen: "全屏",
+    codeExitFullscreen: "退出全屏",
+    codeWrap: "自动换行",
+    saveAndClose: "保存并关闭",
+    codeLoading: "正在加载源码...",
+    codeLoaded: "源码已加载。",
+    codeUnsaved: "有未保存的修改",
+    codeSaved: "HTML 源码已保存。",
+    codeSaveFailed: "HTML 源码保存失败。",
+    codeNeedsAgent: "保存 HTML 源码需要连接 Agent Server。",
+    codeShareSafetyConfirm: "这份 HTML 可以作为本地笔记保存，但可能无法通过公开分享安全检查。\n\n命中原因：{reasons}\n\n仍然保存？",
+    codeShareSafetyFailed: "分享安全预检失败。",
+    codeConfirmClose: "放弃未保存的源码修改？",
+    codePosition: "第 {line} 行，第 {column} 列",
     stateSaveFailed: "状态保存失败。",
     navigationSaveFailed: "导航设置保存失败。",
     favoriteAction: "收藏",
@@ -1100,6 +1204,43 @@ const i18n = {
     original: "原文",
     shareAction: "共有",
     editMetadata: "メタデータを編集",
+    editCode: "コードを編集",
+    editFile: "ファイルを編集",
+    editFileComingSoon: "ファイルエディターは今後のバージョンで実装予定です。",
+    fileEditor: "ビジュアルファイルエディター",
+    fileEditTextMode: "テキスト",
+    fileEditElementMode: "要素",
+    fileResetElement: "要素をリセット",
+    fileSelectedElement: "選択中の要素",
+    fileNoSelection: "プレビューでテキストまたは要素を選択してください。",
+    fileTextContent: "テキスト内容",
+    fileTextColor: "文字色",
+    fileBackgroundColor: "背景",
+    fileTextStyle: "文字スタイル",
+    fileFontSize: "フォントサイズ",
+    fileLineHeight: "行間",
+    fileFontWeight: "太さ",
+    fileTextAlign: "配置",
+    fileStyleInherit: "継承",
+    alignLeft: "左",
+    alignCenter: "中央",
+    alignRight: "右",
+    undo: "元に戻す",
+    redo: "やり直す",
+    bold: "太字",
+    italic: "斜体",
+    underline: "下線",
+    strikethrough: "取り消し線",
+    resizeEditorPanel: "編集パネルの幅を調整",
+    collapseEditorPanel: "編集パネルを折りたたむ",
+    expandEditorPanel: "編集パネルを展開",
+    fileEditorLoading: "ビジュアルエディターを読み込み中...",
+    fileEditorLoaded: "編集可能な要素を選択してください。",
+    fileEditorUnsaved: "未保存のビジュアル編集があります",
+    fileEditorSaved: "ビジュアル編集を保存しました。",
+    fileEditorSaveFailed: "ビジュアル編集の保存に失敗しました。",
+    fileEditorUnsupported: "この要素はビジュアル編集に対応していません。",
+    fileEditorConfirmClose: "未保存のビジュアル編集を破棄しますか？",
     metadataEditor: "ノートメタデータを編集",
     metadataTitle: "タイトル",
     metadataSummary: "概要",
@@ -1112,6 +1253,21 @@ const i18n = {
     cancel: "キャンセル",
     metadataSaved: "メタデータを保存しました。",
     metadataSaveFailed: "メタデータの保存に失敗しました。",
+    codeEditor: "HTML コードエディター",
+    codeFullscreen: "全画面",
+    codeExitFullscreen: "全画面を終了",
+    codeWrap: "折り返し",
+    saveAndClose: "保存して閉じる",
+    codeLoading: "ソースを読み込み中...",
+    codeLoaded: "ソースを読み込みました。",
+    codeUnsaved: "未保存の変更があります",
+    codeSaved: "HTML ソースを保存しました。",
+    codeSaveFailed: "HTML ソースの保存に失敗しました。",
+    codeNeedsAgent: "HTML ソースを保存するには Agent Server 接続が必要です。",
+    codeShareSafetyConfirm: "この HTML はローカルノートとして保存できますが、公開共有の安全チェックを通過しない可能性があります。\n\n理由: {reasons}\n\nそれでも保存しますか？",
+    codeShareSafetyFailed: "共有安全性の事前チェックに失敗しました。",
+    codeConfirmClose: "未保存のソース変更を破棄しますか？",
+    codePosition: "{line} 行目、{column} 列目",
     stateSaveFailed: "状態の保存に失敗しました。",
     navigationSaveFailed: "ナビゲーション設定の保存に失敗しました。",
     favoriteAction: "お気に入り",
@@ -1207,7 +1363,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.9.1",
+  currentVersion: "0.9.2",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -1259,6 +1415,23 @@ const state = {
   currentReaderItemId: "",
   editingItemId: "",
   editingTags: new Set(),
+  codeEditingItemId: "",
+  codeEditorOriginal: "",
+  codeEditorDirty: false,
+  codeEditorWrap: true,
+  codeEditorFullscreen: false,
+  codeEditorSaving: false,
+  fileEditingItemId: "",
+  fileEditorOriginal: "",
+  fileEditorDirty: false,
+  fileEditorMode: "text",
+  fileEditorSelectedPath: "",
+  fileEditorHistory: [],
+  fileEditorHistoryIndex: -1,
+  fileEditorSyncing: false,
+  fileEditorHistoryTimer: 0,
+  fileEditorPanelWidth: getInitialFileEditorPanelWidth(),
+  fileEditorPanelCollapsed: false,
   shares: [],
   sharingItemId: "",
 };
@@ -1417,8 +1590,48 @@ const elements = {
   metadataSummary: document.querySelector("#metadata-summary"),
   metadataCollection: document.querySelector("#metadata-collection"),
   metadataTagPicker: document.querySelector("#metadata-tag-picker"),
+  metadataEditCode: document.querySelector("#metadata-edit-code"),
+  metadataEditFile: document.querySelector("#metadata-edit-file"),
   metadataCancel: document.querySelector("#metadata-cancel"),
   metadataCancelIcon: document.querySelector("#metadata-cancel-icon"),
+  codeEditor: document.querySelector("#code-editor"),
+  codeEditorItemTitle: document.querySelector("#code-editor-item-title"),
+  codeEditorTextarea: document.querySelector("#code-editor-textarea"),
+  codeEditorWrap: document.querySelector("#code-editor-wrap"),
+  codeEditorFullscreen: document.querySelector("#code-editor-fullscreen"),
+  codeEditorSave: document.querySelector("#code-editor-save"),
+  codeEditorSaveClose: document.querySelector("#code-editor-save-close"),
+  codeEditorClose: document.querySelector("#code-editor-close"),
+  codeEditorFeedback: document.querySelector("#code-editor-feedback"),
+  codeEditorPosition: document.querySelector("#code-editor-position"),
+  fileEditor: document.querySelector("#file-editor"),
+  fileEditorItemTitle: document.querySelector("#file-editor-item-title"),
+  fileEditorFrame: document.querySelector("#file-editor-frame"),
+  fileEditorStage: document.querySelector(".file-editor-stage"),
+  fileEditorPanelResize: document.querySelector("#file-editor-panel-resize"),
+  fileEditorPanelToggle: document.querySelector("#file-editor-panel-toggle"),
+  fileEditorModeText: document.querySelector("#file-editor-mode-text"),
+  fileEditorModeElement: document.querySelector("#file-editor-mode-element"),
+  fileEditorUndo: document.querySelector("#file-editor-undo"),
+  fileEditorRedo: document.querySelector("#file-editor-redo"),
+  fileEditorReset: document.querySelector("#file-editor-reset"),
+  fileEditorSave: document.querySelector("#file-editor-save"),
+  fileEditorSaveClose: document.querySelector("#file-editor-save-close"),
+  fileEditorClose: document.querySelector("#file-editor-close"),
+  fileEditorPanel: document.querySelector("#file-editor-panel"),
+  fileEditorSelectedName: document.querySelector("#file-editor-selected-name"),
+  fileEditorText: document.querySelector("#file-editor-text"),
+  fileEditorColor: document.querySelector("#file-editor-color"),
+  fileEditorBackground: document.querySelector("#file-editor-background"),
+  fileEditorBold: document.querySelector("#file-editor-bold"),
+  fileEditorItalic: document.querySelector("#file-editor-italic"),
+  fileEditorUnderline: document.querySelector("#file-editor-underline"),
+  fileEditorStrike: document.querySelector("#file-editor-strike"),
+  fileEditorFontSize: document.querySelector("#file-editor-font-size"),
+  fileEditorLineHeight: document.querySelector("#file-editor-line-height"),
+  fileEditorFontWeight: document.querySelector("#file-editor-font-weight"),
+  fileEditorTextAlign: document.querySelector("#file-editor-text-align"),
+  fileEditorFeedback: document.querySelector("#file-editor-feedback"),
 };
 
 function ensureHtmlImportInput() {
@@ -2917,6 +3130,797 @@ function closeMetadataEditor() {
   elements.metadataEditor.hidden = true;
 }
 
+async function openCodeEditor(id = state.editingItemId) {
+  const item = getItemById(id);
+  if (!item || isArchived(item)) return;
+  state.codeEditingItemId = item.id;
+  state.codeEditorOriginal = "";
+  state.codeEditorDirty = false;
+  elements.codeEditorItemTitle.textContent = getItemTitle(item);
+  elements.codeEditorTextarea.value = "";
+  elements.codeEditorFeedback.textContent = t("codeLoading");
+  elements.codeEditor.hidden = false;
+  applyCodeEditorWrapState();
+  applyCodeEditorFullscreenState();
+  updateCodeEditorPosition();
+  elements.codeEditorTextarea.focus();
+  try {
+    const response = state.agentUrl
+      ? await apiFetch(`/api/items/${encodeURIComponent(item.id)}/raw`, { cache: "no-store" })
+      : await fetch(getReaderRawUrl(item), { cache: "no-store" });
+    if (!response.ok) throw new Error(`Source returned ${response.status}`);
+    const source = await response.text();
+    if (state.codeEditingItemId !== item.id) return;
+    state.codeEditorOriginal = source;
+    state.codeEditorDirty = false;
+    elements.codeEditorTextarea.value = source;
+    elements.codeEditorFeedback.textContent = t("codeLoaded");
+    updateCodeEditorPosition();
+  } catch (error) {
+    console.error(error);
+    elements.codeEditorFeedback.textContent = t("codeSaveFailed");
+  }
+}
+
+function closeCodeEditor(force = false) {
+  if (!force && state.codeEditorDirty && !window.confirm(t("codeConfirmClose"))) return false;
+  state.codeEditingItemId = "";
+  state.codeEditorOriginal = "";
+  state.codeEditorDirty = false;
+  state.codeEditorFullscreen = false;
+  applyCodeEditorFullscreenState();
+  elements.codeEditor.hidden = true;
+  elements.codeEditorTextarea.value = "";
+  elements.codeEditorFeedback.textContent = "";
+  return true;
+}
+
+function markCodeEditorDirty() {
+  state.codeEditorDirty = elements.codeEditorTextarea.value !== state.codeEditorOriginal;
+  elements.codeEditorFeedback.textContent = state.codeEditorDirty ? t("codeUnsaved") : t("codeLoaded");
+  updateCodeEditorPosition();
+}
+
+function updateCodeEditorPosition() {
+  const value = elements.codeEditorTextarea.value.slice(0, elements.codeEditorTextarea.selectionStart || 0);
+  const lines = value.split("\n");
+  elements.codeEditorPosition.textContent = t("codePosition", {
+    line: lines.length,
+    column: (lines[lines.length - 1] || "").length + 1,
+  });
+}
+
+function applyCodeEditorWrapState() {
+  elements.codeEditorTextarea.classList.toggle("no-wrap", !state.codeEditorWrap);
+  elements.codeEditorWrap.setAttribute("aria-pressed", state.codeEditorWrap ? "true" : "false");
+}
+
+function toggleCodeEditorWrap() {
+  state.codeEditorWrap = !state.codeEditorWrap;
+  applyCodeEditorWrapState();
+}
+
+function applyCodeEditorFullscreenState() {
+  elements.codeEditor.classList.toggle("is-fullscreen", state.codeEditorFullscreen);
+  const label = t(state.codeEditorFullscreen ? "codeExitFullscreen" : "codeFullscreen");
+  elements.codeEditorFullscreen.setAttribute("aria-label", label);
+  elements.codeEditorFullscreen.setAttribute("title", label);
+  elements.codeEditorFullscreen.innerHTML = state.codeEditorFullscreen ? `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M9 3v6H3"></path>
+      <path d="M3 9l6-6"></path>
+      <path d="M15 3v6h6"></path>
+      <path d="M21 9l-6-6"></path>
+      <path d="M9 21v-6H3"></path>
+      <path d="M3 15l6 6"></path>
+      <path d="M15 21v-6h6"></path>
+      <path d="M21 15l-6 6"></path>
+    </svg>
+  ` : `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M8 3H3v5"></path>
+      <path d="M3 3l6 6"></path>
+      <path d="M16 3h5v5"></path>
+      <path d="M21 3l-6 6"></path>
+      <path d="M8 21H3v-5"></path>
+      <path d="M3 21l6-6"></path>
+      <path d="M16 21h5v-5"></path>
+      <path d="M21 21l-6-6"></path>
+    </svg>
+  `;
+}
+
+function toggleCodeEditorFullscreen() {
+  const viewport = captureCodeEditorViewport();
+  state.codeEditorFullscreen = !state.codeEditorFullscreen;
+  applyCodeEditorFullscreenState();
+  restoreCodeEditorViewport(viewport);
+}
+
+async function saveCodeEditor({ closeAfterSave = false } = {}) {
+  const item = getItemById(state.codeEditingItemId);
+  if (!item) return;
+  if (!state.agentUrl) {
+    elements.codeEditorFeedback.textContent = t("codeNeedsAgent");
+    return;
+  }
+  const content = elements.codeEditorTextarea.value;
+  const canContinue = await confirmCodeEditorShareSafety(item.id, content);
+  if (!canContinue) return;
+  state.codeEditorSaving = true;
+  elements.codeEditorSave.disabled = true;
+  elements.codeEditorSaveClose.disabled = true;
+  try {
+    const response = await apiFetch(`/api/items/${encodeURIComponent(item.id)}/content`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content }),
+    });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    const updated = await response.json();
+    const index = state.items.findIndex((candidate) => candidate.id === item.id);
+    if (index >= 0) state.items[index] = updated;
+    state.codeEditorOriginal = content;
+    state.codeEditorDirty = false;
+    await refreshManifestAndWorkspace();
+    refreshReaderAfterContentEdit(updated);
+    elements.codeEditorFeedback.textContent = t("codeSaved");
+    setFeedback("codeSaved");
+    if (closeAfterSave) {
+      closeCodeEditor(true);
+      closeMetadataEditor();
+    }
+  } catch (error) {
+    console.error(error);
+    elements.codeEditorFeedback.textContent = t("codeSaveFailed");
+  } finally {
+    state.codeEditorSaving = false;
+    elements.codeEditorSave.disabled = false;
+    elements.codeEditorSaveClose.disabled = false;
+  }
+}
+
+function captureCodeEditorViewport() {
+  const textarea = elements.codeEditorTextarea;
+  return {
+    selectionStart: textarea.selectionStart || 0,
+    selectionEnd: textarea.selectionEnd || 0,
+    selectionDirection: textarea.selectionDirection || "none",
+    scrollTop: textarea.scrollTop,
+    scrollLeft: textarea.scrollLeft,
+  };
+}
+
+function restoreCodeEditorViewport(viewport) {
+  const textarea = elements.codeEditorTextarea;
+  const restore = () => {
+    textarea.focus({ preventScroll: true });
+    textarea.setSelectionRange(viewport.selectionStart, viewport.selectionEnd, viewport.selectionDirection);
+    textarea.scrollTop = viewport.scrollTop;
+    textarea.scrollLeft = viewport.scrollLeft;
+    updateCodeEditorPosition();
+  };
+  restore();
+  requestAnimationFrame(restore);
+}
+
+async function confirmCodeEditorShareSafety(itemId, content) {
+  try {
+    const response = await apiFetch(`/api/items/${encodeURIComponent(itemId)}/content/share-safety`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content }),
+    });
+    if (!response.ok) throw new Error(`Safety precheck returned ${response.status}`);
+    const scan = await response.json();
+    if (scan.shareable) return true;
+    const reasons = Array.isArray(scan.reasons) && scan.reasons.length ? scan.reasons.join(", ") : "unknown";
+    return window.confirm(t("codeShareSafetyConfirm", { reasons }));
+  } catch (error) {
+    console.error(error);
+    elements.codeEditorFeedback.textContent = t("codeShareSafetyFailed");
+    return window.confirm(t("codeShareSafetyConfirm", { reasons: t("codeShareSafetyFailed") }));
+  }
+}
+
+function refreshReaderAfterContentEdit(item) {
+  if (elements.reader.hidden || state.currentReaderItemId !== item.id) return;
+  renderReaderMetadata(item);
+  renderReaderActions(item);
+  const url = getReaderContentUrl(item);
+  const separator = url.includes("?") ? "&" : "?";
+  elements.readerFrame.src = `${url}${separator}edited=${Date.now()}`;
+}
+
+function insertCodeEditorTab(event) {
+  event.preventDefault();
+  const textarea = elements.codeEditorTextarea;
+  const start = textarea.selectionStart || 0;
+  const end = textarea.selectionEnd || 0;
+  const value = textarea.value;
+  textarea.value = `${value.slice(0, start)}  ${value.slice(end)}`;
+  textarea.selectionStart = start + 2;
+  textarea.selectionEnd = start + 2;
+  markCodeEditorDirty();
+}
+
+async function openFileEditor(id = state.editingItemId) {
+  const item = getItemById(id);
+  if (!item || isArchived(item)) return;
+  state.fileEditingItemId = item.id;
+  state.fileEditorOriginal = "";
+  state.fileEditorDirty = false;
+  state.fileEditorMode = "text";
+  state.fileEditorSelectedPath = "";
+  state.fileEditorHistory = [];
+  state.fileEditorHistoryIndex = -1;
+  state.fileEditorPanelCollapsed = false;
+  elements.fileEditorItemTitle.textContent = getItemTitle(item);
+  elements.fileEditorFeedback.textContent = t("fileEditorLoading");
+  elements.fileEditorSelectedName.textContent = t("fileNoSelection");
+  elements.fileEditor.hidden = false;
+  applyFileEditorPanelState();
+  setFileEditorMode("text");
+  updateFileEditorHistoryButtons();
+  try {
+    const response = state.agentUrl
+      ? await apiFetch(`/api/items/${encodeURIComponent(item.id)}/raw`, { cache: "no-store" })
+      : await fetch(getReaderRawUrl(item), { cache: "no-store" });
+    if (!response.ok) throw new Error(`Source returned ${response.status}`);
+    const source = await response.text();
+    if (state.fileEditingItemId !== item.id) return;
+    state.fileEditorOriginal = source;
+    loadFileEditorDocument(source);
+    pushFileEditorHistory(source, { dirty: false });
+    elements.fileEditorFeedback.textContent = t("fileEditorLoaded");
+  } catch (error) {
+    console.error(error);
+    elements.fileEditorFeedback.textContent = t("fileEditorSaveFailed");
+  }
+}
+
+function closeFileEditor(force = false) {
+  if (!force && state.fileEditorDirty && !window.confirm(t("fileEditorConfirmClose"))) return false;
+  state.fileEditingItemId = "";
+  state.fileEditorOriginal = "";
+  state.fileEditorDirty = false;
+  state.fileEditorSelectedPath = "";
+  state.fileEditorHistory = [];
+  state.fileEditorHistoryIndex = -1;
+  window.clearTimeout(state.fileEditorHistoryTimer);
+  state.fileEditorHistoryTimer = 0;
+  elements.fileEditor.hidden = true;
+  elements.fileEditorFrame.removeAttribute("srcdoc");
+  elements.fileEditorFeedback.textContent = "";
+  updateFileEditorHistoryButtons();
+  return true;
+}
+
+function loadFileEditorDocument(source) {
+  elements.fileEditorFrame.srcdoc = injectFileEditorRuntime(source);
+}
+
+function injectFileEditorRuntime(source) {
+  const runtime = `
+<style id="html-lore-visual-editor-style">
+  [data-html-lore-selected="true"] { outline: 2px solid #0f766e !important; outline-offset: 2px !important; }
+  [data-html-lore-hover="true"] { outline: 1px dashed rgba(15,118,110,.65) !important; outline-offset: 2px !important; }
+  [data-html-lore-editing-text="true"] { cursor: text !important; }
+</style>
+<script id="html-lore-visual-editor-runtime">
+(() => {
+  const blocked = new Set(["HTML","BODY","HEAD","META","TITLE","STYLE","SCRIPT","LINK","IFRAME","OBJECT","EMBED","CANVAS","SVG","NOSCRIPT"]);
+  const textTargets = new Set(["P","H1","H2","H3","H4","H5","H6","LI","A","BUTTON","SPAN","STRONG","EM","SMALL","LABEL","TD","TH","BLOCKQUOTE","PRE","CODE","FIGCAPTION"]);
+  const inlineTargets = new Set(["A","BUTTON","SPAN","STRONG","EM","SMALL","LABEL","CODE","B","I","U","S","MARK"]);
+  let selected = null;
+  let hover = null;
+  let mode = "text";
+  function pathFor(element) {
+    const parts = [];
+    let node = element;
+    while (node && node.nodeType === 1 && node !== document.documentElement) {
+      const parent = node.parentElement;
+      if (!parent) break;
+      const index = Array.from(parent.children).indexOf(node);
+      parts.unshift(index);
+      node = parent;
+    }
+    return parts.join(".");
+  }
+  function elementFor(path) {
+    if (!path) return null;
+    let node = document.documentElement;
+    for (const raw of path.split(".")) {
+      const index = Number(raw);
+      if (!Number.isInteger(index) || !node.children[index]) return null;
+      node = node.children[index];
+    }
+    return node;
+  }
+  function editable(element) {
+    if (!element || blocked.has(element.tagName)) return false;
+    if (element.closest("script,style,iframe,object,embed,canvas,svg")) return false;
+    return true;
+  }
+  function selectable(element) {
+    if (!editable(element)) return false;
+    if (textTargets.has(element.tagName)) return true;
+    if (isCompositeTextBlock(element)) return true;
+    if (element.children.length === 0 && (element.textContent || "").trim()) return true;
+    return false;
+  }
+  function isCompositeTextBlock(element) {
+    if (!editable(element) || !String(element.textContent || "").trim()) return false;
+    if (element.children.length === 0 || element.children.length > 8) return false;
+    const hasOwnText = Array.from(element.childNodes).some((node) => node.nodeType === Node.TEXT_NODE && String(node.textContent || "").trim());
+    if (!hasOwnText) return false;
+    return Array.from(element.children).every((child) => inlineTargets.has(child.tagName));
+  }
+  function selectionTarget(rawTarget) {
+    let target = rawTarget;
+    if (target && target.nodeType === Node.TEXT_NODE) target = target.parentElement;
+    if (!target || target.nodeType !== Node.ELEMENT_NODE) return null;
+    const parent = target.parentElement;
+    if (inlineTargets.has(target.tagName) && isCompositeTextBlock(parent)) return parent;
+    return target;
+  }
+  function snapshot(element) {
+    const computed = getComputedStyle(element);
+    return {
+      path: pathFor(element),
+      tag: element.tagName.toLowerCase(),
+      text: element.textContent || "",
+      style: {
+        color: element.style.color || rgbToHex(computed.color, "#000000"),
+        backgroundColor: element.style.backgroundColor || rgbToHex(computed.backgroundColor, "#ffffff"),
+        fontSize: parseFloat(computed.fontSize) || "",
+        lineHeight: computed.lineHeight === "normal" ? "" : parseFloat(computed.lineHeight) / (parseFloat(computed.fontSize) || 16),
+        fontWeight: element.style.fontWeight || computed.fontWeight || "",
+        fontStyle: element.style.fontStyle || computed.fontStyle || "",
+        textDecoration: element.style.textDecoration || computed.textDecorationLine || "",
+        textAlign: element.style.textAlign || computed.textAlign || "",
+      },
+    };
+  }
+  function select(element) {
+    if (!editable(element)) {
+      parent.postMessage({ type: "html-lore-file-editor-unsupported" }, "*");
+      return;
+    }
+    if (selected) {
+      selected.removeAttribute("data-html-lore-selected");
+      selected.removeAttribute("data-html-lore-editing-text");
+      selected.removeAttribute("contenteditable");
+    }
+    selected = element;
+    selected.setAttribute("data-html-lore-selected", "true");
+    applyMode();
+    parent.postMessage({ type: "html-lore-file-editor-select", selection: snapshot(element) }, "*");
+  }
+  function applyMode() {
+    if (!selected) return;
+    if (mode === "text") {
+      selected.setAttribute("contenteditable", "plaintext-only");
+      selected.setAttribute("data-html-lore-editing-text", "true");
+      selected.focus({ preventScroll: true });
+    } else {
+      selected.removeAttribute("contenteditable");
+      selected.removeAttribute("data-html-lore-editing-text");
+    }
+  }
+  function rgbToHex(value, fallback) {
+    const text = String(value || "");
+    const match = text.match(/rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)(?:,\\s*([\\d.]+))?/i);
+    if (!match) return fallback;
+    if (match[4] !== undefined && Number(match[4]) === 0) return fallback;
+    return "#" + [match[1], match[2], match[3]].map((part) => Number(part).toString(16).padStart(2, "0")).join("");
+  }
+  function serialize() {
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelector("#html-lore-visual-editor-style")?.remove();
+    clone.querySelector("#html-lore-visual-editor-runtime")?.remove();
+    clone.querySelectorAll("[data-html-lore-selected],[data-html-lore-hover]").forEach((node) => {
+      node.removeAttribute("data-html-lore-selected");
+      node.removeAttribute("data-html-lore-hover");
+      node.removeAttribute("data-html-lore-editing-text");
+      node.removeAttribute("contenteditable");
+    });
+    return "<!doctype html>\\n" + clone.outerHTML;
+  }
+  document.addEventListener("mouseover", (event) => {
+    const target = selectionTarget(event.target);
+    if (!selectable(target) || target === selected) return;
+    if (hover) hover.removeAttribute("data-html-lore-hover");
+    hover = target;
+    hover.setAttribute("data-html-lore-hover", "true");
+  }, true);
+  document.addEventListener("mouseout", () => {
+    if (hover) hover.removeAttribute("data-html-lore-hover");
+    hover = null;
+  }, true);
+  document.addEventListener("click", (event) => {
+    const target = selectionTarget(event.target);
+    if (mode === "text" && target === selected) return;
+    if (!selectable(target)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    select(target);
+  }, true);
+  document.addEventListener("input", (event) => {
+    if (!selected || event.target !== selected) return;
+    parent.postMessage({ type: "html-lore-file-editor-direct-text", selection: snapshot(selected) }, "*");
+  }, true);
+  window.addEventListener("message", (event) => {
+    const message = event.data || {};
+    if (message.type === "html-lore-file-editor-mode") {
+      mode = message.mode === "element" ? "element" : "text";
+      applyMode();
+    }
+    if (message.type === "html-lore-file-editor-apply") {
+      const element = elementFor(message.path);
+      if (!editable(element)) return;
+      if ("text" in message.values) element.textContent = String(message.values.text || "");
+      const style = message.values.style || {};
+      for (const [key, value] of Object.entries(style)) {
+        element.style[key] = value == null ? "" : String(value);
+      }
+      if (message.silent) return;
+      select(element);
+    }
+    if (message.type === "html-lore-file-editor-select") {
+      const element = elementFor(message.path);
+      if (editable(element)) select(element);
+    }
+    if (message.type === "html-lore-file-editor-serialize") {
+      parent.postMessage({ type: "html-lore-file-editor-serialized", html: serialize(), requestId: message.requestId }, "*");
+    }
+  });
+})();
+</script>`;
+  if (/<\/body\s*>/i.test(source)) return source.replace(/<\/body\s*>/i, `${runtime}</body>`);
+  return `${source}${runtime}`;
+}
+
+function setFileEditorMode(mode) {
+  state.fileEditorMode = mode === "element" ? "element" : "text";
+  elements.fileEditorModeText.classList.toggle("active", state.fileEditorMode === "text");
+  elements.fileEditorModeElement.classList.toggle("active", state.fileEditorMode === "element");
+  elements.fileEditorText.disabled = state.fileEditorMode !== "text";
+  postFileEditorMessage({ type: "html-lore-file-editor-mode", mode: state.fileEditorMode });
+}
+
+function applyFileEditorPanelState() {
+  state.fileEditorPanelWidth = clampFileEditorPanelWidth(state.fileEditorPanelWidth);
+  elements.fileEditor.classList.toggle("panel-collapsed", state.fileEditorPanelCollapsed);
+  elements.fileEditor.style.setProperty("--file-editor-panel-width", `${state.fileEditorPanelWidth}px`);
+  const label = t(state.fileEditorPanelCollapsed ? "expandEditorPanel" : "collapseEditorPanel");
+  elements.fileEditorPanelToggle.setAttribute("aria-label", label);
+  elements.fileEditorPanelToggle.setAttribute("title", label);
+  elements.fileEditorPanelToggle.innerHTML = state.fileEditorPanelCollapsed ? `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m15 18-6-6 6-6"></path>
+    </svg>
+  ` : `
+    <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m9 18 6-6-6-6"></path>
+    </svg>
+  `;
+}
+
+function toggleFileEditorPanel() {
+  state.fileEditorPanelCollapsed = !state.fileEditorPanelCollapsed;
+  setStored("file-editor-panel-collapsed", String(state.fileEditorPanelCollapsed));
+  applyFileEditorPanelState();
+}
+
+function handleFileEditorMessage(event) {
+  if (event.source !== elements.fileEditorFrame.contentWindow) return;
+  const message = event.data || {};
+  if (message.type === "html-lore-file-editor-select") {
+    updateFileEditorSelection(message.selection);
+  } else if (message.type === "html-lore-file-editor-direct-text") {
+    updateFileEditorSelection(message.selection);
+    markFileEditorDirty();
+    scheduleFileEditorHistorySnapshot();
+  } else if (message.type === "html-lore-file-editor-unsupported") {
+    elements.fileEditorFeedback.textContent = t("fileEditorUnsupported");
+  }
+}
+
+function updateFileEditorSelection(selection) {
+  state.fileEditorSelectedPath = selection.path || "";
+  state.fileEditorSyncing = true;
+  elements.fileEditorSelectedName.textContent = selection.tag ? `<${selection.tag}>` : t("fileNoSelection");
+  elements.fileEditorText.value = selection.text || "";
+  elements.fileEditorColor.value = normalizeColorInput(selection.style?.color || "#000000", "#000000");
+  elements.fileEditorBackground.value = normalizeColorInput(selection.style?.backgroundColor || "#ffffff", "#ffffff");
+  elements.fileEditorFontSize.value = selection.style?.fontSize ? Math.round(Number(selection.style.fontSize)) : "";
+  elements.fileEditorLineHeight.value = selection.style?.lineHeight ? Number(selection.style.lineHeight).toFixed(1) : "";
+  elements.fileEditorFontWeight.value = normalizeWeightValue(selection.style?.fontWeight || "");
+  elements.fileEditorTextAlign.value = normalizeAlignValue(selection.style?.textAlign || "");
+  elements.fileEditorBold.setAttribute("aria-pressed", normalizeWeightValue(selection.style?.fontWeight || "") === "700" ? "true" : "false");
+  elements.fileEditorItalic.setAttribute("aria-pressed", String(selection.style?.fontStyle || "") === "italic" ? "true" : "false");
+  const decoration = String(selection.style?.textDecoration || "");
+  elements.fileEditorUnderline.setAttribute("aria-pressed", decoration.includes("underline") ? "true" : "false");
+  elements.fileEditorStrike.setAttribute("aria-pressed", decoration.includes("line-through") ? "true" : "false");
+  state.fileEditorSyncing = false;
+  elements.fileEditorFeedback.textContent = state.fileEditorDirty ? t("fileEditorUnsaved") : t("fileEditorLoaded");
+}
+
+function normalizeColorInput(value, fallback = "#000000") {
+  const text = String(value || "").trim();
+  if (/^#[0-9a-f]{6}$/i.test(text)) return text.toLowerCase();
+  if (/^#[0-9a-f]{3}$/i.test(text)) {
+    return `#${text.slice(1).split("").map((part) => `${part}${part}`).join("")}`.toLowerCase();
+  }
+  const rgb = text.match(/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/i);
+  if (rgb) {
+    const [red, green, blue] = rgb.slice(1, 4).map((part) => clampNumber(part, 0, 255));
+    return `#${[red, green, blue].map((part) => Math.round(part).toString(16).padStart(2, "0")).join("")}`;
+  }
+  return fallback;
+}
+
+function normalizeWeightValue(value) {
+  const text = String(value || "");
+  if (Number(text) >= 650) return "700";
+  if (Number(text) >= 550) return "600";
+  if (Number(text) >= 350) return "400";
+  return "";
+}
+
+function normalizeAlignValue(value) {
+  return ["left", "center", "right"].includes(value) ? value : "";
+}
+
+function applyFileEditorPanelChange({ pushHistory = true, changed = "" } = {}) {
+  if (state.fileEditorSyncing || !state.fileEditorSelectedPath) return;
+  const style = {};
+  if (changed === "color") style.color = elements.fileEditorColor.value || "";
+  if (changed === "backgroundColor") style.backgroundColor = elements.fileEditorBackground.value || "";
+  if (changed === "fontSize") style.fontSize = elements.fileEditorFontSize.value ? `${clampNumber(elements.fileEditorFontSize.value, 10, 48)}px` : "";
+  if (changed === "lineHeight") style.lineHeight = elements.fileEditorLineHeight.value ? String(clampNumber(elements.fileEditorLineHeight.value, 1, 2.4)) : "";
+  if (changed === "fontWeight") style.fontWeight = elements.fileEditorFontWeight.value || "";
+  if (changed === "fontStyle") style.fontStyle = elements.fileEditorItalic.getAttribute("aria-pressed") === "true" ? "italic" : "";
+  if (changed === "textDecoration") style.textDecoration = getFileEditorTextDecorationValue();
+  if (changed === "textAlign") style.textAlign = elements.fileEditorTextAlign.value || "";
+  postFileEditorMessage({
+    type: "html-lore-file-editor-apply",
+    path: state.fileEditorSelectedPath,
+    silent: changed === "text",
+    values: {
+      ...(changed === "text" && state.fileEditorMode === "text" ? { text: elements.fileEditorText.value } : {}),
+      style,
+    },
+  });
+  markFileEditorDirty();
+  if (pushHistory) snapshotFileEditorHistory();
+}
+
+function clampNumber(value, min, max) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return min;
+  return Math.min(max, Math.max(min, number));
+}
+
+function postFileEditorMessage(message) {
+  elements.fileEditorFrame.contentWindow?.postMessage(message, "*");
+}
+
+function markFileEditorDirty() {
+  state.fileEditorDirty = true;
+  elements.fileEditorFeedback.textContent = t("fileEditorUnsaved");
+}
+
+function resetFileEditorElement() {
+  if (!state.fileEditorSelectedPath) return;
+  postFileEditorMessage({
+    type: "html-lore-file-editor-apply",
+    path: state.fileEditorSelectedPath,
+    values: {
+      style: {
+        color: "",
+        backgroundColor: "",
+        fontSize: "",
+        lineHeight: "",
+        fontWeight: "",
+        fontStyle: "",
+        textDecoration: "",
+        textAlign: "",
+      },
+    },
+  });
+  markFileEditorDirty();
+  snapshotFileEditorHistory();
+}
+
+function getFileEditorTextDecorationValue() {
+  const values = [];
+  if (elements.fileEditorUnderline.getAttribute("aria-pressed") === "true") values.push("underline");
+  if (elements.fileEditorStrike.getAttribute("aria-pressed") === "true") values.push("line-through");
+  return values.join(" ");
+}
+
+function toggleFileEditorTextStyle(style) {
+  if (!state.fileEditorSelectedPath) return;
+  if (style === "bold") {
+    const active = elements.fileEditorBold.getAttribute("aria-pressed") === "true";
+    elements.fileEditorBold.setAttribute("aria-pressed", active ? "false" : "true");
+    elements.fileEditorFontWeight.value = active ? "" : "700";
+    applyFileEditorPanelChange({ changed: "fontWeight" });
+    return;
+  }
+  if (style === "italic") {
+    const active = elements.fileEditorItalic.getAttribute("aria-pressed") === "true";
+    elements.fileEditorItalic.setAttribute("aria-pressed", active ? "false" : "true");
+    applyFileEditorPanelChange({ changed: "fontStyle" });
+    return;
+  }
+  if (style === "underline") {
+    const active = elements.fileEditorUnderline.getAttribute("aria-pressed") === "true";
+    elements.fileEditorUnderline.setAttribute("aria-pressed", active ? "false" : "true");
+    applyFileEditorPanelChange({ changed: "textDecoration" });
+    return;
+  }
+  if (style === "strike") {
+    const active = elements.fileEditorStrike.getAttribute("aria-pressed") === "true";
+    elements.fileEditorStrike.setAttribute("aria-pressed", active ? "false" : "true");
+    applyFileEditorPanelChange({ changed: "textDecoration" });
+  }
+}
+
+function startFileEditorPanelResize(event) {
+  if (state.fileEditorPanelCollapsed) return;
+  event.preventDefault();
+  if (event.pointerId !== undefined) event.currentTarget?.setPointerCapture?.(event.pointerId);
+  elements.body.classList.add("ai-panel-resizing");
+  const panelBox = elements.fileEditorPanel.getBoundingClientRect();
+  const pointerOffset = event.clientX - panelBox.left;
+  const startWidth = panelBox.width;
+  const onMove = (moveEvent) => {
+    state.fileEditorPanelWidth = clampFileEditorPanelWidth(startWidth + panelBox.left - moveEvent.clientX + pointerOffset);
+    applyFileEditorPanelState();
+  };
+  const onUp = () => {
+    elements.body.classList.remove("ai-panel-resizing");
+    setStored("file-editor-panel-width", String(state.fileEditorPanelWidth));
+    window.removeEventListener("pointermove", onMove);
+    window.removeEventListener("pointerup", onUp);
+    window.removeEventListener("pointercancel", onUp);
+    window.removeEventListener("blur", onUp);
+    event.currentTarget?.removeEventListener?.("lostpointercapture", onUp);
+  };
+  window.addEventListener("pointermove", onMove);
+  window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
+  window.addEventListener("blur", onUp);
+  event.currentTarget?.addEventListener?.("lostpointercapture", onUp, { once: true });
+}
+
+function requestFileEditorHtml() {
+  return new Promise((resolve) => {
+    const requestId = `file-edit-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const fallbackTimer = window.setTimeout(() => {
+      window.removeEventListener("message", listener);
+      resolve(serializeFileEditorFrameDirectly());
+    }, 500);
+    const listener = (event) => {
+      if (event.source !== elements.fileEditorFrame.contentWindow) return;
+      const message = event.data || {};
+      if (message.type !== "html-lore-file-editor-serialized" || message.requestId !== requestId) return;
+      window.clearTimeout(fallbackTimer);
+      window.removeEventListener("message", listener);
+      resolve(String(message.html || "") || serializeFileEditorFrameDirectly());
+    };
+    window.addEventListener("message", listener);
+    postFileEditorMessage({ type: "html-lore-file-editor-serialize", requestId });
+  });
+}
+
+function serializeFileEditorFrameDirectly() {
+  const doc = elements.fileEditorFrame.contentDocument;
+  if (!doc?.documentElement) return "";
+  const clone = doc.documentElement.cloneNode(true);
+  clone.querySelector("#html-lore-visual-editor-style")?.remove();
+  clone.querySelector("#html-lore-visual-editor-runtime")?.remove();
+  clone.querySelectorAll("[data-html-lore-selected],[data-html-lore-hover],[data-html-lore-editing-text],[contenteditable]").forEach((node) => {
+    node.removeAttribute("data-html-lore-selected");
+    node.removeAttribute("data-html-lore-hover");
+    node.removeAttribute("data-html-lore-editing-text");
+    node.removeAttribute("contenteditable");
+  });
+  return `<!doctype html>\n${clone.outerHTML}`;
+}
+
+async function snapshotFileEditorHistory() {
+  const html = await requestFileEditorHtml();
+  pushFileEditorHistory(html);
+}
+
+function scheduleFileEditorHistorySnapshot() {
+  window.clearTimeout(state.fileEditorHistoryTimer);
+  state.fileEditorHistoryTimer = window.setTimeout(() => {
+    state.fileEditorHistoryTimer = 0;
+    snapshotFileEditorHistory();
+  }, 650);
+}
+
+function pushFileEditorHistory(html, options = {}) {
+  const current = state.fileEditorHistory[state.fileEditorHistoryIndex];
+  if (current === html) return;
+  state.fileEditorHistory = state.fileEditorHistory.slice(0, state.fileEditorHistoryIndex + 1);
+  state.fileEditorHistory.push(html);
+  state.fileEditorHistoryIndex = state.fileEditorHistory.length - 1;
+  if (options.dirty === false) state.fileEditorDirty = false;
+  updateFileEditorHistoryButtons();
+}
+
+function updateFileEditorHistoryButtons() {
+  elements.fileEditorUndo.disabled = state.fileEditorHistoryIndex <= 0;
+  elements.fileEditorRedo.disabled = state.fileEditorHistoryIndex >= state.fileEditorHistory.length - 1;
+}
+
+function stepFileEditorHistory(direction) {
+  const next = state.fileEditorHistoryIndex + direction;
+  if (next < 0 || next >= state.fileEditorHistory.length) return;
+  state.fileEditorHistoryIndex = next;
+  const html = state.fileEditorHistory[next];
+  state.fileEditorDirty = html !== state.fileEditorOriginal;
+  loadFileEditorDocument(html);
+  state.fileEditorSelectedPath = "";
+  elements.fileEditorSelectedName.textContent = t("fileNoSelection");
+  elements.fileEditorFeedback.textContent = state.fileEditorDirty ? t("fileEditorUnsaved") : t("fileEditorLoaded");
+  updateFileEditorHistoryButtons();
+}
+
+async function saveFileEditor({ closeAfterSave = false } = {}) {
+  const item = getItemById(state.fileEditingItemId);
+  if (!item) return;
+  if (!state.agentUrl) {
+    elements.fileEditorFeedback.textContent = t("codeNeedsAgent");
+    return;
+  }
+  if (state.fileEditorMode === "text" && state.fileEditorSelectedPath) {
+    applyFileEditorPanelChange({ pushHistory: false, changed: "text" });
+  }
+  const content = await requestFileEditorHtml();
+  if (!content.trim()) {
+    elements.fileEditorFeedback.textContent = t("fileEditorSaveFailed");
+    return;
+  }
+  const canContinue = await confirmCodeEditorShareSafety(item.id, content);
+  if (!canContinue) return;
+  elements.fileEditorSave.disabled = true;
+  elements.fileEditorSaveClose.disabled = true;
+  try {
+    const response = await apiFetch(`/api/items/${encodeURIComponent(item.id)}/content`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content }),
+    });
+    if (!response.ok) throw new Error(`Agent returned ${response.status}`);
+    const updated = await response.json();
+    state.fileEditorOriginal = content;
+    state.fileEditorDirty = false;
+    await refreshManifestAndWorkspace();
+    refreshReaderAfterContentEdit(updated);
+    elements.fileEditorFeedback.textContent = t("fileEditorSaved");
+    setFeedback("fileEditorSaved");
+    if (closeAfterSave) {
+      closeFileEditor(true);
+      closeMetadataEditor();
+    } else {
+      pushFileEditorHistory(content, { dirty: false });
+    }
+  } catch (error) {
+    console.error(error);
+    elements.fileEditorFeedback.textContent = t("fileEditorSaveFailed");
+  } finally {
+    elements.fileEditorSave.disabled = false;
+    elements.fileEditorSaveClose.disabled = false;
+  }
+}
+
 function renderMetadataCollectionOptions(selectedCollection) {
   const names = new Set(getCollectionOptions().map((collection) => collection.name));
   names.add(selectedCollection || "Inbox");
@@ -3074,6 +4078,12 @@ function getInitialAiPanelWidth() {
   return 420;
 }
 
+function getInitialFileEditorPanelWidth() {
+  const saved = Number(getStored("file-editor-panel-width"));
+  if (Number.isFinite(saved) && saved >= 260 && saved <= 560) return saved;
+  return 320;
+}
+
 function getInitialAiComposerHeight() {
   const saved = Number(getStored("ai-composer-height"));
   if (Number.isFinite(saved) && saved >= 142 && saved <= 320) return saved;
@@ -3089,6 +4099,11 @@ function getInitialSidebarWidth() {
 function clampAiPanelWidth(width) {
   const viewportLimit = Math.max(320, window.innerWidth - 120);
   return Math.min(720, Math.max(320, Math.min(width, viewportLimit)));
+}
+
+function clampFileEditorPanelWidth(width) {
+  const viewportLimit = Math.max(260, window.innerWidth - 360);
+  return Math.min(560, Math.max(260, Math.min(width, viewportLimit)));
 }
 
 function clampAiComposerHeight(height) {
@@ -5291,7 +6306,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.1-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.2-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });
@@ -5324,6 +6339,7 @@ function applyTranslations() {
   applyFavoriteFilter();
   applyMultiFilterState();
   applySortState();
+  applyCodeEditorFullscreenState();
   updateThemeMetaColor(getResolvedTheme());
   renderVersionStatus();
 }
@@ -5358,6 +6374,12 @@ function isTransientFeedback(key) {
     "deleteFailed",
     "metadataSaved",
     "metadataSaveFailed",
+    "codeSaved",
+    "codeSaveFailed",
+    "codeNeedsAgent",
+    "editFileComingSoon",
+    "fileEditorSaved",
+    "fileEditorSaveFailed",
     "navigationSaveFailed",
   ]).has(key);
 }
@@ -5449,6 +6471,14 @@ document.addEventListener("click", (event) => {
   closeSortPopover();
 });
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !elements.codeEditor.hidden) {
+    closeCodeEditor();
+    return;
+  }
+  if (event.key === "Escape" && !elements.fileEditor.hidden) {
+    closeFileEditor();
+    return;
+  }
   if (event.key === "Escape" && !elements.metadataEditor.hidden) {
     closeMetadataEditor();
   }
@@ -5517,6 +6547,8 @@ elements.generateNoteDialog.addEventListener("click", (event) => {
   if (event.target === elements.generateNoteDialog) closeGenerateNoteDialog();
 });
 elements.metadataForm.addEventListener("submit", saveMetadataEditor);
+elements.metadataEditCode.addEventListener("click", () => openCodeEditor());
+elements.metadataEditFile.addEventListener("click", () => openFileEditor());
 elements.metadataCancel.addEventListener("click", closeMetadataEditor);
 elements.metadataCancelIcon.addEventListener("click", closeMetadataEditor);
 elements.metadataEditor.addEventListener("click", (event) => {
@@ -5525,6 +6557,53 @@ elements.metadataEditor.addEventListener("click", (event) => {
 elements.metadataCollection.addEventListener("change", () => {
   if (elements.metadataCollection.value === "__add__") addMetadataCollection();
 });
+elements.codeEditorSave.addEventListener("click", () => saveCodeEditor());
+elements.codeEditorSaveClose.addEventListener("click", () => saveCodeEditor({ closeAfterSave: true }));
+elements.codeEditorClose.addEventListener("click", () => closeCodeEditor());
+elements.codeEditorWrap.addEventListener("click", toggleCodeEditorWrap);
+elements.codeEditorFullscreen.addEventListener("click", toggleCodeEditorFullscreen);
+elements.codeEditorTextarea.addEventListener("input", markCodeEditorDirty);
+elements.codeEditorTextarea.addEventListener("keyup", updateCodeEditorPosition);
+elements.codeEditorTextarea.addEventListener("click", updateCodeEditorPosition);
+elements.codeEditorTextarea.addEventListener("keydown", (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+    event.preventDefault();
+    saveCodeEditor({ closeAfterSave: event.shiftKey });
+  } else if (event.key === "Tab") {
+    insertCodeEditorTab(event);
+  }
+});
+elements.codeEditor.addEventListener("click", (event) => {
+  if (event.target === elements.codeEditor) closeCodeEditor();
+});
+elements.fileEditorModeText.addEventListener("click", () => setFileEditorMode("text"));
+elements.fileEditorModeElement.addEventListener("click", () => setFileEditorMode("element"));
+elements.fileEditorPanelResize.addEventListener("pointerdown", startFileEditorPanelResize);
+elements.fileEditorPanelToggle.addEventListener("click", toggleFileEditorPanel);
+elements.fileEditorUndo.addEventListener("click", () => stepFileEditorHistory(-1));
+elements.fileEditorRedo.addEventListener("click", () => stepFileEditorHistory(1));
+elements.fileEditorReset.addEventListener("click", resetFileEditorElement);
+elements.fileEditorSave.addEventListener("click", () => saveFileEditor());
+elements.fileEditorSaveClose.addEventListener("click", () => saveFileEditor({ closeAfterSave: true }));
+elements.fileEditorClose.addEventListener("click", () => closeFileEditor());
+elements.fileEditorText.addEventListener("input", () => applyFileEditorPanelChange({ pushHistory: false, changed: "text" }));
+elements.fileEditorText.addEventListener("change", () => snapshotFileEditorHistory());
+elements.fileEditorBold.addEventListener("click", () => toggleFileEditorTextStyle("bold"));
+elements.fileEditorItalic.addEventListener("click", () => toggleFileEditorTextStyle("italic"));
+elements.fileEditorUnderline.addEventListener("click", () => toggleFileEditorTextStyle("underline"));
+elements.fileEditorStrike.addEventListener("click", () => toggleFileEditorTextStyle("strike"));
+[
+  [elements.fileEditorColor, "color"],
+  [elements.fileEditorBackground, "backgroundColor"],
+  [elements.fileEditorFontSize, "fontSize"],
+  [elements.fileEditorLineHeight, "lineHeight"],
+  [elements.fileEditorFontWeight, "fontWeight"],
+  [elements.fileEditorTextAlign, "textAlign"],
+].forEach(([control, changed]) => {
+  control.addEventListener("input", () => applyFileEditorPanelChange({ pushHistory: false, changed }));
+  control.addEventListener("change", () => snapshotFileEditorHistory());
+});
+window.addEventListener("message", handleFileEditorMessage);
 elements.importEntries.forEach((button) => {
   button.addEventListener("click", openHtmlImportPicker);
 });

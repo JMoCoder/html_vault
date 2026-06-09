@@ -6,7 +6,7 @@ import pytest
 
 from html_lore import __version__
 from html_lore.server.config import ServerSettings
-from html_lore.server.items import ItemContentError, ItemMetadataError, ItemService, normalize_query
+from html_lore.server.items import ItemContentError, ItemContentUpdateError, ItemMetadataError, ItemService, normalize_query
 from tests.api_server import run_api_server
 
 
@@ -153,6 +153,53 @@ def test_item_service_updates_metadata_and_rebuilds(tmp_path: Path) -> None:
     assert manifest_item["summary"] == "Updated summary."
 
 
+def test_item_service_updates_item_content_and_rebuilds(tmp_path: Path) -> None:
+    content_dir = tmp_path / "content"
+    meta_dir = tmp_path / "meta"
+    public_dir = tmp_path / "public"
+    shutil.copytree(ROOT / "examples" / "content", content_dir)
+    shutil.copytree(ROOT / "examples" / "meta", meta_dir)
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Content Edit Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    service = ItemService(settings)
+    new_html = "<!doctype html><html><head><title>Edited HTML</title></head><body><h1>Edited HTML</h1><p>Manual source edit.</p></body></html>"
+
+    updated = service.update_item_content("imported/docker-network.html", new_html)
+
+    metadata_text = (meta_dir / "items" / "imported" / "docker-network.yml").read_text(encoding="utf-8")
+    assert updated["title"] == "Docker Network Quick Notes"
+    assert service.read_item_content("imported/docker-network.html") == new_html
+    public_copy = public_dir / "content" / "imported" / "docker-network.html"
+    assert "Manual source edit." in public_copy.read_text(encoding="utf-8")
+    assert "collection: Dev" in metadata_text
+    assert "updated:" in metadata_text
+
+
+def test_item_service_rejects_content_update_for_archived_item(tmp_path: Path) -> None:
+    content_dir = tmp_path / "content"
+    meta_dir = tmp_path / "meta"
+    public_dir = tmp_path / "public"
+    shutil.copytree(ROOT / "examples" / "content", content_dir)
+    shutil.copytree(ROOT / "examples" / "meta", meta_dir)
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Archived Content Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    service = ItemService(settings)
+    service.update_item_state("imported/docker-network.html", {"archived": True})
+
+    with pytest.raises(ItemContentUpdateError):
+        service.update_item_content("imported/docker-network.html", "<html></html>")
+
+
 def test_item_service_rejects_metadata_update_for_archived_item(tmp_path: Path) -> None:
     content_dir = tmp_path / "content"
     meta_dir = tmp_path / "meta"
@@ -206,11 +253,16 @@ def test_item_service_updates_favorite_and_archive_state(tmp_path: Path) -> None
     assert "archived: false" in metadata_text
 
 
-def test_server_items_api() -> None:
+def test_server_items_api(tmp_path: Path) -> None:
+    content_dir = tmp_path / "content"
+    meta_dir = tmp_path / "meta"
+    public_dir = tmp_path / "public"
+    shutil.copytree(ROOT / "examples" / "content", content_dir)
+    shutil.copytree(ROOT / "examples" / "meta", meta_dir)
     server = run_api_server(
-        content_dir=SETTINGS.content_dir,
-        meta_dir=SETTINGS.meta_dir or ROOT / "examples" / "meta",
-        public_dir=SETTINGS.public_dir,
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
         site_title=SETTINGS.site_title,
     )
     try:
@@ -225,6 +277,23 @@ def test_server_items_api() -> None:
         raw = server.request_text("GET", "/api/items/imported/docker-network.html/raw")
         assert "Docker Network Quick Notes" in content
         assert raw == content
+
+        updated = server.json(
+            "PUT",
+            "/api/items/imported/docker-network.html/content",
+            {"content": "<!doctype html><html><head><title>API Edited</title></head><body>API edit</body></html>"},
+        )
+        assert updated["id"] == "imported/docker-network.html"
+        edited_content = server.request_text("GET", "/api/items/imported/docker-network.html/content")
+        assert "API edit" in edited_content
+
+        safety = server.json(
+            "POST",
+            "/api/items/imported/docker-network.html/content/share-safety",
+            {"content": "<!doctype html><html><body><script>alert(1)</script></body></html>"},
+        )
+        assert safety["shareable"] is False
+        assert "blocked-tag:script" in safety["reasons"]
 
         search = server.request("GET", "/api/search", query={"q": "安全", "tags": "MCP"})
         assert search["count"] == 1

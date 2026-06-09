@@ -64,6 +64,9 @@ Implemented today:
 - Tag multi-select filters with OR/AND matching.
 - Reader view with iframe reading, original-file access, copy/share actions,
   favorite/archive actions, and metadata editing.
+- Manual HTML source editing and conservative visual file editing for non-archived
+  notes, including text edits, color/background changes, inline text styles,
+  undo/redo, safety precheck before saving, and a collapsible editor panel.
 - Archive behavior with edit lock and permanent delete for archived notes.
 - Sidebar visibility management for library views, collections, and tags.
 - Global AI sidebar with workspace, collection, tag, reader, and manually

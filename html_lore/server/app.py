@@ -33,10 +33,10 @@ from .ai.api import (
 from .auth import current_user, login, logout, read_session, require_session, session_status
 from .config import ServerSettings, load_settings
 from .ai.rate_limit import AIRateLimitError, ai_rate_limiter
-from .items import ItemContentError, ItemDeleteError, ItemMetadataError, ItemService, ItemStateError, normalize_query
+from .items import ItemContentError, ItemContentUpdateError, ItemDeleteError, ItemMetadataError, ItemService, ItemStateError, normalize_query
 from .jobs import JobError, JobService
 from .navigation import NavigationConfigError, NavigationConfigService
-from .shares import ShareError, ShareSafetyError, ShareService, settings_for_share_token
+from .shares import ShareError, ShareSafetyError, ShareService, scan_share_content, settings_for_share_token
 from .uploads import UploadError, UploadService
 
 
@@ -471,6 +471,24 @@ def create_app() -> FastAPI:
             return HTMLResponse(service.read_item_content(item_id))
         except ItemContentError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.put("/api/items/{item_id:path}/content")
+    def update_item_content(item_id: str, values: dict, _: ApiAuth, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:
+        try:
+            return service.update_item_content(item_id, values.get("content"))
+        except ItemContentUpdateError as exc:
+            message = str(exc)
+            status = 404 if message == "Item not found." else 400
+            raise HTTPException(status_code=status, detail=message) from exc
+
+    @app.post("/api/items/{item_id:path}/content/share-safety")
+    def check_item_content_share_safety(item_id: str, values: dict, _: ApiAuth, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:
+        if not service.get_item(item_id):
+            raise HTTPException(status_code=404, detail="Item not found.")
+        content = values.get("content")
+        if not isinstance(content, str):
+            raise HTTPException(status_code=400, detail="Content must be a string.")
+        return scan_share_content(content)
 
     @app.get("/api/navigation")
     def navigation(_: ApiAuth, service: Annotated[NavigationConfigService, Depends(get_navigation_service)]) -> dict:

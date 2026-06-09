@@ -82,6 +82,54 @@ class ItemService:
     def read_item_content(self, item_id: str) -> str:
         return self.get_item_content_path(item_id).read_text(encoding="utf-8", errors="replace")
 
+    def update_item_content(self, item_id: str, content: Any) -> dict[str, Any]:
+        item = self.get_item(item_id)
+        if not item:
+            raise ItemContentUpdateError("Item not found.")
+        if bool(item.get("archived")):
+            raise ItemContentUpdateError("Archived items cannot be edited.")
+        if not isinstance(content, str):
+            raise ItemContentUpdateError("Content must be a string.")
+        if not content.strip():
+            raise ItemContentUpdateError("Content cannot be empty.")
+        if "\x00" in content:
+            raise ItemContentUpdateError("Content cannot contain null bytes.")
+        encoded = content.encode("utf-8")
+        if len(encoded) > self.settings.max_upload_bytes:
+            raise ItemContentUpdateError("Content exceeds the configured upload size limit.")
+
+        content_path = self.get_item_content_path(item_id)
+        self.preserve_item_dates_for_content_edit(item_id, item)
+        content_path.write_text(content, encoding="utf-8")
+        build_site(
+            content_dir=self.settings.content_dir,
+            meta_dir=self.settings.meta_dir,
+            output_dir=self.settings.public_dir,
+            site_title=self.settings.site_title,
+        )
+        updated = self.get_item(item_id)
+        if not updated:
+            raise ItemContentUpdateError("Updated item not found.")
+        return updated
+
+    def preserve_item_dates_for_content_edit(self, item_id: str, item: dict[str, Any]) -> None:
+        if self.settings.meta_dir is None:
+            return
+        metadata_path = metadata_path_for_item(self.settings.meta_dir, item_id)
+        if metadata_path is None:
+            return
+        ensure_within(metadata_path, self.settings.meta_dir)
+        metadata_path.parent.mkdir(parents=True, exist_ok=True)
+        existing = MetadataStore.load(self.settings.meta_dir).for_item(item_id)
+        values = {
+            **existing,
+            "id": item_id,
+            "created": existing.get("created") or item.get("created"),
+            "updated": existing.get("updated") or item.get("updated") or item.get("created"),
+        }
+        values = {key: value for key, value in values.items() if value is not None}
+        metadata_path.write_text(dump_simple_yaml(values), encoding="utf-8")
+
     def update_item_metadata(self, item_id: str, values: dict[str, Any]) -> dict[str, Any]:
         item = self.get_item(item_id)
         if not item:
@@ -180,6 +228,10 @@ class ItemDeleteError(ValueError):
 
 
 class ItemContentError(ValueError):
+    pass
+
+
+class ItemContentUpdateError(ValueError):
     pass
 
 
