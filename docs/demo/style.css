@@ -1614,6 +1614,9 @@ textarea {
   right: 14px;
   bottom: calc(100% + 8px);
   z-index: 4;
+  width: auto;
+  min-width: 0;
+  max-width: calc(100% - 28px);
   max-height: min(320px, 48vh);
   overflow: auto;
   padding: 10px;
@@ -1708,6 +1711,10 @@ textarea {
   border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
 }
 
+.ai-job-row > div {
+  min-width: 0;
+}
+
 .ai-job-row:last-child {
   border-bottom: 0;
 }
@@ -1724,7 +1731,15 @@ textarea {
 .ai-job-row .ai-run-meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 5px;
+  min-width: 0;
+}
+
+.ai-job-row .ai-run-meta span {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .ai-job-progress-dot {
@@ -2465,7 +2480,8 @@ a.icon-action {
 
 .share-row-meta {
   justify-content: flex-start;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .share-status {
@@ -2933,12 +2949,17 @@ a.icon-action {
 }
 
 .share-row.management-row {
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(220px, 1fr) minmax(210px, 0.45fr) auto;
   align-items: center;
 }
 
 .share-row .management-name {
   min-width: 0;
+}
+
+.share-row-details {
+  min-width: 0;
+  justify-self: stretch;
 }
 
 .share-row .management-name strong,
@@ -2969,7 +2990,15 @@ a.icon-action {
 }
 
 .share-row .share-row-meta {
-  margin-top: 6px;
+  margin-top: 0;
+  text-align: left;
+}
+
+.share-row .share-row-meta > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .share-row .management-actions {
@@ -2983,6 +3012,21 @@ a.icon-action {
 .share-row .management-actions button:first-child {
   border-color: color-mix(in srgb, var(--danger) 45%, var(--line));
   color: var(--danger);
+}
+
+@media (max-width: 760px) {
+  .share-row.management-row {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .share-row .share-row-meta {
+    margin-top: 6px;
+  }
+
+  .share-row .management-actions {
+    justify-content: flex-start;
+  }
 }
 
 #reader-share.active {

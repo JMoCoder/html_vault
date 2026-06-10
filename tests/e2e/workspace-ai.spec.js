@@ -275,6 +275,7 @@ test("workspace file create mode uploads material to the AI generation endpoint"
   await expect(page.locator("#ai-job-list")).toContainText("Generation history");
   await expect(page.locator("#ai-job-list")).toContainText("Failed note");
   await expect(page.locator("#ai-job-list")).toContainText("material.md");
+  await expect(page.locator("#ai-chat-log")).not.toContainText("AI job completed");
   await expect(page.locator("#ai-job-list").getByRole("button", { name: "Retry" })).toBeVisible();
   await page.locator("#ai-job-list").getByRole("button", { name: "Retry" }).click();
   await expect(page.locator("#ai-chat-log")).toContainText("Retrying AI job");
@@ -514,6 +515,7 @@ test("workspace note generation can select an existing note as reference style",
   await page.locator("#generate-note-submit").click();
 
   await expect(page.locator("#generate-note-feedback")).toContainText("AI job queued: ai-job-reference-test");
+  await expect(page.locator("#ai-chat-log")).not.toContainText("AI job queued");
   expect(conversationRequest).not.toBeNull();
   expect(generationRequest).toMatchObject({
     target_use: "share",
@@ -957,4 +959,20 @@ test("workspace AI renders markdown hierarchy and aligns the more menu", async (
   expect(menuMetrics.rightInset).toBe(14);
   expect(Math.abs(menuMetrics.bottomDelta)).toBeLessThanOrEqual(1);
   await expect(page.locator("#ai-more-menu .ai-more-menu-item.active")).toHaveCount(0);
+
+  await page.locator("#ai-job-toggle").click();
+  await expect(page.locator("#ai-job-list")).toBeVisible();
+  const jobListMetrics = await page.evaluate(() => {
+    const list = document.querySelector("#ai-job-list").getBoundingClientRect();
+    const panel = document.querySelector("#ai-panel").getBoundingClientRect();
+    return {
+      leftOverflow: Math.round(panel.left - list.left),
+      rightOverflow: Math.round(list.right - panel.right),
+      width: Math.round(list.width),
+      panelWidth: Math.round(panel.width),
+    };
+  });
+  expect(jobListMetrics.leftOverflow).toBeLessThanOrEqual(0);
+  expect(jobListMetrics.rightOverflow).toBeLessThanOrEqual(0);
+  expect(jobListMetrics.width).toBeLessThan(jobListMetrics.panelWidth);
 });

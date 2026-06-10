@@ -202,6 +202,23 @@ test("share dialog and management show expiry and static status", async ({ page 
   await expect(row.locator(".share-row-title")).toHaveCSS("cursor", "pointer");
   await expect(row.locator("[data-share-open]")).toHaveCSS("cursor", "pointer");
   await expect(row.locator("[data-share-revoke]")).toHaveCSS("cursor", "pointer");
+  const shareMetaLayout = await row.evaluate((node) => {
+    const title = node.querySelector(".management-name").getBoundingClientRect();
+    const details = node.querySelector(".share-row-details").getBoundingClientRect();
+    const meta = node.querySelector(".share-row-meta").getBoundingClientRect();
+    const status = node.querySelector(".share-status").getBoundingClientRect();
+    return {
+      detailsLeft: Math.round(details.left),
+      metaLeft: Math.round(meta.left),
+      statusLeft: Math.round(status.left),
+      sameRow: Math.abs(details.top - title.top) < 10,
+      metaHeight: Math.round(meta.height),
+    };
+  });
+  expect(shareMetaLayout.sameRow).toBe(true);
+  expect(Math.abs(shareMetaLayout.metaLeft - shareMetaLayout.detailsLeft)).toBeLessThanOrEqual(2);
+  expect(Math.abs(shareMetaLayout.statusLeft - shareMetaLayout.detailsLeft)).toBeLessThanOrEqual(2);
+  expect(shareMetaLayout.metaHeight).toBeLessThan(28);
 
   await row.locator(".share-row-title").click();
   await expect(page.locator("#settings-page")).toBeHidden();

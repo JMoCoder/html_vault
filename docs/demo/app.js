@@ -2850,6 +2850,8 @@ function renderShareManagementRow(share) {
   row.innerHTML = `
     <div class="management-name">
       ${titleMarkup}
+    </div>
+    <div class="share-row-details">
       <span class="share-row-meta">
         ${shareStatusMarkup(status)}
         <span>${escapeHtml(formatShareExpiry(share))}</span>
@@ -4842,7 +4844,6 @@ async function submitGenerateNoteDialog(event) {
     await loadAiJobs();
     startAiJobPolling();
     elements.generateNoteFeedback.textContent = t("aiJobQueued", { jobId: data.job_id || "" });
-    appendAiMessage("assistant", t("aiJobQueued", { jobId: data.job_id || "" }));
   } catch (error) {
     await loadAiRuns();
     elements.generateNoteFeedback.textContent = error?.message || t("generateNoteFailed");
@@ -5339,9 +5340,10 @@ async function loadAiJobs() {
     if (completedNow.length > 0) {
       await refreshManifestAndWorkspace();
       await loadAiRuns();
-      appendAiMessage("assistant", t("aiJobCompleted"));
     }
-    failedNow.forEach((job) => appendAiMessage("assistant", t("aiJobFailed", { message: job.error?.message || job.message || job.job_id })));
+    if (failedNow.length > 0 && elements.generateNoteFeedback) {
+      elements.generateNoteFeedback.textContent = t("aiJobFailed", { message: failedNow[0].error?.message || failedNow[0].message || failedNow[0].job_id });
+    }
     if (hasActiveAiJobs()) startAiJobPolling();
     else stopAiJobPolling();
   } catch (error) {
