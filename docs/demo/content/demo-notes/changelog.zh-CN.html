@@ -15,12 +15,25 @@
 <p class="eyebrow">发布轨迹</p>
 <h1>HTMlore 更新日志</h1>
 </article>
-<aside class="stat"><span class="badge">0.9.3</span></aside>
+<aside class="stat"><span class="badge">0.9.4</span></aside>
 </section>
 <section class="timeline doc">
 <h1>更新日志</h1>
 <p>语言：<a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
 <h2>[Unreleased]</h2>
+<h2>[0.9.4] - 2026-06-10</h2>
+<h3>变更</h3>
+<ul>
+<li>优化知识库问答提示词，加入当前上下文摘要与近期对话上下文，使较短的追问也能继续锚定当前资料库上下文。</li>
+<li>优化多笔记上下文检索：根据近期对话拓展短问题检索词，并优先覆盖更多不同笔记，再补充同笔记的重复片段。</li>
+<li>新增检索覆盖诊断信息，包括上下文条目数、已覆盖条目数、覆盖率和查询是否拓展。</li>
+<li>包版本、应用版本、PWA、Demo 缓存版本和 provider user-agent 更新为 <code>0.9.4</code>。</li>
+</ul>
+<h3>修复</h3>
+<ul>
+<li>修复 AI Markdown 渲染中有序列表全部显示为 1 的问题，并优化标题层级视觉效果；后端不限制模型固定回复格式。</li>
+<li>修复 AI 侧栏更多菜单的对齐和宽度。</li>
+</ul>
 <h2>[0.9.3] - 2026-06-09</h2>
 <h3>修复</h3>
 <ul>

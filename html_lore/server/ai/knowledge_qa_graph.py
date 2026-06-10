@@ -31,6 +31,8 @@ class KnowledgeQAState:
     conversation: dict[str, Any]
     content: str
     context_snapshot: dict[str, Any] = field(default_factory=dict)
+    recent_messages: list[dict[str, str]] = field(default_factory=list)
+    retrieval_query: str = ""
     evidence: list[dict[str, Any]] = field(default_factory=list)
     retrieval_status: dict[str, Any] = field(default_factory=dict)
     external_sources: list[dict[str, Any]] = field(default_factory=list)
@@ -105,6 +107,8 @@ class InputGuardrailNode:
         state.budget["message_chars"] = len(state.content)
         state.budget["max_message_chars"] = self.max_message_chars
         state.context_snapshot = state.conversation.get("context_snapshot") if isinstance(state.conversation.get("context_snapshot"), dict) else {}
+        state.recent_messages = recent_conversation_messages(state.conversation.get("messages"))
+        state.retrieval_query = build_retrieval_query(state.content, state.recent_messages)
 
 
 class RetrieverNode:
@@ -119,12 +123,14 @@ class RetrieverNode:
         result = retrieve_evidence_with_status(
             self.item_service,
             state.context_snapshot,
-            state.content,
+            state.retrieval_query or state.content,
             mode=self.retrieval_mode,
             model_client=self.model_client,
         )
         state.evidence = result.evidence
         state.retrieval_status = result.status
+        state.retrieval_status["query_expanded"] = bool(state.retrieval_query and state.retrieval_query != state.content)
+        state.retrieval_status.update(retrieval_coverage_status(state.context_snapshot, state.evidence))
 
 
 class ExternalSearchNode:
@@ -160,7 +166,7 @@ class EvidenceGateNode:
     def run(self, state: KnowledgeQAState) -> None:
         if state.evidence:
             state.sources = state.evidence
-            state.prompt_messages = build_answer_prompt(state.content, state.evidence, state.context_snapshot)
+            state.prompt_messages = build_answer_prompt(state.content, state.evidence, state.context_snapshot, state.recent_messages)
             state.budget["prompt_chars"] = prompt_chars(state.prompt_messages)
             state.budget["max_prompt_chars"] = self.max_prompt_chars
             validate_prompt_budget(state.prompt_messages, max_chars=self.max_prompt_chars)
@@ -214,12 +220,20 @@ class ConversationPersistNode:
         )
 
 
-def build_answer_prompt(content: str, evidence: list[dict[str, Any]], snapshot: dict[str, Any]) -> list[dict[str, str]]:
+def build_answer_prompt(
+    content: str,
+    evidence: list[dict[str, Any]],
+    snapshot: dict[str, Any],
+    recent_messages: list[dict[str, str]] | None = None,
+) -> list[dict[str, str]]:
     source_mode = str(snapshot.get("source_mode") or "local_only")
+    context_text = format_context_for_prompt(snapshot)
+    recent_text = format_recent_conversation_for_prompt(recent_messages or [])
     evidence_text = "\n\n".join(
         format_evidence_for_prompt(index, item)
         for index, item in enumerate(evidence, start=1)
     )
+    recent_section = f"RECENT_CONVERSATION:\n{recent_text}\n\n" if recent_text else ""
     return [
         {
             "role": "system",
@@ -233,6 +247,8 @@ def build_answer_prompt(content: str, evidence: list[dict[str, Any]], snapshot: 
             "role": "user",
             "content": (
                 f"SOURCE_MODE: {source_mode}\n"
+                f"CURRENT_CONTEXT:\n{context_text}\n\n"
+                f"{recent_section}"
                 f"USER_QUESTION:\n{content}\n\n"
                 f"TRUSTED_EVIDENCE:\n{evidence_text}"
             ),
@@ -248,6 +264,127 @@ def format_evidence_for_prompt(index: int, item: dict[str, Any]) -> str:
     if item.get("kind") == "external":
         return f"[{index}] EXTERNAL: {item.get('title')} ({item.get('url')})\n{item.get('snippet')}"
     return f"[{index}] LOCAL: {item.get('title')} ({item.get('item_id')})\n{item.get('snippet')}"
+
+
+def format_context_for_prompt(snapshot: dict[str, Any]) -> str:
+    scope = str(snapshot.get("scope") or "global")
+    requested = snapshot.get("requested") if isinstance(snapshot.get("requested"), dict) else {}
+    items = snapshot.get("items") if isinstance(snapshot.get("items"), list) else []
+    lines = [
+        f"scope: {scope}",
+        f"item_count: {snapshot.get('item_count', len(items))}",
+    ]
+    if requested:
+        requested_parts = []
+        for key in ("library", "collection", "tags", "tag_match", "favorite", "include_archived", "q"):
+            value = requested.get(key)
+            if value not in (None, "", []):
+                requested_parts.append(f"{key}={value}")
+        if requested_parts:
+            lines.append(f"requested: {', '.join(str(part) for part in requested_parts)}")
+    if items:
+        lines.append("items:")
+        for index, item in enumerate(items[:30], start=1):
+            title = str(item.get("title") or item.get("id") or "").strip()
+            item_id = str(item.get("id") or "").strip()
+            collection = str(item.get("collection") or "").strip()
+            tags = ", ".join(str(tag) for tag in item.get("tags") or [] if str(tag).strip())
+            summary = str(item.get("summary") or "").strip()
+            meta = " / ".join(part for part in (collection, tags) if part)
+            suffix = f" ({meta})" if meta else ""
+            summary_part = f" - {summary[:180]}" if summary else ""
+            lines.append(f"{index}. {title or item_id}{suffix}{summary_part}")
+        if len(items) > 30:
+            lines.append(f"... {len(items) - 30} more items omitted from context summary")
+    return "\n".join(lines)
+
+
+def recent_conversation_messages(messages: Any, *, limit: int = 6) -> list[dict[str, str]]:
+    if not isinstance(messages, list):
+        return []
+    normalized: list[dict[str, str]] = []
+    for message in messages:
+        if not isinstance(message, dict):
+            continue
+        role = str(message.get("role") or "").strip().lower()
+        content = str(message.get("content") or "").strip()
+        if role not in {"user", "assistant"} or not content:
+            continue
+        normalized.append({"role": role, "content": content[:900]})
+    return normalized[-max(1, int(limit or 6)) :]
+
+
+def build_retrieval_query(content: str, recent_messages: list[dict[str, str]]) -> str:
+    question = str(content or "").strip()
+    if not recent_messages or not is_followup_question(question):
+        return question
+    history = " ".join(message["content"] for message in recent_messages[-4:])
+    return f"{history[:1600]} {question}".strip()
+
+
+def is_followup_question(content: str) -> bool:
+    normalized = str(content or "").strip().lower()
+    if not normalized:
+        return False
+    if len(normalized) > 120:
+        return False
+    followup_markers = [
+        "continue",
+        "tell me more",
+        "what about",
+        "how about",
+        "that",
+        "this",
+        "it",
+        "they",
+        "them",
+        "those",
+        "继续",
+        "展开",
+        "详细",
+        "再说",
+        "这个",
+        "这些",
+        "它",
+        "他们",
+        "上述",
+        "前面",
+        "刚才",
+        "还有",
+        "呢",
+        "続け",
+        "詳しく",
+        "それ",
+        "これ",
+    ]
+    return any(marker in normalized for marker in followup_markers)
+
+
+def format_recent_conversation_for_prompt(messages: list[dict[str, str]]) -> str:
+    if not messages:
+        return ""
+    lines = []
+    for index, message in enumerate(messages, start=1):
+        role = "USER" if message.get("role") == "user" else "ASSISTANT"
+        content = str(message.get("content") or "").replace("\n", " ").strip()
+        lines.append(f"{index}. {role}: {content[:600]}")
+    return "\n".join(lines)
+
+
+def retrieval_coverage_status(snapshot: dict[str, Any], evidence: list[dict[str, Any]]) -> dict[str, Any]:
+    context_ids = [str(item_id) for item_id in snapshot.get("item_ids") or [] if str(item_id)]
+    evidence_ids = {
+        str(item.get("item_id") or "")
+        for item in evidence
+        if item.get("kind") != "external" and str(item.get("item_id") or "")
+    }
+    context_count = len(context_ids)
+    covered_count = len(evidence_ids)
+    return {
+        "context_item_count": context_count,
+        "covered_item_count": covered_count,
+        "coverage_ratio": round(covered_count / context_count, 4) if context_count else 0,
+    }
 
 
 def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: dict[str, str] | None = None) -> dict[str, Any]:

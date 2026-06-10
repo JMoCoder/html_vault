@@ -9,6 +9,27 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-06-10
+
+### Changed
+
+- Improved knowledge-base Q&A prompts with current context summaries and recent
+  conversation context, so short follow-up questions can stay grounded in the
+  active notebook context.
+- Improved retrieval for multi-note contexts by expanding short follow-up
+  queries from recent dialogue and balancing evidence across more distinct
+  notes before adding duplicate chunks.
+- Added retrieval coverage diagnostics for context item count, covered item
+  count, coverage ratio, and query expansion state.
+- Updated package, app, PWA, demo, and provider user-agent versions to `0.9.4`.
+
+### Fixed
+
+- Fixed AI Markdown rendering so ordered lists keep natural numbering and
+  heading hierarchy is visually coherent without constraining model output
+  format in the backend prompt.
+- Fixed AI sidebar More menu alignment and width.
+
 ## [0.9.3] - 2026-06-09
 
 ### Fixed

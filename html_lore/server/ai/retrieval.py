@@ -13,6 +13,7 @@ from .model_client import ModelClient
 MAX_CHUNK_CHARS = 1800
 MAX_EVIDENCE_CHARS = 5000
 RETRIEVAL_MODES = {"keyword", "vector", "hybrid"}
+MAX_CHUNKS_PER_ITEM = 2
 
 
 @dataclass(frozen=True)
@@ -76,6 +77,15 @@ def extract_safe_text(html: str) -> str:
     parser.feed(html)
     parser.close()
     return parser.text()
+
+
+def extract_safe_blocks(html: str) -> list[str]:
+    parser = SafeTextExtractor()
+    parser.feed(html)
+    parser.close()
+    raw = " ".join(parser.parts)
+    blocks = [normalize_space(line) for line in raw.splitlines()]
+    return [block for block in blocks if block]
 
 
 def retrieve_evidence(item_service: ItemService, context_snapshot: dict[str, Any], query: str, *, max_results: int = 5) -> list[dict[str, Any]]:
@@ -155,8 +165,12 @@ def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[
         except ItemContentError:
             continue
         text = evidence_text(item, html)
-        score = score_text(query, text)
+        blocks = extract_safe_blocks(html)
+        chunks = chunk_blocks(blocks) or [text]
+        item_score = score_item_metadata(query, item)
+        chunk_evidences: list[Evidence] = []
         if overview_scope:
+            score = score_text(query, text) + item_score
             fallback_candidates.append(
                 Evidence(
                     item_id=item_id,
@@ -166,25 +180,30 @@ def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[
                 ),
             )
             continue
-        if score <= 0:
+        for chunk_index, chunk in enumerate(chunks):
+            score = score_text(query, chunk) + item_score
+            if score <= 0:
+                continue
+            chunk_evidences.append(
+                Evidence(
+                    item_id=item_id,
+                    title=str(item.get("title") or item_id),
+                    snippet=snippet_for_query(chunk, query),
+                    score=score,
+                ),
+            )
+        if not chunk_evidences:
             if allow_generic_fallback:
                 fallback_candidates.append(
                     Evidence(
                         item_id=item_id,
                         title=str(item.get("title") or item_id),
-                        snippet=snippet_for_query(text, query),
+                        snippet=overview_snippet(item, text),
                         score=1,
                     ),
                 )
             continue
-        evidences.append(
-            Evidence(
-                item_id=item_id,
-                title=str(item.get("title") or item_id),
-                snippet=snippet_for_query(text, query),
-                score=score,
-            ),
-        )
+        evidences.extend(best_item_chunks(chunk_evidences))
     if overview_scope and fallback_candidates:
         return [
             evidence.as_dict()
@@ -192,7 +211,85 @@ def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[
         ]
     if not evidences and fallback_candidates:
         return [evidence.as_dict() for evidence in fallback_candidates[:max_results]]
-    return [evidence.as_dict() for evidence in sorted(evidences, key=lambda item: (-item.score, item.title))[:max_results]]
+    balanced = scope not in {"reader"} and len(item_ids) > 1
+    return [evidence.as_dict() for evidence in rank_evidence(evidences, max_results=max_results, balanced=balanced)]
+
+
+def chunk_blocks(blocks: list[str]) -> list[str]:
+    chunks: list[str] = []
+    current: list[str] = []
+    current_len = 0
+    for block in blocks:
+        text = normalize_space(block)
+        if not text:
+            continue
+        if len(text) > MAX_CHUNK_CHARS:
+            if current:
+                chunks.append(" ".join(current))
+                current = []
+                current_len = 0
+            chunks.extend(split_long_text(text, MAX_CHUNK_CHARS))
+            continue
+        next_len = current_len + len(text) + (1 if current else 0)
+        if current and next_len > MAX_CHUNK_CHARS:
+            chunks.append(" ".join(current))
+            current = [text]
+            current_len = len(text)
+        else:
+            current.append(text)
+            current_len = next_len
+    if current:
+        chunks.append(" ".join(current))
+    return chunks
+
+
+def split_long_text(text: str, size: int) -> list[str]:
+    chunks: list[str] = []
+    start = 0
+    while start < len(text):
+        chunks.append(text[start : start + size].strip())
+        start += size
+    return [chunk for chunk in chunks if chunk]
+
+
+def best_item_chunks(evidences: list[Evidence]) -> list[Evidence]:
+    deduped: list[Evidence] = []
+    seen: set[str] = set()
+    for evidence in sorted(evidences, key=lambda item: (-item.score, item.snippet)):
+        key = normalize_space(evidence.snippet).lower()[:240]
+        if key in seen:
+            continue
+        deduped.append(evidence)
+        seen.add(key)
+        if len(deduped) >= MAX_CHUNKS_PER_ITEM:
+            break
+    return deduped
+
+
+def rank_evidence(evidences: list[Evidence], *, max_results: int, balanced: bool = False) -> list[Evidence]:
+    limit = max(1, int(max_results or 5))
+    sorted_evidence = sorted(evidences, key=lambda item: (-item.score, item.title, item.snippet))
+    if not balanced:
+        return sorted_evidence[:limit]
+
+    by_item: dict[str, list[Evidence]] = {}
+    for evidence in sorted_evidence:
+        by_item.setdefault(evidence.item_id, []).append(evidence)
+
+    ranked: list[Evidence] = []
+    first_pass = sorted((items[0] for items in by_item.values()), key=lambda item: (-item.score, item.title, item.snippet))
+    for evidence in first_pass:
+        if len(ranked) >= limit:
+            return ranked
+        ranked.append(evidence)
+
+    ranked_keys = {(item.item_id, item.snippet) for item in ranked}
+    extras = [item for item in sorted_evidence if (item.item_id, item.snippet) not in ranked_keys]
+    for evidence in extras:
+        if len(ranked) >= limit:
+            break
+        ranked.append(evidence)
+    return ranked
 
 
 def retrieve_vector_evidence(
@@ -236,6 +333,32 @@ def evidence_text(item: dict[str, Any], html: str) -> str:
     return normalize_space(" ".join(fields))[:MAX_EVIDENCE_CHARS]
 
 
+def score_item_metadata(query: str, item: dict[str, Any]) -> int:
+    tokens = query_tokens(normalize_space(query).lower())
+    if not tokens:
+        return 0
+    title = str(item.get("title") or "").lower()
+    summary = str(item.get("summary") or "").lower()
+    collection = str(item.get("collection") or "").lower()
+    tags = " ".join(str(tag) for tag in item.get("tags") or []).lower()
+    score = 0
+    normalized_query = normalize_space(query).lower()
+    if normalized_query and normalized_query in title:
+        score += 50
+    if normalized_query and normalized_query in summary:
+        score += 24
+    for token in tokens:
+        if token in title:
+            score += max(8, min(len(token) * 3, 36))
+        if token in tags:
+            score += max(6, min(len(token) * 3, 30))
+        if token in collection:
+            score += max(3, min(len(token) * 2, 16))
+        if token in summary:
+            score += max(4, min(len(token) * 2, 24))
+    return score
+
+
 def score_text(query: str, text: str) -> int:
     normalized_query = normalize_space(query).lower()
     normalized_text = text.lower()
@@ -275,7 +398,8 @@ def query_tokens(query: str) -> list[str]:
         stripped = strip_cjk_stopwords(segment)
         if len(stripped) >= 2:
             cjk_tokens.append(stripped)
-        cjk_tokens.extend(re.findall(r"[\u4e00-\u9fff]{2}", stripped))
+        cjk_tokens.extend(re.findall(r"(?=([\u4e00-\u9fff]{2}))", stripped))
+        cjk_tokens.extend(re.findall(r"(?=([\u4e00-\u9fff]{3}))", stripped))
     return dedupe_tokens([*ascii_tokens, *cjk_tokens])
 
 

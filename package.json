@@ -1,6 +1,6 @@
 {
   "name": "html-lore",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "private": true,
   "description": "Development tooling for HTMlore frontend and static demo checks.",
   "scripts": {

@@ -15,7 +15,7 @@
 <p class="eyebrow">Release history</p>
 <h1>HTMlore Changelog</h1>
 </article>
-<aside class="stat"><span class="badge">0.9.3</span></aside>
+<aside class="stat"><span class="badge">0.9.4</span></aside>
 </section>
 <section class="timeline doc">
 <h1>Changelog</h1>
@@ -24,6 +24,19 @@
 <p>The format is based on Keep a Changelog, and this project uses semantic</p>
 <p>versioning after the initial public release.</p>
 <h2>[Unreleased]</h2>
+<h2>[0.9.4] - 2026-06-10</h2>
+<h3>Changed</h3>
+<ul>
+<li>Improved knowledge-base Q&amp;A prompts with current context summaries and recent conversation context, so short follow-up questions can stay grounded in the active notebook context.</li>
+<li>Improved retrieval for multi-note contexts by expanding short follow-up queries from recent dialogue and balancing evidence across more distinct notes before adding duplicate chunks.</li>
+<li>Added retrieval coverage diagnostics for context item count, covered item count, coverage ratio, and query expansion state.</li>
+<li>Updated package, app, PWA, demo, and provider user-agent versions to <code>0.9.4</code>.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed AI Markdown rendering so ordered lists keep natural numbering and heading hierarchy is visually coherent without constraining model output format in the backend prompt.</li>
+<li>Fixed AI sidebar More menu alignment and width.</li>
+</ul>
 <h2>[0.9.3] - 2026-06-09</h2>
 <h3>Fixed</h3>
 <ul>

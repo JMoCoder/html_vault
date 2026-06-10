@@ -35,7 +35,7 @@
     {
       "id": "demo-notes/changelog.ja.html",
       "title": "HTMlore 変更履歴",
-      "summary": "日本語 CHANGELOG 全文を HTML 化し、0.9.3 ビジュアルエディター改善リリースと過去の開発マイルストーンを表示します。",
+      "summary": "日本語 CHANGELOG 全文を HTML 化し、0.9.4 AI Q&A 検索・表示改善リリースと過去の開発マイルストーンを表示します。",
       "path": "content/demo-notes/changelog.ja.html",
       "source_type": "html",
       "source_url": null,

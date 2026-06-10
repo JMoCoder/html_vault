@@ -1363,7 +1363,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.9.3",
+  currentVersion: "0.9.4",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -2348,7 +2348,12 @@ function bindReaderFrameScroll() {
         return;
       }
       const scrollTop = readerWindow.scrollY || readerDocument.documentElement.scrollTop || readerDocument.body.scrollTop || 0;
-      elements.reader.classList.toggle("compact-reader-header", scrollTop > 24);
+      const compact = elements.reader.classList.contains("compact-reader-header");
+      if (!compact && scrollTop > 36) {
+        elements.reader.classList.add("compact-reader-header");
+      } else if (compact && scrollTop < 10) {
+        elements.reader.classList.remove("compact-reader-header");
+      }
     };
     readerWindow.addEventListener("scroll", update, { passive: true });
     readerWindow.addEventListener("resize", update);
@@ -4438,6 +4443,17 @@ function renderMarkdown(value) {
     blocks.push(`<${list.type}>${list.items.map((item) => `<li>${renderInlineMarkdown(item)}</li>`).join("")}</${list.type}>`);
     list = null;
   };
+  const appendListContinuation = (line) => {
+    if (!list?.items.length) return false;
+    const attachAfterBlank = /^(目标|证据|例如|重点|说明|原因|建议|步骤|方法|风险|收益|价值|结论|可以|可|是|要|让|对|寻找|引入|探索|匹配|设计|重点沟通|核心)/.test(line);
+    const previousLooksLikeLabel = /^(\*\*)?[^。！？.!?]{2,80}(\*\*)?$/.test(list.items[list.items.length - 1] || "");
+    if (!list.hadBlank || attachAfterBlank || previousLooksLikeLabel) {
+      list.items[list.items.length - 1] = `${list.items[list.items.length - 1]} ${line}`;
+      list.hadBlank = false;
+      return true;
+    }
+    return false;
+  };
   const flushQuote = () => {
     if (quote.length === 0) return;
     blocks.push(`<blockquote>${renderInlineMarkdown(quote.join(" "))}</blockquote>`);
@@ -4472,7 +4488,8 @@ function renderMarkdown(value) {
 
     const trimmed = line.trim();
     if (!trimmed) {
-      flushTextBlocks();
+      if (list) list.hadBlank = true;
+      else flushTextBlocks();
       return;
     }
 
@@ -4493,6 +4510,7 @@ function renderMarkdown(value) {
       if (!list || list.type !== type) flushList();
       if (!list) list = { type, items: [] };
       list.items.push((unordered || ordered)[1]);
+      list.hadBlank = false;
       return;
     }
 
@@ -4504,6 +4522,7 @@ function renderMarkdown(value) {
       return;
     }
 
+    if (appendListContinuation(trimmed)) return;
     flushList();
     flushQuote();
     paragraph.push(trimmed);
@@ -5388,10 +5407,17 @@ function renderAiMoreMenu() {
   elements.aiMoreMenu.hidden = !state.aiMoreOpen;
   if (elements.aiHistoryToggle) {
     elements.aiHistoryToggle.innerHTML = `${historyIcon()}<span>${escapeHtml(t("aiConversationHistory"))}</span>`;
+    elements.aiHistoryToggle.classList.toggle("active", state.aiHistoryOpen);
     elements.aiHistoryToggle.setAttribute("aria-expanded", String(state.aiHistoryOpen));
   }
   if (elements.aiNewChat) {
     elements.aiNewChat.innerHTML = `${plusIcon()}<span>${escapeHtml(t("aiNewConversation"))}</span>`;
+    elements.aiNewChat.classList.remove("active");
+  }
+  if (elements.aiJobToggle) {
+    elements.aiJobToggle.innerHTML = `${queueIcon()}<span>${escapeHtml(t("aiJobQueue"))}</span>${activeCount > 0 ? `<em>${activeCount}</em>` : ""}`;
+    elements.aiJobToggle.classList.toggle("active", state.aiJobsOpen);
+    elements.aiJobToggle.setAttribute("aria-expanded", String(state.aiJobsOpen));
   }
 }
 
@@ -5402,8 +5428,7 @@ async function loadAiHistory() {
     return;
   }
   try {
-    const contextKey = getAiContextKey();
-    const response = await apiFetch(`/api/ai/conversations?limit=20&context_key=${encodeURIComponent(contextKey)}`, { cache: "no-store" });
+    const response = await apiFetch("/api/ai/conversations?limit=20", { cache: "no-store" });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
     state.aiHistory = Array.isArray(data.conversations) ? data.conversations : [];
@@ -5562,15 +5587,16 @@ function renderAiHistoryRow(conversation) {
   row.type = "button";
   row.className = "ai-history-row";
   row.classList.toggle("active", conversation.id === state.aiConversationId);
+  const contextLabel = getConversationContextLabel(conversation);
   row.innerHTML = `
     <strong>${escapeHtml(conversation.title || t("aiConversation"))}</strong>
-    <span>${escapeHtml(formatDateTime(conversation.updated_at || conversation.created_at))} · ${escapeHtml(String(conversation.message_count || 0))}</span>
+    <span>${escapeHtml(contextLabel)} · ${escapeHtml(formatDateTime(conversation.updated_at || conversation.created_at))} · ${escapeHtml(String(conversation.message_count || 0))}</span>
   `;
   row.addEventListener("click", async () => {
     try {
-      await loadAiConversation(conversation);
       state.aiHistoryOpen = false;
       renderAiHistory();
+      openAiConversationContext(conversation);
     } catch (error) {
       console.error(error);
     }
@@ -5580,9 +5606,6 @@ function renderAiHistoryRow(conversation) {
 
 function renderAiJobs() {
   if (!elements.aiJobList || !elements.aiJobToggle) return;
-  const activeCount = activeAiJobCount();
-  elements.aiJobToggle.innerHTML = `${queueIcon()}<span>${escapeHtml(t("aiJobQueue"))}</span>${activeCount > 0 ? `<em>${activeCount}</em>` : ""}`;
-  elements.aiJobToggle.classList.toggle("active", state.aiJobsOpen);
   renderAiMoreMenu();
   elements.aiJobList.hidden = !state.aiJobsOpen;
   if (!state.aiJobsOpen) return;
@@ -6316,7 +6339,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.3-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.4-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });

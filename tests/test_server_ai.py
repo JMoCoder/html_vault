@@ -7,7 +7,7 @@ from pathlib import Path
 from html_lore.builder import build_site
 from html_lore.server.config import ServerSettings
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
-from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, format_evidence_for_prompt
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, format_evidence_for_prompt
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
@@ -40,6 +40,40 @@ def make_note(content_dir: Path, meta_dir: Path, item_id: str, *, title: str, co
             [
                 f"title: {title}",
                 "summary: Test summary",
+                "source_type: imported",
+                f"collection: {collection}",
+                "tags:",
+                *[f"  - {tag}" for tag in tags],
+                f"archived: {'true' if archived else 'false'}",
+                "",
+            ],
+        ),
+        encoding="utf-8",
+    )
+
+
+def make_note_with_html(
+    content_dir: Path,
+    meta_dir: Path,
+    item_id: str,
+    *,
+    title: str,
+    collection: str,
+    tags: list[str],
+    html: str,
+    summary: str = "Test summary",
+    archived: bool = False,
+) -> None:
+    content_path = content_dir / item_id
+    content_path.parent.mkdir(parents=True, exist_ok=True)
+    content_path.write_text(html, encoding="utf-8")
+    metadata_path = meta_dir / "items" / f"{item_id.removesuffix('.html')}.yml"
+    metadata_path.parent.mkdir(parents=True, exist_ok=True)
+    metadata_path.write_text(
+        "\n".join(
+            [
+                f"title: {title}",
+                f"summary: {summary}",
                 "source_type: imported",
                 f"collection: {collection}",
                 "tags:",
@@ -749,6 +783,70 @@ def test_knowledge_qa_graph_passes_configured_response_token_limit(tmp_path: Pat
     assert state.answer == "Short answer."
 
 
+def test_knowledge_qa_graph_uses_recent_history_for_followup_retrieval(tmp_path: Path) -> None:
+    from html_lore.server.ai.conversations import ConversationStore
+    from html_lore.server.items import ItemService
+
+    class RecordingClient:
+        def __init__(self) -> None:
+            self.messages = []
+
+        def chat(self, *, messages, temperature=0.2, max_tokens=1024):
+            self.messages = messages
+            return {"content": "Follow-up answer.", "usage": {"total_tokens": 9}}
+
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "mcp.html",
+        title="MCP 安全实践",
+        collection="AI",
+        tags=["MCP", "安全"],
+        summary="Model Context Protocol 的权限边界、工具调用和风险控制。",
+        html="<!doctype html><html><body><p>MCP 工具调用需要最小权限和显式授权。</p></body></html>",
+    )
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="QA Follow-up Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    item_service = ItemService(settings)
+    conversation_store = ConversationStore(settings, item_service)
+    conversation = conversation_store.create({"context": {"scope": "global"}})
+    conversation = conversation_store.append_messages(
+        conversation["id"],
+        [
+            {"role": "user", "content": "MCP 安全有哪些重点？"},
+            {"role": "assistant", "content": "MCP 安全重点包括权限边界和工具调用授权。"},
+        ],
+    )
+    client = RecordingClient()
+
+    state = KnowledgeQAGraph(
+        item_service=item_service,
+        model_client=client,
+        conversation_store=conversation_store,
+    ).run(
+        KnowledgeQAState(
+            conversation_id=conversation["id"],
+            conversation=conversation,
+            content="这个展开说说",
+        ),
+    )
+
+    assert state.retrieval_status["query_expanded"] is True
+    assert state.retrieval_status["context_item_count"] == 1
+    assert state.retrieval_status["covered_item_count"] == 1
+    assert state.retrieval_status["coverage_ratio"] == 1
+    assert state.sources[0]["item_id"] == "mcp.html"
+    assert "RECENT_CONVERSATION:" in client.messages[1]["content"]
+    assert "MCP 安全重点包括权限边界" in client.messages[1]["content"]
+    assert state.answer == "Follow-up answer."
+
+
 def test_vector_retrieval_mode_falls_back_to_keyword_when_embedding_is_unavailable(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = make_dirs(tmp_path)
     make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
@@ -764,13 +862,13 @@ def test_vector_retrieval_mode_falls_back_to_keyword_when_embedding_is_unavailab
     try:
         conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
         response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "What does MCP security cover?"})
-        assert response["retrieval_status"] == {
-            "requested_mode": "vector",
-            "effective_mode": "keyword",
-            "fallback": True,
-            "reason": "embedding_not_implemented",
-            "source_count": 1,
-        }
+        assert response["retrieval_status"]["requested_mode"] == "vector"
+        assert response["retrieval_status"]["effective_mode"] == "keyword"
+        assert response["retrieval_status"]["fallback"] is True
+        assert response["retrieval_status"]["reason"] == "embedding_not_implemented"
+        assert response["retrieval_status"]["source_count"] == 1
+        assert response["retrieval_status"]["query_expanded"] is False
+        assert response["retrieval_status"]["covered_item_count"] == 1
         assert response["sources"][0]["item_id"] == "mcp.html"
 
         runs = server.request("GET", "/api/ai/runs")
@@ -832,6 +930,135 @@ def test_global_overview_question_uses_all_context_notes_as_evidence(tmp_path: P
 
     assert result.status["source_count"] == 3
     assert {item["item_id"] for item in result.evidence} == {"mcp.html", "docker.html", "energy.html"}
+
+
+def test_keyword_retrieval_finds_relevant_late_chunk_in_long_note(tmp_path: Path) -> None:
+    from html_lore.server.items import ItemService
+
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    filler = "".join(f"<p>背景材料 {index}：这是一段普通说明，不包含目标答案。</p>" for index in range(80))
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "epc.html",
+        title="EPC 学习指南",
+        collection="Energy",
+        tags=["EPC", "储能"],
+        summary="工程总承包学习材料。",
+        html=f"""
+        <!doctype html>
+        <html><body>
+          <h1>EPC 学习指南</h1>
+          {filler}
+          <section>
+            <h2>小白解释</h2>
+            <p>EPC 是 Engineering Procurement Construction 的缩写，通常指工程设计、采购和施工总承包。</p>
+            <p>核心理解是由一个总承包方对项目交付结果负责。</p>
+          </section>
+        </body></html>
+        """,
+    )
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Retrieval Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    context = {"scope": "reader", "item_ids": ["epc.html"]}
+
+    result = retrieve_evidence_with_status(ItemService(settings), context, "给小白解释一下 EPC 是什么", mode="keyword", max_results=5)
+
+    assert result.status["source_count"] >= 1
+    assert result.evidence[0]["item_id"] == "epc.html"
+    assert "Engineering Procurement Construction" in result.evidence[0]["snippet"]
+
+
+def test_keyword_retrieval_uses_tag_and_summary_weight_for_concept_question(tmp_path: Path) -> None:
+    from html_lore.server.items import ItemService
+
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "mcp.html",
+        title="MCP 安全实践",
+        collection="AI",
+        tags=["MCP", "安全"],
+        summary="Model Context Protocol 的权限边界、工具调用和风险控制。",
+        html="""
+        <!doctype html><html><body>
+          <h1>安全实践</h1>
+          <p>工具调用需要最小权限，敏感能力需要显式授权。</p>
+        </body></html>
+        """,
+    )
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "docker.html",
+        title="Docker 网络",
+        collection="Ops",
+        tags=["Docker"],
+        summary="容器网络排障。",
+        html="<!doctype html><html><body><p>bridge 网络和端口映射。</p></body></html>",
+    )
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Retrieval Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    context = {"scope": "global", "item_ids": ["mcp.html", "docker.html"]}
+
+    result = retrieve_evidence_with_status(ItemService(settings), context, "MCP 有哪些风险控制要点", mode="keyword", max_results=5)
+
+    assert result.evidence[0]["item_id"] == "mcp.html"
+    assert "权限边界" in result.evidence[0]["snippet"] or "最小权限" in result.evidence[0]["snippet"]
+
+
+def test_keyword_retrieval_balances_sources_across_multi_note_context(tmp_path: Path) -> None:
+    from html_lore.server.items import ItemService
+
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "mcp-a.html",
+        title="MCP 安全 A",
+        collection="AI",
+        tags=["MCP"],
+        summary="MCP 风险控制。",
+        html="""
+        <!doctype html><html><body>
+          <section><h2>MCP 权限边界</h2><p>MCP 风险控制需要最小权限和工具授权。</p></section>
+          <section><h2>MCP 审计</h2><p>MCP 风险控制还需要调用审计和敏感操作记录。</p></section>
+        </body></html>
+        """,
+    )
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "mcp-b.html",
+        title="MCP 安全 B",
+        collection="AI",
+        tags=["MCP"],
+        summary="MCP 运行时隔离。",
+        html="<!doctype html><html><body><p>MCP 风险控制还包括沙箱隔离和上下文隔离。</p></body></html>",
+    )
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Retrieval Balance Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    context = {"scope": "global", "item_ids": ["mcp-a.html", "mcp-b.html"]}
+
+    result = retrieve_evidence_with_status(ItemService(settings), context, "MCP 风险控制", mode="keyword", max_results=2)
+
+    assert {item["item_id"] for item in result.evidence} == {"mcp-a.html", "mcp-b.html"}
 
 
 def test_ai_write_requests_are_rate_limited_while_run_reads_remain_available(tmp_path: Path) -> None:
@@ -992,6 +1219,44 @@ def test_external_evidence_prompt_format_is_distinct_from_local_notes() -> None:
     )
     assert formatted.startswith("[1] EXTERNAL: External source (https://example.test/source)")
     assert "LOCAL" not in formatted
+
+
+def test_knowledge_qa_prompt_includes_context_summary_without_format_rules() -> None:
+    messages = build_answer_prompt(
+        "这些笔记有哪些主题",
+        [{"kind": "local", "title": "Energy Note", "item_id": "energy.html", "snippet": "储能合作机会"}],
+        {
+            "source_mode": "local_only",
+            "scope": "global",
+            "item_count": 2,
+            "requested": {"library": "all", "include_archived": False, "tags": []},
+            "items": [
+                {
+                    "id": "energy.html",
+                    "title": "Energy Note",
+                    "summary": "储能合作机会。",
+                    "collection": "Energy",
+                    "tags": ["EPC", "储能"],
+                },
+                {
+                    "id": "mcp.html",
+                    "title": "MCP Note",
+                    "summary": "工具调用安全。",
+                    "collection": "AI",
+                    "tags": ["MCP"],
+                },
+            ],
+        },
+    )
+    prompt = messages[1]["content"]
+
+    assert "CURRENT_CONTEXT:" in prompt
+    assert "item_count: 2" in prompt
+    assert "Energy Note" in prompt
+    assert "MCP Note" in prompt
+    assert "TRUSTED_EVIDENCE:" in prompt
+    assert "clean Markdown" not in messages[0]["content"]
+    assert "never restart every ordered item at 1" not in messages[0]["content"]
 
 
 def test_knowledge_qa_graph_skips_model_when_evidence_is_missing(tmp_path: Path) -> None:

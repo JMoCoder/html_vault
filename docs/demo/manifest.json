@@ -35,7 +35,7 @@
     {
       "id": "demo-notes/changelog.zh-CN.html",
       "title": "HTMlore 更新日志",
-      "summary": "完整中文 CHANGELOG 转换为 HTML，以发布轨迹风格展示 0.9.3 可视化编辑器优化版本和早期版本变更。",
+      "summary": "完整中文 CHANGELOG 转换为 HTML，以发布轨迹风格展示 0.9.4 AI 问答检索与渲染优化版本和早期版本变更。",
       "path": "content/demo-notes/changelog.zh-CN.html",
       "source_type": "html",
       "source_url": null,

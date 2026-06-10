@@ -1276,18 +1276,31 @@ textarea {
 
 .ai-message-body ul,
 .ai-message-body ol {
-  padding-left: 18px;
+  padding-left: 22px;
 }
 
 .ai-message-body li + li {
-  margin-top: 3px;
+  margin-top: 7px;
 }
 
 .ai-message-body h3,
 .ai-message-body h4,
 .ai-message-body h5 {
-  font-size: 14px;
   line-height: 1.4;
+  font-weight: 750;
+}
+
+.ai-message-body h3 {
+  font-size: 15px;
+}
+
+.ai-message-body h4 {
+  font-size: 14px;
+}
+
+.ai-message-body h5 {
+  font-size: 13px;
+  color: var(--muted);
 }
 
 .ai-message-body blockquote {
@@ -1497,17 +1510,17 @@ textarea {
 }
 
 .ai-more-menu-wrap {
-  position: relative;
+  position: static;
   margin-left: auto;
   flex: 0 0 auto;
 }
 
 .ai-more-menu {
   position: absolute;
-  right: 0;
-  bottom: calc(100% + 8px);
+  right: 14px;
+  bottom: 100%;
   z-index: 3;
-  min-width: 178px;
+  width: 136px;
   padding: 6px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1523,7 +1536,7 @@ textarea {
   width: 100%;
   min-height: 32px;
   display: grid;
-  grid-template-columns: 18px minmax(0, 1fr) auto;
+  grid-template-columns: 18px minmax(0, 1fr);
   align-items: center;
   gap: 8px;
   border: 1px solid transparent;
@@ -1533,6 +1546,7 @@ textarea {
   color: var(--text);
   text-align: left;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .ai-panel-actions .ai-more-menu-item:hover {
@@ -1751,6 +1765,7 @@ textarea {
   min-height: 82px;
   max-height: none;
   resize: none;
+  outline: none;
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 9px 52px 9px 10px;
@@ -1758,6 +1773,11 @@ textarea {
   color: var(--text);
   line-height: 1.45;
   overflow-y: auto;
+}
+
+.ai-chat-form textarea:focus {
+  border-color: color-mix(in srgb, var(--accent) 72%, var(--line));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 .ai-chat-form button {
@@ -2042,8 +2062,12 @@ textarea {
 }
 
 .reader-actions {
+  position: absolute;
+  top: 18px;
+  right: 18px;
   flex-wrap: nowrap;
   justify-content: flex-end;
+  z-index: 1;
 }
 
 #reader-original {
@@ -2104,7 +2128,7 @@ textarea {
 
 .reader-header {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) auto;
+  grid-template-columns: 42px minmax(0, 1fr);
   gap: 16px;
   align-items: start;
   padding: 18px 18px 22px;
@@ -2114,12 +2138,13 @@ textarea {
   overflow: hidden;
   position: relative;
   z-index: 2;
-  transition: padding 0.16s ease, max-height 0.16s ease;
+  will-change: max-height, padding;
+  transition: padding 180ms ease, max-height 180ms ease;
 }
 
 .reader.compact-reader-header .reader-header {
-  align-items: center;
-  padding: 10px 14px;
+  align-items: start;
+  padding: 18px 18px 8px;
   height: var(--compact-panel-header-height);
   max-height: var(--compact-panel-header-height);
 }
@@ -2129,7 +2154,10 @@ textarea {
 }
 
 .reader.compact-reader-header .reader-tags {
-  display: none;
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
 }
 
 .reader.compact-reader-header .reader-heading h2 {
@@ -2173,6 +2201,9 @@ textarea {
   display: grid;
   gap: 8px;
   min-width: 0;
+  overflow: hidden;
+  padding-right: 232px;
+  transition: gap 180ms ease;
 }
 
 .reader-heading h2 {
@@ -2182,6 +2213,7 @@ textarea {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  transition: font-size 180ms ease, line-height 180ms ease;
 }
 
 .reader-heading p {
@@ -2195,6 +2227,9 @@ textarea {
 
 .reader-tags {
   max-height: 30px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: max-height 180ms ease, opacity 140ms ease, transform 180ms ease;
 }
 
 .button-link {
@@ -2742,7 +2777,7 @@ a.icon-action {
 
 .file-editor-panel-floating-toggle {
   position: absolute;
-  top: 18px;
+  top: 10px;
   right: calc(var(--file-editor-panel-width, 320px) + 18px);
   z-index: 3;
   transition: right 180ms ease, opacity 160ms ease, border-color 160ms ease, color 160ms ease;
@@ -3863,6 +3898,7 @@ a.icon-action {
   }
 
   .reader-actions {
+    position: static;
     grid-column: 1 / -1;
     justify-content: flex-start;
     gap: 7px;
@@ -3889,6 +3925,10 @@ a.icon-action {
     font-size: 24px;
     line-height: 1.25;
     -webkit-line-clamp: 2;
+  }
+
+  .reader-heading {
+    padding-right: 0;
   }
 
   .reader-frame-shell {

@@ -15,12 +15,25 @@
 <p class="eyebrow">Release history</p>
 <h1>HTMlore Changelog</h1>
 </article>
-<aside class="stat"><span class="badge">0.9.3</span></aside>
+<aside class="stat"><span class="badge">0.9.4</span></aside>
 </section>
 <section class="timeline doc">
 <h1>Changelog</h1>
 <p>Languages: <a href="CHANGELOG.md">English</a> | <a href="CHANGELOG.zh-CN.md">中文</a> | <a href="CHANGELOG.ja.md">日本語</a></p>
 <h2>[Unreleased]</h2>
+<h2>[0.9.4] - 2026-06-10</h2>
+<h3>Changed</h3>
+<ul>
+<li>ナレッジベース Q&amp;A のプロンプトを改善し、現在のコンテキスト概要と直近の会話文脈を追加しました。短い追問でも、アクティブなノートブックコンテキストに沿いやすくなります。</li>
+<li>複数ノートのコンテキスト検索を改善しました。直近の会話から短い質問の検索語を補強し、同じノートの重複チャンクを追加する前に、より多くの異なるノートを優先して参照します。</li>
+<li>コンテキスト項目数、カバー済み項目数、カバー率、クエリ拡張状態を含む検索カバレッジ診断を追加しました。</li>
+<li>パッケージ、アプリ、PWA、Demo cache、provider user-agent のバージョンを <code>0.9.4</code> に更新しました。</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>AI Markdown 表示で番号付きリストがすべて <code>1</code> になる問題を修正し、見出し階層の視覚表示を改善しました。バックエンドプロンプトではモデルの回答形式を固定しません。</li>
+<li>AI サイドバー More メニューの位置合わせと幅を修正しました。</li>
+</ul>
 <h2>[0.9.3] - 2026-06-09</h2>
 <h3>Fixed</h3>
 <ul>

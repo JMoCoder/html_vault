@@ -654,7 +654,12 @@ test("workspace AI restores latest context conversation and can start a fresh on
     id: "conversation-old",
     title: "MCP Security",
     context_key: 'local_only:reader:{"item_id":"notes/mcp.html"}',
-    context_snapshot: {},
+    context_snapshot: {
+      scope: "reader",
+      item_ids: ["notes/mcp.html"],
+      items: [{ id: "notes/mcp.html", title: "MCP Security" }],
+      requested: { item_id: "notes/mcp.html" },
+    },
     message_count: 2,
     created_at: "2026-06-07T01:00:00.000Z",
     updated_at: "2026-06-07T01:05:00.000Z",
@@ -663,7 +668,12 @@ test("workspace AI restores latest context conversation and can start a fresh on
     id: "conversation-history",
     title: "Docker Notes",
     context_key: 'local_only:reader:{"item_id":"notes/docker.html"}',
-    context_snapshot: {},
+    context_snapshot: {
+      scope: "reader",
+      item_ids: ["notes/docker.html"],
+      items: [{ id: "notes/docker.html", title: "Docker Notes" }],
+      requested: { item_id: "notes/docker.html" },
+    },
     message_count: 2,
     created_at: "2026-06-07T02:00:00.000Z",
     updated_at: "2026-06-07T02:05:00.000Z",
@@ -802,9 +812,11 @@ test("workspace AI restores latest context conversation and can start a fresh on
   await page.locator("#ai-more-toggle").click();
   await page.locator("#ai-history-toggle").click();
   await expect(page.locator("#ai-history-list")).toContainText("MCP Security");
-  await expect(page.locator("#ai-history-list")).not.toContainText("Docker Notes");
-  expect(conversationListRequests.at(-1)).toBe(oldConversation.context_key);
-  await expect.poll(() => conversationListRequests.includes(oldConversation.context_key)).toBe(true);
+  await expect(page.locator("#ai-history-list")).toContainText("Docker Notes");
+  expect(conversationListRequests.at(-1)).toBe("");
+  await page.locator("#ai-history-list .ai-history-row", { hasText: "Docker Notes" }).click();
+  await expect(page.locator("#ai-chat-log")).toContainText("Show Docker risks.");
+  await expect(page.locator("#ai-chat-log")).toContainText("Docker risk summary.");
   await page.locator("#ai-more-toggle").click();
   await expect(page.locator("#ai-history-list")).toBeHidden();
   await expect(page.locator("#ai-more-menu")).toBeVisible();
@@ -824,4 +836,125 @@ test("workspace AI restores latest context conversation and can start a fresh on
   page.once("dialog", async (dialog) => dialog.accept());
   await page.locator("#ai-conversation-list .ai-conversation-row", { hasText: "Docker Notes" }).getByRole("button", { name: "Delete" }).click();
   await expect.poll(() => deletedConversationId).toBe("conversation-history");
+});
+
+test("workspace AI renders markdown hierarchy and aligns the more menu", async ({ page }) => {
+  await page.addInitScript(() => localStorage.clear());
+  await routeWorkspace(page);
+
+  await page.route("**/api/auth/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ enabled: false, authenticated: true, user: null, data_id: null }),
+    });
+  });
+  await page.route("**/api/ai/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ available: true, provider: "", model: "fake", external_search: false }),
+    });
+  });
+  await page.route("**/api/version", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ version: "0.9.0", latest_version: "0.9.0", update_available: false }),
+    });
+  });
+  await page.route("**/api/shares", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ shares: [], count: 0 }) });
+  });
+  await page.route("**/api/manifest", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ version: 2, title: "HTMlore Workspace", items: [] }) });
+  });
+  await page.route("**/api/ai/runs**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ runs: [], count: 0 }) });
+  });
+  await page.route("**/api/ai/jobs**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ jobs: [], count: 0 }) });
+  });
+  await page.route("**/api/ai/conversations/latest**", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ conversation: null }) });
+  });
+  await page.route("**/api/ai/conversations", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        conversation: {
+          id: "markdown-conversation",
+          title: "Markdown",
+          context_key: "local_only:global:{}",
+          context_snapshot: {},
+          message_count: 0,
+          messages: [],
+        },
+      }),
+    });
+  });
+  await page.route("**/api/ai/conversations/*/messages", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        message: {
+          role: "assistant",
+          content: [
+            "# 父级标题",
+            "",
+            "## 子级标题",
+            "",
+            "1. 储能系统集成商 / EPC总承包商",
+            "",
+            "目标：寻找能输送优质项目、深度绑定的产业合作方。",
+            "",
+            "1. 工业园区运营方 / 高耗能用电企业",
+            "",
+            "目标：寻找工商业储能EMC客户资源。",
+          ].join("\n"),
+          sources: [{ kind: "local", title: "Long local source title used for markdown rendering" }],
+        },
+        sources: [{ kind: "local", title: "Long local source title used for markdown rendering" }],
+      }),
+    });
+  });
+
+  await page.goto("/workspace/", { waitUntil: "domcontentloaded" });
+  await page.locator("#ai-panel-open").click();
+  await page.locator("#ai-chat-input").fill("Render markdown.");
+  await page.locator("#ai-chat-form button[type='submit']").click();
+  await expect(page.locator("#ai-chat-log .ai-message.assistant").last()).toContainText("父级标题");
+
+  const markdownState = await page.evaluate(() => {
+    const container = document.querySelector("#ai-chat-log .ai-message.assistant:last-child .ai-message-body");
+    const headings = [...container.querySelectorAll("h3, h4, h5")].map((node) => ({
+      tag: node.tagName.toLowerCase(),
+      fontSize: Number.parseFloat(getComputedStyle(node).fontSize),
+    }));
+    return {
+      orderedListCount: container.querySelectorAll("ol").length,
+      listItemCount: container.querySelectorAll("ol > li").length,
+      firstItemText: container.querySelector("ol > li")?.textContent || "",
+      headings,
+    };
+  });
+  expect(markdownState.orderedListCount).toBe(1);
+  expect(markdownState.listItemCount).toBe(2);
+  expect(markdownState.firstItemText).toContain("目标：寻找能输送优质项目");
+  expect(markdownState.headings[0]).toMatchObject({ tag: "h3" });
+  expect(markdownState.headings[1]).toMatchObject({ tag: "h4" });
+  expect(markdownState.headings[0].fontSize).toBeGreaterThan(markdownState.headings[1].fontSize);
+
+  await page.locator("#ai-more-toggle").click();
+  await expect(page.locator("#ai-more-menu")).toBeVisible();
+  const menuMetrics = await page.evaluate(() => {
+    const menu = document.querySelector("#ai-more-menu").getBoundingClientRect();
+    const composer = document.querySelector("#ai-composer").getBoundingClientRect();
+    return {
+      width: menu.width,
+      rightInset: Math.round(composer.right - menu.right),
+      bottomDelta: Math.round(composer.top - menu.bottom),
+    };
+  });
+  expect(menuMetrics.width).toBeLessThanOrEqual(150);
+  expect(menuMetrics.rightInset).toBe(14);
+  expect(Math.abs(menuMetrics.bottomDelta)).toBeLessThanOrEqual(1);
+  await expect(page.locator("#ai-more-menu .ai-more-menu-item.active")).toHaveCount(0);
 });

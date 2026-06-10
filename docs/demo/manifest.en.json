@@ -35,7 +35,7 @@
     {
       "id": "demo-notes/changelog.en.html",
       "title": "HTMlore Changelog",
-      "summary": "The complete English CHANGELOG rendered as HTML with the 0.9.3 visual editor polish release and earlier development milestones.",
+      "summary": "The complete English CHANGELOG rendered as HTML with the 0.9.4 AI Q&A retrieval and rendering refinement release plus earlier milestones.",
       "path": "content/demo-notes/changelog.en.html",
       "source_type": "html",
       "source_url": null,

@@ -74,9 +74,10 @@ Implemented today:
 - Server-side AI provider configuration for OpenAI-compatible endpoints. API
   keys stay in backend environment variables and are never accepted through the
   browser settings endpoint.
-- Knowledge-base Q&A beta with context-aware retrieval, Markdown-rendered
-  answers, source pills, conversation persistence, latest-conversation restore,
-  and per-context history.
+- Knowledge-base Q&A beta with context-aware retrieval, current-context
+  summaries, recent-conversation grounding for follow-up questions,
+  Markdown-rendered answers, source pills, conversation persistence,
+  latest-conversation restore, and per-context history.
 - Strict / external-expansion mode for AI answers. Strict mode answers from the
   selected notebook context; expansion mode is wired for explicit external
   sources when an external search adapter is configured.
@@ -86,9 +87,10 @@ Implemented today:
   PM/UX/Coder/QA/Reviewer graph.
 - Beta material-to-HTML generation from uploaded HTML, Markdown, or text
   material, reusing the HTML generation graph after safe text extraction.
-- Keyword retrieval with vector/hybrid retrieval mode scaffolding and automatic
-  fallback to keyword retrieval while the pluggable vector store is not yet
-  configured.
+- Keyword retrieval with short-query expansion, balanced multi-note evidence,
+  retrieval coverage diagnostics, vector/hybrid retrieval mode scaffolding, and
+  automatic fallback to keyword retrieval while the pluggable vector store is
+  not yet configured.
 - AI guardrails for prompt size, unsupported requests, secret-like output, and
   share-target HTML safety review.
 - AI provider, data, user, account/security, conversation history, project
