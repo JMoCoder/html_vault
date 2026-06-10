@@ -2914,11 +2914,31 @@ a.icon-action {
   min-width: 0;
 }
 
-.share-row .management-name strong {
+.share-row .management-name strong,
+.share-row-title {
   display: block;
+  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.share-row-title {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 760;
+  text-align: left;
+  cursor: pointer;
+}
+
+.share-row-title:hover {
+  color: var(--accent-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .share-row .share-row-meta {
@@ -2927,6 +2947,10 @@ a.icon-action {
 
 .share-row .management-actions {
   flex-wrap: nowrap;
+}
+
+.share-row .management-actions button {
+  cursor: pointer;
 }
 
 .share-row .management-actions button:first-child {

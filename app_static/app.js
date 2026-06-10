@@ -2841,11 +2841,15 @@ function sortShareManagementRows(shares) {
 function renderShareManagementRow(share) {
   const item = getItemById(share.item_id);
   const status = getShareStatus(share);
+  const title = item ? getItemTitle(item) : share.item_id;
+  const titleMarkup = item
+    ? `<button type="button" class="share-row-title" data-share-read>${escapeHtml(title)}</button>`
+    : `<strong>${escapeHtml(title)}</strong>`;
   const row = document.createElement("div");
   row.className = "management-row share-row";
   row.innerHTML = `
     <div class="management-name">
-      <strong>${escapeHtml(item ? getItemTitle(item) : share.item_id)}</strong>
+      ${titleMarkup}
       <span class="share-row-meta">
         ${shareStatusMarkup(status)}
         <span>${escapeHtml(formatShareExpiry(share))}</span>
@@ -2857,6 +2861,10 @@ function renderShareManagementRow(share) {
       <button type="button" data-share-open>${escapeHtml(t("shareAction"))}</button>
     </div>
   `;
+  row.querySelector("[data-share-read]")?.addEventListener("click", () => {
+    closeSettings();
+    openReader(item);
+  });
   row.querySelector("[data-share-open]").addEventListener("click", () => openShareDialog(share.item_id));
   row.querySelector("[data-share-revoke]").addEventListener("click", async () => {
     try {

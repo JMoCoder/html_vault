@@ -199,6 +199,14 @@ test("share dialog and management show expiry and static status", async ({ page 
   await expect(row).toContainText("HTMlore README 完整说明");
   await expect(row).toContainText("2026");
   await expect(row).toContainText("2 visits");
+  await expect(row.locator(".share-row-title")).toHaveCSS("cursor", "pointer");
+  await expect(row.locator("[data-share-open]")).toHaveCSS("cursor", "pointer");
+  await expect(row.locator("[data-share-revoke]")).toHaveCSS("cursor", "pointer");
+
+  await row.locator(".share-row-title").click();
+  await expect(page.locator("#settings-page")).toBeHidden();
+  await expect(page.locator("#reader")).toBeVisible();
+  await expect(page.locator("#reader-title")).toHaveText("HTMlore README 完整说明");
 });
 
 test("share management sorts active links before expired links by note creation time", async ({ page }) => {
@@ -270,7 +278,7 @@ test("share management sorts active links before expired links by note creation 
   await page.locator("#settings-open").click();
   await page.locator("[data-settings-tab='shares']").click();
 
-  const rowTitles = await page.locator("#share-management-list .share-row strong").allTextContents();
+  const rowTitles = await page.locator("#share-management-list .share-row-title").allTextContents();
   expect(rowTitles).toEqual([
     "HTMlore 更新日志",
     "HTMlore README 完整说明",
