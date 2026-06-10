@@ -204,13 +204,20 @@ test("share dialog and management show expiry and static status", async ({ page 
   await expect(row.locator("[data-share-revoke]")).toHaveCSS("cursor", "pointer");
   const shareMetaLayout = await row.evaluate((node) => {
     const title = node.querySelector(".management-name").getBoundingClientRect();
-    const details = node.querySelector(".share-row-details").getBoundingClientRect();
-    const meta = node.querySelector(".share-row-meta").getBoundingClientRect();
+    const detailsNode = node.querySelector(".share-row-details");
+    const metaNode = node.querySelector(".share-row-meta");
+    const details = detailsNode.getBoundingClientRect();
+    const meta = metaNode.getBoundingClientRect();
     const status = node.querySelector(".share-status").getBoundingClientRect();
     return {
       detailsLeft: Math.round(details.left),
       metaLeft: Math.round(meta.left),
       statusLeft: Math.round(status.left),
+      detailsText: [...detailsNode.querySelectorAll("span")]
+        .map((span) => span.textContent || "")
+        .join(" "),
+      detailsFits: detailsNode.scrollWidth <= detailsNode.clientWidth + 1,
+      metaFits: metaNode.scrollWidth <= metaNode.clientWidth + 1,
       sameRow: Math.abs(details.top - title.top) < 10,
       metaHeight: Math.round(meta.height),
     };
@@ -219,6 +226,12 @@ test("share dialog and management show expiry and static status", async ({ page 
   expect(Math.abs(shareMetaLayout.metaLeft - shareMetaLayout.detailsLeft)).toBeLessThanOrEqual(2);
   expect(Math.abs(shareMetaLayout.statusLeft - shareMetaLayout.detailsLeft)).toBeLessThanOrEqual(2);
   expect(shareMetaLayout.metaHeight).toBeLessThan(28);
+  expect(shareMetaLayout.detailsText).toContain("Active");
+  expect(shareMetaLayout.detailsText).toContain("2026");
+  expect(shareMetaLayout.detailsText).toContain("2 visits");
+  expect(shareMetaLayout.detailsText).not.toContain("...");
+  expect(shareMetaLayout.detailsFits).toBe(true);
+  expect(shareMetaLayout.metaFits).toBe(true);
 
   await row.locator(".share-row-title").click();
   await expect(page.locator("#settings-page")).toBeHidden();

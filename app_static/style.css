@@ -2922,8 +2922,9 @@ a.icon-action {
 }
 
 .share-row.management-row {
-  grid-template-columns: minmax(220px, 1fr) minmax(210px, 0.45fr) auto;
+  grid-template-columns: minmax(140px, 1fr) max-content max-content;
   align-items: center;
+  column-gap: 14px;
 }
 
 .share-row .management-name {
@@ -2931,8 +2932,10 @@ a.icon-action {
 }
 
 .share-row-details {
-  min-width: 0;
-  justify-self: stretch;
+  min-width: max-content;
+  max-width: none;
+  overflow: visible;
+  justify-self: start;
 }
 
 .share-row .management-name strong,
@@ -2964,17 +2967,20 @@ a.icon-action {
 
 .share-row .share-row-meta {
   margin-top: 0;
+  max-width: none;
+  overflow: visible;
   text-align: left;
 }
 
 .share-row .share-row-meta > span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex: 0 0 auto;
+  overflow: visible;
+  text-overflow: clip;
   white-space: nowrap;
 }
 
 .share-row .management-actions {
+  justify-self: end;
   flex-wrap: nowrap;
 }
 
