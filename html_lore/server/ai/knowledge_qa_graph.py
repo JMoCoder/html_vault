@@ -14,6 +14,7 @@ from .guardrails import GuardrailError, validate_answer, validate_message_budget
 from .model_client import ModelClient
 from .registry import AgentSpec, PromptTemplate, load_agent, load_prompt
 from .research import ResearchWorkflow
+from .retrieval import is_context_overview_question, is_generic_context_question
 from .skills import RetrievalSkill
 
 
@@ -244,6 +245,10 @@ class EvidenceGateNode:
         allow_model_knowledge = state.expansion_policy.get("mode") == "model_knowledge"
         requires_web_research = state.expansion_policy.get("mode") == "web_research"
         has_external_evidence = any(source.get("kind") == "external" for source in state.evidence)
+        if state.evidence and should_reject_weak_evidence(state.evidence, state.context_snapshot, state.content):
+            state.retrieval_status["weak_evidence_rejected"] = True
+            state.retrieval_status["source_count_before_weak_reject"] = len(state.evidence)
+            state.evidence = []
         if requires_web_research and not has_external_evidence:
             state.answer = EXTERNAL_UNAVAILABLE_ANSWER
             state.sources = []
@@ -580,6 +585,28 @@ def evidence_priority(item: dict[str, Any]) -> int:
     if item.get("kind") == "external":
         return safe_int(item.get("score"), 100)
     return safe_int(item.get("score"), 0)
+
+
+def should_reject_weak_evidence(evidence: list[dict[str, Any]], snapshot: dict[str, Any], query: str) -> bool:
+    scope = str(snapshot.get("scope") or "")
+    if scope in {"reader", "manual"} and is_generic_context_question(query):
+        return False
+    if is_context_overview_question(query):
+        return False
+    local_scores = [
+        safe_int(item.get("score"), 0)
+        for item in evidence
+        if item.get("kind") != "external"
+    ]
+    external_count = sum(1 for item in evidence if item.get("kind") == "external")
+    if external_count and not local_scores:
+        return False
+    if not local_scores:
+        return False
+    top_score = max(local_scores)
+    if scope in {"reader", "manual"}:
+        return top_score < 4
+    return top_score < 10
 
 
 def safe_int(value: Any, fallback: int) -> int:

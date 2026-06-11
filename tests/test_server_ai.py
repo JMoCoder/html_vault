@@ -919,6 +919,106 @@ def test_ai_message_uses_current_note_for_generic_summary_question(tmp_path: Pat
         server.close()
 
 
+def test_global_overview_uses_all_context_items_instead_of_top_keyword_chunks(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    for index in range(1, 7):
+        make_note_with_html(
+            content_dir,
+            meta_dir,
+            f"note-{index}.html",
+            title=f"Topic {index}",
+            collection="Workspace",
+            tags=[f"Tag{index}"],
+            summary=f"Summary for topic {index}.",
+            html=f"<!doctype html><html><body><p>Durable knowledge asset {index}.</p></body></html>",
+        )
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"scope": "global"}})["conversation"]
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "知识库里有哪些主题？按主题分组总结。"})
+        assert response["retrieval_status"]["source_count"] == 6
+        assert response["retrieval_status"]["covered_item_count"] == 6
+        assert response["qa_report"]["evidence_coverage"]["status"] == "full"
+    finally:
+        server.close()
+
+
+def test_keyword_retrieval_filters_weak_global_matches(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "mcp.html",
+        title="MCP Server 安全模型",
+        collection="AI",
+        tags=["MCP", "Security"],
+        summary="介绍 MCP Server 的信任边界、权限、工具调用风险与部署建议。",
+        html="<!doctype html><html><body><p>MCP Server 需要处理工具调用权限、信任边界和部署隔离。</p></body></html>",
+    )
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "energy.html",
+        title="Energy Report",
+        collection="Energy",
+        tags=["Training"],
+        summary="Energy market report.",
+        html="<!doctype html><html><body><p>这份能源培训材料偶然提到安全两个字，但不讨论 MCP。</p></body></html>",
+    )
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"scope": "global"}})["conversation"]
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "MCP Server 的主要安全风险有哪些？"})
+        assert [source["item_id"] for source in response["sources"]] == ["mcp.html"]
+        assert response["retrieval_status"]["source_count"] == 1
+    finally:
+        server.close()
+
+
+def test_global_unrelated_question_rejects_weak_evidence_without_model_call(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "energy.html",
+        title="Energy Report",
+        collection="Energy",
+        tags=["Training"],
+        summary="Energy market report.",
+        html="<!doctype html><html><body><p>能源项目、融资、储能和市场交易。</p></body></html>",
+    )
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"scope": "global"}})["conversation"]
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "这篇笔记和量子香蕉有什么关系？"})
+        assert response["sources"] == []
+        assert "没有足够资料" in response["message"]["content"]
+        assert response["qa_report"]["skipped_model_call"] is True
+    finally:
+        server.close()
+
+
 def test_ai_message_returns_no_evidence_answer_without_model_call(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = make_dirs(tmp_path)
     make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])

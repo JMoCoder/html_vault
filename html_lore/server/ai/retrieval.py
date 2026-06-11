@@ -15,6 +15,8 @@ MAX_CHUNK_CHARS = 1800
 MAX_EVIDENCE_CHARS = 5000
 RETRIEVAL_MODES = {"keyword", "vector", "hybrid"}
 MAX_CHUNKS_PER_ITEM = 2
+KEYWORD_MIN_SCORE = 8
+KEYWORD_RELATIVE_SCORE_RATIO = 0.34
 
 
 @dataclass(frozen=True)
@@ -190,6 +192,7 @@ def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[
     generic_question = is_generic_context_question(query)
     allow_generic_fallback = scope in {"reader", "manual"} and generic_question
     overview_scope = scope not in {"reader", "manual"} and is_context_overview_question(query)
+    overview_limit = max(max_results, len(item_ids)) if overview_scope else max_results
     for item_id in item_ids:
         item = manifest_items.get(item_id)
         if not item or bool(item.get("archived")):
@@ -210,7 +213,7 @@ def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[
                     item_id=item_id,
                     title=str(item.get("title") or item_id),
                     snippet=overview_snippet(item, text),
-                    score=max(score, 1),
+                    score=max(score, KEYWORD_MIN_SCORE),
                 ),
             )
             continue
@@ -232,8 +235,8 @@ def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[
                     Evidence(
                         item_id=item_id,
                         title=str(item.get("title") or item_id),
-                        snippet=overview_snippet(item, text),
-                        score=1,
+                        snippet=reader_summary_snippet(item, text),
+                        score=KEYWORD_MIN_SCORE,
                     ),
                 )
             continue
@@ -241,12 +244,13 @@ def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[
     if overview_scope and fallback_candidates:
         return [
             evidence.as_dict()
-            for evidence in sorted(fallback_candidates, key=lambda item: (-item.score, item.title))[:max_results]
+            for evidence in sorted(fallback_candidates, key=lambda item: (-item.score, item.title))[:overview_limit]
         ]
     if not evidences and fallback_candidates:
         return [evidence.as_dict() for evidence in fallback_candidates[:max_results]]
     balanced = scope not in {"reader"} and len(item_ids) > 1
-    return [evidence.as_dict() for evidence in rank_evidence(evidences, max_results=max_results, balanced=balanced)]
+    filtered = filter_low_relevance_evidence(evidences, scope=scope)
+    return [evidence.as_dict() for evidence in rank_evidence(filtered, max_results=max_results, balanced=balanced)]
 
 
 def chunk_blocks(blocks: list[str]) -> list[str]:
@@ -324,6 +328,19 @@ def rank_evidence(evidences: list[Evidence], *, max_results: int, balanced: bool
             break
         ranked.append(evidence)
     return ranked
+
+
+def filter_low_relevance_evidence(evidences: list[Evidence], *, scope: str) -> list[Evidence]:
+    if not evidences:
+        return []
+    if scope in {"reader", "manual"}:
+        return [item for item in evidences if item.score >= 1]
+    strong = [item for item in evidences if item.score >= KEYWORD_MIN_SCORE]
+    if not strong:
+        return []
+    top_score = max(item.score for item in strong)
+    relative_floor = max(KEYWORD_MIN_SCORE, int(top_score * KEYWORD_RELATIVE_SCORE_RATIO))
+    return [item for item in strong if item.score >= relative_floor]
 
 
 def merge_hybrid_evidence(keyword_evidence: list[dict[str, Any]], vector_evidence: list[dict[str, Any]], *, max_results: int) -> list[dict[str, Any]]:
@@ -508,6 +525,15 @@ def overview_snippet(item: dict[str, Any], text: str) -> str:
     if summary:
         return normalize_space(prefix)[:MAX_CHUNK_CHARS]
     return normalize_space(text)[:MAX_CHUNK_CHARS]
+
+
+def reader_summary_snippet(item: dict[str, Any], text: str) -> str:
+    summary = str(item.get("summary") or "").strip()
+    safe_text = normalize_space(text)
+    if summary:
+        combined = f"{overview_snippet(item, text)}\n\n{safe_text}"
+        return normalize_space(combined)[:MAX_CHUNK_CHARS]
+    return safe_text[:MAX_CHUNK_CHARS]
 
 
 def query_tokens(query: str) -> list[str]:
