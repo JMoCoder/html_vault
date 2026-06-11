@@ -41,6 +41,7 @@ class KnowledgeQAState:
     external_sources: list[dict[str, Any]] = field(default_factory=list)
     external_status: dict[str, Any] = field(default_factory=dict)
     expansion_policy: dict[str, Any] = field(default_factory=dict)
+    evidence_rank_report: dict[str, Any] = field(default_factory=dict)
     evidence_budget: dict[str, Any] = field(default_factory=dict)
     prompt_messages: list[dict[str, str]] = field(default_factory=list)
     agent_trace: list[dict[str, Any]] = field(default_factory=list)
@@ -83,6 +84,7 @@ class KnowledgeQAGraph:
             RetrieverNode(item_service, model_client=model_client, retrieval_mode=retrieval_mode),
             ExpansionPolicyNode(),
             ExternalSearchNode(external_search),
+            EvidenceRankerNode(),
             EvidenceGateNode(max_prompt_chars=max_prompt_chars),
             AnswerAgentNode(model_client, max_response_tokens=max_response_tokens),
             CitationVerifierNode(),
@@ -209,6 +211,13 @@ class ExpansionPolicyNode:
         }
 
 
+class EvidenceRankerNode:
+    name = "EvidenceRankerNode"
+
+    def run(self, state: KnowledgeQAState) -> None:
+        state.evidence, state.evidence_rank_report = rank_answer_evidence(state.evidence)
+
+
 class EvidenceGateNode:
     name = "EvidenceGateNode"
 
@@ -241,10 +250,10 @@ class EvidenceGateNode:
             state.recent_messages = budgeted_history
             state.evidence_budget = budget_report
             state.retrieval_status["budget"] = budget_report
-            state.sources = state.evidence
+            state.sources = assign_source_indices(state.evidence)
             state.prompt_messages = build_answer_prompt(
                 state.content,
-                budgeted_evidence,
+                state.sources,
                 state.context_snapshot,
                 budgeted_history,
                 expansion_policy=state.expansion_policy,
@@ -469,6 +478,73 @@ def safe_int(value: Any, fallback: int) -> int:
 
 def prompt_chars(messages: list[dict[str, str]]) -> int:
     return sum(len(str(message.get("content") or "")) for message in messages)
+
+
+def rank_answer_evidence(evidence: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    original_count = len(evidence)
+    deduped: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    duplicate_dropped = 0
+    for item in sorted(evidence, key=evidence_sort_key):
+        normalized = normalize_evidence_item(item)
+        key = evidence_dedupe_key(normalized)
+        if key in seen:
+            duplicate_dropped += 1
+            continue
+        deduped.append(normalized)
+        seen.add(key)
+    indexed = assign_source_indices(deduped)
+    local_count = sum(1 for item in indexed if item.get("kind") != "external")
+    external_count = sum(1 for item in indexed if item.get("kind") == "external")
+    report = {
+        "original_count": original_count,
+        "selected_count": len(indexed),
+        "duplicate_dropped_count": duplicate_dropped,
+        "local_source_count": local_count,
+        "external_source_count": external_count,
+        "numbered": bool(indexed),
+    }
+    return indexed, report
+
+
+def normalize_evidence_item(item: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(item)
+    normalized["title"] = str(normalized.get("title") or normalized.get("item_id") or normalized.get("url") or "Source").strip()
+    normalized["snippet"] = normalize_answer_evidence_text(str(normalized.get("snippet") or ""))
+    try:
+        normalized["score"] = int(normalized.get("score") or 0)
+    except (TypeError, ValueError):
+        normalized["score"] = 0
+    return normalized
+
+
+def evidence_sort_key(item: dict[str, Any]) -> tuple[int, str, str, str]:
+    kind_priority = 1 if item.get("kind") == "external" else 0
+    return (
+        -safe_int(item.get("score"), 0),
+        str(kind_priority),
+        str(item.get("title") or ""),
+        str(item.get("item_id") or item.get("url") or ""),
+    )
+
+
+def evidence_dedupe_key(item: dict[str, Any]) -> tuple[str, str]:
+    source_id = str(item.get("url") or item.get("item_id") or item.get("title") or "").strip().lower()
+    snippet = normalize_answer_evidence_text(str(item.get("snippet") or "")).lower()[:280]
+    return (source_id, snippet)
+
+
+def assign_source_indices(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    indexed: list[dict[str, Any]] = []
+    for index, item in enumerate(evidence, start=1):
+        copied = dict(item)
+        copied["source_index"] = index
+        indexed.append(copied)
+    return indexed
+
+
+def normalize_answer_evidence_text(value: str) -> str:
+    return " ".join(str(value or "").split())
 
 
 def verify_answer_citations(answer: str, sources: list[dict[str, Any]], *, requires_citation: bool = False) -> dict[str, Any]:
@@ -747,6 +823,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
             "retrieval": state.retrieval_status,
             "external_status": state.external_status,
             "expansion_policy": state.expansion_policy,
+            "evidence_ranking": state.evidence_rank_report,
             "evidence_budget": state.evidence_budget,
             "citation": state.citation_report,
         },

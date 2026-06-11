@@ -7,7 +7,7 @@ from pathlib import Path
 from html_lore.builder import build_site
 from html_lore.server.config import ServerSettings
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
-from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, format_evidence_for_prompt, is_time_sensitive_question, verify_answer_citations
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, format_evidence_for_prompt, is_time_sensitive_question, rank_answer_evidence, verify_answer_citations
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
@@ -639,6 +639,7 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
             "RetrieverNode",
             "ExpansionPolicyNode",
             "ExternalSearchNode",
+            "EvidenceRankerNode",
             "EvidenceGateNode",
             "AnswerAgentNode",
             "CitationVerifierNode",
@@ -662,6 +663,7 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         assert run["qa_report"]["source_count"] == 1
         assert run["qa_report"]["citation"]["source_count"] == 1
         assert run["qa_report"]["citation"]["status"] == "missing_citation"
+        assert run["qa_report"]["evidence_ranking"]["selected_count"] == 1
         assert run["agent_trace"][0]["id"] == "knowledge_qa.answer_agent"
         assert run["agent_trace"][0]["version"] == "v1"
         assert run["prompt_trace"][0] == {
@@ -1355,6 +1357,28 @@ def test_external_evidence_prompt_format_is_distinct_from_local_notes() -> None:
     )
     assert formatted.startswith("[1] EXTERNAL: External source (https://example.test/source)")
     assert "LOCAL" not in formatted
+
+
+def test_knowledge_qa_evidence_ranker_dedupes_and_numbers_sources() -> None:
+    evidence, report = rank_answer_evidence(
+        [
+            {"kind": "local", "item_id": "mcp.html", "title": "MCP", "snippet": "  same   snippet  ", "score": 4},
+            {"kind": "local", "item_id": "mcp.html", "title": "MCP", "snippet": "same snippet", "score": 2},
+            {"kind": "external", "url": "https://example.test/a", "title": "External", "snippet": "external snippet", "score": 9},
+        ],
+    )
+
+    assert [item["source_index"] for item in evidence] == [1, 2]
+    assert evidence[0]["title"] == "External"
+    assert evidence[1]["snippet"] == "same snippet"
+    assert report == {
+        "original_count": 3,
+        "selected_count": 2,
+        "duplicate_dropped_count": 1,
+        "local_source_count": 1,
+        "external_source_count": 1,
+        "numbered": True,
+    }
 
 
 def test_knowledge_qa_citation_verifier_accepts_valid_source_refs() -> None:
