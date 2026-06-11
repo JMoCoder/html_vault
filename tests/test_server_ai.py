@@ -9,7 +9,7 @@ from html_lore.server.config import ServerSettings
 from html_lore.server.ai.guardrails import GuardrailError
 from html_lore.server.ai.eval import KnowledgeQAEvalSpec, run_knowledge_qa_eval
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
-from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, assess_answer_quality, assess_evidence_coverage, build_answer_prompt, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, public_qa_run, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, assess_answer_quality, assess_evidence_coverage, build_answer_prompt, budget_prompt_inputs, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, prompt_chars, public_qa_run, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
@@ -1648,6 +1648,53 @@ def test_knowledge_qa_status_flags_partial_context_coverage() -> None:
         "citation_status": "valid",
         "source_count": 2,
     }
+
+
+def test_knowledge_qa_prompt_budget_compresses_context_summary() -> None:
+    agent = load_agent("knowledge_qa.answer_agent.v1")
+    prompt = load_prompt(agent.prompt_template)
+    snapshot = {
+        "source_mode": "local_only",
+        "scope": "global",
+        "item_count": 20,
+        "item_ids": [f"note-{index}.html" for index in range(20)],
+        "items": [
+            {
+                "id": f"note-{index}.html",
+                "title": f"Long context note {index}",
+                "summary": "This note has a deliberately long summary for prompt budget testing. " * 4,
+                "collection": "Budget",
+                "tags": ["AI", "Budget"],
+            }
+            for index in range(20)
+        ],
+    }
+
+    evidence, history, report = budget_prompt_inputs(
+        content="Summarize all notes.",
+        evidence=[{"kind": "local", "item_id": "note-0.html", "title": "Long context note 0", "snippet": "Budget evidence.", "score": 8}],
+        snapshot=snapshot,
+        recent_messages=[],
+        expansion_policy={"mode": "local_evidence", "requires_citation": True},
+        max_prompt_chars=2600,
+        agent=agent,
+        prompt=prompt,
+    )
+    messages = build_answer_prompt(
+        "Summarize all notes.",
+        evidence,
+        {**snapshot, "items": snapshot["items"][: report["context_items_selected"]]},
+        history,
+        expansion_policy={"mode": "local_evidence", "requires_citation": True},
+        agent=agent,
+        prompt=prompt,
+    )
+
+    assert report["context_items_original"] == 20
+    assert 0 < report["context_items_selected"] <= 8
+    assert report["context_items_omitted"] == 20 - report["context_items_selected"]
+    assert report["context_summary_chars"] > 0
+    assert prompt_chars(messages) <= 2600
 
 
 def test_knowledge_qa_prompt_includes_context_summary_without_format_rules() -> None:

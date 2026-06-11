@@ -440,6 +440,7 @@ def budget_prompt_inputs(
     original_history_count = len(recent_messages)
     working_evidence = [dict(item) for item in evidence]
     working_history = list(recent_messages)
+    working_snapshot, context_report = budget_context_snapshot(snapshot, max_prompt_chars=max_prompt_chars)
     max_chars = max(1, int(max_prompt_chars or 1))
     trimmed_evidence_chars = False
     dropped_evidence = 0
@@ -459,19 +460,30 @@ def budget_prompt_inputs(
     messages = build_answer_prompt(
         content,
         working_evidence,
-        snapshot,
+        working_snapshot,
         working_history,
         expansion_policy=expansion_policy,
         agent=agent,
         prompt=prompt,
     )
+    while prompt_chars(messages) > max_chars and context_report["selected_item_count"] > 0:
+        working_snapshot, context_report = shrink_context_snapshot(working_snapshot, context_report, max_prompt_chars=max_prompt_chars)
+        messages = build_answer_prompt(
+            content,
+            working_evidence,
+            working_snapshot,
+            working_history,
+            expansion_policy=expansion_policy,
+            agent=agent,
+            prompt=prompt,
+        )
     while prompt_chars(messages) > max_chars and working_history:
         working_history = working_history[1:]
         dropped_history += 1
         messages = build_answer_prompt(
             content,
             working_evidence,
-            snapshot,
+            working_snapshot,
             working_history,
             expansion_policy=expansion_policy,
             agent=agent,
@@ -483,7 +495,7 @@ def budget_prompt_inputs(
         messages = build_answer_prompt(
             content,
             working_evidence,
-            snapshot,
+            working_snapshot,
             working_history,
             expansion_policy=expansion_policy,
             agent=agent,
@@ -500,8 +512,57 @@ def budget_prompt_inputs(
         "dropped_history_count": dropped_history,
         "trimmed_evidence_chars": trimmed_evidence_chars,
         "prompt_chars_after_budget": prompt_chars(messages),
+        "context_summary_chars": context_report["summary_chars"],
+        "context_items_original": context_report["original_item_count"],
+        "context_items_selected": context_report["selected_item_count"],
+        "context_items_omitted": context_report["omitted_item_count"],
     }
     return working_evidence, working_history, report
+
+
+def budget_context_snapshot(snapshot: dict[str, Any], *, max_prompt_chars: int) -> tuple[dict[str, Any], dict[str, int]]:
+    items = snapshot.get("items") if isinstance(snapshot.get("items"), list) else []
+    max_items = max_context_summary_items(max_prompt_chars)
+    selected_items = items[:max_items]
+    budgeted = dict(snapshot)
+    budgeted["items"] = selected_items
+    budgeted["_context_items_original_count"] = len(items)
+    report = {
+        "summary_chars": len(format_context_for_prompt(budgeted)),
+        "original_item_count": len(items),
+        "selected_item_count": len(selected_items),
+        "omitted_item_count": max(0, len(items) - len(selected_items)),
+    }
+    return budgeted, report
+
+
+def shrink_context_snapshot(snapshot: dict[str, Any], report: dict[str, int], *, max_prompt_chars: int) -> tuple[dict[str, Any], dict[str, int]]:
+    items = snapshot.get("items") if isinstance(snapshot.get("items"), list) else []
+    if not items:
+        return snapshot, report
+    next_count = max(0, len(items) - 1)
+    budgeted = dict(snapshot)
+    budgeted["items"] = items[:next_count]
+    original_count = int(snapshot.get("_context_items_original_count") or report.get("original_item_count") or len(items))
+    budgeted["_context_items_original_count"] = original_count
+    next_report = {
+        "summary_chars": len(format_context_for_prompt(budgeted)),
+        "original_item_count": original_count,
+        "selected_item_count": next_count,
+        "omitted_item_count": max(0, original_count - next_count),
+    }
+    return budgeted, next_report
+
+
+def max_context_summary_items(max_prompt_chars: int) -> int:
+    chars = max(1, int(max_prompt_chars or 1))
+    if chars < 3000:
+        return 8
+    if chars < 6000:
+        return 16
+    if chars < 10000:
+        return 24
+    return 30
 
 
 def evidence_snippet_limit(max_prompt_chars: int, evidence_count: int) -> int:
