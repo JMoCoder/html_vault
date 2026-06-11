@@ -70,6 +70,13 @@ const i18n = {
     aiProviderUnavailable: "AI provider is not configured on the server.",
     aiMessageFailed: "AI request failed.",
     aiSources: "Sources",
+    aiQaNeedsAttention: "Needs attention",
+    aiQaMissingCitation: "Missing citation",
+    aiQaModelSkipped: "Model call skipped",
+    aiQaExternalUnavailable: "External sources unavailable",
+    aiQaEmptyAnswer: "Empty answer",
+    aiQaVeryShortAnswer: "Very short answer",
+    aiQaInvalidCitation: "Citation check failed",
     aiSourceLocal: "Local",
     aiSourceExternal: "External",
     generateHtmlNote: "Generate note",
@@ -498,6 +505,13 @@ const i18n = {
     aiProviderUnavailable: "服务端尚未配置 AI 服务商。",
     aiMessageFailed: "AI 请求失败。",
     aiSources: "来源",
+    aiQaNeedsAttention: "需要注意",
+    aiQaMissingCitation: "缺少引用",
+    aiQaModelSkipped: "模型未调用",
+    aiQaExternalUnavailable: "外部来源不可用",
+    aiQaEmptyAnswer: "空回复",
+    aiQaVeryShortAnswer: "回复过短",
+    aiQaInvalidCitation: "引用校验失败",
     aiSourceLocal: "本地",
     aiSourceExternal: "外部",
     generateHtmlNote: "生成笔记",
@@ -926,6 +940,13 @@ const i18n = {
     aiProviderUnavailable: "サーバー側の AI プロバイダーが未設定です。",
     aiMessageFailed: "AI リクエストに失敗しました。",
     aiSources: "出典",
+    aiQaNeedsAttention: "要確認",
+    aiQaMissingCitation: "引用不足",
+    aiQaModelSkipped: "モデル未呼び出し",
+    aiQaExternalUnavailable: "外部ソース利用不可",
+    aiQaEmptyAnswer: "空の回答",
+    aiQaVeryShortAnswer: "短すぎる回答",
+    aiQaInvalidCitation: "引用検証失敗",
     aiSourceLocal: "ローカル",
     aiSourceExternal: "外部",
     generateHtmlNote: "ノートを生成",
@@ -4378,32 +4399,56 @@ function renderInitialAiMessage() {
 function appendAiMessage(role, text, sources = [], options = {}) {
   const message = document.createElement("article");
   message.className = `ai-message ${role}${options.pending ? " pending" : ""}`;
-  message.innerHTML = aiMessageMarkup(role, text, sources);
+  message.innerHTML = aiMessageMarkup(role, text, sources, options.qaStatus || null);
   elements.aiChatLog.append(message);
   updateAiPanelConversationState();
   scrollAiChatToBottom();
   return message;
 }
 
-function updateAiMessage(message, role, text, sources = []) {
+function updateAiMessage(message, role, text, sources = [], options = {}) {
   message.className = `ai-message ${role}`;
-  message.innerHTML = aiMessageMarkup(role, text, sources);
+  message.innerHTML = aiMessageMarkup(role, text, sources, options.qaStatus || null);
   updateAiPanelConversationState();
   scrollAiChatToBottom();
 }
 
-function aiMessageMarkup(role, text, sources = []) {
+function aiMessageMarkup(role, text, sources = [], qaStatus = null) {
   const sourceMarkup = role === "assistant" && sources.length > 0
     ? `<div class="ai-message-sources"><span>${escapeHtml(t("aiSources"))}</span>${sources.slice(0, 4).map(renderAiSourcePill).join("")}</div>`
     : "";
+  const diagnosticsMarkup = role === "assistant" ? renderAiDiagnostics(qaStatus) : "";
   const bodyMarkup = role === "assistant"
     ? renderMarkdown(text)
     : `<p>${escapeHtml(text)}</p>`;
   return `
     <strong>${escapeHtml(role === "user" ? t("aiUserPlaceholder") : t("aiConversation"))}</strong>
     <div class="ai-message-body">${bodyMarkup}</div>
+    ${diagnosticsMarkup}
     ${sourceMarkup}
   `;
+}
+
+function renderAiDiagnostics(qaStatus) {
+  if (!qaStatus || (!qaStatus.requires_attention && !Array.isArray(qaStatus.flags))) return "";
+  const flags = Array.isArray(qaStatus.flags) ? [...new Set(qaStatus.flags.map(String).filter(Boolean))] : [];
+  if (!qaStatus.requires_attention && flags.length === 0) return "";
+  const labels = flags.map(aiDiagnosticLabel).filter(Boolean);
+  if (labels.length === 0 && qaStatus.requires_attention) labels.push(t("aiQaNeedsAttention"));
+  if (labels.length === 0) return "";
+  return `<div class="ai-message-diagnostics" aria-label="${escapeHtml(t("aiQaNeedsAttention"))}">${labels.slice(0, 3).map((label) => `<span>${escapeHtml(label)}</span>`).join("")}</div>`;
+}
+
+function aiDiagnosticLabel(flag) {
+  const keyByFlag = {
+    missing_citation: "aiQaMissingCitation",
+    model_call_skipped: "aiQaModelSkipped",
+    external_unavailable: "aiQaExternalUnavailable",
+    empty_answer: "aiQaEmptyAnswer",
+    very_short_answer: "aiQaVeryShortAnswer",
+    invalid_citation: "aiQaInvalidCitation",
+  };
+  return t(keyByFlag[flag] || "aiQaNeedsAttention");
 }
 
 function updateAiPanelConversationState() {
@@ -4583,7 +4628,7 @@ async function submitAiMessage(event) {
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
-    updateAiMessage(pendingMessage, "assistant", data.message?.content || t("aiAssistantPlaceholder"), data.sources || []);
+    updateAiMessage(pendingMessage, "assistant", data.message?.content || t("aiAssistantPlaceholder"), data.sources || [], { qaStatus: data.qa_status || null });
     await loadAiRuns();
   } catch (error) {
     updateAiMessage(pendingMessage, "assistant", error?.message || t("aiMessageFailed"));

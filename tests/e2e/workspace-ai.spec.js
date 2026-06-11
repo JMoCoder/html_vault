@@ -597,6 +597,13 @@ test("workspace AI content expansion controls conversation source mode", async (
           { kind: "local", title: "MCP Security", item_id: "mcp.html" },
           { kind: "external", title: "External MCP reference", url: "https://example.test/search?q=mcp" },
         ],
+        qa_status: {
+          status: "needs_attention",
+          requires_attention: true,
+          flags: ["missing_citation"],
+          citation_status: "missing_citation",
+          source_count: 2,
+        },
         external_status: { provider: "fake", available: true, count: 1 },
       }),
     });
@@ -612,6 +619,7 @@ test("workspace AI content expansion controls conversation source mode", async (
   await expect(page.locator(".ai-message-sources")).toContainText("Local");
   await expect(page.locator(".ai-message-sources")).toContainText("External");
   await expect(page.locator(".ai-message-sources")).toContainText("example.test");
+  await expect(page.locator(".ai-message-diagnostics").last()).toContainText("Missing citation");
 
   await page.locator("#ai-content-expansion").uncheck();
   await page.locator("#ai-chat-input").fill("Answer only from local notes.");
