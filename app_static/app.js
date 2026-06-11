@@ -52,6 +52,8 @@ const i18n = {
     aiAssistantPlaceholder: "AI response placeholder. No request was sent.",
     aiReplying: "Replying...",
     aiContentExpansion: "Expand with external sources",
+    aiDeepResearch: "Deep research",
+    aiDeepResearchSoon: "Deep research is planned for the AI generation workflow.",
     aiPanelComingSoon: "Conversation and note generation are in development.",
     aiMoreActions: "More AI actions",
     aiNewConversation: "New conversation",
@@ -70,14 +72,6 @@ const i18n = {
     aiProviderUnavailable: "AI provider is not configured on the server.",
     aiMessageFailed: "AI request failed.",
     aiSources: "Sources",
-    aiQaNeedsAttention: "Needs attention",
-    aiQaMissingCitation: "Missing citation",
-    aiQaModelSkipped: "Model call skipped",
-    aiQaExternalUnavailable: "External sources unavailable",
-    aiQaPartialContextCoverage: "Partial context coverage",
-    aiQaEmptyAnswer: "Empty answer",
-    aiQaVeryShortAnswer: "Very short answer",
-    aiQaInvalidCitation: "Citation check failed",
     aiSourceLocal: "Local",
     aiSourceExternal: "External",
     generateHtmlNote: "Generate note",
@@ -488,6 +482,8 @@ const i18n = {
     aiAssistantPlaceholder: "AI 回复占位。当前未发送任何请求。",
     aiReplying: "回复中...",
     aiContentExpansion: "内容拓展",
+    aiDeepResearch: "深度研究",
+    aiDeepResearchSoon: "深度研究将随 AI 生成工作流后续开放。",
     aiPanelComingSoon: "对话与生成 HTML 笔记功能开发中。",
     aiMoreActions: "更多 AI 功能",
     aiNewConversation: "新建对话",
@@ -506,14 +502,6 @@ const i18n = {
     aiProviderUnavailable: "服务端尚未配置 AI 服务商。",
     aiMessageFailed: "AI 请求失败。",
     aiSources: "来源",
-    aiQaNeedsAttention: "需要注意",
-    aiQaMissingCitation: "缺少引用",
-    aiQaModelSkipped: "模型未调用",
-    aiQaExternalUnavailable: "外部来源不可用",
-    aiQaPartialContextCoverage: "上下文覆盖不完整",
-    aiQaEmptyAnswer: "空回复",
-    aiQaVeryShortAnswer: "回复过短",
-    aiQaInvalidCitation: "引用校验失败",
     aiSourceLocal: "本地",
     aiSourceExternal: "外部",
     generateHtmlNote: "生成笔记",
@@ -924,6 +912,8 @@ const i18n = {
     aiAssistantPlaceholder: "AI 応答のプレースホルダーです。リクエストは送信されていません。",
     aiReplying: "返信中...",
     aiContentExpansion: "外部情報で拡張",
+    aiDeepResearch: "深い調査",
+    aiDeepResearchSoon: "深い調査は AI 生成ワークフローで後日提供予定です。",
     aiPanelComingSoon: "会話と HTML ノート生成は開発中です。",
     aiMoreActions: "その他の AI 操作",
     aiNewConversation: "新規会話",
@@ -942,14 +932,6 @@ const i18n = {
     aiProviderUnavailable: "サーバー側の AI プロバイダーが未設定です。",
     aiMessageFailed: "AI リクエストに失敗しました。",
     aiSources: "出典",
-    aiQaNeedsAttention: "要確認",
-    aiQaMissingCitation: "引用不足",
-    aiQaModelSkipped: "モデル未呼び出し",
-    aiQaExternalUnavailable: "外部ソース利用不可",
-    aiQaPartialContextCoverage: "文脈の一部のみ参照",
-    aiQaEmptyAnswer: "空の回答",
-    aiQaVeryShortAnswer: "短すぎる回答",
-    aiQaInvalidCitation: "引用検証失敗",
     aiSourceLocal: "ローカル",
     aiSourceExternal: "外部",
     generateHtmlNote: "ノートを生成",
@@ -1387,7 +1369,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.9.4",
+  currentVersion: "0.9.5",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -4402,57 +4384,32 @@ function renderInitialAiMessage() {
 function appendAiMessage(role, text, sources = [], options = {}) {
   const message = document.createElement("article");
   message.className = `ai-message ${role}${options.pending ? " pending" : ""}`;
-  message.innerHTML = aiMessageMarkup(role, text, sources, options.qaStatus || null);
+  message.innerHTML = aiMessageMarkup(role, text, sources);
   elements.aiChatLog.append(message);
   updateAiPanelConversationState();
   scrollAiChatToBottom();
   return message;
 }
 
-function updateAiMessage(message, role, text, sources = [], options = {}) {
+function updateAiMessage(message, role, text, sources = []) {
   message.className = `ai-message ${role}`;
-  message.innerHTML = aiMessageMarkup(role, text, sources, options.qaStatus || null);
+  message.innerHTML = aiMessageMarkup(role, text, sources);
   updateAiPanelConversationState();
   scrollAiChatToBottom();
 }
 
-function aiMessageMarkup(role, text, sources = [], qaStatus = null) {
+function aiMessageMarkup(role, text, sources = []) {
   const sourceMarkup = role === "assistant" && sources.length > 0
     ? `<div class="ai-message-sources"><span>${escapeHtml(t("aiSources"))}</span>${sources.slice(0, 4).map(renderAiSourcePill).join("")}</div>`
     : "";
-  const diagnosticsMarkup = role === "assistant" ? renderAiDiagnostics(qaStatus) : "";
   const bodyMarkup = role === "assistant"
     ? renderMarkdown(text)
     : `<p>${escapeHtml(text)}</p>`;
   return `
     <strong>${escapeHtml(role === "user" ? t("aiUserPlaceholder") : t("aiConversation"))}</strong>
     <div class="ai-message-body">${bodyMarkup}</div>
-    ${diagnosticsMarkup}
     ${sourceMarkup}
   `;
-}
-
-function renderAiDiagnostics(qaStatus) {
-  if (!qaStatus || (!qaStatus.requires_attention && !Array.isArray(qaStatus.flags))) return "";
-  const flags = Array.isArray(qaStatus.flags) ? [...new Set(qaStatus.flags.map(String).filter(Boolean))] : [];
-  if (!qaStatus.requires_attention && flags.length === 0) return "";
-  const labels = flags.map(aiDiagnosticLabel).filter(Boolean);
-  if (labels.length === 0 && qaStatus.requires_attention) labels.push(t("aiQaNeedsAttention"));
-  if (labels.length === 0) return "";
-  return `<div class="ai-message-diagnostics" aria-label="${escapeHtml(t("aiQaNeedsAttention"))}">${labels.slice(0, 3).map((label) => `<span>${escapeHtml(label)}</span>`).join("")}</div>`;
-}
-
-function aiDiagnosticLabel(flag) {
-  const keyByFlag = {
-    missing_citation: "aiQaMissingCitation",
-    model_call_skipped: "aiQaModelSkipped",
-    external_unavailable: "aiQaExternalUnavailable",
-    partial_context_coverage: "aiQaPartialContextCoverage",
-    empty_answer: "aiQaEmptyAnswer",
-    very_short_answer: "aiQaVeryShortAnswer",
-    invalid_citation: "aiQaInvalidCitation",
-  };
-  return t(keyByFlag[flag] || "aiQaNeedsAttention");
 }
 
 function updateAiPanelConversationState() {
@@ -4632,7 +4589,7 @@ async function submitAiMessage(event) {
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Agent returned ${response.status}`);
-    updateAiMessage(pendingMessage, "assistant", data.message?.content || t("aiAssistantPlaceholder"), data.sources || [], { qaStatus: data.qa_status || null });
+    updateAiMessage(pendingMessage, "assistant", data.message?.content || t("aiAssistantPlaceholder"), data.sources || []);
     await loadAiRuns();
   } catch (error) {
     updateAiMessage(pendingMessage, "assistant", error?.message || t("aiMessageFailed"));
@@ -6398,7 +6355,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.4-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.5-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });

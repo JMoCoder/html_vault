@@ -4,9 +4,19 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-06-11
+
 ### Added
 
 - OpenAI-compatible embedding リクエストと、vector/hybrid ナレッジベース検索向けの軽量ローカル vector index を追加しました。index は現在のユーザー metadata ディレクトリに保存され、`HTML_LORE_AI_EMBEDDING_MODEL` と `HTML_LORE_AI_RETRIEVAL_MODE=vector` または `hybrid` を設定した場合に有効になります。未設定時はキーワード検索へフォールバックします。
+- バックエンド専用の vector index メンテナンス API と、状態確認、prune、clear、rebuild、embedding smoke test 用の `html-lore ai-vector-index` CLI を追加しました。
+- AI content expansion 用の制御された外部検索 adapter として Tavily を追加しました。サーバー側 API key 設定、低コスト既定値、topic / time range 推定、ユーザー質問からの country ヒント、明示的な深い調査依頼または運用者設定時のみの advanced 検索に対応します。
+- AI サイドバーの content expansion の横に、将来の非同期 Deep Research workflow 用の無効状態チェックボックスを追加しました。
+
+### Changed
+
+- ノートの編集、アーカイブ、完全削除時に古いローカル vector を削除します。また、大きなコンテキストで vector chunk を準備する際の index 読み込み回数を削減しました。
+- パッケージ、アプリ、PWA cache、provider user-agent のバージョンを `0.9.5` に更新しました。
 
 ## [0.9.4] - 2026-06-10
 

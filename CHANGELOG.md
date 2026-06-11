@@ -9,6 +9,8 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-06-11
+
 ### Added
 
 - Added OpenAI-compatible embedding requests and a lightweight local vector
@@ -16,6 +18,23 @@ versioning after the initial public release.
   the active user's metadata directory and requires
   `HTML_LORE_AI_EMBEDDING_MODEL` plus `HTML_LORE_AI_RETRIEVAL_MODE=vector` or
   `hybrid` to take effect; otherwise retrieval falls back to keyword mode.
+- Added backend-only vector index maintenance APIs and the
+  `html-lore ai-vector-index` CLI for stats, prune, clear, rebuild, and
+  embedding smoke tests.
+- Added Tavily as a controlled external-search adapter for AI content
+  expansion, with server-side API key configuration, low-cost defaults, topic
+  and time-range inference, country hints from the user query, and advanced
+  search only for explicit deep-research requests or operator configuration.
+- Added a disabled Deep Research checkbox beside content expansion in the AI
+  sidebar as a visible placeholder for the future asynchronous research
+  workflow.
+
+### Changed
+
+- Stale local vectors are now cleared when a note is edited, archived, or
+  permanently deleted, and vector retrieval avoids repeated index reads while
+  preparing chunks for larger contexts.
+- Updated package, app, PWA, and provider user-agent versions to `0.9.5`.
 
 ## [0.9.4] - 2026-06-10
 

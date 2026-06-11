@@ -16,6 +16,7 @@ from .material_generation import MaterialGenerationError, generate_note_from_mat
 from .model_client import ModelClient, test_provider
 from .providers import AIProviderConfigError, AIProviderConfigStore, ProviderCallError
 from .runs import AIRunError, AIRunStore
+from .vector_maintenance import VectorMaintenanceError, vector_maintenance_for_config
 
 
 class AIService:
@@ -51,6 +52,21 @@ class AIService:
     def test_provider(self) -> dict[str, Any]:
         config = self.store.get()
         return test_provider(config)
+
+    def vector_index_stats(self) -> dict[str, Any]:
+        return vector_maintenance_for_config(ItemService(self.settings), self.store.get()).stats()
+
+    def prune_vector_index(self) -> dict[str, Any]:
+        return vector_maintenance_for_config(ItemService(self.settings), self.store.get()).prune()
+
+    def clear_vector_index(self) -> dict[str, Any]:
+        return vector_maintenance_for_config(ItemService(self.settings), self.store.get()).clear()
+
+    def rebuild_vector_index(self) -> dict[str, Any]:
+        return vector_maintenance_for_config(ItemService(self.settings), self.store.get()).rebuild()
+
+    def smoke_test_embedding(self) -> dict[str, Any]:
+        return vector_maintenance_for_config(ItemService(self.settings), self.store.get()).smoke_test_embedding()
 
 
 class AIConversationService:
@@ -294,4 +310,5 @@ __all__ = [
     "AIRunError",
     "AIRunStore",
     "AIJobError",
+    "VectorMaintenanceError",
 ]

@@ -52,6 +52,8 @@ const i18n = {
     aiAssistantPlaceholder: "AI response placeholder. No request was sent.",
     aiReplying: "Replying...",
     aiContentExpansion: "Expand with external sources",
+    aiDeepResearch: "Deep research",
+    aiDeepResearchSoon: "Deep research is planned for the AI generation workflow.",
     aiPanelComingSoon: "Conversation and note generation are in development.",
     aiMoreActions: "More AI actions",
     aiNewConversation: "New conversation",
@@ -480,6 +482,8 @@ const i18n = {
     aiAssistantPlaceholder: "AI 回复占位。当前未发送任何请求。",
     aiReplying: "回复中...",
     aiContentExpansion: "内容拓展",
+    aiDeepResearch: "深度研究",
+    aiDeepResearchSoon: "深度研究将随 AI 生成工作流后续开放。",
     aiPanelComingSoon: "对话与生成 HTML 笔记功能开发中。",
     aiMoreActions: "更多 AI 功能",
     aiNewConversation: "新建对话",
@@ -908,6 +912,8 @@ const i18n = {
     aiAssistantPlaceholder: "AI 応答のプレースホルダーです。リクエストは送信されていません。",
     aiReplying: "返信中...",
     aiContentExpansion: "外部情報で拡張",
+    aiDeepResearch: "深い調査",
+    aiDeepResearchSoon: "深い調査は AI 生成ワークフローで後日提供予定です。",
     aiPanelComingSoon: "会話と HTML ノート生成は開発中です。",
     aiMoreActions: "その他の AI 操作",
     aiNewConversation: "新規会話",
@@ -1363,7 +1369,7 @@ const state = {
   currentUser: { username: "", dataId: "" },
   profile: loadProfile(),
   loginSubmitting: false,
-  currentVersion: "0.9.4",
+  currentVersion: "0.9.5",
   latestVersion: "",
   updateAvailable: false,
   versionCheckComplete: false,
@@ -6349,7 +6355,7 @@ function setIconButtonLabel(button, key) {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.4-demo" : "sw.js";
+    const swPath = hasRuntimeConfig("STATIC_DEMO") ? "sw.js?v=0.9.5-demo" : "sw.js";
     navigator.serviceWorker.register(swPath).catch((error) => {
       console.warn("Service worker registration failed", error);
     });

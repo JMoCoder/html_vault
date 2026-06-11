@@ -340,15 +340,59 @@ HTML_LORE_AI_RETRIEVAL_MODE=hybrid
 HTML_LORE_AI_API_KEY=replace-with-your-server-side-key
 ```
 
+Deployment notes:
+
+- `HTML_LORE_AI_API_KEY` is used by the server for chat and embedding calls; it
+  must not be placed in frontend config files.
+- `HTML_LORE_AI_EMBEDDING_MODEL` enables vector / hybrid retrieval. If the
+  embedding model or index is unavailable, HTMlore falls back to keyword
+  retrieval.
+- External search uses a separate server-side key when Tavily is enabled.
+- Smoke-test commands make real provider calls and should only be run after the
+  target model and key are confirmed for that environment.
+
 For development tests, `HTML_LORE_AI_PROVIDER=fake` can exercise the UI and
 conversation flow without sending model requests. Public provider status only
 returns `has_api_key`, never the secret value.
+
+External expansion mode can use Tavily as a controlled web-search provider:
+
+```bash
+HTML_LORE_AI_EXTERNAL_SEARCH=tavily
+HTML_LORE_AI_EXTERNAL_SEARCH_API_KEY=replace-with-your-tavily-key
+HTML_LORE_AI_EXTERNAL_SEARCH_MAX_RESULTS=5
+HTML_LORE_AI_EXTERNAL_SEARCH_DEPTH=basic
+HTML_LORE_AI_EXTERNAL_SEARCH_AUTO_PARAMETERS=false
+```
+
+HTMlore does not use Tavily's generated answer by default. It treats Tavily as
+evidence retrieval, then lets the knowledge Q&A workflow compose the final
+answer. Search starts in low-cost `basic` mode, switches topic/time range for
+time-sensitive or finance questions, can infer country from the user's query,
+and only escalates to `advanced` when the user explicitly asks for deep,
+multi-source research or the operator configures that depth.
 
 Vector / hybrid retrieval stores a lightweight local index under the active
 user metadata directory, for example `meta/ai/vector_index.json` or the
 corresponding `users/{data_id}/meta/ai/vector_index.json` in multi-user
 deployments. This keeps self-hosted user workspaces logically isolated while
 sharing the same application process.
+
+The vector index is maintained by backend-only APIs and CLI commands, not by a
+regular workspace button. HTMlore removes stale vectors when notes are edited,
+archived, or permanently deleted, and deployment operators can inspect or
+rebuild the local index when needed:
+
+```bash
+html-lore ai-vector-index stats
+html-lore ai-vector-index prune
+html-lore ai-vector-index rebuild
+html-lore ai-vector-index smoke-test
+```
+
+`smoke-test` makes one server-side embedding request using the configured
+provider and embedding model. It should only be run after confirming the model
+and key are intentional for that environment.
 
 ## Security Model
 

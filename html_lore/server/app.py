@@ -29,7 +29,9 @@ from .ai.api import (
     GuardrailError,
     HtmlGenerationError,
     MaterialGenerationError,
+    VectorMaintenanceError,
 )
+from .ai.vector_maintenance import clear_vector_index_for_items
 from .auth import current_user, login, logout, read_session, require_session, session_status
 from .config import ServerSettings, load_settings
 from .ai.rate_limit import AIRateLimitError, ai_rate_limiter
@@ -206,6 +208,41 @@ def create_app() -> FastAPI:
         try:
             return service.test_provider()
         except AIProviderConfigError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/api/ai/vector-index")
+    def ai_vector_index(_: ApiAuth, service: Annotated[AIService, Depends(get_ai_service)]) -> dict:
+        try:
+            return service.vector_index_stats()
+        except VectorMaintenanceError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/api/ai/vector-index/prune")
+    def prune_ai_vector_index(_: ApiAuth, service: Annotated[AIService, Depends(get_ai_service)]) -> dict:
+        try:
+            return service.prune_vector_index()
+        except VectorMaintenanceError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/api/ai/vector-index/clear")
+    def clear_ai_vector_index(_: ApiAuth, service: Annotated[AIService, Depends(get_ai_service)]) -> dict:
+        try:
+            return service.clear_vector_index()
+        except VectorMaintenanceError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/api/ai/vector-index/rebuild")
+    def rebuild_ai_vector_index(_: ApiAuth, __: AiRateLimit, service: Annotated[AIService, Depends(get_ai_service)]) -> dict:
+        try:
+            return service.rebuild_vector_index()
+        except VectorMaintenanceError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/api/ai/vector-index/smoke-test")
+    def smoke_test_ai_embedding(_: ApiAuth, __: AiRateLimit, service: Annotated[AIService, Depends(get_ai_service)]) -> dict:
+        try:
+            return service.smoke_test_embedding()
+        except (AIProviderConfigError, VectorMaintenanceError) as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.post("/api/ai/context/resolve")
@@ -475,7 +512,9 @@ def create_app() -> FastAPI:
     @app.put("/api/items/{item_id:path}/content")
     def update_item_content(item_id: str, values: dict, _: ApiAuth, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:
         try:
-            return service.update_item_content(item_id, values.get("content"))
+            result = service.update_item_content(item_id, values.get("content"))
+            clear_vector_index_for_items(service, {item_id})
+            return result
         except ItemContentUpdateError as exc:
             message = str(exc)
             status = 404 if message == "Item not found." else 400
@@ -507,7 +546,9 @@ def create_app() -> FastAPI:
     @app.patch("/api/items/{item_id:path}/metadata")
     def update_item_metadata(item_id: str, values: dict, _: ApiAuth, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:
         try:
-            return service.update_item_metadata(item_id, values)
+            result = service.update_item_metadata(item_id, values)
+            clear_vector_index_for_items(service, {item_id})
+            return result
         except ItemMetadataError as exc:
             message = str(exc)
             status = 404 if message == "Item not found." else 400
@@ -516,7 +557,10 @@ def create_app() -> FastAPI:
     @app.patch("/api/items/{item_id:path}/state")
     def update_item_state(item_id: str, values: dict, _: ApiAuth, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:
         try:
-            return service.update_item_state(item_id, values)
+            result = service.update_item_state(item_id, values)
+            if "archived" in values:
+                clear_vector_index_for_items(service, {item_id})
+            return result
         except ItemStateError as exc:
             message = str(exc)
             status = 404 if message == "Item not found." else 400
@@ -532,7 +576,9 @@ def create_app() -> FastAPI:
     @app.delete("/api/items/{item_id:path}")
     def delete_item(item_id: str, _: ApiAuth, service: Annotated[ItemService, Depends(get_item_service)]) -> dict:
         try:
-            return service.delete_item(item_id)
+            result = service.delete_item(item_id)
+            clear_vector_index_for_items(service, {item_id})
+            return result
         except ItemDeleteError as exc:
             message = str(exc)
             status = 404 if message == "Item not found." else 400

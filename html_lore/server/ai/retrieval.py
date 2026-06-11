@@ -392,6 +392,8 @@ def build_vector_chunks(
     store: LocalVectorStore,
 ) -> list[dict[str, Any]]:
     item_ids = [str(item_id) for item_id in context_snapshot.get("item_ids") or [] if str(item_id)]
+    item_id_set = set(item_ids)
+    indexed_hashes = store.existing_hashes(model=embedding_model, item_ids=item_id_set)
     manifest_items = {str(item.get("id") or ""): item for item in item_service.manifest().get("items", [])}
     chunks: list[dict[str, Any]] = []
     for item_id in item_ids:
@@ -410,7 +412,7 @@ def build_vector_chunks(
                 continue
             chunk_id = vector_chunk_id(item_id, index)
             hash_value = content_hash(snippet)
-            if store.has_current_chunk(item_id=item_id, chunk_id=chunk_id, model=embedding_model, content_hash_value=hash_value):
+            if (item_id, chunk_id, hash_value) in indexed_hashes:
                 continue
             chunks.append(
                 {

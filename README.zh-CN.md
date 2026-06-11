@@ -273,7 +273,37 @@ HTML_LORE_AI_RETRIEVAL_MODE=hybrid
 HTML_LORE_AI_API_KEY=replace-with-your-server-side-key
 ```
 
+部署注意事项：
+
+- `HTML_LORE_AI_API_KEY` 只供服务端调用 chat 和 embedding，不要写入前端配置文件。
+- `HTML_LORE_AI_EMBEDDING_MODEL` 用于启用 vector / hybrid 检索；embedding 模型或索引不可用时，HTMlore 会回退到关键词检索。
+- 启用 Tavily 外部搜索时使用独立的服务端 key。
+- smoke-test 命令会产生真实 provider 调用，只有确认当前环境模型和 key 都正确后再运行。
+
+内容拓展模式可以使用 Tavily 作为受控外部搜索服务：
+
+```bash
+HTML_LORE_AI_EXTERNAL_SEARCH=tavily
+HTML_LORE_AI_EXTERNAL_SEARCH_API_KEY=replace-with-your-tavily-key
+HTML_LORE_AI_EXTERNAL_SEARCH_MAX_RESULTS=5
+HTML_LORE_AI_EXTERNAL_SEARCH_DEPTH=basic
+HTML_LORE_AI_EXTERNAL_SEARCH_AUTO_PARAMETERS=false
+```
+
+HTMlore 默认不使用 Tavily 生成的 answer，而是把 Tavily 作为外部证据检索工具，再由知识库问答 workflow 统一组织最终回答。搜索默认从低成本 `basic` 模式开始；遇到强时效或金融问题时自动切换 topic / time range；可以从用户问题中识别国家提示；只有用户明确要求深度研究、多来源对比，或部署者显式配置时，才会升级到 `advanced`。
+
 vector / hybrid 检索会在当前用户的 metadata 目录下保存轻量本地索引，例如 `meta/ai/vector_index.json`；多用户部署时则位于对应的 `users/{data_id}/meta/ai/vector_index.json`。这样可以在同一个应用进程中复用能力，同时保持用户工作台的逻辑隔离。
+
+向量索引维护属于后台能力，不作为普通工作台按钮暴露。笔记被编辑、归档或永久删除后，HTMlore 会主动清理对应旧向量；部署者也可以在需要时通过 CLI 查看、清理或重建本地索引：
+
+```bash
+html-lore ai-vector-index stats
+html-lore ai-vector-index prune
+html-lore ai-vector-index rebuild
+html-lore ai-vector-index smoke-test
+```
+
+`smoke-test` 会使用当前服务端配置的 provider 和 embedding 模型发起一次真实 embedding 请求。只有在确认该环境的模型与 key 都是预期配置后再运行。
 
 开发测试时可以使用 `HTML_LORE_AI_PROVIDER=fake` 验证界面与会话流程，不会发起真实模型请求。公开状态接口只返回 `has_api_key`，不会返回密钥内容。
 

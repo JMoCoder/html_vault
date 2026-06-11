@@ -274,7 +274,37 @@ HTML_LORE_AI_RETRIEVAL_MODE=hybrid
 HTML_LORE_AI_API_KEY=replace-with-your-server-side-key
 ```
 
+デプロイ時の注意:
+
+- `HTML_LORE_AI_API_KEY` はサーバー側の chat / embedding 呼び出しだけに使います。フロントエンド設定ファイルに書かないでください。
+- `HTML_LORE_AI_EMBEDDING_MODEL` は vector / hybrid 検索を有効にします。embedding model または index が利用できない場合、HTMlore はキーワード検索へフォールバックします。
+- Tavily 外部検索を有効にする場合は、別のサーバー側 key を使います。
+- smoke-test コマンドは実際の provider 呼び出しを行います。その環境の model と key が正しいことを確認してから実行してください。
+
+外部拡張モードでは、Tavily を制御された Web 検索 provider として利用できます:
+
+```bash
+HTML_LORE_AI_EXTERNAL_SEARCH=tavily
+HTML_LORE_AI_EXTERNAL_SEARCH_API_KEY=replace-with-your-tavily-key
+HTML_LORE_AI_EXTERNAL_SEARCH_MAX_RESULTS=5
+HTML_LORE_AI_EXTERNAL_SEARCH_DEPTH=basic
+HTML_LORE_AI_EXTERNAL_SEARCH_AUTO_PARAMETERS=false
+```
+
+HTMlore は既定では Tavily の生成 answer を使いません。Tavily は外部証拠検索として扱い、最終回答はナレッジ Q&A workflow が組み立てます。検索は低コストの `basic` から開始し、時事性の高い質問や金融質問では topic / time range を切り替えます。ユーザーの質問から country ヒントを推定でき、ユーザーが深い調査や複数ソース比較を明示した場合、または運用者が明示設定した場合のみ `advanced` に昇格します。
+
 vector / hybrid 検索は、現在のユーザー metadata ディレクトリに軽量ローカル index を保存します。例: `meta/ai/vector_index.json`。マルチユーザーデプロイでは、対応する `users/{data_id}/meta/ai/vector_index.json` に保存されます。これにより、同じアプリケーションプロセスを共有しつつ、各ユーザーのワークスペースを論理的に分離できます。
+
+vector index のメンテナンスはバックエンド用の機能であり、通常のワークスペースボタンとしては表示しません。ノートを編集、アーカイブ、完全削除した場合、HTMlore は対応する古い vector を削除します。運用者は必要に応じて CLI からローカル index を確認、整理、再構築できます:
+
+```bash
+html-lore ai-vector-index stats
+html-lore ai-vector-index prune
+html-lore ai-vector-index rebuild
+html-lore ai-vector-index smoke-test
+```
+
+`smoke-test` は、現在のサーバー設定の provider と embedding model を使って実際に 1 回 embedding リクエストを送ります。その環境で model と key が意図した設定であることを確認してから実行してください。
 
 開発テストでは `HTML_LORE_AI_PROVIDER=fake` を使い、実際のモデルリクエストなしで UI と会話フローを確認できます。公開ステータスは `has_api_key` のみを返し、秘密値は返しません。
 

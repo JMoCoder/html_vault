@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Noto+Serif+SC:wght@600;900&family=Noto+Serif+JP:wght@600;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.9.4-dev.1">
+  <link rel="stylesheet" href="style.css?v=0.9.5">
 </head>
 <body>
   <section class="login-screen" id="login-screen" hidden>
@@ -625,10 +625,16 @@
         <div class="ai-composer-resize" id="ai-composer-resize" role="separator" aria-orientation="horizontal" aria-label="Resize AI input area" data-i18n-attr="aria-label:resizeAiComposer"></div>
         <div class="ai-panel-actions">
           <button type="button" id="ai-generate-note" data-i18n="generateHtmlNote"></button>
-          <label class="ai-source-toggle">
-            <input id="ai-content-expansion" type="checkbox">
-            <span data-i18n="aiContentExpansion"></span>
-          </label>
+          <div class="ai-source-options">
+            <label class="ai-source-toggle">
+              <input id="ai-content-expansion" type="checkbox">
+              <span data-i18n="aiContentExpansion"></span>
+            </label>
+            <label class="ai-source-toggle ai-source-toggle-disabled" title="Deep research is planned for the AI generation workflow." data-i18n-attr="title:aiDeepResearchSoon">
+              <input id="ai-deep-research" type="checkbox" disabled>
+              <span data-i18n="aiDeepResearch"></span>
+            </label>
+          </div>
           <div class="ai-more-menu-wrap">
             <button type="button" class="icon-action ai-more-toggle" id="ai-more-toggle" aria-label="More AI actions" title="More AI actions" data-i18n-attr="aria-label:aiMoreActions,title:aiMoreActions"></button>
             <div class="ai-more-menu" id="ai-more-menu" hidden>
@@ -910,6 +916,6 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="app.js?v=0.9.4-dev.1" type="module"></script>
+  <script src="app.js?v=0.9.5" type="module"></script>
 </body>
 </html>

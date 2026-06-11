@@ -68,6 +68,20 @@ class LocalVectorStore:
         self._write(data)
         return {"upserted": upserted, "total": len(data["vectors"])}
 
+    def existing_hashes(self, *, model: str, item_ids: set[str] | None = None) -> set[tuple[str, str, str]]:
+        data = self._read()
+        result: set[tuple[str, str, str]] = set()
+        for row in data.get("vectors", []):
+            if not isinstance(row, dict):
+                continue
+            item_id = str(row.get("item_id") or "")
+            if item_ids is not None and item_id not in item_ids:
+                continue
+            if row.get("model") != model or not isinstance(row.get("vector"), list):
+                continue
+            result.add((item_id, str(row.get("chunk_id") or ""), str(row.get("content_hash") or "")))
+        return result
+
     def has_current_chunk(self, *, item_id: str, chunk_id: str, model: str, content_hash_value: str) -> bool:
         data = self._read()
         for row in data.get("vectors", []):
@@ -82,6 +96,51 @@ class LocalVectorStore:
             ):
                 return True
         return False
+
+    def remove_items(self, item_ids: set[str]) -> dict[str, int]:
+        if not item_ids:
+            return self.stats()
+        data = self._read()
+        before = len(data.get("vectors", []))
+        vectors = [
+            row
+            for row in data.get("vectors", [])
+            if not isinstance(row, dict) or str(row.get("item_id") or "") not in item_ids
+        ]
+        self._write({"version": self.version, "vectors": vectors})
+        return {"removed": before - len(vectors), "total": len(vectors)}
+
+    def prune_to_items(self, valid_item_ids: set[str]) -> dict[str, int]:
+        data = self._read()
+        before = len(data.get("vectors", []))
+        vectors = [
+            row
+            for row in data.get("vectors", [])
+            if isinstance(row, dict) and str(row.get("item_id") or "") in valid_item_ids
+        ]
+        self._write({"version": self.version, "vectors": vectors})
+        return {"removed": before - len(vectors), "total": len(vectors)}
+
+    def clear(self) -> dict[str, int]:
+        data = self._read()
+        removed = len(data.get("vectors", []))
+        self._write({"version": self.version, "vectors": []})
+        return {"removed": removed, "total": 0}
+
+    def stats(self) -> dict[str, int]:
+        data = self._read()
+        vectors = [row for row in data.get("vectors", []) if isinstance(row, dict)]
+        item_ids = {str(row.get("item_id") or "") for row in vectors if row.get("item_id")}
+        models = {str(row.get("model") or "") for row in vectors if row.get("model")}
+        return {"total": len(vectors), "item_count": len(item_ids), "model_count": len(models)}
+
+    def indexed_item_ids(self) -> set[str]:
+        data = self._read()
+        return {
+            str(row.get("item_id") or "")
+            for row in data.get("vectors", [])
+            if isinstance(row, dict) and row.get("item_id")
+        }
 
     def _read(self) -> dict[str, Any]:
         if not self.path.exists():

@@ -1458,10 +1458,25 @@ textarea {
   padding: 8px 14px 10px;
 }
 
+.ai-panel-actions > #ai-generate-note {
+  flex: 0 0 auto;
+}
+
+.ai-source-options {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
 .ai-source-toggle {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex: 0 1 auto;
+  min-width: 0;
   width: fit-content;
   margin: 0;
   color: var(--muted);
@@ -1471,11 +1486,26 @@ textarea {
   white-space: nowrap;
 }
 
+.ai-source-toggle span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .ai-source-toggle input {
   width: 14px;
   height: 14px;
   accent-color: var(--accent);
   cursor: pointer;
+}
+
+.ai-source-toggle-disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.ai-source-toggle-disabled input,
+.ai-source-toggle-disabled span {
+  cursor: not-allowed;
 }
 
 .ai-panel-actions button,

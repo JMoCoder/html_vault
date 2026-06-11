@@ -16,7 +16,8 @@ from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttp
 from html_lore.server.ai.registry import load_agent, load_prompt
 from html_lore.server.ai.retrieval import extract_safe_text, retrieve_evidence_with_status
 from html_lore.server.ai.runs import AIRunStore
-from html_lore.server.ai.external_search import ExternalSearchResult, prepare_external_search_query, is_safe_external_url, sanitize_external_results
+from html_lore.server.ai.vector_store import LocalVectorStore
+from html_lore.server.ai.external_search import ExternalSearchResult, TavilyExternalSearchAdapter, build_tavily_payload, prepare_external_search_query, is_safe_external_url, sanitize_external_results
 from html_lore.server.ai.api import qa_status_from_report
 from html_lore.server.users import UserStore
 
@@ -236,6 +237,136 @@ def test_ai_status_reports_external_search_capability(tmp_path: Path) -> None:
         assert status["external_search"] == {"provider": "fake", "available": True, "max_results": 3}
     finally:
         server.close()
+
+
+def test_ai_status_reports_tavily_external_search_without_key_leak(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_external_search="tavily",
+        ai_external_search_api_key="tvly-test-secret",
+        ai_external_search_max_results=4,
+    )
+    try:
+        status = server.request("GET", "/api/ai/status")
+        assert status["external_search_available"] is True
+        assert status["external_search"] == {"provider": "tavily", "available": True, "max_results": 4}
+        assert "tvly-test-secret" not in json.dumps(status)
+        assert "api_key" not in status["external_search"]
+    finally:
+        server.close()
+
+
+def test_tavily_payload_uses_controlled_defaults_and_enhancements() -> None:
+    default_payload = build_tavily_payload(
+        "Explain HTMlore project positioning",
+        max_results=5,
+        search_depth="basic",
+        auto_parameters=False,
+        topic="general",
+        time_range="",
+        include_raw_content=False,
+    )
+    assert default_payload == {
+        "query": "Explain HTMlore project positioning",
+        "max_results": 5,
+        "search_depth": "basic",
+        "topic": "general",
+        "include_answer": False,
+        "include_raw_content": False,
+    }
+
+    news_payload = build_tavily_payload(
+        "latest AI policy news in the US today",
+        max_results=30,
+        search_depth="basic",
+        auto_parameters=False,
+        topic="general",
+        time_range="",
+        include_raw_content=False,
+    )
+    assert news_payload["max_results"] == 20
+    assert news_payload["topic"] == "news"
+    assert news_payload["time_range"] == "day"
+    assert news_payload["country"] == "us"
+    assert news_payload["search_depth"] == "basic"
+
+    deep_payload = build_tavily_payload(
+        "深度研究 2026 储能政策 多来源 对比",
+        max_results=6,
+        search_depth="basic",
+        auto_parameters=True,
+        topic="general",
+        time_range="",
+        include_raw_content=True,
+    )
+    assert deep_payload["search_depth"] == "advanced"
+    assert deep_payload["topic"] == "news"
+    assert deep_payload["time_range"] == "month"
+    assert deep_payload["auto_parameters"] is True
+    assert deep_payload["include_raw_content"] is True
+    assert deep_payload["include_answer"] is False
+
+    finance_payload = build_tavily_payload(
+        "Tesla earnings revenue market cap",
+        max_results=3,
+        search_depth="fast",
+        auto_parameters=False,
+        topic="general",
+        time_range="year",
+        include_raw_content=False,
+    )
+    assert finance_payload["topic"] == "finance"
+    assert finance_payload["time_range"] == "year"
+    assert finance_payload["search_depth"] == "fast"
+
+
+def test_tavily_adapter_posts_bearer_key_and_parses_results(monkeypatch) -> None:
+    seen: dict[str, str] = {}
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return None
+
+        def read(self) -> bytes:
+            return json.dumps(
+                {
+                    "results": [
+                        {
+                            "title": "Official source",
+                            "url": "https://example.com/source",
+                            "content": "Relevant external evidence.",
+                        },
+                    ],
+                },
+            ).encode("utf-8")
+
+    def fake_urlopen(request, timeout):
+        seen["url"] = request.full_url
+        seen["authorization"] = request.get_header("Authorization")
+        seen["body"] = request.data.decode("utf-8")
+        return FakeResponse()
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+
+    adapter = TavilyExternalSearchAdapter(api_key="tvly-test-secret", max_results=5, search_depth="basic")
+    results = adapter.search("latest release news in Japan", max_results=4)
+
+    assert seen["url"] == "https://api.tavily.com/search"
+    assert seen["authorization"] == "Bearer tvly-test-secret"
+    payload = json.loads(seen["body"])
+    assert payload["include_answer"] is False
+    assert payload["topic"] == "news"
+    assert payload["time_range"] == "month"
+    assert payload["country"] == "japan"
+    assert len(results) == 1
+    assert results[0].title == "Official source"
+    assert results[0].url == "https://example.com/source"
 
 
 def test_ai_secret_is_not_written_to_public_static_files(tmp_path: Path) -> None:
@@ -1092,6 +1223,125 @@ def test_vector_retrieval_mode_uses_local_index_when_embedding_is_configured(tmp
         assert response["sources"][0]["item_id"] == "mcp.html"
         assert response["sources"][0]["retrieval_sources"] == ["vector"]
         assert (meta_dir / "ai" / "vector_index.json").exists()
+    finally:
+        server.close()
+
+
+def test_vector_index_maintenance_api_rebuilds_prunes_and_smoke_tests(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "mcp.html",
+        title="MCP Security",
+        collection="AI",
+        tags=["MCP"],
+        html="<!doctype html><html><body><p>MCP authorization and tool risk controls.</p></body></html>",
+    )
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "archived.html",
+        title="Archived Note",
+        collection="AI",
+        tags=["Old"],
+        html="<!doctype html><html><body><p>Archived content should not be indexed.</p></body></html>",
+        archived=True,
+    )
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_embedding_model="baai/bge-m3",
+        ai_enabled=True,
+        ai_retrieval_mode="hybrid",
+    )
+    try:
+        smoke = server.json("POST", "/api/ai/vector-index/smoke-test", {})
+        assert smoke["ok"] is True
+        assert smoke["embedding_model"] == "baai/bge-m3"
+        assert smoke["dimensions"] == 32
+
+        rebuilt = server.json("POST", "/api/ai/vector-index/rebuild", {})
+        assert rebuilt["active_item_count"] == 1
+        assert rebuilt["rebuilt"]["total"] == 1
+
+        index = json.loads((meta_dir / "ai" / "vector_index.json").read_text(encoding="utf-8"))
+        assert [row["item_id"] for row in index["vectors"]] == ["mcp.html"]
+
+        store = LocalVectorStore(ServerSettings(content_dir, meta_dir, public_dir, "Vector Test", 10 * 1024 * 1024))
+        store.upsert_chunks(
+            [
+                {
+                    "item_id": "missing.html",
+                    "chunk_id": "missing.html#1",
+                    "title": "Missing",
+                    "snippet": "stale",
+                    "content_hash": "stale",
+                    "model": "baai/bge-m3",
+                    "vector": [1.0] * 32,
+                },
+            ],
+        )
+        stats = server.request("GET", "/api/ai/vector-index")
+        assert stats["item_count"] == 2
+        assert stats["stale_item_count"] == 1
+
+        pruned = server.json("POST", "/api/ai/vector-index/prune", {})
+        assert pruned["vector_index"]["removed"] == 1
+        cleared = server.json("POST", "/api/ai/vector-index/clear", {})
+        assert cleared["vector_index"]["total"] == 0
+    finally:
+        server.close()
+
+
+def test_vector_index_is_cleared_when_content_metadata_archive_or_delete_changes(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "mcp.html",
+        title="MCP Security",
+        collection="AI",
+        tags=["MCP"],
+        html="<!doctype html><html><body><p>MCP authorization and tool risk controls.</p></body></html>",
+    )
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_embedding_model="baai/bge-m3",
+        ai_enabled=True,
+        ai_retrieval_mode="vector",
+    )
+    try:
+        server.json("POST", "/api/ai/vector-index/rebuild", {})
+        assert server.request("GET", "/api/ai/vector-index")["total"] == 1
+
+        server.json("PATCH", "/api/items/mcp.html/metadata", {"title": "MCP Security Updated", "collection": "AI", "tags": ["MCP"]})
+        assert server.request("GET", "/api/ai/vector-index")["total"] == 0
+
+        server.json("POST", "/api/ai/vector-index/rebuild", {})
+        assert server.request("GET", "/api/ai/vector-index")["total"] == 1
+
+        server.json("PUT", "/api/items/mcp.html/content", {"content": "<!doctype html><html><body><p>Changed content.</p></body></html>"})
+        assert server.request("GET", "/api/ai/vector-index")["total"] == 0
+
+        server.json("POST", "/api/ai/vector-index/rebuild", {})
+        assert server.request("GET", "/api/ai/vector-index")["total"] == 1
+
+        server.json("PATCH", "/api/items/mcp.html/state", {"archived": True})
+        assert server.request("GET", "/api/ai/vector-index")["total"] == 0
+
+        server.json("POST", "/api/ai/vector-index/rebuild", {})
+        assert server.request("GET", "/api/ai/vector-index")["total"] == 0
+
+        server.request("DELETE", "/api/items/mcp.html")
+        assert server.request("GET", "/api/ai/vector-index")["total"] == 0
     finally:
         server.close()
 

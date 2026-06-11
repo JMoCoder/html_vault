@@ -4,9 +4,19 @@
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-06-11
+
 ### 新增
 
 - 新增 OpenAI-compatible embedding 请求与轻量本地向量索引，用于 vector/hybrid 知识库检索。索引保存在当前用户 metadata 目录下，需要配置 `HTML_LORE_AI_EMBEDDING_MODEL` 并将 `HTML_LORE_AI_RETRIEVAL_MODE` 设为 `vector` 或 `hybrid` 后生效；未配置时继续回退关键词检索。
+- 新增仅后台使用的向量索引维护 API，以及 `html-lore ai-vector-index` CLI，支持查看状态、清理失效条目、清空、重建和 embedding smoke test。
+- 新增 Tavily 作为 AI 内容拓展的受控外部搜索 adapter，支持服务端 API key 配置、低成本默认参数、topic 和 time range 推断、根据用户问题识别国家提示，并且只在明确深度研究请求或部署者显式配置时使用 advanced 搜索。
+- 在 AI 侧栏内容拓展旁新增禁用状态的“深度研究”复选框，作为未来异步深度研究 workflow 的可见占位。
+
+### 变更
+
+- 笔记被编辑、归档或永久删除后会主动清理对应本地旧向量；大上下文构建向量 chunk 时也减少重复读取索引文件。
+- 包版本、应用版本、PWA 缓存版本和 provider user-agent 更新为 `0.9.5`。
 
 ## [0.9.4] - 2026-06-10
 

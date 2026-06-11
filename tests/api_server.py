@@ -41,7 +41,13 @@ class ApiServer:
         ai_embedding_model: str = "",
         ai_enabled: bool = False,
         ai_external_search: str = "",
+        ai_external_search_api_key: str = "",
         ai_external_search_max_results: int | None = None,
+        ai_external_search_depth: str | None = None,
+        ai_external_search_auto_parameters: bool | None = None,
+        ai_external_search_topic: str | None = None,
+        ai_external_search_time_range: str | None = None,
+        ai_external_search_include_raw_content: bool | None = None,
         ai_max_context_items: int | None = None,
         ai_max_prompt_chars: int | None = None,
         ai_max_message_chars: int | None = None,
@@ -72,12 +78,23 @@ class ApiServer:
                 "HTML_LORE_AI_EMBEDDING_MODEL": ai_embedding_model,
                 "HTML_LORE_AI_ENABLED": "true" if ai_enabled else "",
                 "HTML_LORE_AI_EXTERNAL_SEARCH": ai_external_search,
+                "HTML_LORE_AI_EXTERNAL_SEARCH_API_KEY": ai_external_search_api_key,
             },
         )
         if ai_max_context_items is not None:
             env["HTML_LORE_AI_MAX_CONTEXT_ITEMS"] = str(ai_max_context_items)
         if ai_external_search_max_results is not None:
             env["HTML_LORE_AI_EXTERNAL_SEARCH_MAX_RESULTS"] = str(ai_external_search_max_results)
+        if ai_external_search_depth is not None:
+            env["HTML_LORE_AI_EXTERNAL_SEARCH_DEPTH"] = ai_external_search_depth
+        if ai_external_search_auto_parameters is not None:
+            env["HTML_LORE_AI_EXTERNAL_SEARCH_AUTO_PARAMETERS"] = "true" if ai_external_search_auto_parameters else "false"
+        if ai_external_search_topic is not None:
+            env["HTML_LORE_AI_EXTERNAL_SEARCH_TOPIC"] = ai_external_search_topic
+        if ai_external_search_time_range is not None:
+            env["HTML_LORE_AI_EXTERNAL_SEARCH_TIME_RANGE"] = ai_external_search_time_range
+        if ai_external_search_include_raw_content is not None:
+            env["HTML_LORE_AI_EXTERNAL_SEARCH_INCLUDE_RAW_CONTENT"] = "true" if ai_external_search_include_raw_content else "false"
         if ai_max_prompt_chars is not None:
             env["HTML_LORE_AI_MAX_PROMPT_CHARS"] = str(ai_max_prompt_chars)
         if ai_max_message_chars is not None:
@@ -242,7 +259,13 @@ def run_api_server(
     ai_embedding_model: str = "",
     ai_enabled: bool = False,
     ai_external_search: str = "",
+    ai_external_search_api_key: str = "",
     ai_external_search_max_results: int | None = None,
+    ai_external_search_depth: str | None = None,
+    ai_external_search_auto_parameters: bool | None = None,
+    ai_external_search_topic: str | None = None,
+    ai_external_search_time_range: str | None = None,
+    ai_external_search_include_raw_content: bool | None = None,
     ai_max_context_items: int | None = None,
     ai_max_prompt_chars: int | None = None,
     ai_max_message_chars: int | None = None,
@@ -269,7 +292,13 @@ def run_api_server(
         ai_embedding_model=ai_embedding_model,
         ai_enabled=ai_enabled,
         ai_external_search=ai_external_search,
+        ai_external_search_api_key=ai_external_search_api_key,
         ai_external_search_max_results=ai_external_search_max_results,
+        ai_external_search_depth=ai_external_search_depth,
+        ai_external_search_auto_parameters=ai_external_search_auto_parameters,
+        ai_external_search_topic=ai_external_search_topic,
+        ai_external_search_time_range=ai_external_search_time_range,
+        ai_external_search_include_raw_content=ai_external_search_include_raw_content,
         ai_max_context_items=ai_max_context_items,
         ai_max_prompt_chars=ai_max_prompt_chars,
         ai_max_message_chars=ai_max_message_chars,

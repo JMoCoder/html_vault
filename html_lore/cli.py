@@ -8,7 +8,10 @@ from typing import Sequence
 
 from .builder import build_site
 from .server.ai.eval import KnowledgeQAEvalSpec, load_eval_questions, run_knowledge_qa_eval
-from .server.config import ServerSettings
+from .server.ai.providers import AIProviderConfigStore
+from .server.ai.vector_maintenance import VectorMaintenanceError, vector_maintenance_for_config
+from .server.config import ServerSettings, load_settings
+from .server.items import ItemService
 from .server.users import UserStore, UserStoreError
 
 
@@ -46,6 +49,9 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "html-lore") -> None:
     qa_eval_parser.add_argument("--retrieval-mode", default="keyword", choices=["keyword", "vector", "hybrid"], help="Retrieval mode to evaluate.")
     qa_eval_parser.add_argument("--source-mode", default="local_only", choices=["local_only", "local_plus_external"], help="QA source mode.")
     qa_eval_parser.add_argument("--out", default="", help="Optional JSON output path. Defaults to stdout.")
+
+    vector_parser = subparsers.add_parser("ai-vector-index", help="Maintain the local AI vector index.")
+    vector_parser.add_argument("action", choices=["stats", "prune", "clear", "rebuild", "smoke-test"], help="Vector index maintenance action.")
 
     args = parser.parse_args(argv)
     if args.command == "build":
@@ -105,6 +111,23 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "html-lore") -> None:
             print(f"Wrote QA eval report to {args.out}")
         else:
             print(payload)
+    elif args.command == "ai-vector-index":
+        settings = load_settings()
+        service = vector_maintenance_for_config(ItemService(settings), AIProviderConfigStore(settings).get())
+        try:
+            if args.action == "stats":
+                report = service.stats()
+            elif args.action == "prune":
+                report = service.prune()
+            elif args.action == "clear":
+                report = service.clear()
+            elif args.action == "rebuild":
+                report = service.rebuild()
+            else:
+                report = service.smoke_test_embedding()
+        except VectorMaintenanceError as exc:
+            raise SystemExit(str(exc)) from exc
+        print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
