@@ -32,3 +32,6 @@ html-lore = "html_lore.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["html_lore*"]
+
+[tool.setuptools.package-data]
+"html_lore.server.ai" = ["agents/*.json", "prompts/*/*.md"]

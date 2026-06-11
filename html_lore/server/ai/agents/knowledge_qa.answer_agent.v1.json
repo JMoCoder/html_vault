@@ -1,0 +1,12 @@
+{
+  "id": "knowledge_qa.answer_agent",
+  "version": "v1",
+  "role": "HTMlore knowledge-base answer agent",
+  "prompt_template": "knowledge_qa/answer_agent.v1.md",
+  "input_schema": "KnowledgeQAAnswerInput",
+  "output_schema": "KnowledgeQAAnswerOutput",
+  "allowed_skills": [],
+  "model_policy": {
+    "temperature": 0.2
+  }
+}

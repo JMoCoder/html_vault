@@ -81,6 +81,8 @@ def sanitize_run(run: dict[str, Any]) -> dict[str, Any]:
         "qa_report": run.get("qa_report") if isinstance(run.get("qa_report"), dict) else {},
         "review_decision": run.get("review_decision") if isinstance(run.get("review_decision"), dict) else {},
         "node_trace": run.get("node_trace") if isinstance(run.get("node_trace"), list) else [],
+        "agent_trace": sanitize_trace_list(run.get("agent_trace"), allowed_keys={"id", "version", "role", "prompt_template", "input_schema", "output_schema"}),
+        "prompt_trace": sanitize_trace_list(run.get("prompt_trace"), allowed_keys={"id", "version", "path"}),
         "usage": sanitize_usage(run.get("usage")),
         "budget": sanitize_budget(run.get("budget")),
         "error": sanitize_error(run.get("error")),
@@ -105,6 +107,19 @@ def sanitize_bool(value: Any, *, default: bool) -> bool:
     if isinstance(value, bool):
         return value
     return default
+
+
+def sanitize_trace_list(value: Any, *, allowed_keys: set[str]) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    sanitized: list[dict[str, Any]] = []
+    for entry in value:
+        if not isinstance(entry, dict):
+            continue
+        clean = {key: entry[key] for key in allowed_keys if key in entry and isinstance(entry[key], (str, int, float, bool))}
+        if clean:
+            sanitized.append(clean)
+    return sanitized
 
 
 def sanitize_duration(value: Any) -> int:

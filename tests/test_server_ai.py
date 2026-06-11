@@ -11,6 +11,7 @@ from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, 
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
+from html_lore.server.ai.registry import load_agent, load_prompt
 from html_lore.server.ai.retrieval import extract_safe_text, retrieve_evidence_with_status
 from html_lore.server.ai.runs import AIRunStore
 from html_lore.server.ai.external_search import ExternalSearchResult, is_safe_external_url, sanitize_external_results
@@ -344,6 +345,17 @@ def test_chat_completions_url_accepts_v1_base_url() -> None:
     assert chat_completions_url("https://api.example.test/v1") == "https://api.example.test/v1/chat/completions"
 
 
+def test_ai_registry_loads_knowledge_qa_answer_agent() -> None:
+    agent = load_agent("knowledge_qa.answer_agent.v1")
+    prompt = load_prompt(agent.prompt_template)
+
+    assert agent.id == "knowledge_qa.answer_agent"
+    assert agent.version == "v1"
+    assert agent.prompt_template == "knowledge_qa/answer_agent.v1.md"
+    assert prompt.version == "v1"
+    assert "HTMlore's knowledge-base assistant" in prompt.content
+
+
 def test_ai_context_resolver_filters_scope_and_excludes_archived(tmp_path: Path) -> None:
     content_dir, meta_dir, public_dir = make_dirs(tmp_path)
     make_note(content_dir, meta_dir, "a.html", title="Alpha MCP", collection="AI", tags=["MCP", "Docker"])
@@ -646,10 +658,18 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         assert run["retryable"] is False
         assert run["cancellable"] is False
         assert run["qa_report"]["source_count"] == 1
+        assert run["agent_trace"][0]["id"] == "knowledge_qa.answer_agent"
+        assert run["agent_trace"][0]["version"] == "v1"
+        assert run["prompt_trace"][0] == {
+            "id": "knowledge_qa/answer_agent.v1.md",
+            "version": "v1",
+            "path": "knowledge_qa/answer_agent.v1.md",
+        }
         raw_runs = json.dumps(runs, ensure_ascii=False)
         assert "What does MCP security cover?" not in raw_runs
         assert "Fake AI response" not in raw_runs
         assert "Test summary" not in raw_runs
+        assert "Answer only from the provided evidence" not in raw_runs
     finally:
         server.close()
 
