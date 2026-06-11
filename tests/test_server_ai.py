@@ -1333,6 +1333,7 @@ def test_ai_message_uses_fake_external_search_when_expansion_is_enabled(tmp_path
         assert response["external_status"]["queried"] is True
         assert response["external_status"]["max_results"] == 3
         assert response["external_status"]["query_chars"] > 0
+        assert response["external_status"]["external_evidence_count"] == 1
         external_sources = [source for source in response["sources"] if str(source.get("url") or "").startswith("https://example.test/search")]
         assert external_sources
         assert "Fake AI response" in response["message"]["content"]
@@ -1346,8 +1347,10 @@ def test_ai_message_uses_fake_external_search_when_expansion_is_enabled(tmp_path
             "ResearchQueryPlannerNode",
             "ExternalSearchProviderNode",
             "ResearchSourceVerifierNode",
+            "ResearchEvidenceMergerNode",
         ]
-        assert research_trace[-1]["selected_count"] == 1
+        assert research_trace[-2]["selected_count"] == 1
+        assert research_trace[-1]["external_evidence_count"] == 1
     finally:
         server.close()
 

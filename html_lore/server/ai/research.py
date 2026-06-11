@@ -46,8 +46,10 @@ class ResearchWorkflow:
         trace.append({"node": "ExternalSearchProviderNode", "status": "completed", "result_count": len(raw_results)})
         sources, dropped = verify_research_sources(raw_results)
         trace.append({"node": "ResearchSourceVerifierNode", "status": "completed", "selected_count": len(sources), "dropped_count": dropped})
-        status.update({"available": True, "count": len(sources), "dropped": dropped, "queried": True, "workflow": self.name})
-        return ResearchResult(sources=sources, status=status, trace=trace)
+        merged_sources, merge_report = merge_research_evidence(sources)
+        trace.append({"node": "ResearchEvidenceMergerNode", "status": "completed", **merge_report})
+        status.update({"available": True, "count": len(merged_sources), "dropped": dropped, "queried": True, "workflow": self.name, **merge_report})
+        return ResearchResult(sources=merged_sources, status=status, trace=trace)
 
 
 def plan_research_query(query: Any) -> tuple[str, dict[str, Any]]:
@@ -56,3 +58,7 @@ def plan_research_query(query: Any) -> tuple[str, dict[str, Any]]:
 
 def verify_research_sources(results: list[ExternalSearchResult]) -> tuple[list[dict[str, Any]], int]:
     return sanitize_external_results(results)
+
+
+def merge_research_evidence(sources: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    return list(sources), {"external_evidence_count": len(sources)}
