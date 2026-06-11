@@ -45,6 +45,7 @@ class KnowledgeQAState:
     evidence_rank_report: dict[str, Any] = field(default_factory=dict)
     evidence_rerank_report: dict[str, Any] = field(default_factory=dict)
     evidence_budget: dict[str, Any] = field(default_factory=dict)
+    evidence_coverage_report: dict[str, Any] = field(default_factory=dict)
     prompt_messages: list[dict[str, str]] = field(default_factory=list)
     agent_trace: list[dict[str, Any]] = field(default_factory=list)
     prompt_trace: list[dict[str, str]] = field(default_factory=list)
@@ -91,6 +92,7 @@ class KnowledgeQAGraph:
             EvidenceRankerNode(),
             EvidenceRerankNode(),
             EvidenceGateNode(max_prompt_chars=max_prompt_chars),
+            EvidenceCoverageNode(),
             AnswerAgentNode(model_client, max_response_tokens=max_response_tokens),
             CitationVerifierNode(),
             AnswerQualityNode(),
@@ -302,6 +304,18 @@ class EvidenceGateNode:
             state.answer = NO_EVIDENCE_ANSWER
         state.sources = []
         state.skipped_model_call = True
+
+
+class EvidenceCoverageNode:
+    name = "EvidenceCoverageNode"
+
+    def run(self, state: KnowledgeQAState) -> None:
+        state.evidence_coverage_report = assess_evidence_coverage(
+            snapshot=state.context_snapshot,
+            retrieval_status=state.retrieval_status,
+            sources=state.sources,
+            budget_report=state.evidence_budget,
+        )
 
 
 class AnswerAgentNode:
@@ -750,6 +764,47 @@ def assess_answer_quality(
     }
 
 
+def assess_evidence_coverage(
+    *,
+    snapshot: dict[str, Any],
+    retrieval_status: dict[str, Any],
+    sources: list[dict[str, Any]],
+    budget_report: dict[str, Any],
+) -> dict[str, Any]:
+    context_ids = [str(item_id) for item_id in snapshot.get("item_ids") or [] if str(item_id)]
+    selected_ids = [
+        str(source.get("item_id") or "")
+        for source in sources
+        if source.get("kind") != "external" and str(source.get("item_id") or "")
+    ]
+    selected_unique_ids = sorted(set(selected_ids))
+    context_unique_ids = list(dict.fromkeys(context_ids))
+    missing_ids = [item_id for item_id in context_unique_ids if item_id not in set(selected_unique_ids)]
+    context_count = len(context_unique_ids)
+    selected_count = len(selected_unique_ids)
+    retrieved_count = safe_int(retrieval_status.get("covered_item_count"), selected_count)
+    dropped_by_budget = max(0, safe_int(budget_report.get("dropped_evidence_count"), 0))
+    if context_count == 0:
+        status = "empty_context"
+    elif selected_count == 0:
+        status = "no_local_evidence"
+    elif selected_count < context_count:
+        status = "partial"
+    else:
+        status = "full"
+    return {
+        "status": status,
+        "context_item_count": context_count,
+        "retrieved_item_count": retrieved_count,
+        "selected_item_count": selected_count,
+        "coverage_ratio": round(selected_count / context_count, 4) if context_count else 0,
+        "missing_item_count": len(missing_ids),
+        "missing_item_ids": missing_ids[:20],
+        "dropped_evidence_count": dropped_by_budget,
+        "trimmed_evidence_chars": bool(budget_report.get("trimmed_evidence_chars")),
+    }
+
+
 def format_evidence_for_prompt(index: int, item: dict[str, Any]) -> str:
     if item.get("kind") == "external":
         return f"[{index}] EXTERNAL: {item.get('title')} ({item.get('url')})\n{item.get('snippet')}"
@@ -991,6 +1046,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
             "evidence_ranking": state.evidence_rank_report,
             "evidence_rerank": state.evidence_rerank_report,
             "evidence_budget": state.evidence_budget,
+            "evidence_coverage": state.evidence_coverage_report,
             "citation": state.citation_report,
             "answer_quality": state.answer_quality_report,
         },

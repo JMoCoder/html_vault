@@ -9,7 +9,7 @@ from html_lore.server.config import ServerSettings
 from html_lore.server.ai.guardrails import GuardrailError
 from html_lore.server.ai.eval import KnowledgeQAEvalSpec, run_knowledge_qa_eval
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
-from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, assess_answer_quality, build_answer_prompt, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, public_qa_run, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, assess_answer_quality, assess_evidence_coverage, build_answer_prompt, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, public_qa_run, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
@@ -679,6 +679,7 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
             "EvidenceRankerNode",
             "EvidenceRerankNode",
             "EvidenceGateNode",
+            "EvidenceCoverageNode",
             "AnswerAgentNode",
             "CitationVerifierNode",
             "AnswerQualityNode",
@@ -707,6 +708,17 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         assert run["qa_report"]["evidence_scope"]["dropped_count"] == 0
         assert run["qa_report"]["evidence_ranking"]["selected_count"] == 1
         assert run["qa_report"]["evidence_rerank"]["strategy"] == "deterministic_query_score_v1"
+        assert run["qa_report"]["evidence_coverage"] == {
+            "status": "full",
+            "context_item_count": 1,
+            "retrieved_item_count": 1,
+            "selected_item_count": 1,
+            "coverage_ratio": 1.0,
+            "missing_item_count": 0,
+            "missing_item_ids": [],
+            "dropped_evidence_count": 0,
+            "trimmed_evidence_chars": False,
+        }
         assert run["agent_trace"][0]["id"] == "knowledge_qa.answer_agent"
         assert run["agent_trace"][0]["version"] == "v1"
         assert run["prompt_trace"][0] == {
@@ -1591,6 +1603,31 @@ def test_knowledge_qa_answer_quality_flags_missing_citation_and_skipped_model() 
     assert missing_citation["flags"] == ["missing_citation"]
     assert skipped["status"] == "needs_attention"
     assert skipped["flags"] == ["model_call_skipped"]
+
+
+def test_knowledge_qa_evidence_coverage_reports_missing_context_items() -> None:
+    report = assess_evidence_coverage(
+        snapshot={"item_ids": ["mcp.html", "docker.html", "energy.html"]},
+        retrieval_status={"covered_item_count": 2},
+        sources=[
+            {"kind": "local", "item_id": "mcp.html"},
+            {"kind": "local", "item_id": "energy.html"},
+            {"kind": "external", "url": "https://example.test/source"},
+        ],
+        budget_report={"dropped_evidence_count": 1, "trimmed_evidence_chars": True},
+    )
+
+    assert report == {
+        "status": "partial",
+        "context_item_count": 3,
+        "retrieved_item_count": 2,
+        "selected_item_count": 2,
+        "coverage_ratio": 0.6667,
+        "missing_item_count": 1,
+        "missing_item_ids": ["docker.html"],
+        "dropped_evidence_count": 1,
+        "trimmed_evidence_chars": True,
+    }
 
 
 def test_knowledge_qa_prompt_includes_context_summary_without_format_rules() -> None:
