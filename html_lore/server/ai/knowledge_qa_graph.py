@@ -9,10 +9,11 @@ from typing import Any, Protocol
 from html_lore.server.items import ItemService
 
 from .conversations import ConversationStore
-from .external_search import DisabledExternalSearchAdapter, ExternalSearchAdapter, ExternalSearchUnavailable, prepare_external_search_query, sanitize_external_results
+from .external_search import DisabledExternalSearchAdapter, ExternalSearchAdapter
 from .guardrails import GuardrailError, validate_answer, validate_message_budget, validate_prompt_budget, validate_user_message
 from .model_client import ModelClient
 from .registry import AgentSpec, PromptTemplate, load_agent, load_prompt
+from .research import ResearchWorkflow
 from .skills import RetrievalSkill
 
 
@@ -40,6 +41,7 @@ class KnowledgeQAState:
     retrieval_status: dict[str, Any] = field(default_factory=dict)
     external_sources: list[dict[str, Any]] = field(default_factory=list)
     external_status: dict[str, Any] = field(default_factory=dict)
+    research_trace: list[dict[str, Any]] = field(default_factory=list)
     expansion_policy: dict[str, Any] = field(default_factory=dict)
     evidence_scope_report: dict[str, Any] = field(default_factory=dict)
     evidence_rank_report: dict[str, Any] = field(default_factory=dict)
@@ -153,33 +155,20 @@ class ExternalSearchNode:
     name = "ExternalSearchNode"
 
     def __init__(self, external_search: ExternalSearchAdapter) -> None:
-        self.external_search = external_search
+        self.research_workflow = ResearchWorkflow(external_search)
 
     def run(self, state: KnowledgeQAState) -> None:
         source_mode = str(state.context_snapshot.get("source_mode") or "local_only")
-        state.external_status = {"provider": self.external_search.name, "available": self.external_search.available}
+        state.external_status = {"provider": self.research_workflow.external_search.name, "available": self.research_workflow.external_search.available}
         if source_mode != "local_plus_external":
             return
         if state.expansion_policy.get("mode") != "web_research":
             return
-        if not self.external_search.available:
-            state.external_status["message"] = "External content expansion is not configured."
-            return
-        search_query, query_report = prepare_external_search_query(state.content)
-        state.external_status.update(query_report)
-        if not search_query:
-            state.external_status["message"] = "External search query is empty after safety filtering."
-            return
-        max_results = max(1, int(getattr(self.external_search, "max_results", 5) or 5))
-        state.external_status["max_results"] = max_results
-        try:
-            results = self.external_search.search(search_query, max_results=max_results)
-        except ExternalSearchUnavailable as exc:
-            state.external_status.update({"available": False, "message": str(exc)})
-            return
-        state.external_sources, dropped = sanitize_external_results(results)
+        research = self.research_workflow.run(state.content)
+        state.external_status = research.status
+        state.research_trace = research.trace
+        state.external_sources = research.sources
         state.evidence.extend(state.external_sources)
-        state.external_status.update({"available": True, "count": len(state.external_sources), "dropped": dropped, "queried": True})
 
 
 class ExpansionPolicyNode:
@@ -1138,6 +1127,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
             "skipped_model_call": bool(state.skipped_model_call),
             "retrieval": state.retrieval_status,
             "external_status": state.external_status,
+            "research_trace": state.research_trace,
             "expansion_policy": state.expansion_policy,
             "evidence_scope": state.evidence_scope_report,
             "evidence_ranking": state.evidence_rank_report,

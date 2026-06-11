@@ -1271,6 +1271,7 @@ def test_ai_message_reports_external_expansion_unavailable_without_adapter(tmp_p
         assert response["qa_status"]["flags"] == ["model_call_skipped", "external_unavailable"]
         runs = server.request("GET", "/api/ai/runs")
         assert runs["runs"][0]["qa_report"]["expansion_policy"]["mode"] == "web_research"
+        assert runs["runs"][0]["qa_report"]["research_trace"][0] == {"node": "ExternalSearchAvailabilityNode", "status": "unavailable"}
     finally:
         server.close()
 
@@ -1340,6 +1341,13 @@ def test_ai_message_uses_fake_external_search_when_expansion_is_enabled(tmp_path
         policy = runs["runs"][0]["qa_report"]["expansion_policy"]
         assert policy["mode"] == "web_research"
         assert policy["reason"] == "time_sensitive_question"
+        research_trace = runs["runs"][0]["qa_report"]["research_trace"]
+        assert [entry["node"] for entry in research_trace] == [
+            "ResearchQueryPlannerNode",
+            "ExternalSearchProviderNode",
+            "ResearchSourceVerifierNode",
+        ]
+        assert research_trace[-1]["selected_count"] == 1
     finally:
         server.close()
 
