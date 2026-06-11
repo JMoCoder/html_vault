@@ -13,7 +13,7 @@ from .external_search import DisabledExternalSearchAdapter, ExternalSearchAdapte
 from .guardrails import GuardrailError, validate_answer, validate_message_budget, validate_prompt_budget, validate_user_message
 from .model_client import ModelClient
 from .registry import AgentSpec, PromptTemplate, load_agent, load_prompt
-from .retrieval import retrieve_evidence_with_status
+from .skills import RetrievalSkill
 
 
 NO_EVIDENCE_ANSWER = "当前上下文没有足够资料回答这个问题。请调整上下文、选择相关笔记，或开启内容拓展后再试。"
@@ -50,6 +50,7 @@ class KnowledgeQAState:
     prompt_messages: list[dict[str, str]] = field(default_factory=list)
     agent_trace: list[dict[str, Any]] = field(default_factory=list)
     prompt_trace: list[dict[str, str]] = field(default_factory=list)
+    skill_trace: list[dict[str, Any]] = field(default_factory=list)
     citation_report: dict[str, Any] = field(default_factory=dict)
     answer_quality_report: dict[str, Any] = field(default_factory=dict)
     answer: str = ""
@@ -137,18 +138,11 @@ class RetrieverNode:
     name = "RetrieverNode"
 
     def __init__(self, item_service: ItemService, *, model_client: ModelClient | None = None, retrieval_mode: str = "keyword") -> None:
-        self.item_service = item_service
-        self.model_client = model_client
-        self.retrieval_mode = retrieval_mode
+        self.retrieval_skill = RetrievalSkill(item_service, model_client=model_client, mode=retrieval_mode)
 
     def run(self, state: KnowledgeQAState) -> None:
-        result = retrieve_evidence_with_status(
-            self.item_service,
-            state.context_snapshot,
-            state.retrieval_query or state.content,
-            mode=self.retrieval_mode,
-            model_client=self.model_client,
-        )
+        result, trace = self.retrieval_skill.run(state.context_snapshot, state.retrieval_query or state.content)
+        state.skill_trace.append(trace)
         state.evidence = result.evidence
         state.retrieval_status = result.status
         state.retrieval_status["query_expanded"] = bool(state.retrieval_query and state.retrieval_query != state.content)
@@ -1158,6 +1152,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
         "node_trace": state.node_trace,
         "agent_trace": state.agent_trace,
         "prompt_trace": state.prompt_trace,
+        "skill_trace": state.skill_trace,
         "usage": state.usage,
         "budget": state.budget,
         "error": error or {},

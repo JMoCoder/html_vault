@@ -83,6 +83,7 @@ def sanitize_run(run: dict[str, Any]) -> dict[str, Any]:
         "node_trace": run.get("node_trace") if isinstance(run.get("node_trace"), list) else [],
         "agent_trace": sanitize_trace_list(run.get("agent_trace"), allowed_keys={"id", "version", "role", "prompt_template", "input_schema", "output_schema"}),
         "prompt_trace": sanitize_trace_list(run.get("prompt_trace"), allowed_keys={"id", "version", "path"}),
+        "skill_trace": sanitize_skill_trace(run.get("skill_trace")),
         "usage": sanitize_usage(run.get("usage")),
         "budget": sanitize_budget(run.get("budget")),
         "error": sanitize_error(run.get("error")),
@@ -120,6 +121,41 @@ def sanitize_trace_list(value: Any, *, allowed_keys: set[str]) -> list[dict[str,
         if clean:
             sanitized.append(clean)
     return sanitized
+
+
+def sanitize_skill_trace(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    sanitized: list[dict[str, Any]] = []
+    for entry in value:
+        if not isinstance(entry, dict):
+            continue
+        clean = {
+            "skill_id": str(entry.get("skill_id") or ""),
+            "version": str(entry.get("version") or ""),
+            "status": str(entry.get("status") or ""),
+            "input_summary": sanitize_summary(entry.get("input_summary")),
+            "output_summary": sanitize_summary(entry.get("output_summary")),
+        }
+        if clean["skill_id"]:
+            sanitized.append(clean)
+    return sanitized
+
+
+def sanitize_summary(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    result: dict[str, Any] = {}
+    for key, raw in value.items():
+        if not isinstance(key, str) or key not in {"query_chars", "context_item_count", "requested_mode", "evidence_count", "effective_mode", "fallback"}:
+            continue
+        if isinstance(raw, bool):
+            result[key] = raw
+        elif isinstance(raw, (int, float)):
+            result[key] = int(raw)
+        elif isinstance(raw, str):
+            result[key] = raw[:80]
+    return result
 
 
 def sanitize_duration(value: Any) -> int:

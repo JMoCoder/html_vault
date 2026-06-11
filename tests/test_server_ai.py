@@ -730,6 +730,11 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
             "version": "v1",
             "path": "knowledge_qa/answer_agent.v1.md",
         }
+        assert run["skill_trace"][0]["skill_id"] == "retrieval.hybrid_rank"
+        assert run["skill_trace"][0]["version"] == "v1"
+        assert run["skill_trace"][0]["input_summary"]["query_chars"] > 0
+        assert run["skill_trace"][0]["input_summary"]["context_item_count"] == 1
+        assert run["skill_trace"][0]["output_summary"]["evidence_count"] == 1
         raw_runs = json.dumps(runs, ensure_ascii=False)
         assert "What does MCP security cover?" not in raw_runs
         assert "Fake AI response" not in raw_runs
