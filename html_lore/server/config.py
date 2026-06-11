@@ -29,6 +29,7 @@ class ServerSettings:
     ai_embedding_model: str = ""
     ai_enabled: bool = False
     ai_external_search: str = ""
+    ai_external_search_max_results: int = 5
     ai_max_context_items: int = 50
     ai_max_prompt_chars: int = 12000
     ai_max_message_chars: int = 4000
@@ -83,6 +84,7 @@ def load_settings() -> ServerSettings:
     ai_embedding_model = get_env("AI_EMBEDDING_MODEL", "").strip()
     ai_enabled = parse_bool(get_env("AI_ENABLED", "false"))
     ai_external_search = get_env("AI_EXTERNAL_SEARCH", "").strip()
+    ai_external_search_max_results = parse_positive_int(get_env("AI_EXTERNAL_SEARCH_MAX_RESULTS", "5"), 5)
     ai_max_context_items = parse_positive_int(get_env("AI_MAX_CONTEXT_ITEMS", "50"), 50)
     ai_max_prompt_chars = parse_positive_int(get_env("AI_MAX_PROMPT_CHARS", "12000"), 12000)
     ai_max_message_chars = parse_positive_int(get_env("AI_MAX_MESSAGE_CHARS", "4000"), 4000)
@@ -113,6 +115,7 @@ def load_settings() -> ServerSettings:
         ai_embedding_model=ai_embedding_model,
         ai_enabled=ai_enabled,
         ai_external_search=ai_external_search,
+        ai_external_search_max_results=ai_external_search_max_results,
         ai_max_context_items=ai_max_context_items,
         ai_max_prompt_chars=ai_max_prompt_chars,
         ai_max_message_chars=ai_max_message_chars,

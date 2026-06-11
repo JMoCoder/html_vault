@@ -15,7 +15,7 @@ from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttp
 from html_lore.server.ai.registry import load_agent, load_prompt
 from html_lore.server.ai.retrieval import extract_safe_text, retrieve_evidence_with_status
 from html_lore.server.ai.runs import AIRunStore
-from html_lore.server.ai.external_search import ExternalSearchResult, is_safe_external_url, sanitize_external_results
+from html_lore.server.ai.external_search import ExternalSearchResult, prepare_external_search_query, is_safe_external_url, sanitize_external_results
 from html_lore.server.users import UserStore
 
 from tests.api_server import run_api_server
@@ -1256,6 +1256,7 @@ def test_ai_message_uses_fake_external_search_when_expansion_is_enabled(tmp_path
         ai_model="fake-test-model",
         ai_enabled=True,
         ai_external_search="fake",
+        ai_external_search_max_results=3,
     )
     try:
         conversation = server.json(
@@ -1264,7 +1265,13 @@ def test_ai_message_uses_fake_external_search_when_expansion_is_enabled(tmp_path
             {"context": {"item_id": "mcp.html"}, "source_mode": "local_plus_external"},
         )["conversation"]
         response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "What is the latest MCP version today?"})
-        assert response["external_status"] == {"provider": "fake", "available": True, "count": 1, "dropped": 0}
+        assert response["external_status"]["provider"] == "fake"
+        assert response["external_status"]["available"] is True
+        assert response["external_status"]["count"] == 1
+        assert response["external_status"]["dropped"] == 0
+        assert response["external_status"]["queried"] is True
+        assert response["external_status"]["max_results"] == 3
+        assert response["external_status"]["query_chars"] > 0
         external_sources = [source for source in response["sources"] if str(source.get("url") or "").startswith("https://example.test/search")]
         assert external_sources
         assert "Fake AI response" in response["message"]["content"]
@@ -1294,6 +1301,20 @@ def test_external_search_result_safety_filter_blocks_internal_urls() -> None:
     )
     assert dropped == 2
     assert [item["title"] for item in safe] == ["Safe"]
+
+
+def test_external_search_query_preparation_drops_internal_urls_and_truncates() -> None:
+    query, report = prepare_external_search_query(
+        "latest MCP http://localhost:8787/api/private https://example.test/source " + ("x" * 300),
+        max_chars=64,
+    )
+
+    assert "localhost" not in query
+    assert "https://example.test/source" in query
+    assert len(query) <= 64
+    assert report["query_chars"] == len(query)
+    assert report["query_truncated"] is True
+    assert report["blocked_internal_url_tokens"] is True
 
 
 def test_external_search_filtered_results_do_not_trigger_model_call(tmp_path: Path) -> None:
@@ -1342,7 +1363,11 @@ def test_external_search_filtered_results_do_not_trigger_model_call(tmp_path: Pa
     assert state.skipped_model_call is True
     assert state.usage == {}
     assert state.answer == EXTERNAL_UNAVAILABLE_ANSWER
-    assert state.external_status == {"provider": "unsafe-test", "available": True, "count": 0, "dropped": 2}
+    assert state.external_status["provider"] == "unsafe-test"
+    assert state.external_status["available"] is True
+    assert state.external_status["count"] == 0
+    assert state.external_status["dropped"] == 2
+    assert state.external_status["queried"] is True
 
 
 def test_expansion_policy_marks_time_sensitive_questions_for_web_research() -> None:

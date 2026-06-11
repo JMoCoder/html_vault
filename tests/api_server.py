@@ -40,6 +40,7 @@ class ApiServer:
         ai_model: str = "",
         ai_enabled: bool = False,
         ai_external_search: str = "",
+        ai_external_search_max_results: int | None = None,
         ai_max_context_items: int | None = None,
         ai_max_prompt_chars: int | None = None,
         ai_max_message_chars: int | None = None,
@@ -73,6 +74,8 @@ class ApiServer:
         )
         if ai_max_context_items is not None:
             env["HTML_LORE_AI_MAX_CONTEXT_ITEMS"] = str(ai_max_context_items)
+        if ai_external_search_max_results is not None:
+            env["HTML_LORE_AI_EXTERNAL_SEARCH_MAX_RESULTS"] = str(ai_external_search_max_results)
         if ai_max_prompt_chars is not None:
             env["HTML_LORE_AI_MAX_PROMPT_CHARS"] = str(ai_max_prompt_chars)
         if ai_max_message_chars is not None:
@@ -236,6 +239,7 @@ def run_api_server(
     ai_model: str = "",
     ai_enabled: bool = False,
     ai_external_search: str = "",
+    ai_external_search_max_results: int | None = None,
     ai_max_context_items: int | None = None,
     ai_max_prompt_chars: int | None = None,
     ai_max_message_chars: int | None = None,
@@ -261,6 +265,7 @@ def run_api_server(
         ai_model=ai_model,
         ai_enabled=ai_enabled,
         ai_external_search=ai_external_search,
+        ai_external_search_max_results=ai_external_search_max_results,
         ai_max_context_items=ai_max_context_items,
         ai_max_prompt_chars=ai_max_prompt_chars,
         ai_max_message_chars=ai_max_message_chars,

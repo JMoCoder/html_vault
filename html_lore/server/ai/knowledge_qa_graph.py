@@ -9,7 +9,7 @@ from typing import Any, Protocol
 from html_lore.server.items import ItemService
 
 from .conversations import ConversationStore
-from .external_search import DisabledExternalSearchAdapter, ExternalSearchAdapter, ExternalSearchUnavailable, sanitize_external_results
+from .external_search import DisabledExternalSearchAdapter, ExternalSearchAdapter, ExternalSearchUnavailable, prepare_external_search_query, sanitize_external_results
 from .guardrails import GuardrailError, validate_answer, validate_message_budget, validate_prompt_budget, validate_user_message
 from .model_client import ModelClient
 from .registry import AgentSpec, PromptTemplate, load_agent, load_prompt
@@ -165,14 +165,21 @@ class ExternalSearchNode:
         if not self.external_search.available:
             state.external_status["message"] = "External content expansion is not configured."
             return
+        search_query, query_report = prepare_external_search_query(state.content)
+        state.external_status.update(query_report)
+        if not search_query:
+            state.external_status["message"] = "External search query is empty after safety filtering."
+            return
+        max_results = max(1, int(getattr(self.external_search, "max_results", 5) or 5))
+        state.external_status["max_results"] = max_results
         try:
-            results = self.external_search.search(state.content)
+            results = self.external_search.search(search_query, max_results=max_results)
         except ExternalSearchUnavailable as exc:
             state.external_status.update({"available": False, "message": str(exc)})
             return
         state.external_sources, dropped = sanitize_external_results(results)
         state.evidence.extend(state.external_sources)
-        state.external_status.update({"available": True, "count": len(state.external_sources), "dropped": dropped})
+        state.external_status.update({"available": True, "count": len(state.external_sources), "dropped": dropped, "queried": True})
 
 
 class ExpansionPolicyNode:
