@@ -7,7 +7,7 @@ from pathlib import Path
 from html_lore.builder import build_site
 from html_lore.server.config import ServerSettings
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
-from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, format_evidence_for_prompt, is_time_sensitive_question
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, format_evidence_for_prompt, is_time_sensitive_question, verify_answer_citations
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
@@ -641,6 +641,7 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
             "ExternalSearchNode",
             "EvidenceGateNode",
             "AnswerAgentNode",
+            "CitationVerifierNode",
             "OutputGuardrailNode",
             "ConversationPersistNode",
         ]
@@ -659,6 +660,8 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         assert run["retryable"] is False
         assert run["cancellable"] is False
         assert run["qa_report"]["source_count"] == 1
+        assert run["qa_report"]["citation"]["source_count"] == 1
+        assert run["qa_report"]["citation"]["status"] == "missing_citation"
         assert run["agent_trace"][0]["id"] == "knowledge_qa.answer_agent"
         assert run["agent_trace"][0]["version"] == "v1"
         assert run["prompt_trace"][0] == {
@@ -1352,6 +1355,45 @@ def test_external_evidence_prompt_format_is_distinct_from_local_notes() -> None:
     )
     assert formatted.startswith("[1] EXTERNAL: External source (https://example.test/source)")
     assert "LOCAL" not in formatted
+
+
+def test_knowledge_qa_citation_verifier_accepts_valid_source_refs() -> None:
+    report = verify_answer_citations(
+        "MCP security covers authorization and tool boundaries. [1]",
+        [{"kind": "local", "item_id": "mcp.html", "title": "MCP Security"}],
+        requires_citation=True,
+    )
+
+    assert report["status"] == "valid"
+    assert report["valid"] is True
+    assert report["cited_refs"] == [1]
+    assert report["invalid_refs"] == []
+
+
+def test_knowledge_qa_citation_verifier_flags_invalid_source_refs() -> None:
+    report = verify_answer_citations(
+        "MCP security covers authorization and tool boundaries. [2]",
+        [{"kind": "local", "item_id": "mcp.html", "title": "MCP Security"}],
+        requires_citation=True,
+    )
+
+    assert report["status"] == "invalid_reference"
+    assert report["valid"] is False
+    assert report["cited_refs"] == [2]
+    assert report["invalid_refs"] == [2]
+
+
+def test_knowledge_qa_citation_verifier_does_not_require_model_knowledge_refs() -> None:
+    report = verify_answer_citations(
+        "EPC usually means engineering, procurement, and construction.",
+        [],
+        requires_citation=False,
+    )
+
+    assert report["status"] == "not_required"
+    assert report["valid"] is True
+    assert report["source_count"] == 0
+    assert report["missing_required"] is False
 
 
 def test_knowledge_qa_prompt_includes_context_summary_without_format_rules() -> None:

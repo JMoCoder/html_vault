@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import uuid
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Protocol
@@ -44,6 +45,7 @@ class KnowledgeQAState:
     prompt_messages: list[dict[str, str]] = field(default_factory=list)
     agent_trace: list[dict[str, Any]] = field(default_factory=list)
     prompt_trace: list[dict[str, str]] = field(default_factory=list)
+    citation_report: dict[str, Any] = field(default_factory=dict)
     answer: str = ""
     sources: list[dict[str, Any]] = field(default_factory=list)
     usage: dict[str, Any] = field(default_factory=dict)
@@ -83,6 +85,7 @@ class KnowledgeQAGraph:
             ExternalSearchNode(external_search),
             EvidenceGateNode(max_prompt_chars=max_prompt_chars),
             AnswerAgentNode(model_client, max_response_tokens=max_response_tokens),
+            CitationVerifierNode(),
             OutputGuardrailNode(),
             ConversationPersistNode(conversation_store),
         )
@@ -281,6 +284,17 @@ class AnswerAgentNode:
         state.usage = response.get("usage") if isinstance(response.get("usage"), dict) else {}
 
 
+class CitationVerifierNode:
+    name = "CitationVerifierNode"
+
+    def run(self, state: KnowledgeQAState) -> None:
+        state.citation_report = verify_answer_citations(
+            state.answer,
+            state.sources,
+            requires_citation=bool(state.expansion_policy.get("requires_citation")),
+        )
+
+
 class OutputGuardrailNode:
     name = "OutputGuardrailNode"
 
@@ -455,6 +469,45 @@ def safe_int(value: Any, fallback: int) -> int:
 
 def prompt_chars(messages: list[dict[str, str]]) -> int:
     return sum(len(str(message.get("content") or "")) for message in messages)
+
+
+def verify_answer_citations(answer: str, sources: list[dict[str, Any]], *, requires_citation: bool = False) -> dict[str, Any]:
+    source_count = len(sources)
+    cited_refs = citation_numbers(answer)
+    invalid_refs = sorted({number for number in cited_refs if number < 1 or number > source_count})
+    missing_required = bool(requires_citation and source_count and not cited_refs)
+    if invalid_refs:
+        status = "invalid_reference"
+    elif missing_required:
+        status = "missing_citation"
+    elif cited_refs:
+        status = "valid"
+    else:
+        status = "not_required"
+    return {
+        "status": status,
+        "valid": not invalid_refs and not missing_required,
+        "requires_citation": bool(requires_citation),
+        "source_count": source_count,
+        "has_citations": bool(cited_refs),
+        "cited_refs": cited_refs,
+        "invalid_refs": invalid_refs,
+        "missing_required": missing_required,
+    }
+
+
+def citation_numbers(answer: str) -> list[int]:
+    refs: list[int] = []
+    for match in re.finditer(r"\[((?:\d+\s*(?:[,，]\s*)?)+)\]", str(answer or "")):
+        for part in re.split(r"[,，]\s*", match.group(1)):
+            part = part.strip()
+            if not part:
+                continue
+            try:
+                refs.append(int(part))
+            except ValueError:
+                continue
+    return sorted(set(refs))
 
 
 def format_evidence_for_prompt(index: int, item: dict[str, Any]) -> str:
@@ -695,6 +748,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
             "external_status": state.external_status,
             "expansion_policy": state.expansion_policy,
             "evidence_budget": state.evidence_budget,
+            "citation": state.citation_report,
         },
         "review_decision": {},
         "node_trace": state.node_trace,
