@@ -43,6 +43,7 @@ class KnowledgeQAState:
     expansion_policy: dict[str, Any] = field(default_factory=dict)
     evidence_scope_report: dict[str, Any] = field(default_factory=dict)
     evidence_rank_report: dict[str, Any] = field(default_factory=dict)
+    evidence_rerank_report: dict[str, Any] = field(default_factory=dict)
     evidence_budget: dict[str, Any] = field(default_factory=dict)
     prompt_messages: list[dict[str, str]] = field(default_factory=list)
     agent_trace: list[dict[str, Any]] = field(default_factory=list)
@@ -87,6 +88,7 @@ class KnowledgeQAGraph:
             ExternalSearchNode(external_search),
             EvidenceScopeGuardNode(),
             EvidenceRankerNode(),
+            EvidenceRerankNode(),
             EvidenceGateNode(max_prompt_chars=max_prompt_chars),
             AnswerAgentNode(model_client, max_response_tokens=max_response_tokens),
             CitationVerifierNode(),
@@ -225,6 +227,13 @@ class EvidenceScopeGuardNode:
 
     def run(self, state: KnowledgeQAState) -> None:
         state.evidence, state.evidence_scope_report = filter_evidence_by_context(state.evidence, state.context_snapshot)
+
+
+class EvidenceRerankNode:
+    name = "EvidenceRerankNode"
+
+    def run(self, state: KnowledgeQAState) -> None:
+        state.evidence, state.evidence_rerank_report = rerank_answer_evidence(state.evidence, state.retrieval_query or state.content)
 
 
 class EvidenceGateNode:
@@ -540,6 +549,75 @@ def rank_answer_evidence(evidence: list[dict[str, Any]]) -> tuple[list[dict[str,
         "numbered": bool(indexed),
     }
     return indexed, report
+
+
+def rerank_answer_evidence(evidence: list[dict[str, Any]], query: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    original_order = [evidence_identity(item) for item in evidence]
+    scored: list[dict[str, Any]] = []
+    for item in evidence:
+        copied = dict(item)
+        base_score = safe_int(copied.get("score"), 0)
+        query_score = evidence_query_match_score(query, copied)
+        source_bonus = 2 if copied.get("kind") != "external" else 0
+        rerank_score = base_score + query_score + source_bonus
+        copied["rerank_score"] = rerank_score
+        copied["rerank_features"] = {
+            "base_score": base_score,
+            "query_match_score": query_score,
+            "source_bonus": source_bonus,
+        }
+        scored.append(copied)
+    reranked = sorted(scored, key=lambda item: (-safe_int(item.get("rerank_score"), 0), str(item.get("title") or ""), str(item.get("item_id") or item.get("url") or "")))
+    indexed = assign_source_indices(reranked)
+    reranked_order = [evidence_identity(item) for item in indexed]
+    report = {
+        "strategy": "deterministic_query_score_v1",
+        "source_count": len(indexed),
+        "order_changed": original_order != reranked_order,
+        "top_source": reranked_order[0] if reranked_order else "",
+    }
+    return indexed, report
+
+
+def evidence_query_match_score(query: str, item: dict[str, Any]) -> int:
+    normalized_query = normalize_answer_evidence_text(query).lower()
+    if not normalized_query:
+        return 0
+    haystack = " ".join(
+        [
+            str(item.get("title") or ""),
+            str(item.get("snippet") or ""),
+            str(item.get("item_id") or ""),
+            str(item.get("url") or ""),
+        ],
+    ).lower()
+    score = 0
+    if normalized_query and normalized_query in haystack:
+        score += 24
+    for token in answer_query_tokens(normalized_query):
+        if token in haystack:
+            score += max(2, min(len(token), 16))
+    return score
+
+
+def answer_query_tokens(query: str) -> list[str]:
+    tokens = re.findall(r"[a-z0-9][a-z0-9._-]{1,}", query.lower())
+    for segment in re.findall(r"[\u4e00-\u9fff]{2,}", query):
+        tokens.append(segment)
+        tokens.extend(re.findall(r"(?=([\u4e00-\u9fff]{2}))", segment))
+    seen: set[str] = set()
+    result: list[str] = []
+    for token in tokens:
+        normalized = token.strip().lower()
+        if len(normalized) < 2 or normalized in seen:
+            continue
+        result.append(normalized)
+        seen.add(normalized)
+    return result
+
+
+def evidence_identity(item: dict[str, Any]) -> str:
+    return str(item.get("item_id") or item.get("url") or item.get("title") or "").strip()
 
 
 def normalize_evidence_item(item: dict[str, Any]) -> dict[str, Any]:
@@ -860,6 +938,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
             "expansion_policy": state.expansion_policy,
             "evidence_scope": state.evidence_scope_report,
             "evidence_ranking": state.evidence_rank_report,
+            "evidence_rerank": state.evidence_rerank_report,
             "evidence_budget": state.evidence_budget,
             "citation": state.citation_report,
         },

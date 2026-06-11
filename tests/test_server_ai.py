@@ -7,7 +7,7 @@ from pathlib import Path
 from html_lore.builder import build_site
 from html_lore.server.config import ServerSettings
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
-from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, rank_answer_evidence, verify_answer_citations
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
@@ -641,6 +641,7 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
             "ExternalSearchNode",
             "EvidenceScopeGuardNode",
             "EvidenceRankerNode",
+            "EvidenceRerankNode",
             "EvidenceGateNode",
             "AnswerAgentNode",
             "CitationVerifierNode",
@@ -666,6 +667,7 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         assert run["qa_report"]["citation"]["status"] == "missing_citation"
         assert run["qa_report"]["evidence_scope"]["dropped_count"] == 0
         assert run["qa_report"]["evidence_ranking"]["selected_count"] == 1
+        assert run["qa_report"]["evidence_rerank"]["strategy"] == "deterministic_query_score_v1"
         assert run["agent_trace"][0]["id"] == "knowledge_qa.answer_agent"
         assert run["agent_trace"][0]["version"] == "v1"
         assert run["prompt_trace"][0] == {
@@ -1401,6 +1403,26 @@ def test_knowledge_qa_evidence_ranker_dedupes_and_numbers_sources() -> None:
         "local_source_count": 1,
         "external_source_count": 1,
         "numbered": True,
+    }
+
+
+def test_knowledge_qa_evidence_reranker_prioritizes_query_relevant_sources() -> None:
+    evidence, report = rerank_answer_evidence(
+        [
+            {"kind": "local", "item_id": "generic.html", "title": "Generic", "snippet": "general operations", "score": 10},
+            {"kind": "local", "item_id": "mcp.html", "title": "MCP Security", "snippet": "MCP tool authorization and risk control", "score": 1},
+        ],
+        "MCP risk control",
+    )
+
+    assert evidence[0]["item_id"] == "mcp.html"
+    assert evidence[0]["source_index"] == 1
+    assert evidence[0]["rerank_score"] > evidence[1]["rerank_score"]
+    assert report == {
+        "strategy": "deterministic_query_score_v1",
+        "source_count": 2,
+        "order_changed": True,
+        "top_source": "mcp.html",
     }
 
 
