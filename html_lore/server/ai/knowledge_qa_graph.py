@@ -46,6 +46,7 @@ class KnowledgeQAState:
     evidence_rerank_report: dict[str, Any] = field(default_factory=dict)
     evidence_budget: dict[str, Any] = field(default_factory=dict)
     evidence_coverage_report: dict[str, Any] = field(default_factory=dict)
+    evidence_sufficiency_report: dict[str, Any] = field(default_factory=dict)
     prompt_messages: list[dict[str, str]] = field(default_factory=list)
     agent_trace: list[dict[str, Any]] = field(default_factory=list)
     prompt_trace: list[dict[str, str]] = field(default_factory=list)
@@ -93,6 +94,7 @@ class KnowledgeQAGraph:
             EvidenceRerankNode(),
             EvidenceGateNode(max_prompt_chars=max_prompt_chars),
             EvidenceCoverageNode(),
+            EvidenceSufficiencyNode(),
             AnswerAgentNode(model_client, max_response_tokens=max_response_tokens),
             CitationVerifierNode(),
             AnswerQualityNode(),
@@ -315,6 +317,17 @@ class EvidenceCoverageNode:
             retrieval_status=state.retrieval_status,
             sources=state.sources,
             budget_report=state.evidence_budget,
+        )
+
+
+class EvidenceSufficiencyNode:
+    name = "EvidenceSufficiencyNode"
+
+    def run(self, state: KnowledgeQAState) -> None:
+        state.evidence_sufficiency_report = assess_evidence_sufficiency(
+            sources=state.sources,
+            expansion_policy=state.expansion_policy,
+            coverage_report=state.evidence_coverage_report,
         )
 
 
@@ -866,6 +879,35 @@ def assess_evidence_coverage(
     }
 
 
+def assess_evidence_sufficiency(
+    *,
+    sources: list[dict[str, Any]],
+    expansion_policy: dict[str, Any],
+    coverage_report: dict[str, Any],
+) -> dict[str, Any]:
+    local_sources = [source for source in sources if source.get("kind") != "external"]
+    external_sources = [source for source in sources if source.get("kind") == "external"]
+    scores = [max(safe_int(source.get("rerank_score"), safe_int(source.get("score"), 0)), safe_int(source.get("score"), 0)) for source in sources]
+    top_score = max(scores) if scores else 0
+    if not sources:
+        level = "none"
+    elif top_score >= 24 and coverage_report.get("status") in {"full", "partial"}:
+        level = "strong"
+    elif top_score >= 8:
+        level = "moderate"
+    else:
+        level = "weak"
+    return {
+        "level": level,
+        "top_score": top_score,
+        "source_count": len(sources),
+        "local_source_count": len(local_sources),
+        "external_source_count": len(external_sources),
+        "coverage_status": str(coverage_report.get("status") or ""),
+        "policy_mode": str(expansion_policy.get("mode") or "local_only"),
+    }
+
+
 def format_evidence_for_prompt(index: int, item: dict[str, Any]) -> str:
     if item.get("kind") == "external":
         return f"[{index}] EXTERNAL: {item.get('title')} ({item.get('url')})\n{item.get('snippet')}"
@@ -1108,6 +1150,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
             "evidence_rerank": state.evidence_rerank_report,
             "evidence_budget": state.evidence_budget,
             "evidence_coverage": state.evidence_coverage_report,
+            "evidence_sufficiency": state.evidence_sufficiency_report,
             "citation": state.citation_report,
             "answer_quality": state.answer_quality_report,
         },

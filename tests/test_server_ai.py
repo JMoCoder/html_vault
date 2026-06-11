@@ -9,7 +9,7 @@ from html_lore.server.config import ServerSettings
 from html_lore.server.ai.guardrails import GuardrailError
 from html_lore.server.ai.eval import KnowledgeQAEvalSpec, run_knowledge_qa_eval
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
-from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, assess_answer_quality, assess_evidence_coverage, build_answer_prompt, budget_prompt_inputs, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, prompt_chars, public_qa_run, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, assess_answer_quality, assess_evidence_coverage, assess_evidence_sufficiency, build_answer_prompt, budget_prompt_inputs, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, prompt_chars, public_qa_run, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
@@ -681,6 +681,7 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
             "EvidenceRerankNode",
             "EvidenceGateNode",
             "EvidenceCoverageNode",
+            "EvidenceSufficiencyNode",
             "AnswerAgentNode",
             "CitationVerifierNode",
             "AnswerQualityNode",
@@ -720,6 +721,8 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
             "dropped_evidence_count": 0,
             "trimmed_evidence_chars": False,
         }
+        assert run["qa_report"]["evidence_sufficiency"]["level"] in {"moderate", "strong"}
+        assert run["qa_report"]["evidence_sufficiency"]["local_source_count"] == 1
         assert run["agent_trace"][0]["id"] == "knowledge_qa.answer_agent"
         assert run["agent_trace"][0]["version"] == "v1"
         assert run["prompt_trace"][0] == {
@@ -1629,6 +1632,30 @@ def test_knowledge_qa_evidence_coverage_reports_missing_context_items() -> None:
         "dropped_evidence_count": 1,
         "trimmed_evidence_chars": True,
     }
+
+
+def test_knowledge_qa_evidence_sufficiency_reports_signal_strength() -> None:
+    strong = assess_evidence_sufficiency(
+        sources=[{"kind": "local", "item_id": "mcp.html", "score": 6, "rerank_score": 28}],
+        expansion_policy={"mode": "local_evidence"},
+        coverage_report={"status": "full"},
+    )
+    weak = assess_evidence_sufficiency(
+        sources=[{"kind": "local", "item_id": "mcp.html", "score": 1, "rerank_score": 2}],
+        expansion_policy={"mode": "local_evidence"},
+        coverage_report={"status": "partial"},
+    )
+    none = assess_evidence_sufficiency(
+        sources=[],
+        expansion_policy={"mode": "local_only"},
+        coverage_report={"status": "no_local_evidence"},
+    )
+
+    assert strong["level"] == "strong"
+    assert strong["top_score"] == 28
+    assert weak["level"] == "weak"
+    assert none["level"] == "none"
+    assert none["source_count"] == 0
 
 
 def test_knowledge_qa_status_flags_partial_context_coverage() -> None:
