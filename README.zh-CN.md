@@ -52,7 +52,7 @@ HTMlore 是一个自托管 HTML 知识库工作台，用于保存、浏览、阅
 - AI 运行记录、轻量异步生成历史、失败的对话生成任务重试，以及设置页中的全局 AI 会话管理。
 - 从 AI 对话生成 HTML 笔记的 beta 能力，采用 PM/UX/Coder/QA/Reviewer 分阶段图结构。
 - 上传 HTML、Markdown 或纯文本资料生成 HTML 笔记的 beta 能力，先进行安全文本抽取，再复用 HTML 生成图结构。
-- 关键词检索已落地，支持短问题查询拓展、多笔记证据均衡和检索覆盖诊断；vector/hybrid 检索模式已预留接口，在向量库未配置时自动回退到关键词检索。
+- 关键词检索已落地，支持短问题查询拓展、多笔记证据均衡和检索覆盖诊断；已支持本地轻量向量索引，在 embedding 模型或向量索引未配置时自动回退到关键词检索。
 - AI 护栏覆盖提示词长度、异常请求、疑似密钥输出和面向分享目标的 HTML 安全检查。
 - 设置页包含 AI 服务商、数据、用户、账户安全、AI 会话历史、项目信息和更新相关区域。
 - PWA manifest 与 Service Worker。
@@ -65,7 +65,7 @@ HTMlore 是一个自托管 HTML 知识库工作台，用于保存、浏览、阅
 
 - AI 功能仍处于 beta 阶段，优先用于自托管验证，尚不是云服务形态。
 - 外部搜索已预留适配器，但暂未内置默认搜索服务商。
-- 向量库 / embedding 检索已搭建开关和回退机制，但真实向量存储后端尚未接入。
+- vector / hybrid 检索需要在服务端配置 embedding 模型；未配置时会继续使用关键词检索。
 - PDF 资料解析暂缓，后续会单独评估系统开销和方案。
 - AI 重新分类、打标签等批处理任务。
 - 云同步或托管订阅服务。
@@ -268,8 +268,12 @@ HTML_LORE_AI_ENABLED=true
 HTML_LORE_AI_PROVIDER=openai-compatible
 HTML_LORE_AI_BASE_URL=https://your-newapi.example.com/v1
 HTML_LORE_AI_MODEL=gpt-5.5
+HTML_LORE_AI_EMBEDDING_MODEL=baai/bge-m3
+HTML_LORE_AI_RETRIEVAL_MODE=hybrid
 HTML_LORE_AI_API_KEY=replace-with-your-server-side-key
 ```
+
+vector / hybrid 检索会在当前用户的 metadata 目录下保存轻量本地索引，例如 `meta/ai/vector_index.json`；多用户部署时则位于对应的 `users/{data_id}/meta/ai/vector_index.json`。这样可以在同一个应用进程中复用能力，同时保持用户工作台的逻辑隔离。
 
 开发测试时可以使用 `HTML_LORE_AI_PROVIDER=fake` 验证界面与会话流程，不会发起真实模型请求。公开状态接口只返回 `has_api_key`，不会返回密钥内容。
 

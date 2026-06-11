@@ -28,7 +28,8 @@ class ModelClient:
         raise NotImplementedError("Structured output is not implemented yet.")
 
     def embed(self, *, text: str) -> list[float]:
-        raise NotImplementedError("Embedding is not implemented yet.")
+        self._ensure_available()
+        return build_adapter(self.config).embed(text=text)
 
     def vision_analyze(self, *, image: bytes, prompt: str) -> dict[str, Any]:
         raise NotImplementedError("Vision analysis is not implemented yet.")
@@ -58,4 +59,3 @@ def test_provider(config: AIProviderConfig) -> dict[str, Any]:
         "sample": response.get("content") or "",
         "usage": response.get("usage") or {},
     }
-

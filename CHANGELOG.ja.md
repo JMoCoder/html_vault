@@ -4,6 +4,10 @@ Languages: [English](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | [日本語](
 
 ## [Unreleased]
 
+### Added
+
+- OpenAI-compatible embedding リクエストと、vector/hybrid ナレッジベース検索向けの軽量ローカル vector index を追加しました。index は現在のユーザー metadata ディレクトリに保存され、`HTML_LORE_AI_EMBEDDING_MODEL` と `HTML_LORE_AI_RETRIEVAL_MODE=vector` または `hybrid` を設定した場合に有効になります。未設定時はキーワード検索へフォールバックします。
+
 ## [0.9.4] - 2026-06-10
 
 ### Changed

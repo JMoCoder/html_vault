@@ -1060,6 +1060,42 @@ def test_hybrid_retrieval_mode_records_keyword_fallback_diagnostics(tmp_path: Pa
     assert result.evidence[0]["item_id"] == "mcp.html"
 
 
+def test_vector_retrieval_mode_uses_local_index_when_embedding_is_configured(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "mcp.html",
+        title="MCP Security",
+        collection="AI",
+        tags=["MCP"],
+        summary="MCP security summary.",
+        html="<!doctype html><html><body><p>MCP authorization and tool risk controls.</p></body></html>",
+    )
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_embedding_model="baai/bge-m3",
+        ai_enabled=True,
+        ai_retrieval_mode="vector",
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "MCP authorization risks"})
+        assert response["retrieval_status"]["requested_mode"] == "vector"
+        assert response["retrieval_status"]["effective_mode"] == "vector"
+        assert response["retrieval_status"]["fallback"] is False
+        assert response["retrieval_status"]["source_count"] == 1
+        assert response["sources"][0]["item_id"] == "mcp.html"
+        assert response["sources"][0]["retrieval_sources"] == ["vector"]
+        assert (meta_dir / "ai" / "vector_index.json").exists()
+    finally:
+        server.close()
+
+
 def test_retrieval_status_normalizes_unknown_mode_to_keyword(tmp_path: Path) -> None:
     from html_lore.server.items import ItemService
 

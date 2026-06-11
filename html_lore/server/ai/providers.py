@@ -113,6 +113,9 @@ class ProviderAdapter:
     def chat(self, *, messages: list[dict[str, str]], temperature: float = 0.2, max_tokens: int = 1024) -> dict[str, Any]:
         raise NotImplementedError
 
+    def embed(self, *, text: str) -> list[float]:
+        raise NotImplementedError
+
 
 class FakeProviderAdapter(ProviderAdapter):
     def __init__(self, config: AIProviderConfig) -> None:
@@ -126,6 +129,15 @@ class FakeProviderAdapter(ProviderAdapter):
             "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
             "raw_provider": "fake",
         }
+
+    def embed(self, *, text: str) -> list[float]:
+        if not self.config.embedding_model:
+            raise NotImplementedError("Embedding model is not configured.")
+        normalized = str(text or "").lower()
+        vector = [0.0] * 32
+        for index, char in enumerate(normalized):
+            vector[(ord(char) + index) % len(vector)] += 1.0
+        return normalize_vector(vector)
 
 
 class OpenAICompatibleHttpAdapter(ProviderAdapter):
@@ -173,6 +185,39 @@ class OpenAICompatibleHttpAdapter(ProviderAdapter):
             raise ProviderCallError("AI provider returned an empty response.")
         return response
 
+    def embed(self, *, text: str) -> list[float]:
+        if not self.config.api_key:
+            raise ProviderCallError("AI API key is not configured.")
+        if not self.config.base_url:
+            raise ProviderCallError("AI base URL is not configured.")
+        if not self.config.embedding_model:
+            raise ProviderCallError("AI embedding model is not configured.")
+        payload = {"model": self.config.embedding_model, "input": str(text or "")}
+        body = json.dumps(payload).encode("utf-8")
+        request = urllib.request.Request(
+            embeddings_url(self.config.base_url),
+            data=body,
+            method="POST",
+            headers={
+                "Authorization": f"Bearer {self.config.api_key}",
+                "Content-Type": "application/json",
+                "Content-Length": str(len(body)),
+                "User-Agent": "HTMlore/0.9.4 curl-compatible",
+                "Accept": "application/json",
+            },
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=45) as response:
+                data = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            detail = provider_error_detail(exc)
+            raise ProviderCallError(f"AI embedding provider returned HTTP {exc.code}{detail}.") from exc
+        except urllib.error.URLError as exc:
+            raise ProviderCallError("AI embedding provider is unreachable.") from exc
+        except json.JSONDecodeError as exc:
+            raise ProviderCallError("AI embedding provider returned invalid JSON.") from exc
+        return normalize_embedding_response(data)
+
 
 def provider_config_path(settings: ServerSettings) -> Path | None:
     if settings.meta_dir is None:
@@ -216,6 +261,13 @@ def chat_completions_url(base_url: str) -> str:
     if base.endswith("/v1"):
         return f"{base}/chat/completions"
     return f"{base}/v1/chat/completions"
+
+
+def embeddings_url(base_url: str) -> str:
+    base = base_url.rstrip("/")
+    if base.endswith("/v1"):
+        return f"{base}/embeddings"
+    return f"{base}/v1/embeddings"
 
 
 def parse_provider_response(raw_response: str) -> dict[str, Any]:
@@ -273,6 +325,28 @@ def normalize_chat_completion(data: dict[str, Any], fallback_model: str) -> dict
         "usage": usage,
         "raw_provider": "openai-compatible",
     }
+
+
+def normalize_embedding_response(data: dict[str, Any]) -> list[float]:
+    rows = data.get("data") if isinstance(data, dict) else None
+    first = rows[0] if isinstance(rows, list) and rows else {}
+    embedding = first.get("embedding") if isinstance(first, dict) else None
+    if not isinstance(embedding, list) or not embedding:
+        raise ProviderCallError("AI embedding provider returned no embedding.")
+    vector: list[float] = []
+    for value in embedding:
+        try:
+            vector.append(float(value))
+        except (TypeError, ValueError) as exc:
+            raise ProviderCallError("AI embedding provider returned a non-numeric embedding.") from exc
+    return normalize_vector(vector)
+
+
+def normalize_vector(vector: list[float]) -> list[float]:
+    norm = sum(value * value for value in vector) ** 0.5
+    if norm <= 0:
+        return vector
+    return [value / norm for value in vector]
 
 
 def provider_error_detail(exc: urllib.error.HTTPError) -> str:

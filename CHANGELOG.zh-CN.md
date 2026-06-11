@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### 新增
+
+- 新增 OpenAI-compatible embedding 请求与轻量本地向量索引，用于 vector/hybrid 知识库检索。索引保存在当前用户 metadata 目录下，需要配置 `HTML_LORE_AI_EMBEDDING_MODEL` 并将 `HTML_LORE_AI_RETRIEVAL_MODE` 设为 `vector` 或 `hybrid` 后生效；未配置时继续回退关键词检索。
+
 ## [0.9.4] - 2026-06-10
 
 ### 变更

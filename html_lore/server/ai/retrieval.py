@@ -8,6 +8,7 @@ from typing import Any
 from html_lore.server.items import ItemContentError, ItemService
 
 from .model_client import ModelClient
+from .vector_store import LocalVectorStore, VectorStoreUnavailable, content_hash, vector_chunk_id
 
 
 MAX_CHUNK_CHARS = 1800
@@ -367,11 +368,62 @@ def retrieve_vector_evidence(
 ) -> list[dict[str, Any]]:
     if model_client is None:
         raise RetrievalUnavailable("Embedding model client is not configured.")
-    # The embedding/vector-store path is intentionally scaffolded only. It lets
-    # deployments enable vector mode without breaking QA while the concrete
-    # vector store remains a later pluggable backend.
-    model_client.embed(text=query)
-    raise RetrievalUnavailable("Vector store is not configured.")
+    embedding_model = str(model_client.config.embedding_model or "").strip()
+    if not embedding_model:
+        raise NotImplementedError("Embedding model is not configured.")
+    item_ids = {str(item_id) for item_id in context_snapshot.get("item_ids") or [] if str(item_id)}
+    if not item_ids:
+        return []
+    try:
+        store = LocalVectorStore(item_service.settings)
+    except VectorStoreUnavailable as exc:
+        raise RetrievalUnavailable(str(exc)) from exc
+    chunks = build_vector_chunks(item_service, context_snapshot, embedding_model, model_client, store)
+    store.upsert_chunks(chunks)
+    query_vector = model_client.embed(text=query)
+    return store.search(query_vector=query_vector, item_ids=item_ids, model=embedding_model, limit=max_results)
+
+
+def build_vector_chunks(
+    item_service: ItemService,
+    context_snapshot: dict[str, Any],
+    embedding_model: str,
+    model_client: ModelClient,
+    store: LocalVectorStore,
+) -> list[dict[str, Any]]:
+    item_ids = [str(item_id) for item_id in context_snapshot.get("item_ids") or [] if str(item_id)]
+    manifest_items = {str(item.get("id") or ""): item for item in item_service.manifest().get("items", [])}
+    chunks: list[dict[str, Any]] = []
+    for item_id in item_ids:
+        item = manifest_items.get(item_id)
+        if not item or bool(item.get("archived")):
+            continue
+        try:
+            html = item_service.read_item_content(item_id)
+        except ItemContentError:
+            continue
+        blocks = extract_safe_blocks(html)
+        text_chunks = chunk_blocks(blocks) or [evidence_text(item, html)]
+        for index, text in enumerate(text_chunks[:MAX_CHUNKS_PER_ITEM], start=1):
+            snippet = normalize_space(text)[:MAX_CHUNK_CHARS]
+            if not snippet:
+                continue
+            chunk_id = vector_chunk_id(item_id, index)
+            hash_value = content_hash(snippet)
+            if store.has_current_chunk(item_id=item_id, chunk_id=chunk_id, model=embedding_model, content_hash_value=hash_value):
+                continue
+            chunks.append(
+                {
+                    "item_id": item_id,
+                    "chunk_id": chunk_id,
+                    "title": str(item.get("title") or item_id),
+                    "snippet": snippet,
+                    "content_hash": hash_value,
+                    "model": embedding_model,
+                    "vector": model_client.embed(text=snippet),
+                },
+            )
+    return chunks
 
 
 def normalize_retrieval_mode(mode: str) -> str:

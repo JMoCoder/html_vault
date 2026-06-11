@@ -9,6 +9,14 @@ versioning after the initial public release.
 
 ## [Unreleased]
 
+### Added
+
+- Added OpenAI-compatible embedding requests and a lightweight local vector
+  index for vector/hybrid knowledge-base retrieval. The index is stored under
+  the active user's metadata directory and requires
+  `HTML_LORE_AI_EMBEDDING_MODEL` plus `HTML_LORE_AI_RETRIEVAL_MODE=vector` or
+  `hybrid` to take effect; otherwise retrieval falls back to keyword mode.
+
 ## [0.9.4] - 2026-06-10
 
 ### Changed

@@ -88,9 +88,9 @@ Implemented today:
 - Beta material-to-HTML generation from uploaded HTML, Markdown, or text
   material, reusing the HTML generation graph after safe text extraction.
 - Keyword retrieval with short-query expansion, balanced multi-note evidence,
-  retrieval coverage diagnostics, vector/hybrid retrieval mode scaffolding, and
-  automatic fallback to keyword retrieval while the pluggable vector store is
-  not yet configured.
+  retrieval coverage diagnostics, local vector index support, and automatic
+  fallback to keyword retrieval when the embedding model or vector index is not
+  configured.
 - AI guardrails for prompt size, unsupported requests, secret-like output, and
   share-target HTML safety review.
 - AI provider, data, user, account/security, conversation history, project
@@ -107,8 +107,8 @@ Still limited or not implemented yet:
   hosted/cloud product work.
 - External web search is adapter-scaffolded but not bundled with a default
   provider.
-- Vector store / embedding retrieval is scaffolded and falls back to keyword
-  retrieval unless a future vector backend is configured.
+- Vector / hybrid retrieval requires a server-side embedding model
+  configuration. Without it, HTMlore keeps using keyword retrieval.
 - PDF material parsing is intentionally deferred.
 - AI-powered reclassification/tagging jobs.
 - Cloud sync or hosted subscription service.
@@ -335,12 +335,20 @@ HTML_LORE_AI_ENABLED=true
 HTML_LORE_AI_PROVIDER=openai-compatible
 HTML_LORE_AI_BASE_URL=https://your-newapi.example.com/v1
 HTML_LORE_AI_MODEL=gpt-5.5
+HTML_LORE_AI_EMBEDDING_MODEL=baai/bge-m3
+HTML_LORE_AI_RETRIEVAL_MODE=hybrid
 HTML_LORE_AI_API_KEY=replace-with-your-server-side-key
 ```
 
 For development tests, `HTML_LORE_AI_PROVIDER=fake` can exercise the UI and
 conversation flow without sending model requests. Public provider status only
 returns `has_api_key`, never the secret value.
+
+Vector / hybrid retrieval stores a lightweight local index under the active
+user metadata directory, for example `meta/ai/vector_index.json` or the
+corresponding `users/{data_id}/meta/ai/vector_index.json` in multi-user
+deployments. This keeps self-hosted user workspaces logically isolated while
+sharing the same application process.
 
 ## Security Model
 
