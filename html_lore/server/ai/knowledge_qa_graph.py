@@ -10,7 +10,7 @@ from html_lore.server.items import ItemService
 
 from .conversations import ConversationStore
 from .external_search import DisabledExternalSearchAdapter, ExternalSearchAdapter, ExternalSearchUnavailable, sanitize_external_results
-from .guardrails import validate_answer, validate_message_budget, validate_prompt_budget, validate_user_message
+from .guardrails import GuardrailError, validate_answer, validate_message_budget, validate_prompt_budget, validate_user_message
 from .model_client import ModelClient
 from .registry import AgentSpec, PromptTemplate, load_agent, load_prompt
 from .retrieval import retrieve_evidence_with_status
@@ -320,6 +320,9 @@ class CitationVerifierNode:
             state.sources,
             requires_citation=bool(state.expansion_policy.get("requires_citation")),
         )
+        if state.citation_report.get("status") == "invalid_reference":
+            invalid_refs = ", ".join(str(ref) for ref in state.citation_report.get("invalid_refs") or [])
+            raise GuardrailError(f"AI output cited unavailable sources: {invalid_refs}.")
 
 
 class OutputGuardrailNode:

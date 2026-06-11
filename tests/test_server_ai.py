@@ -6,8 +6,9 @@ from pathlib import Path
 
 from html_lore.builder import build_site
 from html_lore.server.config import ServerSettings
+from html_lore.server.ai.guardrails import GuardrailError
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
-from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, public_qa_run, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
@@ -1450,6 +1451,49 @@ def test_knowledge_qa_citation_verifier_flags_invalid_source_refs() -> None:
     assert report["valid"] is False
     assert report["cited_refs"] == [2]
     assert report["invalid_refs"] == [2]
+
+
+def test_knowledge_qa_graph_rejects_invalid_source_citations(tmp_path: Path) -> None:
+    from html_lore.server.ai.conversations import ConversationStore
+    from html_lore.server.items import ItemService
+
+    class InvalidCitationClient:
+        def chat(self, *, messages, temperature=0.2, max_tokens=1024):
+            return {"content": "MCP security covers tool boundaries. [2]", "usage": {"total_tokens": 9}}
+
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="QA Citation Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    item_service = ItemService(settings)
+    conversation_store = ConversationStore(settings, item_service)
+    conversation = conversation_store.create({"context": {"item_id": "mcp.html"}})
+
+    state = KnowledgeQAState(
+        conversation_id=conversation["id"],
+        conversation=conversation,
+        content="What does MCP security cover?",
+    )
+    try:
+        KnowledgeQAGraph(
+            item_service=item_service,
+            model_client=InvalidCitationClient(),
+            conversation_store=conversation_store,
+        ).run(state)
+    except GuardrailError as exc:
+        assert "unavailable sources" in str(exc)
+    else:
+        raise AssertionError("Invalid source citation should be rejected.")
+
+    assert conversation_store.get(conversation["id"])["messages"] == []
+    failed_run = public_qa_run(state, status="failed", error={"code": "guardrail_failed", "message": "invalid citation"})
+    assert failed_run["qa_report"]["citation"]["status"] == "invalid_reference"
+    assert failed_run["qa_report"]["citation"]["invalid_refs"] == [2]
 
 
 def test_knowledge_qa_citation_verifier_does_not_require_model_knowledge_refs() -> None:
