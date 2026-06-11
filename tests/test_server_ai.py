@@ -17,6 +17,7 @@ from html_lore.server.ai.registry import load_agent, load_prompt
 from html_lore.server.ai.retrieval import extract_safe_text, retrieve_evidence_with_status
 from html_lore.server.ai.runs import AIRunStore
 from html_lore.server.ai.external_search import ExternalSearchResult, prepare_external_search_query, is_safe_external_url, sanitize_external_results
+from html_lore.server.ai.api import qa_status_from_report
 from html_lore.server.users import UserStore
 
 from tests.api_server import run_api_server
@@ -1627,6 +1628,25 @@ def test_knowledge_qa_evidence_coverage_reports_missing_context_items() -> None:
         "missing_item_ids": ["docker.html"],
         "dropped_evidence_count": 1,
         "trimmed_evidence_chars": True,
+    }
+
+
+def test_knowledge_qa_status_flags_partial_context_coverage() -> None:
+    status = qa_status_from_report(
+        {
+            "source_count": 2,
+            "citation": {"status": "valid"},
+            "answer_quality": {"status": "ok", "requires_attention": False, "flags": []},
+            "evidence_coverage": {"status": "partial"},
+        },
+    )
+
+    assert status == {
+        "status": "ok",
+        "requires_attention": True,
+        "flags": ["partial_context_coverage"],
+        "citation_status": "valid",
+        "source_count": 2,
     }
 
 

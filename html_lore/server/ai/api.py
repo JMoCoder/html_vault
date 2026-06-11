@@ -254,12 +254,17 @@ def qa_status_from_report(report: dict[str, Any]) -> dict[str, Any]:
     citation = report.get("citation") if isinstance(report.get("citation"), dict) else {}
     quality = report.get("answer_quality") if isinstance(report.get("answer_quality"), dict) else {}
     external = report.get("external_status") if isinstance(report.get("external_status"), dict) else {}
+    coverage = report.get("evidence_coverage") if isinstance(report.get("evidence_coverage"), dict) else {}
     flags = [str(flag) for flag in quality.get("flags") or [] if str(flag)]
-    if external.get("message") and not external.get("queried"):
+    external_unavailable = bool(external.get("message") and not external.get("queried"))
+    if external_unavailable:
         flags.append("external_unavailable")
+    if not external_unavailable and str(coverage.get("status") or "") in {"partial", "no_local_evidence"}:
+        flags.append("partial_context_coverage")
+    flags = list(dict.fromkeys(flags))
     return {
         "status": str(quality.get("status") or "unknown"),
-        "requires_attention": bool(quality.get("requires_attention")),
+        "requires_attention": bool(quality.get("requires_attention") or flags),
         "flags": flags,
         "citation_status": str(citation.get("status") or ""),
         "source_count": int(report.get("source_count") or 0),
