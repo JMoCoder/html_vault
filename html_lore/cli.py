@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import json
+import os
 from pathlib import Path
 from typing import Sequence
 
 from .builder import build_site
+from .server.ai.eval import KnowledgeQAEvalSpec, load_eval_questions, run_knowledge_qa_eval
 from .server.config import ServerSettings
 from .server.users import UserStore, UserStoreError
 
@@ -30,6 +33,19 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "html-lore") -> None:
     user_parser.add_argument("--role", default="user", choices=["admin", "user"], help="User role.")
     user_parser.add_argument("--data-id", default="", help="Optional persistent data partition id.")
     user_parser.add_argument("--replace", action="store_true", help="Replace the user if it already exists.")
+
+    qa_eval_parser = subparsers.add_parser("ai-eval-qa", help="Run a knowledge QA evaluation baseline.")
+    qa_eval_parser.add_argument("--content", default="examples/content", help="Directory containing source HTML files.")
+    qa_eval_parser.add_argument("--meta", default="examples/meta", help="Directory containing sidecar metadata.")
+    qa_eval_parser.add_argument("--public", default="examples/public", help="Public output directory used for settings.")
+    qa_eval_parser.add_argument("--questions", default="", help="JSON file containing a list of evaluation questions.")
+    qa_eval_parser.add_argument("--provider", default="fake", choices=["fake", "openai-compatible"], help="AI provider for evaluation.")
+    qa_eval_parser.add_argument("--base-url", default="", help="OpenAI-compatible base URL when using a real provider.")
+    qa_eval_parser.add_argument("--api-key-env", default="HTML_LORE_AI_API_KEY", help="Environment variable containing the real provider API key.")
+    qa_eval_parser.add_argument("--model", default="fake-eval-model", help="Model name for evaluation.")
+    qa_eval_parser.add_argument("--retrieval-mode", default="keyword", choices=["keyword", "vector", "hybrid"], help="Retrieval mode to evaluate.")
+    qa_eval_parser.add_argument("--source-mode", default="local_only", choices=["local_only", "local_plus_external"], help="QA source mode.")
+    qa_eval_parser.add_argument("--out", default="", help="Optional JSON output path. Defaults to stdout.")
 
     args = parser.parse_args(argv)
     if args.command == "build":
@@ -66,6 +82,29 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "html-lore") -> None:
         except UserStoreError as exc:
             raise SystemExit(str(exc)) from exc
         print(f"Saved user {user['username']} with data partition {user['data_id']} in {args.users_file}")
+    elif args.command == "ai-eval-qa":
+        api_key = os.getenv(args.api_key_env, "") if args.provider != "fake" else ""
+        report = run_knowledge_qa_eval(
+            KnowledgeQAEvalSpec(
+                content_dir=Path(args.content),
+                meta_dir=Path(args.meta) if args.meta else None,
+                public_dir=Path(args.public),
+                questions=load_eval_questions(Path(args.questions) if args.questions else None),
+                provider=args.provider,
+                base_url=args.base_url,
+                api_key=api_key,
+                model=args.model,
+                source_mode=args.source_mode,
+                retrieval_mode=args.retrieval_mode,
+            ),
+        )
+        payload = json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True)
+        if args.out:
+            Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.out).write_text(payload + "\n", encoding="utf-8")
+            print(f"Wrote QA eval report to {args.out}")
+        else:
+            print(payload)
 
 
 if __name__ == "__main__":

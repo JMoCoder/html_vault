@@ -7,6 +7,7 @@ from pathlib import Path
 from html_lore.builder import build_site
 from html_lore.server.config import ServerSettings
 from html_lore.server.ai.guardrails import GuardrailError
+from html_lore.server.ai.eval import KnowledgeQAEvalSpec, run_knowledge_qa_eval
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
 from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, public_qa_run, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
@@ -145,6 +146,29 @@ def test_ai_run_store_sanitizes_list_and_detail(tmp_path: Path) -> None:
     assert "Do not expose" not in raw
     assert "Private uploaded source text" not in raw
     assert "sk-test-secret-value" not in raw
+
+
+def test_knowledge_qa_eval_runs_fake_baseline(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+
+    report = run_knowledge_qa_eval(
+        KnowledgeQAEvalSpec(
+            content_dir=content_dir,
+            meta_dir=meta_dir,
+            public_dir=public_dir,
+            questions=["What does MCP security cover?"],
+            provider="fake",
+            model="fake-eval-model",
+        ),
+    )
+
+    assert report["kind"] == "knowledge_qa_eval"
+    assert report["provider"] == "fake"
+    assert report["question_count"] == 1
+    assert report["results"][0]["status"] == "completed"
+    assert report["results"][0]["source_count"] == 1
+    assert report["results"][0]["citation"]["status"] == "missing_citation"
 
 
 def test_ai_status_is_unavailable_without_provider(tmp_path: Path) -> None:
