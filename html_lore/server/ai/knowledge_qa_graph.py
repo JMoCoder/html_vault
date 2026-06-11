@@ -49,6 +49,7 @@ class KnowledgeQAState:
     agent_trace: list[dict[str, Any]] = field(default_factory=list)
     prompt_trace: list[dict[str, str]] = field(default_factory=list)
     citation_report: dict[str, Any] = field(default_factory=dict)
+    answer_quality_report: dict[str, Any] = field(default_factory=dict)
     answer: str = ""
     sources: list[dict[str, Any]] = field(default_factory=list)
     usage: dict[str, Any] = field(default_factory=dict)
@@ -92,6 +93,7 @@ class KnowledgeQAGraph:
             EvidenceGateNode(max_prompt_chars=max_prompt_chars),
             AnswerAgentNode(model_client, max_response_tokens=max_response_tokens),
             CitationVerifierNode(),
+            AnswerQualityNode(),
             OutputGuardrailNode(),
             ConversationPersistNode(conversation_store),
         )
@@ -330,6 +332,18 @@ class CitationVerifierNode:
         if state.citation_report.get("status") == "invalid_reference":
             invalid_refs = ", ".join(str(ref) for ref in state.citation_report.get("invalid_refs") or [])
             raise GuardrailError(f"AI output cited unavailable sources: {invalid_refs}.")
+
+
+class AnswerQualityNode:
+    name = "AnswerQualityNode"
+
+    def run(self, state: KnowledgeQAState) -> None:
+        state.answer_quality_report = assess_answer_quality(
+            state.answer,
+            sources=state.sources,
+            citation_report=state.citation_report,
+            skipped_model_call=state.skipped_model_call,
+        )
 
 
 class OutputGuardrailNode:
@@ -709,6 +723,33 @@ def citation_numbers(answer: str) -> list[int]:
     return sorted(set(refs))
 
 
+def assess_answer_quality(
+    answer: str,
+    *,
+    sources: list[dict[str, Any]],
+    citation_report: dict[str, Any],
+    skipped_model_call: bool,
+) -> dict[str, Any]:
+    text = str(answer or "").strip()
+    flags: list[str] = []
+    if not text:
+        flags.append("empty_answer")
+    elif len(text) < 24 and not skipped_model_call:
+        flags.append("very_short_answer")
+    if sources and citation_report.get("status") == "missing_citation":
+        flags.append("missing_citation")
+    if skipped_model_call:
+        flags.append("model_call_skipped")
+    status = "needs_attention" if flags else "ok"
+    return {
+        "status": status,
+        "answer_chars": len(text),
+        "source_count": len(sources),
+        "flags": flags,
+        "requires_attention": bool(flags),
+    }
+
+
 def format_evidence_for_prompt(index: int, item: dict[str, Any]) -> str:
     if item.get("kind") == "external":
         return f"[{index}] EXTERNAL: {item.get('title')} ({item.get('url')})\n{item.get('snippet')}"
@@ -951,6 +992,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
             "evidence_rerank": state.evidence_rerank_report,
             "evidence_budget": state.evidence_budget,
             "citation": state.citation_report,
+            "answer_quality": state.answer_quality_report,
         },
         "review_decision": {},
         "node_trace": state.node_trace,

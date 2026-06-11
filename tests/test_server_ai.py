@@ -9,7 +9,7 @@ from html_lore.server.config import ServerSettings
 from html_lore.server.ai.guardrails import GuardrailError
 from html_lore.server.ai.eval import KnowledgeQAEvalSpec, run_knowledge_qa_eval
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
-from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, public_qa_run, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, assess_answer_quality, build_answer_prompt, filter_evidence_by_context, format_evidence_for_prompt, is_time_sensitive_question, public_qa_run, rank_answer_evidence, rerank_answer_evidence, verify_answer_citations
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
@@ -672,6 +672,7 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
             "EvidenceGateNode",
             "AnswerAgentNode",
             "CitationVerifierNode",
+            "AnswerQualityNode",
             "OutputGuardrailNode",
             "ConversationPersistNode",
         ]
@@ -692,6 +693,8 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         assert run["qa_report"]["source_count"] == 1
         assert run["qa_report"]["citation"]["source_count"] == 1
         assert run["qa_report"]["citation"]["status"] == "missing_citation"
+        assert run["qa_report"]["answer_quality"]["status"] == "needs_attention"
+        assert run["qa_report"]["answer_quality"]["flags"] == ["missing_citation"]
         assert run["qa_report"]["evidence_scope"]["dropped_count"] == 0
         assert run["qa_report"]["evidence_ranking"]["selected_count"] == 1
         assert run["qa_report"]["evidence_rerank"]["strategy"] == "deterministic_query_score_v1"
@@ -1558,6 +1561,26 @@ def test_knowledge_qa_citation_verifier_does_not_require_model_knowledge_refs() 
     assert report["valid"] is True
     assert report["source_count"] == 0
     assert report["missing_required"] is False
+
+
+def test_knowledge_qa_answer_quality_flags_missing_citation_and_skipped_model() -> None:
+    missing_citation = assess_answer_quality(
+        "MCP security covers tool boundaries.",
+        sources=[{"item_id": "mcp.html"}],
+        citation_report={"status": "missing_citation"},
+        skipped_model_call=False,
+    )
+    skipped = assess_answer_quality(
+        NO_EVIDENCE_ANSWER,
+        sources=[],
+        citation_report={"status": "not_required"},
+        skipped_model_call=True,
+    )
+
+    assert missing_citation["status"] == "needs_attention"
+    assert missing_citation["flags"] == ["missing_citation"]
+    assert skipped["status"] == "needs_attention"
+    assert skipped["flags"] == ["model_call_skipped"]
 
 
 def test_knowledge_qa_prompt_includes_context_summary_without_format_rules() -> None:
