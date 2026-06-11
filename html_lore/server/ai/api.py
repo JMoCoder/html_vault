@@ -107,7 +107,8 @@ class AIConversationService:
         except (AIProviderConfigError, ProviderCallError) as exc:
             self.run_store.add(public_qa_run(state, status="failed", error={"code": "provider_failed", "message": str(exc)}))
             raise ConversationError(str(exc)) from exc
-        self.run_store.add(public_qa_run(state))
+        run = public_qa_run(state)
+        self.run_store.add(run)
         return {
             "conversation": state.stored_conversation,
             "message": state.stored_conversation["messages"][-1],
@@ -117,6 +118,8 @@ class AIConversationService:
             "node_trace": state.node_trace,
             "external_status": state.external_status,
             "retrieval_status": state.retrieval_status,
+            "qa_status": qa_status_from_report(run["qa_report"]),
+            "qa_report": run["qa_report"],
         }
 
     def generate_note(self, conversation_id: str, values: dict[str, Any]) -> dict[str, Any]:
@@ -245,6 +248,22 @@ class AIConversationService:
         run = getattr(exc, "run", None)
         if isinstance(run, dict) and run:
             self.run_store.add(run)
+
+
+def qa_status_from_report(report: dict[str, Any]) -> dict[str, Any]:
+    citation = report.get("citation") if isinstance(report.get("citation"), dict) else {}
+    quality = report.get("answer_quality") if isinstance(report.get("answer_quality"), dict) else {}
+    external = report.get("external_status") if isinstance(report.get("external_status"), dict) else {}
+    flags = [str(flag) for flag in quality.get("flags") or [] if str(flag)]
+    if external.get("message") and not external.get("queried"):
+        flags.append("external_unavailable")
+    return {
+        "status": str(quality.get("status") or "unknown"),
+        "requires_attention": bool(quality.get("requires_attention")),
+        "flags": flags,
+        "citation_status": str(citation.get("status") or ""),
+        "source_count": int(report.get("source_count") or 0),
+    }
 
 
 __all__ = [

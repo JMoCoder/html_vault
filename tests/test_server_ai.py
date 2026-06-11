@@ -661,6 +661,15 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         assert response["sources"][0]["item_id"] == "mcp.html"
         assert "Fake AI response" in response["message"]["content"]
         assert response["graph"] == "KnowledgeQAAndNoteGraph.beta"
+        assert response["qa_status"] == {
+            "status": "needs_attention",
+            "requires_attention": True,
+            "flags": ["missing_citation"],
+            "citation_status": "missing_citation",
+            "source_count": 1,
+        }
+        assert response["qa_report"]["answer_quality"]["flags"] == ["missing_citation"]
+        assert "Answer only from the provided evidence" not in json.dumps(response, ensure_ascii=False)
         assert [entry["node"] for entry in response["node_trace"]] == [
             "InputGuardrailNode",
             "RetrieverNode",
@@ -1238,6 +1247,7 @@ def test_ai_message_reports_external_expansion_unavailable_without_adapter(tmp_p
             "available": False,
             "message": "External content expansion is not configured.",
         }
+        assert response["qa_status"]["flags"] == ["model_call_skipped", "external_unavailable"]
         runs = server.request("GET", "/api/ai/runs")
         assert runs["runs"][0]["qa_report"]["expansion_policy"]["mode"] == "web_research"
     finally:
