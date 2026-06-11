@@ -182,6 +182,8 @@ def test_ai_status_is_unavailable_without_provider(tmp_path: Path) -> None:
         assert status["available"] is False
         assert status["configured"] is False
         assert status["provider"]["model"] == "gpt-5.5"
+        assert status["external_search_available"] is False
+        assert status["external_search"] == {"provider": "disabled", "available": False, "max_results": 5}
         assert "api_key" not in status["provider"]
     finally:
         server.close()
@@ -204,12 +206,34 @@ def test_ai_provider_roundtrip_rejects_api_key_and_redacts_env_secret(tmp_path: 
         raw_status = json.dumps(status)
         assert status["available"] is True
         assert status["provider"]["has_api_key"] is True
+        assert "api_key" not in status["external_search"]
         assert "test-secret-key" not in raw_status
         assert "api_key" not in status["provider"]
 
         code, error = server.json_error("PUT", "/api/ai/providers", {"provider": "fake", "enabled": True, "api_key": "browser-secret"})
         assert code == 400
         assert "browser-secret" not in json.dumps(error)
+    finally:
+        server.close()
+
+
+def test_ai_status_reports_external_search_capability(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+        ai_external_search="fake",
+        ai_external_search_max_results=3,
+    )
+    try:
+        status = server.request("GET", "/api/ai/status")
+        assert status["available"] is True
+        assert status["external_search_available"] is True
+        assert status["external_search"] == {"provider": "fake", "available": True, "max_results": 3}
     finally:
         server.close()
 

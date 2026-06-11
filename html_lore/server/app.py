@@ -77,7 +77,7 @@ def get_share_service(
 
 
 def get_ai_service(settings: Annotated[ServerSettings, Depends(get_request_settings)]) -> AIService:
-    return AIService(AIProviderConfigStore(settings))
+    return AIService(AIProviderConfigStore(settings), settings)
 
 
 def get_ai_conversation_service(

@@ -19,8 +19,9 @@ from .runs import AIRunError, AIRunStore
 
 
 class AIService:
-    def __init__(self, store: AIProviderConfigStore) -> None:
+    def __init__(self, store: AIProviderConfigStore, settings: ServerSettings) -> None:
         self.store = store
+        self.settings = settings
 
     def provider(self) -> dict[str, Any]:
         return {"provider": self.store.get().public_dict()}
@@ -32,11 +33,19 @@ class AIService:
     def status(self) -> dict[str, Any]:
         config = self.store.get()
         client_status = ModelClient(config).status()
+        external_search = build_external_search_adapter(self.settings)
+        external_status = {
+            "provider": external_search.name,
+            "available": bool(external_search.available),
+            "max_results": max(1, int(getattr(external_search, "max_results", self.settings.ai_external_search_max_results) or 5)),
+        }
         return {
             "configured": config.configured,
             "available": bool(client_status["available"]),
             "message": client_status["message"],
             "provider": config.public_dict(),
+            "external_search_available": external_status["available"],
+            "external_search": external_status,
         }
 
     def test_provider(self) -> dict[str, Any]:
