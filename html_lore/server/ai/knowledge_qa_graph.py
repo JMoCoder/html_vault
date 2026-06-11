@@ -39,6 +39,7 @@ class KnowledgeQAState:
     retrieval_status: dict[str, Any] = field(default_factory=dict)
     external_sources: list[dict[str, Any]] = field(default_factory=list)
     external_status: dict[str, Any] = field(default_factory=dict)
+    expansion_policy: dict[str, Any] = field(default_factory=dict)
     prompt_messages: list[dict[str, str]] = field(default_factory=list)
     agent_trace: list[dict[str, Any]] = field(default_factory=list)
     prompt_trace: list[dict[str, str]] = field(default_factory=list)
@@ -77,6 +78,7 @@ class KnowledgeQAGraph:
         self.nodes = nodes or (
             InputGuardrailNode(max_message_chars=max_message_chars),
             RetrieverNode(item_service, model_client=model_client, retrieval_mode=retrieval_mode),
+            ExpansionPolicyNode(),
             ExternalSearchNode(external_search),
             EvidenceGateNode(max_prompt_chars=max_prompt_chars),
             AnswerAgentNode(model_client, max_response_tokens=max_response_tokens),
@@ -148,6 +150,8 @@ class ExternalSearchNode:
         state.external_status = {"provider": self.external_search.name, "available": self.external_search.available}
         if source_mode != "local_plus_external":
             return
+        if state.expansion_policy.get("mode") != "web_research":
+            return
         if not self.external_search.available:
             state.external_status["message"] = "External content expansion is not configured."
             return
@@ -161,6 +165,46 @@ class ExternalSearchNode:
         state.external_status.update({"available": True, "count": len(state.external_sources), "dropped": dropped})
 
 
+class ExpansionPolicyNode:
+    name = "ExpansionPolicyNode"
+
+    def run(self, state: KnowledgeQAState) -> None:
+        source_mode = str(state.context_snapshot.get("source_mode") or "local_only")
+        has_local_evidence = any(source.get("kind") != "external" for source in state.evidence)
+        explicit_search = asks_for_external_search(state.content)
+        time_sensitive = is_time_sensitive_question(state.content)
+        if source_mode != "local_plus_external":
+            state.expansion_policy = {
+                "mode": "local_only",
+                "reason": "content_expansion_disabled",
+                "confidence": 1.0,
+                "requires_citation": bool(state.evidence),
+            }
+            return
+        if explicit_search or time_sensitive:
+            state.expansion_policy = {
+                "mode": "web_research",
+                "reason": "explicit_search_request" if explicit_search else "time_sensitive_question",
+                "confidence": 0.9,
+                "requires_citation": True,
+            }
+            return
+        if has_local_evidence:
+            state.expansion_policy = {
+                "mode": "local_evidence",
+                "reason": "local_evidence_available",
+                "confidence": 0.85,
+                "requires_citation": True,
+            }
+            return
+        state.expansion_policy = {
+            "mode": "model_knowledge",
+            "reason": "general_knowledge_fallback",
+            "confidence": 0.72,
+            "requires_citation": False,
+        }
+
+
 class EvidenceGateNode:
     name = "EvidenceGateNode"
 
@@ -170,13 +214,22 @@ class EvidenceGateNode:
         self.answer_prompt = load_prompt(self.answer_agent.prompt_template)
 
     def run(self, state: KnowledgeQAState) -> None:
-        if state.evidence:
+        allow_model_knowledge = state.expansion_policy.get("mode") == "model_knowledge"
+        requires_web_research = state.expansion_policy.get("mode") == "web_research"
+        has_external_evidence = any(source.get("kind") == "external" for source in state.evidence)
+        if requires_web_research and not has_external_evidence:
+            state.answer = EXTERNAL_UNAVAILABLE_ANSWER
+            state.sources = []
+            state.skipped_model_call = True
+            return
+        if state.evidence or allow_model_knowledge:
             state.sources = state.evidence
             state.prompt_messages = build_answer_prompt(
                 state.content,
                 state.evidence,
                 state.context_snapshot,
                 state.recent_messages,
+                expansion_policy=state.expansion_policy,
                 agent=self.answer_agent,
                 prompt=self.answer_prompt,
             )
@@ -187,7 +240,10 @@ class EvidenceGateNode:
             validate_prompt_budget(state.prompt_messages, max_chars=self.max_prompt_chars)
             return
         if str(state.context_snapshot.get("source_mode") or "local_only") == "local_plus_external":
-            state.answer = EXTERNAL_UNAVAILABLE_ANSWER
+            if state.expansion_policy.get("mode") == "web_research":
+                state.answer = EXTERNAL_UNAVAILABLE_ANSWER
+            else:
+                state.answer = NO_EVIDENCE_ANSWER
         else:
             state.answer = NO_EVIDENCE_ANSWER
         state.sources = []
@@ -241,12 +297,14 @@ def build_answer_prompt(
     snapshot: dict[str, Any],
     recent_messages: list[dict[str, str]] | None = None,
     *,
+    expansion_policy: dict[str, Any] | None = None,
     agent: AgentSpec | None = None,
     prompt: PromptTemplate | None = None,
 ) -> list[dict[str, str]]:
     agent = agent or load_agent(ANSWER_AGENT_ID)
     prompt = prompt or load_prompt(agent.prompt_template)
     source_mode = str(snapshot.get("source_mode") or "local_only")
+    policy = expansion_policy if isinstance(expansion_policy, dict) else {}
     context_text = format_context_for_prompt(snapshot)
     recent_text = format_recent_conversation_for_prompt(recent_messages or [])
     evidence_text = "\n\n".join(
@@ -263,6 +321,7 @@ def build_answer_prompt(
             "role": "user",
             "content": (
                 f"SOURCE_MODE: {source_mode}\n"
+                f"EXPANSION_POLICY: {format_expansion_policy_for_prompt(policy)}\n"
                 f"CURRENT_CONTEXT:\n{context_text}\n\n"
                 f"{recent_section}"
                 f"USER_QUESTION:\n{content}\n\n"
@@ -280,6 +339,20 @@ def format_evidence_for_prompt(index: int, item: dict[str, Any]) -> str:
     if item.get("kind") == "external":
         return f"[{index}] EXTERNAL: {item.get('title')} ({item.get('url')})\n{item.get('snippet')}"
     return f"[{index}] LOCAL: {item.get('title')} ({item.get('item_id')})\n{item.get('snippet')}"
+
+
+def format_expansion_policy_for_prompt(policy: dict[str, Any]) -> str:
+    if not policy:
+        return "mode=local_only, reason=default, general_knowledge_allowed=false, web_research_required=false"
+    mode = str(policy.get("mode") or "local_only")
+    general_allowed = mode == "model_knowledge"
+    web_required = mode == "web_research"
+    reason = str(policy.get("reason") or "")
+    return (
+        f"mode={mode}, reason={reason}, "
+        f"general_knowledge_allowed={str(general_allowed).lower()}, "
+        f"web_research_required={str(web_required).lower()}"
+    )
 
 
 def format_context_for_prompt(snapshot: dict[str, Any]) -> str:
@@ -376,6 +449,80 @@ def is_followup_question(content: str) -> bool:
     return any(marker in normalized for marker in followup_markers)
 
 
+def asks_for_external_search(content: str) -> bool:
+    normalized = str(content or "").strip().lower()
+    markers = [
+        "search",
+        "web",
+        "online",
+        "source",
+        "official",
+        "link",
+        "citation",
+        "查一下",
+        "联网",
+        "网上",
+        "官网",
+        "链接",
+        "来源",
+        "引用",
+        "調べ",
+        "検索",
+        "公式",
+        "リンク",
+    ]
+    return any(marker in normalized for marker in markers)
+
+
+def is_time_sensitive_question(content: str) -> bool:
+    normalized = str(content or "").strip().lower()
+    markers = [
+        "latest",
+        "current",
+        "today",
+        "yesterday",
+        "recent",
+        "now",
+        "price",
+        "pricing",
+        "version",
+        "release",
+        "news",
+        "law",
+        "policy",
+        "ceo",
+        "最新",
+        "当前",
+        "现在",
+        "今天",
+        "昨天",
+        "最近",
+        "价格",
+        "报价",
+        "版本",
+        "发布",
+        "新闻",
+        "政策",
+        "法规",
+        "法律",
+        "最新",
+        "現在",
+        "今日",
+        "昨日",
+        "最近",
+        "価格",
+        "料金",
+        "バージョン",
+        "リリース",
+        "ニュース",
+        "法律",
+    ]
+    if any(marker in normalized for marker in markers):
+        return True
+    year = datetime.now(timezone.utc).year
+    return str(year) in normalized or str(year - 1) in normalized or str(year + 1) in normalized
+
+
 def format_recent_conversation_for_prompt(messages: list[dict[str, str]]) -> str:
     if not messages:
         return ""
@@ -424,6 +571,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
             "skipped_model_call": bool(state.skipped_model_call),
             "retrieval": state.retrieval_status,
             "external_status": state.external_status,
+            "expansion_policy": state.expansion_policy,
         },
         "review_decision": {},
         "node_trace": state.node_trace,

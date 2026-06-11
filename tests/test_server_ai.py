@@ -7,7 +7,7 @@ from pathlib import Path
 from html_lore.builder import build_site
 from html_lore.server.config import ServerSettings
 from html_lore.server.ai.html_generation_graph import HtmlGenerationGraph, HtmlGenerationState, review_html
-from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, format_evidence_for_prompt
+from html_lore.server.ai.knowledge_qa_graph import EXTERNAL_UNAVAILABLE_ANSWER, KnowledgeQAGraph, KnowledgeQAState, NO_EVIDENCE_ANSWER, build_answer_prompt, format_evidence_for_prompt, is_time_sensitive_question
 from html_lore.server.ai.material_generation import MaterialGenerationError, parse_material
 from html_lore.server.ai.model_client import ModelClient
 from html_lore.server.ai.providers import AIProviderConfig, OpenAICompatibleHttpAdapter, chat_completions_url, parse_provider_response
@@ -637,6 +637,7 @@ def test_ai_message_uses_local_evidence_with_fake_provider(tmp_path: Path) -> No
         assert [entry["node"] for entry in response["node_trace"]] == [
             "InputGuardrailNode",
             "RetrieverNode",
+            "ExpansionPolicyNode",
             "ExternalSearchNode",
             "EvidenceGateNode",
             "AnswerAgentNode",
@@ -1119,7 +1120,7 @@ def test_ai_message_reports_external_expansion_unavailable_without_adapter(tmp_p
             "/api/ai/conversations",
             {"context": {"item_id": "mcp.html"}, "source_mode": "local_plus_external"},
         )["conversation"]
-        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "unrelated quantum banana"})
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "What is the latest MCP version today?"})
         assert response["sources"] == []
         assert response["usage"] == {}
         assert response["message"]["content"] == EXTERNAL_UNAVAILABLE_ANSWER
@@ -1128,6 +1129,38 @@ def test_ai_message_reports_external_expansion_unavailable_without_adapter(tmp_p
             "available": False,
             "message": "External content expansion is not configured.",
         }
+        runs = server.request("GET", "/api/ai/runs")
+        assert runs["runs"][0]["qa_report"]["expansion_policy"]["mode"] == "web_research"
+    finally:
+        server.close()
+
+
+def test_ai_message_uses_model_knowledge_when_expansion_is_enabled_for_general_question(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+    )
+    try:
+        conversation = server.json(
+            "POST",
+            "/api/ai/conversations",
+            {"context": {"item_id": "mcp.html"}, "source_mode": "local_plus_external"},
+        )["conversation"]
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "Explain quantum banana as a general metaphor"})
+        assert response["sources"] == []
+        assert response["external_status"] == {"provider": "disabled", "available": False}
+        assert response["message"]["content"].startswith("Fake AI response")
+
+        runs = server.request("GET", "/api/ai/runs")
+        policy = runs["runs"][0]["qa_report"]["expansion_policy"]
+        assert policy["mode"] == "model_knowledge"
+        assert policy["reason"] == "general_knowledge_fallback"
     finally:
         server.close()
 
@@ -1150,11 +1183,16 @@ def test_ai_message_uses_fake_external_search_when_expansion_is_enabled(tmp_path
             "/api/ai/conversations",
             {"context": {"item_id": "mcp.html"}, "source_mode": "local_plus_external"},
         )["conversation"]
-        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "unrelated quantum banana"})
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "What is the latest MCP version today?"})
         assert response["external_status"] == {"provider": "fake", "available": True, "count": 1, "dropped": 0}
-        assert response["sources"][0]["kind"] == "external"
-        assert response["sources"][0]["url"].startswith("https://example.test/search")
+        external_sources = [source for source in response["sources"] if str(source.get("url") or "").startswith("https://example.test/search")]
+        assert external_sources
         assert "Fake AI response" in response["message"]["content"]
+
+        runs = server.request("GET", "/api/ai/runs")
+        policy = runs["runs"][0]["qa_report"]["expansion_policy"]
+        assert policy["mode"] == "web_research"
+        assert policy["reason"] == "time_sensitive_question"
     finally:
         server.close()
 
@@ -1209,14 +1247,14 @@ def test_external_search_filtered_results_do_not_trigger_model_call(tmp_path: Pa
     conversation = conversation_store.create({"context": {"item_id": "mcp.html"}, "source_mode": "local_plus_external"})
     state = KnowledgeQAGraph(
         item_service=item_service,
-        model_client=ModelClient(settings),
+        model_client=ModelClient(AIProviderConfig(provider="fake", enabled=True, model="fake-test-model")),
         conversation_store=conversation_store,
         external_search=UnsafeExternalSearch(),
     ).run(
         KnowledgeQAState(
             conversation_id=conversation["id"],
             conversation=conversation,
-            content="unrelated quantum banana",
+            content="What is the latest MCP version today?",
         ),
     )
 
@@ -1225,6 +1263,11 @@ def test_external_search_filtered_results_do_not_trigger_model_call(tmp_path: Pa
     assert state.usage == {}
     assert state.answer == EXTERNAL_UNAVAILABLE_ANSWER
     assert state.external_status == {"provider": "unsafe-test", "available": True, "count": 0, "dropped": 2}
+
+
+def test_expansion_policy_marks_time_sensitive_questions_for_web_research() -> None:
+    assert is_time_sensitive_question("What is the latest GPT model pricing today?") is True
+    assert is_time_sensitive_question("给小白解释一下 EPC 是什么") is False
 
 
 def test_external_evidence_prompt_format_is_distinct_from_local_notes() -> None:
