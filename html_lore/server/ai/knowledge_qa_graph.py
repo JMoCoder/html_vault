@@ -40,6 +40,7 @@ class KnowledgeQAState:
     external_sources: list[dict[str, Any]] = field(default_factory=list)
     external_status: dict[str, Any] = field(default_factory=dict)
     expansion_policy: dict[str, Any] = field(default_factory=dict)
+    evidence_budget: dict[str, Any] = field(default_factory=dict)
     prompt_messages: list[dict[str, str]] = field(default_factory=list)
     agent_trace: list[dict[str, Any]] = field(default_factory=list)
     prompt_trace: list[dict[str, str]] = field(default_factory=list)
@@ -223,12 +224,26 @@ class EvidenceGateNode:
             state.skipped_model_call = True
             return
         if state.evidence or allow_model_knowledge:
+            budgeted_evidence, budgeted_history, budget_report = budget_prompt_inputs(
+                content=state.content,
+                evidence=state.evidence,
+                snapshot=state.context_snapshot,
+                recent_messages=state.recent_messages,
+                expansion_policy=state.expansion_policy,
+                max_prompt_chars=self.max_prompt_chars,
+                agent=self.answer_agent,
+                prompt=self.answer_prompt,
+            )
+            state.evidence = budgeted_evidence
+            state.recent_messages = budgeted_history
+            state.evidence_budget = budget_report
+            state.retrieval_status["budget"] = budget_report
             state.sources = state.evidence
             state.prompt_messages = build_answer_prompt(
                 state.content,
-                state.evidence,
+                budgeted_evidence,
                 state.context_snapshot,
-                state.recent_messages,
+                budgeted_history,
                 expansion_policy=state.expansion_policy,
                 agent=self.answer_agent,
                 prompt=self.answer_prompt,
@@ -329,6 +344,113 @@ def build_answer_prompt(
             ),
         },
     ]
+
+
+def budget_prompt_inputs(
+    *,
+    content: str,
+    evidence: list[dict[str, Any]],
+    snapshot: dict[str, Any],
+    recent_messages: list[dict[str, str]],
+    expansion_policy: dict[str, Any],
+    max_prompt_chars: int,
+    agent: AgentSpec,
+    prompt: PromptTemplate,
+) -> tuple[list[dict[str, Any]], list[dict[str, str]], dict[str, Any]]:
+    original_evidence_count = len(evidence)
+    original_history_count = len(recent_messages)
+    working_evidence = [dict(item) for item in evidence]
+    working_history = list(recent_messages)
+    max_chars = max(1, int(max_prompt_chars or 1))
+    trimmed_evidence_chars = False
+    dropped_evidence = 0
+    dropped_history = 0
+
+    if working_evidence:
+        per_snippet_limit = evidence_snippet_limit(max_chars, len(working_evidence))
+        trimmed: list[dict[str, Any]] = []
+        for item in working_evidence:
+            snippet = str(item.get("snippet") or "")
+            if len(snippet) > per_snippet_limit:
+                item["snippet"] = snippet[:per_snippet_limit].rstrip() + "..."
+                trimmed_evidence_chars = True
+            trimmed.append(item)
+        working_evidence = trimmed
+
+    messages = build_answer_prompt(
+        content,
+        working_evidence,
+        snapshot,
+        working_history,
+        expansion_policy=expansion_policy,
+        agent=agent,
+        prompt=prompt,
+    )
+    while prompt_chars(messages) > max_chars and working_history:
+        working_history = working_history[1:]
+        dropped_history += 1
+        messages = build_answer_prompt(
+            content,
+            working_evidence,
+            snapshot,
+            working_history,
+            expansion_policy=expansion_policy,
+            agent=agent,
+            prompt=prompt,
+        )
+    while prompt_chars(messages) > max_chars and len(working_evidence) > 1:
+        working_evidence = drop_lowest_priority_evidence(working_evidence)
+        dropped_evidence += 1
+        messages = build_answer_prompt(
+            content,
+            working_evidence,
+            snapshot,
+            working_history,
+            expansion_policy=expansion_policy,
+            agent=agent,
+            prompt=prompt,
+        )
+
+    report = {
+        "max_prompt_chars": max_chars,
+        "original_evidence_count": original_evidence_count,
+        "selected_evidence_count": len(working_evidence),
+        "dropped_evidence_count": dropped_evidence,
+        "original_history_count": original_history_count,
+        "selected_history_count": len(working_history),
+        "dropped_history_count": dropped_history,
+        "trimmed_evidence_chars": trimmed_evidence_chars,
+        "prompt_chars_after_budget": prompt_chars(messages),
+    }
+    return working_evidence, working_history, report
+
+
+def evidence_snippet_limit(max_prompt_chars: int, evidence_count: int) -> int:
+    if evidence_count <= 0:
+        return 0
+    evidence_budget = max(240, int(max_prompt_chars * 0.42))
+    return max(160, min(900, evidence_budget // max(1, evidence_count)))
+
+
+def drop_lowest_priority_evidence(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    if len(evidence) <= 1:
+        return evidence
+    indexed = list(enumerate(evidence))
+    drop_index, _ = min(indexed, key=lambda pair: (evidence_priority(pair[1]), -pair[0]))
+    return [item for index, item in indexed if index != drop_index]
+
+
+def evidence_priority(item: dict[str, Any]) -> int:
+    if item.get("kind") == "external":
+        return safe_int(item.get("score"), 100)
+    return safe_int(item.get("score"), 0)
+
+
+def safe_int(value: Any, fallback: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return fallback
 
 
 def prompt_chars(messages: list[dict[str, str]]) -> int:
@@ -572,6 +694,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
             "retrieval": state.retrieval_status,
             "external_status": state.external_status,
             "expansion_policy": state.expansion_policy,
+            "evidence_budget": state.evidence_budget,
         },
         "review_decision": {},
         "node_trace": state.node_trace,

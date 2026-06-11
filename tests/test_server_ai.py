@@ -760,6 +760,42 @@ def test_ai_message_rejects_prompt_above_budget_without_model_call(tmp_path: Pat
         server.close()
 
 
+def test_ai_message_trims_evidence_to_fit_prompt_budget(tmp_path: Path) -> None:
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    repeated = " ".join(["MCP security evidence with permissions and tool authorization."] * 80)
+    make_note_with_html(
+        content_dir,
+        meta_dir,
+        "mcp.html",
+        title="MCP Security",
+        collection="AI",
+        tags=["MCP"],
+        summary="MCP security summary.",
+        html=f"<!doctype html><html><body><p>{repeated}</p></body></html>",
+    )
+    server = run_api_server(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        ai_provider="fake",
+        ai_model="fake-test-model",
+        ai_enabled=True,
+        ai_max_prompt_chars=1800,
+    )
+    try:
+        conversation = server.json("POST", "/api/ai/conversations", {"context": {"item_id": "mcp.html"}})["conversation"]
+        response = server.json("POST", f"/api/ai/conversations/{conversation['id']}/messages", {"content": "What does MCP security cover?"})
+        assert "Fake AI response" in response["message"]["content"]
+
+        runs = server.request("GET", "/api/ai/runs")
+        budget = runs["runs"][0]["qa_report"]["evidence_budget"]
+        assert budget["trimmed_evidence_chars"] is True
+        assert budget["prompt_chars_after_budget"] <= 1800
+        assert runs["runs"][0]["budget"]["prompt_chars"] <= 1800
+    finally:
+        server.close()
+
+
 def test_knowledge_qa_graph_passes_configured_response_token_limit(tmp_path: Path) -> None:
     from html_lore.server.ai.conversations import ConversationStore
     from html_lore.server.items import ItemService
