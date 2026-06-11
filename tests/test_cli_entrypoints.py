@@ -56,3 +56,4 @@ def test_html_lore_cli_ai_eval_qa_outputs_json(capsys: pytest.CaptureFixture[str
     output = capsys.readouterr().out
     assert '"kind": "knowledge_qa_eval"' in output
     assert '"question_count": 3' in output
+    assert not (meta_dir / "ai" / "conversations.json").exists()

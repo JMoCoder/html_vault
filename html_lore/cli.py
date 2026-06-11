@@ -34,7 +34,7 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "html-lore") -> None:
     user_parser.add_argument("--data-id", default="", help="Optional persistent data partition id.")
     user_parser.add_argument("--replace", action="store_true", help="Replace the user if it already exists.")
 
-    qa_eval_parser = subparsers.add_parser("ai-eval-qa", help="Run a knowledge QA evaluation baseline.")
+    qa_eval_parser = subparsers.add_parser("ai-eval-qa", help="Run a non-persistent knowledge QA evaluation baseline.")
     qa_eval_parser.add_argument("--content", default="examples/content", help="Directory containing source HTML files.")
     qa_eval_parser.add_argument("--meta", default="examples/meta", help="Directory containing sidecar metadata.")
     qa_eval_parser.add_argument("--public", default="examples/public", help="Public output directory used for settings.")

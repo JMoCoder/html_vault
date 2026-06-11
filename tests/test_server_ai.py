@@ -169,6 +169,8 @@ def test_knowledge_qa_eval_runs_fake_baseline(tmp_path: Path) -> None:
     assert report["results"][0]["status"] == "completed"
     assert report["results"][0]["source_count"] == 1
     assert report["results"][0]["citation"]["status"] == "missing_citation"
+    assert report["persistent"] is False
+    assert not (meta_dir / "ai" / "conversations.json").exists()
 
 
 def test_ai_status_is_unavailable_without_provider(tmp_path: Path) -> None:
