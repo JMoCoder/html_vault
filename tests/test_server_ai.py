@@ -923,6 +923,8 @@ def test_vector_retrieval_mode_falls_back_to_keyword_when_embedding_is_unavailab
         assert response["retrieval_status"]["effective_mode"] == "keyword"
         assert response["retrieval_status"]["fallback"] is True
         assert response["retrieval_status"]["reason"] == "embedding_not_implemented"
+        assert response["retrieval_status"]["keyword_source_count"] == 1
+        assert response["retrieval_status"]["vector_source_count"] == 0
         assert response["retrieval_status"]["source_count"] == 1
         assert response["retrieval_status"]["query_expanded"] is False
         assert response["retrieval_status"]["covered_item_count"] == 1
@@ -933,6 +935,36 @@ def test_vector_retrieval_mode_falls_back_to_keyword_when_embedding_is_unavailab
         assert runs["runs"][0]["qa_report"]["retrieval"]["effective_mode"] == "keyword"
     finally:
         server.close()
+
+
+def test_hybrid_retrieval_mode_records_keyword_fallback_diagnostics(tmp_path: Path) -> None:
+    from html_lore.server.items import ItemService
+
+    content_dir, meta_dir, public_dir = make_dirs(tmp_path)
+    make_note(content_dir, meta_dir, "mcp.html", title="MCP Security", collection="AI", tags=["MCP"])
+    settings = ServerSettings(
+        content_dir=content_dir,
+        meta_dir=meta_dir,
+        public_dir=public_dir,
+        site_title="Hybrid Retrieval Test",
+        max_upload_bytes=10 * 1024 * 1024,
+    )
+    result = retrieve_evidence_with_status(
+        ItemService(settings),
+        {"scope": "reader", "item_ids": ["mcp.html"]},
+        "What does MCP security cover?",
+        mode="hybrid",
+        model_client=ModelClient(AIProviderConfig(provider="fake", enabled=True, model="fake")),
+    )
+
+    assert result.status["requested_mode"] == "hybrid"
+    assert result.status["effective_mode"] == "keyword"
+    assert result.status["fallback"] is True
+    assert result.status["reason"] == "embedding_not_implemented"
+    assert result.status["keyword_source_count"] == 1
+    assert result.status["vector_source_count"] == 0
+    assert result.status["source_count"] == 1
+    assert result.evidence[0]["item_id"] == "mcp.html"
 
 
 def test_retrieval_status_normalizes_unknown_mode_to_keyword(tmp_path: Path) -> None:
@@ -958,6 +990,8 @@ def test_retrieval_status_normalizes_unknown_mode_to_keyword(tmp_path: Path) -> 
         "requested_mode": "keyword",
         "effective_mode": "keyword",
         "fallback": False,
+        "keyword_source_count": 1,
+        "vector_source_count": 0,
         "source_count": 1,
     }
     assert result.evidence[0]["item_id"] == "mcp.html"

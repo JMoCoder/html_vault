@@ -104,12 +104,40 @@ def retrieve_evidence_with_status(
     requested_mode = normalize_retrieval_mode(mode)
     if requested_mode == "keyword":
         evidence = retrieve_keyword_evidence(item_service, context_snapshot, query, max_results=max_results)
+        return RetrievalResult(evidence=evidence, status=keyword_status(requested_mode, evidence, fallback=False))
+
+    if requested_mode == "hybrid":
+        keyword_evidence = retrieve_keyword_evidence(item_service, context_snapshot, query, max_results=max_results)
+        try:
+            vector_evidence = retrieve_vector_evidence(
+                item_service,
+                context_snapshot,
+                query,
+                model_client=model_client,
+                max_results=max_results,
+            )
+        except Exception as exc:
+            return RetrievalResult(
+                evidence=keyword_evidence,
+                status={
+                    "requested_mode": "hybrid",
+                    "effective_mode": "keyword",
+                    "fallback": True,
+                    "reason": retrieval_error_reason(exc),
+                    "keyword_source_count": len(keyword_evidence),
+                    "vector_source_count": 0,
+                    "source_count": len(keyword_evidence),
+                },
+            )
+        evidence = merge_hybrid_evidence(keyword_evidence, vector_evidence, max_results=max_results)
         return RetrievalResult(
             evidence=evidence,
             status={
-                "requested_mode": requested_mode,
-                "effective_mode": "keyword",
+                "requested_mode": "hybrid",
+                "effective_mode": "hybrid",
                 "fallback": False,
+                "keyword_source_count": len(keyword_evidence),
+                "vector_source_count": len(vector_evidence),
                 "source_count": len(evidence),
             },
         )
@@ -133,16 +161,21 @@ def retrieve_evidence_with_status(
         )
     except Exception as exc:
         evidence = retrieve_keyword_evidence(item_service, context_snapshot, query, max_results=max_results)
-        return RetrievalResult(
-            evidence=evidence,
-            status={
-                "requested_mode": requested_mode,
-                "effective_mode": "keyword",
-                "fallback": True,
-                "reason": retrieval_error_reason(exc),
-                "source_count": len(evidence),
-            },
-        )
+        return RetrievalResult(evidence=evidence, status=keyword_status(requested_mode, evidence, fallback=True, reason=retrieval_error_reason(exc)))
+
+
+def keyword_status(requested_mode: str, evidence: list[dict[str, Any]], *, fallback: bool, reason: str = "") -> dict[str, Any]:
+    status: dict[str, Any] = {
+        "requested_mode": requested_mode,
+        "effective_mode": "keyword",
+        "fallback": fallback,
+        "keyword_source_count": len(evidence),
+        "vector_source_count": 0,
+        "source_count": len(evidence),
+    }
+    if reason:
+        status["reason"] = reason
+    return status
 
 
 def retrieve_keyword_evidence(item_service: ItemService, context_snapshot: dict[str, Any], query: str, *, max_results: int = 5) -> list[dict[str, Any]]:
@@ -290,6 +323,38 @@ def rank_evidence(evidences: list[Evidence], *, max_results: int, balanced: bool
             break
         ranked.append(evidence)
     return ranked
+
+
+def merge_hybrid_evidence(keyword_evidence: list[dict[str, Any]], vector_evidence: list[dict[str, Any]], *, max_results: int) -> list[dict[str, Any]]:
+    merged: dict[tuple[str, str], dict[str, Any]] = {}
+    for source, boost in ((keyword_evidence, 0), (vector_evidence, 8)):
+        for item in source:
+            key = (str(item.get("item_id") or item.get("url") or ""), normalize_space(str(item.get("snippet") or ""))[:240])
+            if key in merged:
+                existing = merged[key]
+                existing["score"] = max(safe_score(existing), safe_score(item) + boost)
+                existing["retrieval_sources"] = sorted(set(existing.get("retrieval_sources") or []) | {retrieval_source_name(item, boost)})
+                continue
+            copied = dict(item)
+            copied["score"] = safe_score(item) + boost
+            copied["retrieval_sources"] = [retrieval_source_name(item, boost)]
+            merged[key] = copied
+    ranked = sorted(merged.values(), key=lambda item: (-safe_score(item), str(item.get("title") or ""), str(item.get("snippet") or "")))
+    return ranked[: max(1, int(max_results or 5))]
+
+
+def safe_score(item: dict[str, Any]) -> int:
+    try:
+        return int(item.get("score") or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def retrieval_source_name(item: dict[str, Any], boost: int) -> str:
+    sources = item.get("retrieval_sources")
+    if isinstance(sources, list) and sources:
+        return str(sources[0])
+    return "vector" if boost else "keyword"
 
 
 def retrieve_vector_evidence(
