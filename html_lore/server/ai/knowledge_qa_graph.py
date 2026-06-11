@@ -41,6 +41,7 @@ class KnowledgeQAState:
     external_sources: list[dict[str, Any]] = field(default_factory=list)
     external_status: dict[str, Any] = field(default_factory=dict)
     expansion_policy: dict[str, Any] = field(default_factory=dict)
+    evidence_scope_report: dict[str, Any] = field(default_factory=dict)
     evidence_rank_report: dict[str, Any] = field(default_factory=dict)
     evidence_budget: dict[str, Any] = field(default_factory=dict)
     prompt_messages: list[dict[str, str]] = field(default_factory=list)
@@ -84,6 +85,7 @@ class KnowledgeQAGraph:
             RetrieverNode(item_service, model_client=model_client, retrieval_mode=retrieval_mode),
             ExpansionPolicyNode(),
             ExternalSearchNode(external_search),
+            EvidenceScopeGuardNode(),
             EvidenceRankerNode(),
             EvidenceGateNode(max_prompt_chars=max_prompt_chars),
             AnswerAgentNode(model_client, max_response_tokens=max_response_tokens),
@@ -216,6 +218,13 @@ class EvidenceRankerNode:
 
     def run(self, state: KnowledgeQAState) -> None:
         state.evidence, state.evidence_rank_report = rank_answer_evidence(state.evidence)
+
+
+class EvidenceScopeGuardNode:
+    name = "EvidenceScopeGuardNode"
+
+    def run(self, state: KnowledgeQAState) -> None:
+        state.evidence, state.evidence_scope_report = filter_evidence_by_context(state.evidence, state.context_snapshot)
 
 
 class EvidenceGateNode:
@@ -478,6 +487,32 @@ def safe_int(value: Any, fallback: int) -> int:
 
 def prompt_chars(messages: list[dict[str, str]]) -> int:
     return sum(len(str(message.get("content") or "")) for message in messages)
+
+
+def filter_evidence_by_context(evidence: list[dict[str, Any]], snapshot: dict[str, Any]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    allowed_ids = {str(item_id) for item_id in snapshot.get("item_ids") or [] if str(item_id)}
+    kept: list[dict[str, Any]] = []
+    dropped: list[str] = []
+    external_count = 0
+    for item in evidence:
+        if item.get("kind") == "external":
+            kept.append(dict(item))
+            external_count += 1
+            continue
+        item_id = str(item.get("item_id") or "").strip()
+        if item_id and item_id in allowed_ids:
+            kept.append(dict(item))
+            continue
+        dropped.append(item_id or str(item.get("title") or "unknown"))
+    report = {
+        "original_count": len(evidence),
+        "selected_count": len(kept),
+        "dropped_count": len(dropped),
+        "dropped_local_ids": dropped[:20],
+        "external_source_count": external_count,
+        "context_item_count": len(allowed_ids),
+    }
+    return kept, report
 
 
 def rank_answer_evidence(evidence: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -823,6 +858,7 @@ def public_qa_run(state: KnowledgeQAState, *, status: str = "completed", error: 
             "retrieval": state.retrieval_status,
             "external_status": state.external_status,
             "expansion_policy": state.expansion_policy,
+            "evidence_scope": state.evidence_scope_report,
             "evidence_ranking": state.evidence_rank_report,
             "evidence_budget": state.evidence_budget,
             "citation": state.citation_report,
